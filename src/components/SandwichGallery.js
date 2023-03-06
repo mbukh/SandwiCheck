@@ -2,47 +2,35 @@ import { debug } from "../constants/debug";
 
 import { Loading } from "../components";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-import { readIngredientsCollection } from "../services/apiIngredients";
-
-import { ingredientTypes } from "../constants/ingredientTypes";
+import useIngredients from "../hooks/use-sandwich";
 
 const SandwichGallery = () => {
+    const [sandwiches, setSandwiches] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [ingredients, setIngredients] = useState({});
 
-    useState(() => {
-        setLoading(true);
+    const {
+        ingredients,      
+    } = useIngredients();
 
-        (async () => {
-            try {
-                const valuesArray = await Promise.all(
-                    ingredientTypes.map((ingredientType) =>
-                        readIngredientsCollection(ingredientType)
-                    )
-                );
-                const ingredientsAsObject = valuesArray.reduce(
-                    (a, v, idx) => ({ ...a, [ingredientTypes[idx]]: v }),
-                    {}
-                );
-                debug && console.log("All ingredients:", ingredientsAsObject);
+    useEffect(() => {
+        Object.keys(ingredients).length &&
+            sandwiches.length &&
+            setLoading(false);
 
-                setIngredients(ingredientsAsObject);
-                setLoading(false);
-            } catch (error) {
-                debug &&
-                    console.log(
-                        "Not all ingredients retrieved: ",
-                        error.message
-                    );
+        return () => setLoading(true);
+    }, [ingredients, sandwiches]);
 
-                setLoading(false);
-            }
-        })();
-    }, []);
+    useEffect(() => {
+        Object.keys(ingredients).length &&
+            sandwiches.length &&
+            setLoading(false);
 
-    return <></>;
+        return () => setLoading(true);
+    }, [ingredients, sandwiches]);
+
+    return loading ? <Loading /> : <></>;
 };
 
 export default SandwichGallery;

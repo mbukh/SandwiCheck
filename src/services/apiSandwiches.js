@@ -12,6 +12,7 @@ import {
     collection,
     increment,
     serverTimestamp,
+    documentId,
 } from "firebase/firestore";
 
 import { updateUserById } from "./apiUsers";
@@ -82,8 +83,22 @@ const createFavoriteSandwich = async (sandwichData, userId) => {
     }
 };
 
-const getSandwichDataByIngredientsIds = async (ingredientsIds) => {
-    
-}
+const getSandwichesById = async (sandwichIds) => {
+    try {
+        const collectionRef = collection(db, collectionName);
+        const docsSnap = await getDocs(
+            query(collectionRef, where(documentId, "in", sandwichIds))
+        );
+        if (docsSnap.docs.length > 0) {
+            debug && console.log("User sandwiches retrieved.");
+            return docsSnap.docs.map((doc) => doc.data());
+        } else {
+            debug && console.log("No user sandwiches found.");
+            return null;
+        }
+    } catch (error) {
+        debug && console.log("Error retrieving user sandwiches:", error);
+    }
+};
 
-export { createFavoriteSandwich };
+export { createFavoriteSandwich, getSandwichesById };

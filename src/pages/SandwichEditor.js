@@ -1,63 +1,21 @@
-import { debug } from "../constants/debug";
-
-import { useNavigate } from "react-router";
-
-import { useUserAuth } from "../context/UserAuthContext";
-
 import { Loading, SandwichImage } from "../components";
-
-import { useState } from "react";
-
-import { readIngredientsCollection } from "../services/apiIngredients";
 
 import { ingredientTypes } from "../constants/ingredientTypes";
 
-import { createFavoriteSandwich } from "../services/apiSandwiches";
+import useIngredients from "../hooks/use-sandwich";
 
 const SandwichEditor = () => {
-    const { user } = useUserAuth();
-    const [ingredients, setIngredients] = useState({});
-    const [sandwich, setSandwich] = useState({});
-    const [currentIngredientType, setCurrentIngredientType] = useState("bread");
-    const [breadShape, setBreadShape] = useState("");
-
-    useState(() => {
-        (async () => {
-            try {
-                const valuesArray = await Promise.all(
-                    ingredientTypes.map((ingredientType) =>
-                        readIngredientsCollection(ingredientType)
-                    )
-                );
-                const ingredientsAsObject = valuesArray.reduce(
-                    (a, v, idx) => ({ ...a, [ingredientTypes[idx]]: v }),
-                    {}
-                );
-                debug && console.log("All ingredients:", ingredientsAsObject);
-
-                setIngredients(ingredientsAsObject);
-            } catch (error) {
-                debug &&
-                    console.log(
-                        "Not all ingredients retrieved: ",
-                        error.message
-                    );
-            }
-        })();
-
-        return () => clearSandwich();
-    }, []);
-
-    const clearSandwich = () => {
-        setSandwich({});
-        setBreadShape("");
-        setCurrentIngredientType("");
-    };
-
-    const saveSandwich = async () => {
-        await createFavoriteSandwich(sandwich, user.uid);
-        clearSandwich();
-    };
+    const {
+        ingredients,
+        currentIngredientType,
+        setCurrentIngredientType,
+        breadShape,
+        setBreadShape,
+        sandwich,
+        setSandwich,
+        clearSandwich,
+        saveSandwich,
+    } = useIngredients();
 
     return (
         <>
