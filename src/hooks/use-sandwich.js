@@ -1,68 +1,66 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 import { debug } from "../constants/debug";
 
 import { ingredientTypes } from "../constants/ingredientTypes";
-import { useUserAuth } from "../context/UserAuthContext";
 
-import { readIngredientsCollection } from "../services/apiIngredients";
-import { createFavoriteSandwich } from "../services/apiSandwiches";
+import { readAllIngredients } from "../services/apiIngredients";
+import {
+    addSandwichToCurrentUser,
+    readSandwichesOfCurrentUser,
+    readSandwichesOfUserById
+} from "../services/apiSandwiches";
 
-const useIngredients = () => {
+const useSandwich = () => {
     const [ingredients, setIngredients] = useState({});
-    const [sandwich, setSandwich] = useState({});
     const [currentIngredientType, setCurrentIngredientType] = useState("bread");
-    const [breadShape, setBreadShape] = useState("");
-    const { user } = useUserAuth();
+    const [sandwich, setSandwich] = useState({});
+    const [sandwichName, setSandwichName] = useState("");
+    const [userSandwiches, setUserSandwiches] = useState(null);
 
     useEffect(() => {
         const fetchAllIngredients = async () => {
-            try {
-                const valuesArray = await Promise.all(
-                    ingredientTypes.map((ingredientType) =>
-                        readIngredientsCollection(ingredientType)
-                    )
-                );
-                const ingredientsAsObject = valuesArray.reduce(
-                    (a, v, idx) => ({ ...a, [ingredientTypes[idx]]: v }),
-                    {}
-                );
-                debug && console.log("All ingredients:", ingredientsAsObject);
-                setIngredients(ingredientsAsObject);
-            } catch (error) {
-                debug &&
-                    console.log(
-                        "Not all ingredients retrieved: ",
-                        error.message
-                    );
-            }
+            const result = await readAllIngredients();
+            debug && console.log("All ingredients:", result);
+            setIngredients(result);
         };
         fetchAllIngredients();
         return () => clearSandwich();
     }, []);
 
+    const fetchUserSandwiches = useCallback(async (uid = null) => {
+        const resultArray = uid
+            ? await readSandwichesOfUserById(uid)
+            : await readSandwichesOfCurrentUser();
+        debug && console.log("User sandwiches:", resultArray);
+        setUserSandwiches(resultArray);
+    }, []);
+
     const clearSandwich = () => {
         setSandwich({});
-        setBreadShape("");
         setCurrentIngredientType("");
     };
 
     const saveSandwich = async () => {
-        await createFavoriteSandwich(sandwich, user.uid);
+        await addSandwichToCurrentUser({ ...sandwich, name: sandwichName });
         clearSandwich();
     };
 
     return {
         ingredients,
+        ingredientTypes,
         currentIngredientType,
         setCurrentIngredientType,
-        breadShape,
-        setBreadShape,
         sandwich,
         setSandwich,
         clearSandwich,
+        sandwichName,
+        setSandwichName,
         saveSandwich,
+        userSandwiches,
+        setUserSandwiches,
+        fetchUserSandwiches,
     };
 };
 
-export default useIngredients;
+export default useSandwich;

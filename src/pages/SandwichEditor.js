@@ -2,20 +2,24 @@ import { Loading, SandwichImage } from "../components";
 
 import { ingredientTypes } from "../constants/ingredientTypes";
 
-import useIngredients from "../hooks/use-sandwich";
+import useSandwich from "../hooks/use-sandwich";
 
 const SandwichEditor = () => {
     const {
         ingredients,
         currentIngredientType,
         setCurrentIngredientType,
-        breadShape,
-        setBreadShape,
         sandwich,
         setSandwich,
         clearSandwich,
+        sandwichName,
+        setSandwichName,
         saveSandwich,
-    } = useIngredients();
+    } = useSandwich();
+
+    const lastIngredient =
+        ingredientTypes.indexOf(currentIngredientType) + 1 ===
+        ingredientTypes.length;
 
     return (
         <>
@@ -30,7 +34,8 @@ const SandwichEditor = () => {
                                     setCurrentIngredientType(ingredientType)
                                 }
                                 disabled={
-                                    ingredientType !== "bread" && !breadShape
+                                    ingredientType !== "bread" &&
+                                    !sandwich?.bread
                                 }
                             >
                                 {ingredientType}
@@ -81,11 +86,6 @@ const SandwichEditor = () => {
                                                                         ingredient.id,
                                                                 })
                                                             );
-                                                            ingredientType ===
-                                                                "bread" &&
-                                                                setBreadShape(
-                                                                    ingredient.shape
-                                                                );
                                                         }}
                                                     />
                                                     <label
@@ -136,11 +136,7 @@ const SandwichEditor = () => {
                                     >
                                         back
                                     </button>
-                                    {ingredientTypes.indexOf(
-                                        currentIngredientType
-                                    ) +
-                                        1 <
-                                    ingredientTypes.length ? (
+                                    {!lastIngredient ? (
                                         <button
                                             onClick={() => {
                                                 setCurrentIngredientType(
@@ -152,17 +148,33 @@ const SandwichEditor = () => {
                                                         ]
                                                 );
                                             }}
-                                            disabled={
-                                                currentIngredientType ===
-                                                    "bread" && !breadShape
-                                            }
+                                            disabled={!sandwich?.bread}
                                         >
                                             next
                                         </button>
                                     ) : (
-                                        <button onClick={saveSandwich}>
-                                            save sandwich
-                                        </button>
+                                        <form
+                                            onSubmit={(e) => {
+                                                e.preventDefault();
+                                                saveSandwich();
+                                            }}
+                                        >
+                                            <input
+                                                type="text"
+                                                name="sandwichName"
+                                                placeholder="Sandwich name"
+                                                onChange={(e) =>
+                                                    setSandwichName(
+                                                        e.target.value
+                                                    )
+                                                }
+                                                value={sandwichName}
+                                            />
+                                            <input
+                                                type="submit"
+                                                value="save sandwich"
+                                            />
+                                        </form>
                                     )}
                                 </>
                             ) : (

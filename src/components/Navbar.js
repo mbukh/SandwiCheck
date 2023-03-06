@@ -1,6 +1,6 @@
 import { debug } from "../constants/debug";
 
-import { useNavigate } from "react-router";
+import { useNavigate, NavLink, Link } from "react-router-dom";
 
 import { useUserAuth } from "../context/UserAuthContext";
 
@@ -30,9 +30,25 @@ const Navbar = () => {
                 <div>
                     You kids are
                     {user.info.children.map((child) => (
-                        <div key={child.id}>{child.name}</div>
-                    ))}{" "}
+                        <div key={child.id}>
+                            <NavLink
+                                style={{}}
+                                to={`/child/${child.id}`}
+                                className={({ isActive }) =>
+                                    isActive ? "current" : ""
+                                }
+                            >
+                                {child.name}
+                            </NavLink>
+                        </div>
+                    ))}
                     <br />
+                </div>
+            )}
+
+            {!user.info?.parents && (
+                <div>
+                    <Link to={`/signup/parent/${user.uid}`}>Add a child</Link>
                 </div>
             )}
 
@@ -40,7 +56,7 @@ const Navbar = () => {
                 <button onClick={handleLogout}>Log out</button>
             </div>
 
-            <hr/>
+            <hr />
         </>
     ) : (
         <Loading />

@@ -15,6 +15,8 @@
 
 -   lunch box ads
 -   catering ads
+-   rules : only parents can see children data (database rule && api check)
 
 #### Scripts
-- [Authentication In React 18 Using Firebase V9 And The Firebase Console](https://blog.openreplay.com/authentication-in-react-18-using-firebase-v9/)
+
+-   [Authentication In React 18 Using Firebase V9 And The Firebase Console](https://blog.openreplay.com/authentication-in-react-18-using-firebase-v9/)

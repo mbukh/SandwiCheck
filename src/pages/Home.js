@@ -1,13 +1,7 @@
-import { debug } from "../constants/debug";
-
-import { useUserAuth } from "../context/UserAuthContext";
+import { SandwichGallery } from "../components";
 
 const Home = () => {
-    const { user } = useUserAuth();
-
-    return <>
-
-    </>;
+    return <SandwichGallery />;
 };
 
 export default Home;

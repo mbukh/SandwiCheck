@@ -11,6 +11,7 @@ import SandwichEditor from "./pages/SandwichEditor";
 import { initialize } from "./constants/debug";
 // ***** Initialize DB ***** //
 import initDB from "./services/initDB";
+import { SandwichGallery } from "./components";
 initialize && (async () => await initDB())();
 // ****** *********** ***** //
 
@@ -20,7 +21,19 @@ const router = createBrowserRouter([
         element: <Login />,
     },
     {
+        path: "/login",
+        element: <Login />,
+    },
+    {
+        path: "/login/parent/:parentId",
+        element: <Login />,
+    },
+    {
         path: "/signup",
+        element: <Signup />,
+    },
+    {
+        path: "/signup/parent/:parentId",
         element: <Signup />,
     },
     {
@@ -32,8 +45,12 @@ const router = createBrowserRouter([
                 element: <Home />,
             },
             {
-                path: "/home/editor",
+                path: "/createSandwich",
                 element: <SandwichEditor />,
+            },
+            {
+                path: "/child/:childId",
+                element: <SandwichGallery />,
             },
         ],
     },
