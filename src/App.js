@@ -1,12 +1,12 @@
-import "reset-css";
 import "normalize.css";
+import "reset-css";
 import "./styles/App.css";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-import { Home, Login, Signup, Layout } from "./pages";
+import { Landing, UserHome, Login, Signup, Layout, Error404, Cart } from "./pages";
 
-import SandwichEditor from "./pages/SandwichEditor";
+import { SandwichEditor } from "./components/";
 
 import { initialize } from "./constants/debug";
 // ***** Initialize DB ***** //
@@ -16,10 +16,6 @@ initialize && (async () => await initDB())();
 // ****** *********** ***** //
 
 const router = createBrowserRouter([
-    {
-        path: "/",
-        element: <Login />,
-    },
     {
         path: "/login",
         element: <Login />,
@@ -41,8 +37,16 @@ const router = createBrowserRouter([
         element: <Layout />,
         children: [
             {
+                path: "/",
+                element: <Landing />,
+            },
+            {
+                path: "/latest",
+                element: <SandwichGallery galleryType="latest" />,
+            },
+            {
                 path: "/home",
-                element: <Home />,
+                element: <UserHome />,
             },
             {
                 path: "/createSandwich",
@@ -52,7 +56,15 @@ const router = createBrowserRouter([
                 path: "/child/:childId",
                 element: <SandwichGallery />,
             },
+            {
+                path: "/cart",
+                element: <Cart />,
+            },
         ],
+    },
+    {
+        path: "*",
+        element: <Error404 />,
     },
 ]);
 

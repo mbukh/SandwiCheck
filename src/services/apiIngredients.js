@@ -11,7 +11,7 @@ const readIngredientCollection = async (collectionName) => {
         const collectionRef = collection(db, collectionName);
         const docsSnap = await getDocs(query(collectionRef, orderBy("name")));
         if (docsSnap.docs.length > 0) {
-            debug && console.log("Ingredients retrieved for: ", collectionName);
+            debug && console.log("Ingredients retrieved for:", collectionName);
             return docsSnap.docs.map((doc) => ({
                 ...doc.data(),
                 id: doc.id,
@@ -19,7 +19,7 @@ const readIngredientCollection = async (collectionName) => {
         }
     } catch (error) {
         debug &&
-            console.log(
+            console.error(
                 "Error retrieving ingredients for " + collectionName + ":",
                 error
             );
@@ -41,7 +41,7 @@ const readAllIngredients = async () => {
         debug && console.log("All ingredients retrieved.");
         return resultObject;
     } catch (error) {
-        debug && console.log("Error retrieving all ingredients:", error);
+        debug && console.error("Error retrieving all ingredients:", error);
         return null;
     }
 };

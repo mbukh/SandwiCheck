@@ -20,3 +20,7 @@
 #### Scripts
 
 -   [Authentication In React 18 Using Firebase V9 And The Firebase Console](https://blog.openreplay.com/authentication-in-react-18-using-firebase-v9/)
+
+1. days of sandwich
+2. login with setting a parent
+3.

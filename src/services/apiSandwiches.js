@@ -10,9 +10,55 @@ import {
     serverTimestamp,
     doc,
     orderBy,
+    collectionGroup,
+    limit,
 } from "firebase/firestore";
 
 import { trimObjectEmptyProperties } from "../utils/";
+
+// const isDuplicateSandwich = async (sandwich) => {
+//     try {
+//         const collectionRef = collection(db, collectionName);
+//         const queryConstraints = Object.entries(sandwich).map(
+//             ([ingredientName, ingredientId]) =>
+//                 where(ingredientName, "==", ingredientId)
+//         );
+//         // https://stackoverflow.com/questions/48036975/firestore-multiple-conditional-where-clauses
+//         const docsSnap = await getDocs(
+//             query(collectionRef, ...queryConstraints)
+//         );
+//         if (docsSnap.docs.length > 0) {
+//             debug && console.log("Duplicate sandwich WAS found");
+//             return docsSnap.docs[0];
+//         } else {
+//             debug && console.log("Duplicate sandwich NOT found.");
+//             return null;
+//         }
+//     } catch (error) {
+//         debug && console.log("Error checking duplicate sandwich:", error);
+//     }
+// };
+
+const readLatestSandwiches = async (count = 30) => {
+    try {
+        const colGroupRef = collectionGroup(db, "sandwiches");
+        const q = query(colGroupRef, orderBy("createdAt", "desc"), limit(count));
+        const docsSnap = await getDocs(q);
+        if (docsSnap.docs.length > 0) {
+            const sandwichesData = docsSnap.docs.map((doc) => ({
+                ...doc.data(),
+                id: doc.id,
+            }));
+            debug && console.log("Latest sandwiches retrieved.");
+            return sandwichesData;
+        } else {
+            debug && console.log("No latest sandwiches found.");
+            return [];
+        }
+    } catch (error) {
+        debug && console.error("Error reading latest sandwiches:", error);
+    }
+};
 
 const readSandwichesOfUserById = async (userId) => {
     try {
@@ -25,14 +71,14 @@ const readSandwichesOfUserById = async (userId) => {
                 ...doc.data(),
                 id: doc.id,
             }));
-            debug && console.log("User sandwiches retrieved:", sandwichesData);
+            debug && console.log("User sandwiches retrieved.");
             return sandwichesData;
         } else {
             debug && console.log("No user sandwiches found.");
             return [];
         }
     } catch (error) {
-        debug && console.log("Error retrieving user sandwiches:", error);
+        debug && console.error("Error retrieving user sandwiches:", error);
     }
 };
 
@@ -55,11 +101,12 @@ const addSandwichToCurrentUser = async (sandwich) => {
         debug && console.log("Sandwich id added to user:", newDocRef.id);
         return newDocRef.id;
     } catch (e) {
-        console.error("Error adding sandwich:", e);
+        debug && console.error("Error adding sandwich:", e);
     }
 };
 
 export {
+    readLatestSandwiches,
     readSandwichesOfUserById,
     readSandwichesOfCurrentUser,
     addSandwichToCurrentUser,

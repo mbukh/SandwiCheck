@@ -1,10 +1,10 @@
-import { debug } from "../constants/debug";
+import { debug } from "../../constants/debug";
 
 import { useNavigate, NavLink, Link } from "react-router-dom";
 
-import { useUserAuth } from "../context/UserAuthContext";
+import { useUserAuth } from "../../context/UserAuthContext";
 
-import { Loading } from "../components";
+import { Loading } from "..";
 
 const Navbar = () => {
     const navigate = useNavigate();
@@ -15,7 +15,7 @@ const Navbar = () => {
             logOut();
             navigate("/");
         } catch (error) {
-            debug && console.log(error.message);
+            debug && console.error(error.message);
         }
     };
 
@@ -32,11 +32,9 @@ const Navbar = () => {
                     {user.info.children.map((child) => (
                         <div key={child.id}>
                             <NavLink
-                                style={{}}
                                 to={`/child/${child.id}`}
-                                className={({ isActive }) =>
-                                    isActive ? "current" : ""
-                                }
+                                className={({ isActive }) => (isActive ? "current" : "")}
+                                preventScrollReset={true}
                             >
                                 {child.name}
                             </NavLink>

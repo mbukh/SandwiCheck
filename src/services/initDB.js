@@ -2,7 +2,7 @@ import { db } from "../constants/firebase.config";
 
 import { collection, doc, getDocs, writeBatch } from "firebase/firestore";
 
-import { bread, protein, cheese, toppings, condiments } from "./initialDataDB/";
+import { bread, protein, cheese, toppings, condiments } from "./initialDataDB";
 
 import { rebuildUsers } from "../constants/debug";
 
@@ -37,7 +37,7 @@ const removeCollection = async (collectionName) => {
         await batch.commit();
         console.log("Collection -" + collectionName + "- removed.");
     } catch (error) {
-        console.log("Collection  -" + collectionName + "- not removed:", error);
+        console.error("Collection  -" + collectionName + "- not removed:", error);
     }
 };
 
@@ -51,7 +51,7 @@ const fillCollectionWithData = async (collectionName, collectionData) => {
         await batch.commit();
         console.log("Collection -" + collectionName + "- filled.");
     } catch (error) {
-        console.log("Collection  -" + collectionName + "- not filled:", error);
+        console.error("Collection  -" + collectionName + "- not filled:", error);
     }
 };
 

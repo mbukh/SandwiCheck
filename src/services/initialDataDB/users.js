@@ -3,7 +3,17 @@ import { writeBatch, doc, collection } from "firebase/firestore";
 
 const users = [
     { id: "8aXzQ46Advaptpeq7sSdAJ1I62f2", name: "Moshe Bukhman" },
-    { id: "MMnxO1NqhfNNC2w1L7EVMe4itPN2" },
+    {
+        id: "948nG8lvrlQQT19CUlN5QLvFqJT2",
+        name: "Parent One & Two",
+        children: [
+            "v5Vr4TVb7EezZwpSHwgrEqeLyo73",
+            "b419OJ3mzShG1cXNByTHH5af5Rh2",
+        ],
+        type: "parent",
+    },
+    { id: "wY0AHX6NADeP9q9FQQzBYVTVvXi2", name: "Parent Two" },
+    { id: "DfNZXGMzLJbRHTdyFr2WVK3JBOf2", name: "Parent Three" },
     {
         id: "v5Vr4TVb7EezZwpSHwgrEqeLyo73",
         name: "Child One",
@@ -16,16 +26,7 @@ const users = [
         parents: ["948nG8lvrlQQT19CUlN5QLvFqJT2"],
         type: "child",
     },
-    { id: "DfNZXGMzLJbRHTdyFr2WVK3JBOf2" },
-    { id: "wY0AHX6NADeP9q9FQQzBYVTVvXi2" },
-    {
-        id: "948nG8lvrlQQT19CUlN5QLvFqJT2",
-        children: [
-            "v5Vr4TVb7EezZwpSHwgrEqeLyo73",
-            "b419OJ3mzShG1cXNByTHH5af5Rh2",
-        ],
-        type: "parent",
-    },
+    { id: "MMnxO1NqhfNNC2w1L7EVMe4itPN2", name: "Child Three" },
 ];
 
 const fillDatabaseWithUsers = async () => {

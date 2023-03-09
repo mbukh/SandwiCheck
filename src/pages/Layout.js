@@ -1,33 +1,16 @@
-import { debug } from "../constants/debug";
+import { Footer } from "../components/";
 
-import { Loading, Navbar } from "../components/";
-
-import { useEffect } from "react";
+import { Header } from "../components/";
 
 import { Outlet } from "react-router-dom";
 
-import { useNavigate } from "react-router-dom";
-
-import { useUserAuth } from "../context/UserAuthContext";
-
 const Layout = () => {
-    const navigate = useNavigate();
-    const { user, loadingUser } = useUserAuth();
-
-    useEffect(() => {
-        if (!loadingUser) navigate("/");
-    }, [loadingUser, navigate]);
-
-    debug &&
-        console.log("Page in private. Can be here?", !!user?.uid, user?.uid);
-
-    return user?.uid ? (
+    return (
         <>
-            <Navbar />
+            <Header />
             <Outlet />
+            {/* <Footer /> */}
         </>
-    ) : (
-        <Loading />
     );
 };
 

@@ -1,4 +1,4 @@
-import { Loading, SandwichImage } from "../components";
+import { Loading, SandwichImage } from ".";
 
 import { ingredientTypes } from "../constants/ingredientTypes";
 

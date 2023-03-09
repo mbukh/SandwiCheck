@@ -1,7 +1,7 @@
 import { SandwichGallery } from "../components";
 
-const Home = () => {
+const userHome = () => {
     return <SandwichGallery />;
 };
 
-export default Home;
+export default userHome;
