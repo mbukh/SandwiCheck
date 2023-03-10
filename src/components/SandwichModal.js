@@ -10,22 +10,14 @@ import { Modal } from "./";
 
 const SandwichModal = ({ children }) => {
     const { sandwichId } = useParams();
-    const {
-        sandwich,
-        setSandwich,
-        ingredientTypes,
-        ingredients,
-        fetchSandwich,
-    } = useSandwich();
+    const { sandwich, setSandwich, ingredientTypes, ingredients, fetchSandwich } =
+        useSandwich();
 
     useEffect(() => {
-        (async () => {
-            const sandwichData = await fetchSandwich(sandwichId);
-            setSandwich(sandwichData);
-        })();
+        (async () => await fetchSandwich(sandwichId))();
     }, [fetchSandwich, sandwichId, setSandwich]);
 
-    return ({sandwich && (
+    return (
         <Modal>
             <div id="modal-burger">
                 <div className="max-w-xs sm:max-w-sm md:max-w-screen-md mx-auto text-white">
@@ -37,7 +29,7 @@ const SandwichModal = ({ children }) => {
                         data-finalist="1"
                         className="thumb modal__thumb flex flex-col md:flex-row justify-center voted"
                     >
-                        
+                        {sandwich && (
                             <>
                                 <SandwichCard
                                     key={sandwich.id}

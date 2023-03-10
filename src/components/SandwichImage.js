@@ -7,19 +7,19 @@ const SandwichImage = ({ sandwich, ingredientTypes, ingredients, className = "" 
                 (ingredientType) =>
                     sandwich.hasOwnProperty(ingredientType) &&
                     sandwich[ingredientType] && (
-                            <img
-                                key={ingredientType}
-                                src={assembleImageSrc(
-                                    sandwich,
-                                    ingredients,
-                                    ingredientType,
-                                    "full",
-                                    "normal"
-                                )}
-                                className="absolute inset-0 object-contain size-full no-drag no-select"
-                                alt={ingredientType}
-                                loading="lazy"
-                            />
+                        <img
+                            key={ingredientType}
+                            src={assembleImageSrc(
+                                sandwich,
+                                ingredients,
+                                ingredientType,
+                                "full",
+                                "normal"
+                            )}
+                            className="absolute inset-0 object-contain size-full no-drag no-select"
+                            alt={ingredientType}
+                            loading="lazy"
+                        />
                     )
             )}
         </div>
