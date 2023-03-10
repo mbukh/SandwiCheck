@@ -59,7 +59,7 @@ const SandwichCard = ({ index, sandwich, ingredientTypes, ingredients }) => {
                     <div className="card-footer-end w-1/3 flex justify-end">
                         <a
                             className="inline-block ml-1"
-                            href={`https://wa.me/?text=This+sandwich+from+SandwiCheck+looks+yummy%21+https%3A%2F%2Fsandwicheck.com%2Fsandwich%2F${sandwich.id}`}
+                            href={`https://wa.me/?text=This+sandwich+from+SandwiCheck+looks+yummy%21+${window.location.protocol}%3A%2F%2F${window.location.hostname}%2Fsandwich%2F${sandwich.id}`}
                         >
                             <i
                                 className="icon icon-whatsapp w-auto h-7"
