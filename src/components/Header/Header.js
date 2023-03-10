@@ -33,7 +33,7 @@ const Header = () => {
                 <nav className="nav-container fl fl-aic fl-spb">
                     <div className="nav-start fl fl-start rel">
                         <HamburgerMenu
-                            className="mobile-only hamburger abs abs-v-c on-top"
+                            className="mobile-only abs abs-v-c on-top"
                             mobileMenuToggler={mobileMenuToggler}
                             isMobileMenuOpen={isMobileMenuOpen}
                         />

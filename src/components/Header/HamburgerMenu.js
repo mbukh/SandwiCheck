@@ -1,7 +1,9 @@
 const HamburgerMenu = ({ className, mobileMenuToggler, isMobileMenuOpen }) => {
     return (
         <button
-            className={`${className} ${isMobileMenuOpen ? "on" : "off"}`}
+            className={`hamburger btn-wrapper ${
+                isMobileMenuOpen ? "on" : "off"
+            } ${className}`}
             onClick={mobileMenuToggler}
         >
             <div></div>

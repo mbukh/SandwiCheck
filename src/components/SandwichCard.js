@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 import SandwichImage from "./SandwichImage";
 
 const SandwichCard = ({ index, sandwich, ingredientTypes, ingredients }) => {
@@ -25,63 +27,44 @@ const SandwichCard = ({ index, sandwich, ingredientTypes, ingredients }) => {
                 </div>
                 <div className="card-middle">
                     <div className="card-orb w-full mt-auto mx-auto cursor-pointer">
-                        <div className="relative aspect-ratio-square">
-                            <SandwichImage
-                                sandwich={sandwich}
-                                ingredientTypes={ingredientTypes}
-                                ingredients={ingredients}
-                            />
-                        </div>
+                        <Link to={`/sandwich/${sandwich.id}`}>
+                            <div className="relative aspect-ratio-square">
+                                <SandwichImage
+                                    sandwich={sandwich}
+                                    ingredientTypes={ingredientTypes}
+                                    ingredients={ingredients}
+                                />
+                            </div>
+                        </Link>
                     </div>
                 </div>
 
-                <div class="card-footer relative flex justify-between items-center">
-                    <div class="card-footer-start w-1/3 flex justify-start items-center">
-                        <img
-                            class="icon icon-votes w-auto h-7"
-                            src="/theme/images/icons/heart.svg"
-                            alt="Heart icon"
-                            width="20"
-                            height="28"
-                        />
-                        <span class="votesCount text-xs sm:text-sm text-shadow-5">
-                            {sandwich?.votesCount}
+                <div className="card-footer relative flex justify-between items-center">
+                    <div className="card-footer-start w-1/3 flex justify-start items-center">
+                        <i
+                            className="icon icon-votes w-auto h-7"
+                            title="Favorites counter"
+                        ></i>
+                        <span className="votesCount text-xs sm:text-sm text-shadow-5">
+                            {sandwich?.votesCount}234
                         </span>
                     </div>
 
-                    <div class="card-footer-mid w-1/3 text-center">
-                        <img
-                            g-ref="Thumb:voteBtn"
-                            class="thumb__vote-btn w-auto h-10 mx-auto leading-none cursor-pointer"
-                            src="/theme/images/icons/like.svg"
-                            alt="Vote icon"
-                            width="40"
-                            height="40"
-                        />
+                    <div className="card-footer-mid w-1/3 text-center">
+                        <button className="btn-wrapper">
+                            <i className="icon icon-heart" title="Add to favorites"></i>
+                        </button>
                     </div>
 
-                    <div class="card-footer-end w-1/3 flex justify-end">
+                    <div className="card-footer-end w-1/3 flex justify-end">
                         <a
-                            g-ref="Thumb:shareTwBtn"
-                            class="inline-block ml-1"
-                            href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flidlburgerbuilder.ie%2Fgallery%3Fburger%3D24&amp;text=Vote%20for%20your%20favourite%20entry%20at%20Lidl%E2%80%99s%20Build%20a%20Burger.&amp;hashtags=IrelandsBestBurger,Lidlburgercomp&amp;related=lidl_ireland"
+                            className="inline-block ml-1"
+                            href={`https://wa.me/?text=This+sandwich+from+Sandwicheck+look+yummy%21+https%3A%2F%2Fsandwicheck.com%2Fsandwich%2F${sandwich.id}`}
                         >
-                            <img
-                                class="w-auto h-7"
-                                src="/theme/images/icons/twitter.svg"
-                                alt="Twitter logo"
-                                width="32"
-                                height="28"
-                            />
-                        </a>
-                        <a g-ref="Thumb:shareFbBtn" class="inline-block ml-1" href="#">
-                            <img
-                                class="w-auto h-7"
-                                src="/theme/images/icons/facebook.svg"
-                                alt="Facebook logo"
-                                width="20"
-                                height="28"
-                            />
+                            <i
+                                className="icon icon-whatsapp w-auto h-7"
+                                title="Share via Whatsapp"
+                            ></i>
                         </a>
                     </div>
                 </div>

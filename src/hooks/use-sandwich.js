@@ -6,6 +6,7 @@ import { ingredientTypes } from "../constants/ingredientTypes";
 
 import { readAllIngredients } from "../services/apiIngredients";
 import {
+    readSandwichById,
     addSandwichToCurrentUser,
     readLatestSandwiches,
     readSandwichesOfCurrentUser,
@@ -43,6 +44,12 @@ const useSandwich = () => {
         setUserSandwiches(resultArray);
     }, []);
 
+    const fetchSandwich = useCallback(async (sandwichId) => {
+        const result = await readSandwichById(sandwichId);
+        debug && console.log("Sandwich:", result);
+        setSandwich(result);
+    }, []);
+
     const clearSandwich = () => {
         setSandwich({});
         setCurrentIngredientType("");
@@ -68,6 +75,7 @@ const useSandwich = () => {
         setUserSandwiches,
         fetchUserSandwiches,
         fetchLatestSandwiches,
+        fetchSandwich,
     };
 };
 

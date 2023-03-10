@@ -12,6 +12,7 @@ import { initialize } from "./constants/debug";
 // ***** Initialize DB ***** //
 import initDB from "./services/initDB";
 import { SandwichGallery } from "./components";
+import SandwichModal from "./components/SandwichModal";
 initialize && (async () => await initDB())();
 // ****** *********** ***** //
 
@@ -43,6 +44,15 @@ const router = createBrowserRouter([
             {
                 path: "/latest",
                 element: <SandwichGallery galleryType="latest" />,
+            },
+            {
+                path: "/sandwich/:sandwichId",
+                element: (
+                    <>
+                        <SandwichModal />
+                        <SandwichGallery galleryType="latest" />
+                    </>
+                ),
             },
             {
                 path: "/home",

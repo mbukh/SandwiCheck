@@ -10,7 +10,7 @@ import useSandwich from "../hooks/use-sandwich";
 const SandwichGallery = ({ galleryType }) => {
     const [loading, setLoading] = useState(true);
     const [child, setChild] = useState(null);
-    const params = useParams();
+    const { childId } = useParams();
     const { user } = useUserAuth();
     const {
         ingredients,
@@ -26,8 +26,8 @@ const SandwichGallery = ({ galleryType }) => {
     }, [ingredients, userSandwiches]);
 
     useEffect(() => {
-        if (params?.childId) {
-            const child = user.info.children.find((child) => child.id === params.childId);
+        if (childId) {
+            const child = user.info.children.find((child) => child.id === childId);
             if (!child) return;
             (async () => await fetchUserSandwiches(child.id))();
             setChild(child);
@@ -41,7 +41,7 @@ const SandwichGallery = ({ galleryType }) => {
         child?.id,
         user?.id,
         user?.info.children,
-        params?.childId,
+        childId,
         galleryType,
         fetchLatestSandwiches,
         fetchUserSandwiches,

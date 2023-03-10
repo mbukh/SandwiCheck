@@ -12,6 +12,10 @@ import SandwichEditor from "./SandwichEditor";
 
 import SandwichCard from "./SandwichCard";
 
+import Portal from "./Helper/Portal";
+
+import Modal from "./Helper/Modal";
+
 export {
     Loading,
     Header,
@@ -20,4 +24,6 @@ export {
     SandwichImage,
     SandwichEditor,
     SandwichCard,
+    Portal,
+    Modal,
 };
