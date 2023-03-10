@@ -1,17 +1,11 @@
 import React from "react";
 
-import useSandwich from "../../hooks/use-sandwich";
-
-import { SandwichCard } from "..";
-
 import { Portal } from "..";
 
 const Modal = ({ children }) => {
     return (
         <Portal>
-            <div
-                className="tingle-modal tingle-modal--noOverlayClose tingle-modal--visible tingle-modal--overflow"
-            >
+            <div className="tingle-modal tingle-modal--noOverlayClose tingle-modal--visible tingle-modal--overflow">
                 <button className="btn-wrapper">
                     <span className="icon icon-close" title="Close">
                         <svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">

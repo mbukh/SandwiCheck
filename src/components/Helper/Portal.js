@@ -14,7 +14,7 @@ const Portal = ({ children, className = "root-portal", el = "div" }) => {
         return () => {
             document.body.removeChild(container);
         };
-    }, []);
+    }, [className, container]);
 
     return createPortal(children, container);
 };

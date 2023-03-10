@@ -1,3 +1,5 @@
+[![Netlify Status](https://api.netlify.com/api/v1/badges/aa8334a3-9466-4b4f-95bb-c3208808f24c/deploy-status)](https://app.netlify.com/sites/incredible-quokka-c8fcd9/deploys)
+
 #### Names:
 
 -   -   SandwiCheck

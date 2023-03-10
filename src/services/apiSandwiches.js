@@ -13,13 +13,10 @@ import {
     collectionGroup,
     limit,
     where,
-    FieldPath,
-    documentId,
     updateDoc,
 } from "firebase/firestore";
 
 import { trimObjectEmptyProperties } from "../utils/";
-import { readUserById } from "./apiUsers";
 
 // const isDuplicateSandwich = async (sandwich) => {
 //     try {
