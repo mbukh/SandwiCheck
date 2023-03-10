@@ -1,4 +1,4 @@
-import { debug } from "../constants/debug";
+import { debug } from "../constants/";
 
 import { createContext, useContext, useEffect, useState } from "react";
 

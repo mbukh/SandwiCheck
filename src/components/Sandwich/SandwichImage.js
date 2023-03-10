@@ -1,4 +1,4 @@
-import { assembleImageSrc } from "../utils/";
+import { assembleImageSrc } from "../../utils/";
 
 const SandwichImage = ({ sandwich, ingredientTypes, ingredients, className = "" }) => {
     return (

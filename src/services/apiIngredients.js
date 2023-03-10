@@ -1,10 +1,10 @@
-import { debug } from "../constants/debug";
+import { debug } from "../constants/";
 
 import { db } from "../constants/firebase.config";
 
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 
-import { ingredientTypes } from "../constants/ingredientTypes";
+import { ingredientTypes } from "../constants/";
 
 const readIngredientCollection = async (collectionName) => {
     try {

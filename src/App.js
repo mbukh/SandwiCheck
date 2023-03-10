@@ -1,18 +1,18 @@
 import "normalize.css";
 import "reset-css";
 import "./styles/App.css";
+import "./styles/blueprint.css";
+
+import initDB from "./services/initDB";
+import { initialize } from "./constants/debug";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import { Landing, UserHome, Login, Signup, Layout, Error404, Cart } from "./pages";
 
-import { SandwichEditor } from "./components/";
+import { SandwichEditor, SandwichModal, SandwichGallery } from "./components/";
 
-import { initialize } from "./constants/debug";
-// ***** Initialize DB ***** //
-import initDB from "./services/initDB";
-import { SandwichGallery } from "./components";
-import SandwichModal from "./components/SandwichModal";
+// ***** Reset DB ***** //
 initialize && (async () => await initDB())();
 // ****** *********** ***** //
 
@@ -46,13 +46,17 @@ const router = createBrowserRouter([
                 element: <SandwichGallery galleryType="latest" />,
             },
             {
-                path: "/sandwich/:sandwichId",
+                path: "/latest/:sandwichId",
                 element: (
                     <>
-                        <SandwichModal />
                         <SandwichGallery galleryType="latest" />
+                        <SandwichModal />
                     </>
                 ),
+            },
+            {
+                path: "/sandwich/:sandwichId",
+                element: <SandwichModal closeLink="/latest" />,
             },
             {
                 path: "/home",

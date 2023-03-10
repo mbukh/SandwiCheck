@@ -1,8 +1,8 @@
-import { Loading, SandwichImage } from ".";
+import { Loading, SandwichImage } from "../";
 
-import { ingredientTypes } from "../constants/ingredientTypes";
+import { ingredientTypes } from "../../constants/";
 
-import useSandwich from "../hooks/use-sandwich";
+import { useSandwich } from "../../hooks/";
 
 const SandwichEditor = () => {
     const {
@@ -18,8 +18,7 @@ const SandwichEditor = () => {
     } = useSandwich();
 
     const lastIngredient =
-        ingredientTypes.indexOf(currentIngredientType) + 1 ===
-        ingredientTypes.length;
+        ingredientTypes.indexOf(currentIngredientType) + 1 === ingredientTypes.length;
 
     return (
         <>
@@ -30,13 +29,8 @@ const SandwichEditor = () => {
                     {ingredientTypes.map((ingredientType) => (
                         <li key={ingredientType}>
                             <button
-                                onClick={() =>
-                                    setCurrentIngredientType(ingredientType)
-                                }
-                                disabled={
-                                    ingredientType !== "bread" &&
-                                    !sandwich?.bread
-                                }
+                                onClick={() => setCurrentIngredientType(ingredientType)}
+                                disabled={ingredientType !== "bread" && !sandwich?.bread}
                             >
                                 {ingredientType}
                             </button>
@@ -65,46 +59,37 @@ const SandwichEditor = () => {
                             {ingredients.hasOwnProperty(ingredientType) ? (
                                 <>
                                     <ul>
-                                        {ingredients[ingredientType].map(
-                                            (ingredient) => (
-                                                <li key={ingredient.id}>
-                                                    <input
-                                                        type="radio"
-                                                        name={ingredientType}
-                                                        id={ingredient.id}
-                                                        value={ingredient.id}
-                                                        checked={
-                                                            sandwich[
-                                                                ingredientType
-                                                            ] === ingredient.id
-                                                        }
-                                                        onChange={() => {
-                                                            setSandwich(
-                                                                (prev) => ({
-                                                                    ...prev,
-                                                                    [ingredientType]:
-                                                                        ingredient.id,
-                                                                })
-                                                            );
-                                                        }}
-                                                    />
-                                                    <label
-                                                        htmlFor={ingredient.id}
-                                                    >
-                                                        {ingredient.name}
-                                                    </label>
-                                                </li>
-                                            )
-                                        )}
+                                        {ingredients[ingredientType].map((ingredient) => (
+                                            <li key={ingredient.id}>
+                                                <input
+                                                    type="radio"
+                                                    name={ingredientType}
+                                                    id={ingredient.id}
+                                                    value={ingredient.id}
+                                                    checked={
+                                                        sandwich[ingredientType] ===
+                                                        ingredient.id
+                                                    }
+                                                    onChange={() => {
+                                                        setSandwich((prev) => ({
+                                                            ...prev,
+                                                            [ingredientType]:
+                                                                ingredient.id,
+                                                        }));
+                                                    }}
+                                                />
+                                                <label htmlFor={ingredient.id}>
+                                                    {ingredient.name}
+                                                </label>
+                                            </li>
+                                        ))}
                                         <li>
                                             <input
                                                 type="radio"
                                                 name={ingredientType}
                                                 id={`${ingredientType}-none`}
                                                 value="none"
-                                                checked={
-                                                    !sandwich[ingredientType]
-                                                }
+                                                checked={!sandwich[ingredientType]}
                                                 onChange={() =>
                                                     setSandwich((prev) => ({
                                                         ...prev,
@@ -112,9 +97,7 @@ const SandwichEditor = () => {
                                                     }))
                                                 }
                                             />
-                                            <label
-                                                htmlFor={`${ingredientType}-none`}
-                                            >
+                                            <label htmlFor={`${ingredientType}-none`}>
                                                 None of the above
                                             </label>
                                         </li>
@@ -124,15 +107,11 @@ const SandwichEditor = () => {
                                             setCurrentIngredientType(
                                                 (prev) =>
                                                     ingredientTypes[
-                                                        ingredientTypes.indexOf(
-                                                            prev
-                                                        ) - 1
+                                                        ingredientTypes.indexOf(prev) - 1
                                                     ]
                                             );
                                         }}
-                                        disabled={
-                                            currentIngredientType === "bread"
-                                        }
+                                        disabled={currentIngredientType === "bread"}
                                     >
                                         back
                                     </button>
@@ -164,16 +143,11 @@ const SandwichEditor = () => {
                                                 name="sandwichName"
                                                 placeholder="Sandwich name"
                                                 onChange={(e) =>
-                                                    setSandwichName(
-                                                        e.target.value
-                                                    )
+                                                    setSandwichName(e.target.value)
                                                 }
                                                 value={sandwichName}
                                             />
-                                            <input
-                                                type="submit"
-                                                value="save sandwich"
-                                            />
+                                            <input type="submit" value="save sandwich" />
                                         </form>
                                     )}
                                 </>

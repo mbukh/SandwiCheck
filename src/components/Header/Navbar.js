@@ -1,4 +1,4 @@
-import { debug } from "../../constants/debug";
+import { debug } from "../../constants/";
 
 import { useNavigate, NavLink, Link } from "react-router-dom";
 

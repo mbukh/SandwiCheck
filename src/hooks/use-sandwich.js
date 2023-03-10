@@ -1,8 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
 
-import { debug } from "../constants/debug";
+import { debug } from "../constants/";
 
-import { ingredientTypes } from "../constants/ingredientTypes";
+import { ingredientTypes } from "../constants/";
 
 import { readAllIngredients } from "../services/apiIngredients";
 import {

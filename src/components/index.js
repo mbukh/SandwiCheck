@@ -1,20 +1,18 @@
-import Loading from "./Loading";
-
-import Header from "./Header/";
+import { Header } from "./Header/";
 
 import Footer from "./Footer";
 
-import SandwichGallery from "./SandwichGallery";
+import {
+    SandwichGallery,
+    SandwichImage,
+    SandwichEditor,
+    SandwichCard,
+    SandwichModal,
+} from "./Sandwich/";
 
-import SandwichImage from "./SandwichImage";
+import { Modal, Portal } from "./Helper";
 
-import SandwichEditor from "./SandwichEditor";
-
-import SandwichCard from "./SandwichCard";
-
-import Portal from "./Helper/Portal";
-
-import Modal from "./Helper/Modal";
+import Loading from "./Loading";
 
 export {
     Loading,
@@ -24,6 +22,7 @@ export {
     SandwichImage,
     SandwichEditor,
     SandwichCard,
+    SandwichModal,
     Portal,
     Modal,
 };

@@ -1,17 +1,10 @@
 import { Link } from "react-router-dom";
 
-import useForm from "../hooks/use-form";
+import { useForm } from "../hooks/";
 
 const Login = () => {
-    const {
-        email,
-        setEmail,
-        password,
-        setPassword,
-        errors,
-        handleLogin,
-        parentId,
-    } = useForm();
+    const { email, setEmail, password, setPassword, errors, handleLogin, parentId } =
+        useForm();
 
     return (
         <div>
@@ -19,9 +12,8 @@ const Login = () => {
 
             {parentId && (
                 <div className="warning">
-                    You are about to be added as a child to another account. You
-                    data will become visible to other people who shared this
-                    link to you.
+                    You are about to be added as a child to another account. You data will
+                    become visible to other people who shared this link to you.
                 </div>
             )}
 

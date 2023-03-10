@@ -1,4 +1,4 @@
-import { debug } from "../constants/debug";
+import { debug } from "../constants/";
 
 import { auth, db } from "../constants/firebase.config";
 
@@ -46,10 +46,6 @@ const readSandwichById = async (sandwichId) => {
         const colGroupRef = collectionGroup(db, "sandwiches");
         const q = query(colGroupRef, where("id", "==", sandwichId), limit(1));
         const docsSnap = await getDocs(q);
-
-        console.log("💀");
-        docsSnap.docs.forEach((doc) => console.table(doc.data()));
-
         if (docsSnap.docs.length > 0) {
             const sandwichData = {
                 ...docsSnap.docs[0].data(),
@@ -123,7 +119,7 @@ const addSandwichToCurrentUser = async (sandwich) => {
         const colRef = collection(docRef, "sandwiches");
         const newDocRef = await addDoc(colRef, {
             ...sandwichData,
-            author: await getDocs(docRef).data().name,
+            author: await getDocs(docRef).data().name.split(" ")[0],
             createdAt: serverTimestamp(),
         });
         updateDoc(newDocRef, { id: newDocRef.id });

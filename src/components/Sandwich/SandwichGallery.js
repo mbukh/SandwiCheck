@@ -1,16 +1,18 @@
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 
-import { useUserAuth } from "../context/UserAuthContext";
+import { useUserAuth } from "../../context/UserAuthContext";
 
-import { Loading, SandwichCard } from "../components";
+import { Loading, SandwichCard } from "../../components";
 
-import useSandwich from "../hooks/use-sandwich";
+import { useSandwich } from "../../hooks/";
 
-const SandwichGallery = ({ galleryType }) => {
-    const [loading, setLoading] = useState(true);
+import { capitalizeFirst } from "../../utils";
+
+const SandwichGallery = ({ galleryType = "" }) => {
+    const [isLoading, setIsLoading] = useState(true);
     const [child, setChild] = useState(null);
-    const { childId } = useParams();
+    const { childId, sandwichId } = useParams();
     const { user } = useUserAuth();
     const {
         ingredients,
@@ -21,8 +23,8 @@ const SandwichGallery = ({ galleryType }) => {
     } = useSandwich();
 
     useEffect(() => {
-        Object.keys(ingredients).length && userSandwiches && setLoading(false);
-        return () => setLoading(true);
+        Object.keys(ingredients).length && userSandwiches && setIsLoading(false);
+        return () => setIsLoading(true);
     }, [ingredients, userSandwiches]);
 
     useEffect(() => {
@@ -47,12 +49,19 @@ const SandwichGallery = ({ galleryType }) => {
         fetchUserSandwiches,
     ]);
 
-    return loading ? (
+    return isLoading ? (
         <Loading />
     ) : (
-        <>
-            <h3>{child?.Name || galleryType || "My"}My sandwich Gallery</h3>
-            <div className="sandwich-gallery size-full fl fl-wrap">
+        <div className={`sandwich-gallery ${sandwichId ? "no-scroll" : ""}`}>
+            <div className="sandwich-gallery-title w-full sticky z-5 top-0 py-4 px-5 md:py-5 md:px-12 xl:px-20">
+                <h3>
+                    {child?.name && child.name + "'s "}
+                    {galleryType && capitalizeFirst(galleryType) + " "}
+                    {!(child?.Name || galleryType) && user?.id && "My "}
+                    sandwich Gallery
+                </h3>
+            </div>
+            <div className={`size-full fl fl-wrap`}>
                 {userSandwiches.length > 0 ? (
                     userSandwiches.map((sandwich, index) => (
                         <SandwichCard
@@ -72,7 +81,7 @@ const SandwichGallery = ({ galleryType }) => {
                     <div>The gallery is empty.</div>
                 )}
             </div>
-        </>
+        </div>
     );
 };
 

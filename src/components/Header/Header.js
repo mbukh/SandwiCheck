@@ -1,18 +1,19 @@
 import { useState } from "react";
 
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useParams } from "react-router-dom";
 
 import HamburgerMenu from "./HamburgerMenu";
 
 const Header = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const { sandwichId } = useParams();
 
     const mobileMenuToggler = () => {
         setIsMobileMenuOpen((state) => !state);
     };
 
     return (
-        <header>
+        <header className={sandwichId ? "hide" : ""}>
             <div
                 className={`mobile-menu fullscreen on-top fl fl-cc fade ${
                     isMobileMenuOpen ? "open" : "close"

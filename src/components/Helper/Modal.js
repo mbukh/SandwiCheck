@@ -1,27 +1,50 @@
-import React from "react";
+import { useState } from "react";
 
-import { Portal } from "..";
+import { useNavigate } from "react-router-dom";
 
-const Modal = ({ children }) => {
+import { Loading, Portal } from "..";
+
+const Modal = ({ children, isModalLoading = true, closeLink = "" }) => {
+    const [isModalShow, setIsModalShow] = useState(true);
+    const navigate = useNavigate();
+
+    const closeModalHandler = (e) => {
+        e.stopPropagation();
+        closeLink ? navigate(closeLink) : navigate(-1);
+        setIsModalShow(false);
+    };
+
     return (
-        <Portal>
-            <div className="tingle-modal tingle-modal--noOverlayClose tingle-modal--visible tingle-modal--overflow">
-                <button className="btn-wrapper">
-                    <span className="icon icon-close" title="Close">
-                        <svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M.3 9.7c.2.2.4.3.7.3.3 0 .5-.1.7-.3L5 6.4l3.3 3.3c.2.2.5.3.7.3.2 0 .5-.1.7-.3.4-.4.4-1 0-1.4L6.4 5l3.3-3.3c.4-.4.4-1 0-1.4-.4-.4-1-.4-1.4 0L5 3.6 1.7.3C1.3-.1.7-.1.3.3c-.4.4-.4 1 0 1.4L3.6 5 .3 8.3c-.4.4-.4 1 0 1.4z"
-                                fill="#000"
-                                fillRule="nonzero"
-                            ></path>
-                        </svg>
-                    </span>
-                </button>
-                <div className="tingle-modal-box w-full">
-                    <div className="tingle-modal-box__content">{children}</div>
+        isModalShow && (
+            <Portal>
+                <div
+                    className="tingle-modal tingle-modal--noOverlayClose tingle-modal--visible tingle-modal--overflow"
+                    onClick={closeModalHandler}
+                >
+                    <button
+                        type="button"
+                        className="tingle-modal__close"
+                        onClick={closeModalHandler}
+                    >
+                        <span className="tingle-modal__closeIcon">
+                            <i className="icon icon-close"></i>
+                        </span>
+                        <span className="tingle-modal__closeLabel">Close</span>
+                    </button>
+
+                    <div
+                        className="tingle-modal-box w-full"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="tingle-modal-box__content">
+                            <div className="max-w-xs sm:max-w-sm md:max-w-screen-md mx-auto text-white">
+                                {!isModalLoading ? children : <Loading />}
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </Portal>
+            </Portal>
+        )
     );
 };
 
