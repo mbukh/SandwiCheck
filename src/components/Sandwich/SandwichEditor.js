@@ -18,19 +18,19 @@ const SandwichEditor = () => {
         saveSandwich,
     } = useSandwich();
 
-    const isLastIngredientType =
-        ingredientTypes.indexOf(currentIngredientType) + 1 === ingredientTypes.length;
-    const isFirstIngredientType = currentIngredientType === "bread";
+    // const isLastIngredientType =
+    //     ingredientTypes.indexOf(currentIngredientType) + 1 === ingredientTypes.length;
+    // const isFirstIngredientType = currentIngredientType === "bread";
 
-    const nextIngredientTypeHandler = () =>
-        setCurrentIngredientType(
-            (prev) => ingredientTypes[ingredientTypes.indexOf(prev) + 1]
-        );
+    // const nextIngredientTypeHandler = () =>
+    //     setCurrentIngredientType(
+    //         (prev) => ingredientTypes[ingredientTypes.indexOf(prev) + 1]
+    //     );
 
-    const backIngredientTypeHandler = () =>
-        setCurrentIngredientType(
-            (prev) => ingredientTypes[ingredientTypes.indexOf(prev) - 1]
-        );
+    // const backIngredientTypeHandler = () =>
+    //     setCurrentIngredientType(
+    //         (prev) => ingredientTypes[ingredientTypes.indexOf(prev) - 1]
+    //     );
 
     const submitSandwichHandler = (e) => {
         e.preventDefault();
@@ -46,14 +46,14 @@ const SandwichEditor = () => {
 
     return (
         <div className="flex flex-col justify-end min-h-full pt-6 md:pt-9 lg:pt-12">
-            <h2>Create a sandwich. Choose your:</h2>
+            <h1 className="text-center">Create a sandwich. Choose your:</h1>
             <div className="creation-section flex-col md:flex-row">
-                <div className="create-sandwich-menu">
-                    <ul className="flex flex-col md:flex-row justify-center">
+                <div className="create-sandwich-menu my-2">
+                    <ul className="flex flex-wrap md:flex-row justify-center">
                         {ingredientTypes.map((ingredientType) => (
                             <li key={ingredientType}>
                                 <button
-                                    className={`my-2 md:my-4 ${
+                                    className={`my-2 md:my-4  text-xs md:text-sm md:text-base ${
                                         ingredientType === currentIngredientType
                                             ? "active"
                                             : ""
@@ -92,31 +92,24 @@ const SandwichEditor = () => {
                                                 : "",
                                     }}
                                 >
-                                    {ingredients.hasOwnProperty(ingredientType) ? (
-                                        <div className="prev-next-navigation flex justify-between">
-                                            <button
-                                                className="text-xs"
-                                                onClick={backIngredientTypeHandler}
-                                                disabled={
-                                                    currentIngredientType === "bread"
-                                                }
-                                            >
-                                                back
-                                            </button>
-                                            <button
-                                                className="text-xs"
-                                                onClick={nextIngredientTypeHandler}
-                                                disabled={
-                                                    !sandwich?.bread ||
-                                                    isLastIngredientType
-                                                }
-                                            >
-                                                next
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        <Loading />
-                                    )}
+                                    {/* <div className="prev-next-navigation flex justify-between">
+                                        <button
+                                            className="text-xs"
+                                            onClick={backIngredientTypeHandler}
+                                            disabled={currentIngredientType === "bread"}
+                                        >
+                                            back
+                                        </button>
+                                        <button
+                                            className="text-xs"
+                                            onClick={nextIngredientTypeHandler}
+                                            disabled={
+                                                !sandwich?.bread || isLastIngredientType
+                                            }
+                                        >
+                                            next
+                                        </button>
+                                    </div> */}
                                 </div>
                             ))}
                         </div>
@@ -133,15 +126,11 @@ const SandwichEditor = () => {
                                 />
                             )}
                         </div>
-
-                        <div className="flex justify-center my-4">
-                            <button onClick={clearSandwich}>clear all</button>
-                        </div>
                     </>
                 )}
             </div>
             {!isDataLoading && (
-                <div className="result-section relative aspect-ratio-3/2 mx-4 w-full md:w-2/3 mx-auto ">
+                <div className="result-section relative aspect-ratio-3/2 mx-4 w-full md:w-2/3 mx-auto">
                     <SandwichImage
                         sandwich={sandwich}
                         ingredientTypes={ingredientTypes}
@@ -149,6 +138,15 @@ const SandwichEditor = () => {
                     />
                 </div>
             )}
+
+            {currentIngredientType && sandwich && Object.keys(sandwich).length > 0 && (
+                <div className="flex justify-center my-4">
+                    <button className="btn-wrapper box-shadow-none" onClick={clearSandwich}>
+                        clear all
+                    </button>
+                </div>
+            )}
+
             <div className="save-sandwich-section flex justify-center text-center">
                 {sandwich?.bread && (
                     <form onSubmit={submitSandwichHandler}>

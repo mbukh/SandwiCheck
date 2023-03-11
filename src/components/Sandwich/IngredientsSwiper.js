@@ -1,4 +1,6 @@
-import { Swiper, SwiperSlide, useSwiper } from "swiper/react";
+import { useEffect, useRef } from "react";
+
+import { Swiper, SwiperSlide } from "swiper/react";
 import "../../styles/Swiper.css";
 import "swiper/css";
 
@@ -10,13 +12,42 @@ const IngredientsSwiper = ({
     currentIngredientType,
     updateSandwichIngredients,
 }) => {
+    const swiperRef = useRef();
+
     const ingredientsOfType = ingredients[currentIngredientType];
 
     const chosenCurrentIngredientOfType = ingredientsOfType.find(
         (ingredient) => ingredient.id === sandwich[currentIngredientType]
     );
+
     const currentSwipeIndex =
         ingredientsOfType.indexOf(chosenCurrentIngredientOfType) + 1;
+
+    useEffect(() => {
+        swiperRef.current.slideTo(currentSwipeIndex);
+    }, [currentSwipeIndex]);
+
+    const initSwiperHandler = (swiper) => {
+        swiperRef.current = swiper;
+        currentIngredientType === "bread" && !sandwich?.bread
+            ? setTimeout(() => swiper.slideTo(1), 400)
+            : swiper.slideTo(currentSwipeIndex);
+    };
+
+    const slideChangeHandler = (swiper) => {
+        if (currentIngredientType === "bread" && swiper.activeIndex === 0) {
+            setTimeout(() => initSwiperHandler(swiper), 400);
+            return;
+        }
+        updateSandwichIngredients({
+            [currentIngredientType]:
+                ingredientsOfType[swiper.activeIndex - 1]?.id || null,
+        });
+    };
+
+    console.log("🍔");
+    console.log(sandwich);
+    console.log(chosenCurrentIngredientOfType);
 
     return (
         <Swiper
@@ -28,13 +59,8 @@ const IngredientsSwiper = ({
             keyboard={{
                 enabled: true,
             }}
-            onSlideChange={({ activeIndex }) =>
-                updateSandwichIngredients({
-                    [currentIngredientType]:
-                        ingredientsOfType[activeIndex - 1]?.id || null,
-                })
-            }
-            onSwiper={(swiper) => swiper.slideTo(currentSwipeIndex)}
+            onSwiper={initSwiperHandler}
+            onSlideChange={slideChangeHandler}
             breakpoints={{
                 640: {
                     slidesPerView: 3,
@@ -58,15 +84,15 @@ const IngredientsSwiper = ({
                 },
             }}
         >
-            <SwiperSlide className="no-choice no-select">
+            <SwiperSlide className="choice-null no-select">
                 {({ isActive }) => (
                     <div
-                        className={`swiper-slide-container flex flex-col justify-around ${
+                        className={`swiper-slide-container relative aspect-ration-4/3 ${
                             isActive ? "active" : ""
                         }`}
                     >
-                        <div className="h-10"></div>
-                        <div className="button text-xs uppercase my-auto">
+                        <div className="py-2 md:py-5">&nbsp;</div>
+                        <div className="button text-xxs md:text-xs w-1/2 lg:w-1/3 mx-auto uppercase">
                             No {currentIngredientType}
                         </div>
                     </div>
@@ -95,7 +121,7 @@ const IngredientsSwiper = ({
                                 className="inset-0 object-contain size-full no-drag"
                                 alt={ingredient.name}
                             />
-                            <div className="button text-xs uppercase">
+                            <div className="button text-xxs md:text-xs w-1/2 lg:w-1/3 mx-auto uppercase">
                                 {ingredient.name}
                             </div>
                         </div>
