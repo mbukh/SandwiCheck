@@ -65,10 +65,7 @@ const SandwichCard = ({
                     <div className="card-middle">
                         <div className="card-orb w-full mt-auto mx-auto">
                             {!isModal ? (
-                                <Link
-                                    to={`${sandwich.id}`}
-                                    // onClick={(e) => e.preventDefault()}
-                                >
+                                <Link to={`${sandwich.id}`}>
                                     <TheSandwichImage />
                                 </Link>
                             ) : (

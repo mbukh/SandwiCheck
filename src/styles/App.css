@@ -4,6 +4,9 @@
 
     --black: #000;
     --white: #fff;
+    --magenta: #e6127d;
+
+    --button-color: var(--magenta);
 
     --card-bg-1: #ff4338;
     --card-bg-2: #fdde15;
@@ -97,6 +100,28 @@ a:hover {
 }
 i {
     color: var(--white);
+}
+
+button,
+.button,
+input,
+textarea {
+    background: var(--white);
+    color: var(--button-color);
+    padding: 0.75em 1.5em;
+    border: none;
+    outline: none;
+    border-radius: 0.5em;
+    font-weight: 700;
+    text-transform: uppercase;
+    box-shadow: 0 0 10px 0 rgb(0 0 0 / 25%);
+    margin-inline: 1rem;
+}
+
+button.active {
+    background-color: var(--button-color);
+    color: var(--white);
+    cursor: default;
 }
 
 .desktop-only {
@@ -230,7 +255,7 @@ i {
     display: none;
 }
 .no-drag {
-    user-drag: none;
+    /* user-drag: none; */
     -webkit-user-drag: none;
 }
 .no-select {

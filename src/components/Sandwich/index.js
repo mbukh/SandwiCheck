@@ -8,4 +8,6 @@ import SandwichCard from "./SandwichCard";
 
 import SandwichModal from "./SandwichModal";
 
-export { SandwichGallery, SandwichImage, SandwichEditor, SandwichCard, SandwichModal };
+import IngredientsSwiper from "./IngredientsSwiper";
+
+export { SandwichGallery, SandwichImage, SandwichEditor, SandwichCard, SandwichModal, IngredientsSwiper };

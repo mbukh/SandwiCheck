@@ -9,13 +9,13 @@ const SandwichImage = ({ sandwich, ingredientTypes, ingredients, className = "" 
                     sandwich[ingredientType] && (
                         <img
                             key={ingredientType}
-                            src={assembleImageSrc(
+                            src={assembleImageSrc({
                                 sandwich,
                                 ingredients,
                                 ingredientType,
-                                "full",
-                                "normal"
-                            )}
+                                proteinPortion: "full",
+                                optionSize: "normal",
+                            })}
                             className="absolute inset-0 object-contain size-full no-drag no-select"
                             alt={ingredientType}
                             loading="lazy"

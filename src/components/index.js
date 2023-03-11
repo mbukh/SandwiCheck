@@ -8,6 +8,7 @@ import {
     SandwichEditor,
     SandwichCard,
     SandwichModal,
+    IngredientsSwiper,
 } from "./Sandwich/";
 
 import { Modal, Portal } from "./Helper";
@@ -23,6 +24,7 @@ export {
     SandwichEditor,
     SandwichCard,
     SandwichModal,
+    IngredientsSwiper,
     Portal,
     Modal,
 };

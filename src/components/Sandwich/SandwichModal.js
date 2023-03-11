@@ -22,7 +22,7 @@ const SandwichModal = ({ closeLink = "" }) => {
         <Modal isModalLoading={isModalLoading} closeLink={closeLink}>
             <SandwichCard
                 isModal
-                key={sandwich.id}
+                key={sandwichId}
                 index={Math.ceil(Math.random() * 4)}
                 sandwich={sandwich}
                 ingredientTypes={ingredientTypes}

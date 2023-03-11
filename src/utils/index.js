@@ -6,13 +6,13 @@ export const capitalizeFirst = (string) =>
 
 export const capitalize = (str) => str.replace(/\b\w/g, (l) => l.toUpperCase());
 
-export const assembleImageSrc = (
+export const assembleImageSrc = ({
     sandwich,
     ingredients,
     ingredientType,
     proteinPortion,
-    optionSize
-) => {
+    optionSize,
+}) => {
     const ingredient = ingredients[ingredientType].find(
         (ingredient) => ingredient.id === sandwich[ingredientType]
     );

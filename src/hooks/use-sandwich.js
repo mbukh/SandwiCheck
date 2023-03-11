@@ -14,45 +14,51 @@ import {
 } from "../services/apiSandwiches";
 
 const useSandwich = () => {
+    const [isDataLoading, setIsDataLoading] = useState(true);
     const [ingredients, setIngredients] = useState({});
     const [currentIngredientType, setCurrentIngredientType] = useState("bread");
-    const [sandwich, setSandwich] = useState({});
+    const [sandwich, setSandwich] = useState();
     const [sandwichName, setSandwichName] = useState("");
     const [userSandwiches, setUserSandwiches] = useState(null);
 
     useEffect(() => {
         const fetchAllIngredients = async () => {
-            const result = await readAllIngredients();
-            debug && console.log("All ingredients:", result);
-            setIngredients(result);
+            const ingredientsData = await readAllIngredients();
+            debug && console.log("All ingredients:", ingredientsData);
+            setIngredients(ingredientsData);
+            setSandwich({ bread: ingredientsData["bread"][0].id });
+            setIsDataLoading(false);
         };
         fetchAllIngredients();
-        return () => clearSandwich();
+        return () => {
+            clearSandwich();
+            setIsDataLoading(true);
+        };
     }, []);
 
     const fetchUserSandwiches = useCallback(async (uid = null) => {
-        const resultArray = uid
+        const sandwichesData = uid
             ? await readSandwichesOfUserById(uid)
             : await readSandwichesOfCurrentUser();
-        debug && console.log("User sandwiches:", resultArray);
-        setUserSandwiches(resultArray);
+        debug && console.log("User sandwiches:", sandwichesData);
+        setUserSandwiches(sandwichesData);
     }, []);
 
     const fetchLatestSandwiches = useCallback(async (count = 30) => {
-        const resultArray = await readLatestSandwiches(count);
-        debug && console.log("Latest sandwiches:", resultArray);
-        setUserSandwiches(resultArray);
+        const sandwichesData = await readLatestSandwiches(count);
+        debug && console.log("Latest sandwiches:", sandwichesData);
+        setUserSandwiches(sandwichesData);
     }, []);
 
     const fetchSandwich = useCallback(async (sandwichId) => {
-        const result = await readSandwichById(sandwichId);
-        debug && console.log("Sandwich:", result);
-        setSandwich(result);
+        const sandwichData = await readSandwichById(sandwichId);
+        debug && console.log("Sandwich:", sandwichData);
+        setSandwich(sandwichData);
     }, []);
 
     const clearSandwich = () => {
         setSandwich({});
-        setCurrentIngredientType("");
+        setCurrentIngredientType("bread");
     };
 
     const saveSandwich = async () => {
@@ -61,6 +67,7 @@ const useSandwich = () => {
     };
 
     return {
+        isDataLoading,
         ingredients,
         ingredientTypes,
         currentIngredientType,

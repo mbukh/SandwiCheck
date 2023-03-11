@@ -1,4 +1,4 @@
-import { Loading, SandwichImage } from "../";
+import { IngredientsSwiper, Loading, SandwichImage } from "../";
 
 import { ingredientTypes } from "../../constants/";
 
@@ -6,6 +6,7 @@ import { useSandwich } from "../../hooks/";
 
 const SandwichEditor = () => {
     const {
+        isDataLoading,
         ingredients,
         currentIngredientType,
         setCurrentIngredientType,
@@ -17,155 +18,156 @@ const SandwichEditor = () => {
         saveSandwich,
     } = useSandwich();
 
-    const lastIngredient =
+    const isLastIngredientType =
         ingredientTypes.indexOf(currentIngredientType) + 1 === ingredientTypes.length;
+    const isFirstIngredientType = currentIngredientType === "bread";
+
+    const nextIngredientTypeHandler = () =>
+        setCurrentIngredientType(
+            (prev) => ingredientTypes[ingredientTypes.indexOf(prev) + 1]
+        );
+
+    const backIngredientTypeHandler = () =>
+        setCurrentIngredientType(
+            (prev) => ingredientTypes[ingredientTypes.indexOf(prev) - 1]
+        );
+
+    const submitSandwichHandler = (e) => {
+        e.preventDefault();
+        saveSandwich();
+    };
+
+    const updateSandwichIngredientsHandler = (newData) => {
+        setSandwich((prev) => ({
+            ...prev,
+            ...newData,
+        }));
+    };
 
     return (
-        <>
-            <button onClick={clearSandwich}>clear all</button>
-            <h3>Create a sandwich</h3>
-            <div className="create-sandwich-menu">
-                <ul>
-                    {ingredientTypes.map((ingredientType) => (
-                        <li key={ingredientType}>
-                            <button
-                                onClick={() => setCurrentIngredientType(ingredientType)}
-                                disabled={ingredientType !== "bread" && !sandwich?.bread}
-                            >
-                                {ingredientType}
-                            </button>
-                        </li>
-                    ))}
-                </ul>
-            </div>
-            {
-                <div className="ingredients-menu">
-                    {!currentIngredientType && (
-                        <div>
-                            <h3>Get Started Now!</h3>
-                        </div>
-                    )}
-                    {ingredientTypes.map((ingredientType) => (
-                        <div
-                            key={ingredientType}
-                            style={{
-                                display:
-                                    currentIngredientType !== ingredientType
-                                        ? "none"
-                                        : "",
-                            }}
-                        >
-                            <h3>Choose Your {ingredientType}</h3>
-                            {ingredients.hasOwnProperty(ingredientType) ? (
-                                <>
-                                    <ul>
-                                        {ingredients[ingredientType].map((ingredient) => (
-                                            <li key={ingredient.id}>
-                                                <input
-                                                    type="radio"
-                                                    name={ingredientType}
-                                                    id={ingredient.id}
-                                                    value={ingredient.id}
-                                                    checked={
-                                                        sandwich[ingredientType] ===
-                                                        ingredient.id
-                                                    }
-                                                    onChange={() => {
-                                                        setSandwich((prev) => ({
-                                                            ...prev,
-                                                            [ingredientType]:
-                                                                ingredient.id,
-                                                        }));
-                                                    }}
-                                                />
-                                                <label htmlFor={ingredient.id}>
-                                                    {ingredient.name}
-                                                </label>
-                                            </li>
-                                        ))}
-                                        <li>
-                                            <input
-                                                type="radio"
-                                                name={ingredientType}
-                                                id={`${ingredientType}-none`}
-                                                value="none"
-                                                checked={!sandwich[ingredientType]}
-                                                onChange={() =>
-                                                    setSandwich((prev) => ({
-                                                        ...prev,
-                                                        [ingredientType]: null,
-                                                    }))
-                                                }
-                                            />
-                                            <label htmlFor={`${ingredientType}-none`}>
-                                                None of the above
-                                            </label>
-                                        </li>
-                                    </ul>
-                                    <button
-                                        onClick={() => {
-                                            setCurrentIngredientType(
-                                                (prev) =>
-                                                    ingredientTypes[
-                                                        ingredientTypes.indexOf(prev) - 1
-                                                    ]
-                                            );
-                                        }}
-                                        disabled={currentIngredientType === "bread"}
-                                    >
-                                        back
-                                    </button>
-                                    {!lastIngredient ? (
-                                        <button
-                                            onClick={() => {
-                                                setCurrentIngredientType(
-                                                    (prev) =>
-                                                        ingredientTypes[
-                                                            ingredientTypes.indexOf(
-                                                                prev
-                                                            ) + 1
-                                                        ]
-                                                );
-                                            }}
-                                            disabled={!sandwich?.bread}
-                                        >
-                                            next
-                                        </button>
-                                    ) : (
-                                        <form
-                                            onSubmit={(e) => {
-                                                e.preventDefault();
-                                                saveSandwich();
-                                            }}
-                                        >
-                                            <input
-                                                type="text"
-                                                name="sandwichName"
-                                                placeholder="Sandwich name"
-                                                onChange={(e) =>
-                                                    setSandwichName(e.target.value)
-                                                }
-                                                value={sandwichName}
-                                            />
-                                            <input type="submit" value="save sandwich" />
-                                        </form>
-                                    )}
-                                </>
-                            ) : (
-                                <Loading />
-                            )}
-                            <hr />
-                        </div>
-                    ))}
+        <div className="flex flex-col justify-end min-h-full pt-6 md:pt-9 lg:pt-12">
+            <h2>Create a sandwich. Choose your:</h2>
+            <div className="creation-section flex-col md:flex-row">
+                <div className="create-sandwich-menu">
+                    <ul className="flex flex-col md:flex-row justify-center">
+                        {ingredientTypes.map((ingredientType) => (
+                            <li key={ingredientType}>
+                                <button
+                                    className={`my-2 md:my-4 ${
+                                        ingredientType === currentIngredientType
+                                            ? "active"
+                                            : ""
+                                    }`}
+                                    onClick={() =>
+                                        setCurrentIngredientType(ingredientType)
+                                    }
+                                    disabled={
+                                        ingredientType !== "bread" && !sandwich?.bread
+                                    }
+                                >
+                                    {ingredientType}
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
                 </div>
-            }
 
-            <SandwichImage
-                sandwich={sandwich}
-                ingredientTypes={ingredientTypes}
-                ingredients={ingredients}
-            />
-        </>
+                {isDataLoading ? (
+                    <Loading />
+                ) : (
+                    <>
+                        <div className="ingredients-menu">
+                            {!currentIngredientType && (
+                                <div>
+                                    <h3>Get Started Now!</h3>
+                                </div>
+                            )}
+                            {ingredientTypes.map((ingredientType) => (
+                                <div
+                                    key={ingredientType}
+                                    style={{
+                                        display:
+                                            currentIngredientType !== ingredientType
+                                                ? "none"
+                                                : "",
+                                    }}
+                                >
+                                    {ingredients.hasOwnProperty(ingredientType) ? (
+                                        <div className="prev-next-navigation flex justify-between">
+                                            <button
+                                                className="text-xs"
+                                                onClick={backIngredientTypeHandler}
+                                                disabled={
+                                                    currentIngredientType === "bread"
+                                                }
+                                            >
+                                                back
+                                            </button>
+                                            <button
+                                                className="text-xs"
+                                                onClick={nextIngredientTypeHandler}
+                                                disabled={
+                                                    !sandwich?.bread ||
+                                                    isLastIngredientType
+                                                }
+                                            >
+                                                next
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <Loading />
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="thumb__wrapper flex flex-col flex-shrink-0 justify-between p-2 sm:p-4">
+                            {currentIngredientType && (
+                                <IngredientsSwiper
+                                    sandwich={sandwich}
+                                    ingredients={ingredients}
+                                    currentIngredientType={currentIngredientType}
+                                    updateSandwichIngredients={
+                                        updateSandwichIngredientsHandler
+                                    }
+                                />
+                            )}
+                        </div>
+
+                        <div className="flex justify-center my-4">
+                            <button onClick={clearSandwich}>clear all</button>
+                        </div>
+                    </>
+                )}
+            </div>
+            {!isDataLoading && (
+                <div className="result-section relative aspect-ratio-3/2 mx-4 w-full md:w-2/3 mx-auto ">
+                    <SandwichImage
+                        sandwich={sandwich}
+                        ingredientTypes={ingredientTypes}
+                        ingredients={ingredients}
+                    />
+                </div>
+            )}
+            <div className="save-sandwich-section flex justify-center text-center">
+                {sandwich?.bread && (
+                    <form onSubmit={submitSandwichHandler}>
+                        <input
+                            type="text"
+                            name="sandwichName"
+                            placeholder="Sandwich name"
+                            onChange={(e) => setSandwichName(e.target.value)}
+                            value={sandwichName}
+                        />
+                        <input
+                            type="submit"
+                            placeholder="save sandwich"
+                            className="my-4"
+                        />
+                    </form>
+                )}
+            </div>
+        </div>
     );
 };
 
