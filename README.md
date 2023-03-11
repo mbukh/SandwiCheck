@@ -16,6 +16,10 @@
 
 -   [new spreads images](https://croftersorganic.com/product/just-fruit-apricot/)
 
+#### Modules
+
+-   [SwiperJS React](https://swiperjs.com/react)
+
 #### Ideas:
 
 -   lunch box ads

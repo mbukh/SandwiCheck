@@ -31,24 +31,31 @@ const Header = () => {
             </div>
 
             <div className="navbar">
-                <nav className="nav-container fl fl-aic fl-spb">
-                    <div className="nav-start fl fl-start rel">
+                <nav className="nav-container flex justify-between items-center px-5 md:px-12 xl:px-20">
+                    <div className="nav-start w-2/5 flex justify-start">
                         <HamburgerMenu
-                            className="mobile-only abs abs-v-c on-top"
+                            className="mobile-only relative lg:hidden w-10 h-8 -ml-2 focus:outline-none on-top"
                             mobileMenuToggler={mobileMenuToggler}
                             isMobileMenuOpen={isMobileMenuOpen}
                         />
 
-                        <div className="desktop-only">
-                            <NavLink to="/menu">My menu</NavLink>
-                            <NavLink to="/createSandwich">Build a sandwich</NavLink>
+                        <div className="desktop-only lg:inline-block xl:text-lg uppercase text-shadow-10">
+                            <NavLink
+                                to="/createSandwich"
+                                className="mr-6 xl:mr-10 font-bold"
+                            >
+                                Build a sandwich
+                            </NavLink>
+                            <NavLink to="/menu" className="mr-6 xl:mr-10">
+                                My menu
+                            </NavLink>
                         </div>
                     </div>
 
                     <div className="nav-center fl fl-cc">
                         <Link to="/latest" className="no-hover block size-full">
                             <div className="logo m-i-a">
-                                <div className="fl fl-cc text-s text-sh-5">
+                                <div className="fl fl-cc text-xs sm:text-base text-sh-5">
                                     Let us
                                     <br /> inspire
                                     <br /> you
@@ -57,11 +64,15 @@ const Header = () => {
                         </Link>
                     </div>
 
-                    <div className="nav-end fl fl-end mobile-only"></div>
-
-                    <div className="nav-end fl fl-end desktop-only">
-                        <NavLink to="/family">My Family</NavLink>
-                        <NavLink to="/logout">Log out</NavLink>
+                    <div className="nav-end w-2/5 flex justify-end">
+                        <div className="desktop-only lg:inline-block xl:text-lg uppercase text-shadow-10">
+                            <NavLink to="/family" className="ml-6 xl:mx-10">
+                                My Family
+                            </NavLink>
+                            <NavLink to="/logout" className="ml-4">
+                                Log out
+                            </NavLink>
+                        </div>
                     </div>
                 </nav>
             </div>

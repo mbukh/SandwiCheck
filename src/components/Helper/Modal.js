@@ -32,16 +32,25 @@ const Modal = ({ children, isModalLoading = true, closeLink = "" }) => {
                         <span className="tingle-modal__closeLabel">Close</span>
                     </button>
 
-                    <div
-                        className="tingle-modal-box w-full"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <div className="tingle-modal-box__content">
-                            <div className="max-w-xs sm:max-w-sm md:max-w-screen-md mx-auto text-white">
-                                {!isModalLoading ? children : <Loading />}
+                    {isModalLoading ? (
+                        <div
+                            className="flex flex-col flex-1 justify-center"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <Loading />
+                        </div>
+                    ) : (
+                        <div
+                            className="tingle-modal-box w-full"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="tingle-modal-box__content">
+                                <div className="max-w-xs sm:max-w-sm md:max-w-screen-md mx-auto text-white">
+                                    {children}
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             </Portal>
         )

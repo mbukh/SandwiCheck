@@ -46,7 +46,7 @@ const SandwichEditor = () => {
 
     return (
         <div className="flex flex-col justify-end min-h-full pt-6 md:pt-9 lg:pt-12">
-            <h1 className="text-center">Create a sandwich. Choose your:</h1>
+            <h1 className="text-center text-xl uppercase">Create a sandwich:</h1>
             <div className="creation-section flex-col md:flex-row">
                 <div className="create-sandwich-menu my-2">
                     <ul className="flex flex-wrap md:flex-row justify-center">
@@ -130,7 +130,7 @@ const SandwichEditor = () => {
                 )}
             </div>
             {!isDataLoading && (
-                <div className="result-section relative aspect-ratio-3/2 mx-4 w-full md:w-2/3 mx-auto">
+                <div className="result-section relative aspect-ratio-3/2 mx-4 w-full md:w-2/3 lg:w-1/3 mx-auto">
                     <SandwichImage
                         sandwich={sandwich}
                         ingredientTypes={ingredientTypes}
@@ -141,7 +141,7 @@ const SandwichEditor = () => {
 
             {currentIngredientType && sandwich && Object.keys(sandwich).length > 0 && (
                 <div className="flex justify-center my-4">
-                    <button className="btn-wrapper box-shadow-none" onClick={clearSandwich}>
+                    <button className="btn-wrapper" onClick={clearSandwich}>
                         clear all
                     </button>
                 </div>

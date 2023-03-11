@@ -130,10 +130,10 @@ button.active {
 
 @media (min-width: 1024px) {
     .desktop-only {
-        display: none !important;
+        display: block !important;
     }
     .mobile-only {
-        display: block !important;
+        display: none !important;
     }
 }
 
@@ -272,6 +272,7 @@ button.active {
     height: auto;
     background: none;
     outline: none;
+    box-shadow: none;
     border: none;
     cursor: pointer;
 }
@@ -311,7 +312,6 @@ header .mobile-menu.open {
 
 .navbar .nav-container {
     height: var(--headerHeight);
-    padding-inline: 1rem;
 }
 
 .navbar .nav-start {
@@ -360,8 +360,8 @@ header .mobile-menu.open {
 
 .navbar .logo {
     background: url("../assets/images/orb.png") no-repeat center / contain;
-    width: calc(var(--headerHeight) - 15%);
-    height: var(--headerHeight);
+    width: calc(var(--headerHeight) * 0.8);
+    aspect-ratio: 1/1;
     user-select: none;
 }
 
