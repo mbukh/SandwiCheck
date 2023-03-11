@@ -18,19 +18,8 @@ const SandwichEditor = () => {
         saveSandwich,
     } = useSandwich();
 
-    // const isLastIngredientType =
-    //     ingredientTypes.indexOf(currentIngredientType) + 1 === ingredientTypes.length;
-    // const isFirstIngredientType = currentIngredientType === "bread";
-
-    // const nextIngredientTypeHandler = () =>
-    //     setCurrentIngredientType(
-    //         (prev) => ingredientTypes[ingredientTypes.indexOf(prev) + 1]
-    //     );
-
-    // const backIngredientTypeHandler = () =>
-    //     setCurrentIngredientType(
-    //         (prev) => ingredientTypes[ingredientTypes.indexOf(prev) - 1]
-    //     );
+    const isSandwichReady =
+        sandwich?.bread && Object.values(sandwich).filter((val) => val).length > 1;
 
     const submitSandwichHandler = (e) => {
         e.preventDefault();
@@ -46,7 +35,7 @@ const SandwichEditor = () => {
 
     return (
         <div className="flex flex-col justify-end min-h-full pt-6 md:pt-9 lg:pt-12">
-            <h1 className="text-center text-xl uppercase">Create a sandwich:</h1>
+            <h1 className="text-center text-l uppercase">Create a sandwich</h1>
             <div className="creation-section flex-col md:flex-row">
                 <div className="create-sandwich-menu my-2">
                     <ul className="flex flex-wrap md:flex-row justify-center">
@@ -77,11 +66,6 @@ const SandwichEditor = () => {
                 ) : (
                     <>
                         <div className="ingredients-menu">
-                            {!currentIngredientType && (
-                                <div>
-                                    <h3>Get Started Now!</h3>
-                                </div>
-                            )}
                             {ingredientTypes.map((ingredientType) => (
                                 <div
                                     key={ingredientType}
@@ -91,30 +75,11 @@ const SandwichEditor = () => {
                                                 ? "none"
                                                 : "",
                                     }}
-                                >
-                                    {/* <div className="prev-next-navigation flex justify-between">
-                                        <button
-                                            className="text-xs"
-                                            onClick={backIngredientTypeHandler}
-                                            disabled={currentIngredientType === "bread"}
-                                        >
-                                            back
-                                        </button>
-                                        <button
-                                            className="text-xs"
-                                            onClick={nextIngredientTypeHandler}
-                                            disabled={
-                                                !sandwich?.bread || isLastIngredientType
-                                            }
-                                        >
-                                            next
-                                        </button>
-                                    </div> */}
-                                </div>
+                                ></div>
                             ))}
                         </div>
 
-                        <div className="thumb__wrapper flex flex-col flex-shrink-0 justify-between p-2 sm:p-4">
+                        <div className="thumb__wrapper flex flex-col flex-shrink-0 justify-between">
                             {currentIngredientType && (
                                 <IngredientsSwiper
                                     sandwich={sandwich}
@@ -139,32 +104,35 @@ const SandwichEditor = () => {
                 </div>
             )}
 
-            {currentIngredientType && sandwich && Object.keys(sandwich).length > 0 && (
-                <div className="flex justify-center my-4">
-                    <button className="btn-wrapper" onClick={clearSandwich}>
-                        clear all
-                    </button>
-                </div>
-            )}
+            {currentIngredientType ? (
+                <>
+                    <div className="flex justify-center my-4">
+                        <button className="btn-wrapper" onClick={clearSandwich}>
+                            clear all
+                        </button>
+                    </div>
 
-            <div className="save-sandwich-section flex justify-center text-center">
-                {sandwich?.bread && (
-                    <form onSubmit={submitSandwichHandler}>
-                        <input
-                            type="text"
-                            name="sandwichName"
-                            placeholder="Sandwich name"
-                            onChange={(e) => setSandwichName(e.target.value)}
-                            value={sandwichName}
-                        />
-                        <input
-                            type="submit"
-                            placeholder="save sandwich"
-                            className="my-4"
-                        />
-                    </form>
-                )}
-            </div>
+                    <div className="save-sandwich-section flex justify-center text-center">
+                        <form onSubmit={submitSandwichHandler}>
+                            <input
+                                type="text"
+                                name="sandwichName"
+                                placeholder="Sandwich name"
+                                onChange={(e) => setSandwichName(e.target.value)}
+                                value={sandwichName}
+                            />
+                            <input
+                                type="submit"
+                                placeholder="save sandwich"
+                                className="my-4"
+                                disabled={!isSandwichReady}
+                            />
+                        </form>
+                    </div>
+                </>
+            ) : (
+                <Loading />
+            )}
         </div>
     );
 };

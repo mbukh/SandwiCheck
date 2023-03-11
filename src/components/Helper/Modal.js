@@ -23,7 +23,7 @@ const Modal = ({ children, isModalLoading = true, closeLink = "" }) => {
                 >
                     <button
                         type="button"
-                        className="tingle-modal__close"
+                        className="tingle-modal__close -mx-2"
                         onClick={closeModalHandler}
                     >
                         <span className="tingle-modal__closeIcon">

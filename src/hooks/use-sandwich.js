@@ -59,6 +59,9 @@ const useSandwich = () => {
     const clearSandwich = () => {
         setSandwich({});
         setCurrentIngredientType("");
+        setTimeout(() => {
+            setCurrentIngredientType("bread")
+        }, 400);
     };
 
     const saveSandwich = async () => {

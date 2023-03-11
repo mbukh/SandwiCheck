@@ -12,15 +12,10 @@ const Footer = () => {
                         <li className="mr-4 md:mr-8">
                             <Link
                                 className="hover:opacity-80"
-                                to="#modal-terms"
-                                data-modal=""
+                                to="https://mbukh.dev"
+                                target="_blank"
                             >
-                                Terms
-                            </Link>
-                        </li>
-                        <li className="mr-4 md:mr-8">
-                            <Link className="hover:opacity-80" to="#modal-privacy">
-                                Privacy
+                                MBUKH.dev
                             </Link>
                         </li>
                     </ul>
@@ -30,7 +25,7 @@ const Footer = () => {
             <div className="footer__triangle absolute bottom-0 right-0 pointer-events-none">
                 <Link
                     className="pointer-events-auto"
-                    to="https://www.lidl.ie/"
+                    to="https://github.com/mbukh/Appleseeds-SandwiCheck"
                     target="_blank"
                 >
                     <img

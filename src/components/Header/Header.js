@@ -46,8 +46,8 @@ const Header = () => {
                             >
                                 Build a sandwich
                             </NavLink>
-                            <NavLink to="/menu" className="mr-6 xl:mr-10">
-                                My menu
+                            <NavLink to="/latest" className="mr-6 xl:mr-10">
+                                Gallery
                             </NavLink>
                         </div>
                     </div>
@@ -66,12 +66,13 @@ const Header = () => {
 
                     <div className="nav-end w-2/5 flex justify-end">
                         <div className="desktop-only lg:inline-block xl:text-lg uppercase text-shadow-10">
-                            <NavLink to="/family" className="ml-6 xl:mx-10">
+                            <NavLink to="/family" className="mr-6 xl:mx-10 font-bold">
+                                My menu
+                            </NavLink>
+                            <NavLink to="/family" className="mr-6 xl:mx-10">
                                 My Family
                             </NavLink>
-                            <NavLink to="/logout" className="ml-4">
-                                Log out
-                            </NavLink>
+                            <NavLink to="/logout">Log out</NavLink>
                         </div>
                     </div>
                 </nav>

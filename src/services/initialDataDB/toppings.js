@@ -125,25 +125,5 @@ export const toppings = [
         normal: "_5",
         light: "_8",
     },
-    {
-        name: "Salt",
-        imageBase: "",
-        heavy: "_6",
-        normal: "_5",
-        light: "_8",
-    },
-    {
-        name: "Pepper",
-        imageBase: "",
-        heavy: "_6",
-        normal: "_5",
-        light: "_8",
-    },
-    {
-        name: "Oregano",
-        imageBase: "",
-        heavy: "_6",
-        normal: "_5",
-        light: "_8",
-    },
+
 ];

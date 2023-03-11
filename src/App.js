@@ -49,8 +49,9 @@ const router = createBrowserRouter([
                 path: "/latest/:sandwichId",
                 element: (
                     <>
-                        <SandwichGallery galleryType="latest" />
-                        <SandwichModal />
+                        <SandwichGallery galleryType="latest">
+                            <SandwichModal />
+                        </SandwichGallery>
                     </>
                 ),
             },

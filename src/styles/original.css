@@ -2425,7 +2425,7 @@ a.header__link:hover {
 }
 
 .bg-magenta {
-        city: 1;
+    --bg-opacity: 1;
     background-color: #e6127d;
     background-color: rgba(230, 18, 125, var(--bg-opacity));
 }
