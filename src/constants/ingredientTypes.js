@@ -5,3 +5,5 @@ export const ingredientTypes = [
     "toppings",
     "condiments",
 ];
+
+export const cacheTimeoutInMinutes = 5;

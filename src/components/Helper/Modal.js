@@ -44,11 +44,7 @@ const Modal = ({ children, isModalLoading = true, closeLink = "" }) => {
                             className="tingle-modal-box w-full"
                             onClick={(e) => e.stopPropagation()}
                         >
-                            <div className="tingle-modal-box__content">
-                                <div className="max-w-xs sm:max-w-sm md:max-w-screen-md mx-auto text-white">
-                                    {children}
-                                </div>
-                            </div>
+                            <div className="tingle-modal-box__content">{children}</div>
                         </div>
                     )}
                 </div>

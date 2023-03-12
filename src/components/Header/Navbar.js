@@ -2,13 +2,13 @@ import { debug } from "../../constants/";
 
 import { useNavigate, NavLink, Link } from "react-router-dom";
 
-import { useGlobalContext } from "../../context/GlobalContext";
+import { useAuthGlobalContext } from "../../context/";
 
 import { Loading } from "..";
 
 const Navbar = () => {
     const navigate = useNavigate();
-    const { logOut, user } = useGlobalContext();
+    const { logOut, user } = useAuthGlobalContext();
 
     const handleLogout = () => {
         try {
@@ -19,7 +19,7 @@ const Navbar = () => {
         }
     };
 
-    return user.uid ? (
+    return user.id ? (
         <>
             <h3>Navbar</h3>
             <div>

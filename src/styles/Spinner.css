@@ -1,5 +1,5 @@
 .spinner {
-    margin: 5em auto;
+    margin: 1em auto;
     width: 3em;
     aspect-ratio: 1/1;
     border: 1px solid var(--card-bg-3);

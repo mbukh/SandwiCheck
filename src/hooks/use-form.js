@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { useNavigate, useParams } from "react-router-dom";
 
-import { useGlobalContext } from "../context/GlobalContext";
+import { useAuthGlobalContext } from "../context/";
 
 import { createUser, updateUserById } from "../services/apiUsers";
 
@@ -12,15 +12,16 @@ const useForm = () => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [errors, setErrors] = useState([]);
-    const { logIn, signUp, user } = useGlobalContext();
-    const navigate = useNavigate();
+    const { logIn, signUp, user } = useAuthGlobalContext();
     const { parentId } = useParams();
     const { validateForm } = useValidate();
+    const navigate = useNavigate();
 
     const handleCreateUser = async (e) => {
         e.preventDefault();
-        const errorMessages = validateForm({ name, email, password });
+        const errorMessages = validateForm({ name, email, password, confirmPassword });
         if (errorMessages.length) {
             setErrors(errorMessages);
             return false;
@@ -71,6 +72,8 @@ const useForm = () => {
         setEmail,
         password,
         setPassword,
+        confirmPassword,
+        setConfirmPassword,
         errors,
         setErrors,
         logIn,

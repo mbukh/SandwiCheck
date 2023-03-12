@@ -8,9 +8,15 @@ import { initialize } from "./constants/debug";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-import { Landing, UserHome, Login, Signup, Layout, Error404, Cart } from "./pages";
+import { Landing, UserHome, Layout, Error404, Cart } from "./pages";
 
-import { SandwichEditor, SandwichModal, SandwichGallery } from "./components/";
+import {
+    SandwichEditor,
+    SandwichModal,
+    SandwichGallery,
+    LoginModal,
+    SignupModal,
+} from "./components/";
 
 // ***** Reset DB ***** //
 initialize && (async () => await initDB())();
@@ -19,19 +25,27 @@ initialize && (async () => await initDB())();
 const router = createBrowserRouter([
     {
         path: "/login",
-        element: <Login />,
-    },
-    {
-        path: "/login/parent/:parentId",
-        element: <Login />,
+        element: <LoginModal />,
+        children: [
+            {
+                path: "parent/:parentId",
+                element: <LoginModal />,
+            },
+        ],
     },
     {
         path: "/signup",
-        element: <Signup />,
+        element: <SignupModal />,
+        children: [
+            {
+                path: "parent/:parentId",
+                element: <SignupModal />,
+            },
+        ],
     },
     {
-        path: "/signup/parent/:parentId",
-        element: <Signup />,
+        path: "/sandwich/:sandwichId",
+        element: <SandwichModal closeLink="/latest" />,
     },
     {
         path: "/",
@@ -48,17 +62,12 @@ const router = createBrowserRouter([
             {
                 path: "/latest/:sandwichId",
                 element: (
-                    <>
-                        <SandwichGallery galleryType="latest">
-                            <SandwichModal />
-                        </SandwichGallery>
-                    </>
+                    <SandwichGallery galleryType="latest">
+                        <SandwichModal />
+                    </SandwichGallery>
                 ),
             },
-            {
-                path: "/sandwich/:sandwichId",
-                element: <SandwichModal closeLink="/latest" />,
-            },
+
             {
                 path: "/home",
                 element: <UserHome />,

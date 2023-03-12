@@ -1,7 +1,7 @@
 import { daysOfWeek } from "./daysOfWeek";
 
-import { ingredientTypes } from "./ingredientTypes";
+import { ingredientTypes, cacheTimeoutInMinutes } from "./ingredientTypes";
 
 import { debug } from "./debug";
 
-export { daysOfWeek, ingredientTypes, debug };
+export { daysOfWeek, ingredientTypes, cacheTimeoutInMinutes, debug };

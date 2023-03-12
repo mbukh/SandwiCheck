@@ -12,7 +12,6 @@ import {
 } from "firebase/firestore";
 
 const readUserById = async (userId) => {
-    debug && console.log("Reading user by id:", userId);
     const docRef = doc(db, "users", userId);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {

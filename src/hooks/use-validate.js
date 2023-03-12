@@ -1,22 +1,34 @@
 const useValidate = () => {
-    const validateForm = ({ email, name, firstName, lastName, password }) => {
+    const validateForm = ({
+        email,
+        name,
+        firstName,
+        lastName,
+        password,
+        confirmPassword,
+    }) => {
         const errorMessages = [];
         email != null &&
             email.length < 5 &&
             !email.includes("@") &&
+            !email.includes(".") &&
             errorMessages.push("Email is invalid");
         name != null &&
             name.length < 3 &&
-            errorMessages.push("Enter a valid name");
+            errorMessages.push("Please provide a valid full name.");
         firstName &&
             firstName.length < 3 &&
-            errorMessages.push("Enter a valid First name");
+            errorMessages.push("Please provide a valid first name.");
         lastName != null &&
             lastName.length < 3 &&
-            errorMessages.push("Enter a valid Last Name");
+            errorMessages.push("Please provide a valid last name.");
         password != null &&
             password.length < 5 &&
-            errorMessages.push("Password is too short");
+            errorMessages.push("The password is too brief.");
+        confirmPassword != null &&
+            confirmPassword !== password &&
+            errorMessages.push("The passwords do not match");
+
         return errorMessages;
     };
 

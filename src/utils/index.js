@@ -31,3 +31,14 @@ export const assembleImageSrc = ({
     };
     return folder + filenameBase + suffix[ingredientType] + extension;
 };
+
+export const timeDifference = (date1, date2) => {
+    const difference = date2 - date1;
+    const differenceTime = {
+        days: Math.floor(difference / 1000 / 60 / 60 / 24),
+        hours: Math.floor(difference / 1000 / 60 / 60),
+        minutes: Math.floor(difference / 1000 / 60),
+        seconds: Math.floor(difference / 1000),
+    };
+    return differenceTime;
+};

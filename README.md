@@ -25,6 +25,7 @@
 -   lunch box ads
 -   catering ads
 -   rules : only parents can see children data (database rule && api check)
+-   sandwich creation to localStorage to save it after registration / login
 
 #### Scripts
 

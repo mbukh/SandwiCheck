@@ -20,14 +20,16 @@ const SandwichModal = ({ closeLink = "" }) => {
 
     return (
         <Modal isModalLoading={isModalLoading} closeLink={closeLink}>
-            <SandwichCard
-                isModal
-                key={sandwichId}
-                index={Math.ceil(Math.random() * 4)}
-                sandwich={sandwich}
-                ingredientTypes={ingredientTypes}
-                ingredients={ingredients}
-            />
+            <div className="max-w-xs sm:max-w-sm md:max-w-screen-md mx-auto text-white">
+                <SandwichCard
+                    isModal
+                    key={sandwichId}
+                    index={Math.ceil(Math.random() * 4)}
+                    sandwich={sandwich}
+                    ingredientTypes={ingredientTypes}
+                    ingredients={ingredients}
+                />
+            </div>
         </Modal>
     );
 };

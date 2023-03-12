@@ -117,7 +117,7 @@ const IngredientsSwiper = ({
                         }`}
                     >
                         <div className="py-2 md:py-5">&nbsp;</div>
-                        <div className="button text-xxs md:text-xs w-1/2 lg:w-1/3 mx-auto uppercase">
+                        <div className="button text-xxs md:text-xs w-1/2 lg:w-1/3 mx-auto uppercase fit-content">
                             No {currentIngredientType}
                         </div>
                     </div>
@@ -146,7 +146,7 @@ const IngredientsSwiper = ({
                                 className="inset-0 object-contain size-full no-drag"
                                 alt={ingredient.name}
                             />
-                            <div className="inline-block max-w-full rounded box-shadow-5 bg-white text-magenta text-xxs uppercase py-1 px-4">
+                            <div className="inline-block max-w-full rounded box-shadow-5 bg-white text-magenta text-xxs uppercase fit-content py-1 px-4">
                                 {ingredient.name}
                             </div>
                         </div>

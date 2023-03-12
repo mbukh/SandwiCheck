@@ -113,16 +113,15 @@ const readSandwichesOfCurrentUser = async () => {
 const addSandwichToCurrentUser = async (sandwich) => {
     const currentUserId = auth.currentUser.uid;
     const sandwichData = trimObjectEmptyProperties(sandwich);
-    debug && console.log("Adding a sandwich to current user.");
     try {
         const docRef = doc(db, "users", currentUserId);
         const colRef = collection(docRef, "sandwiches");
-        const authorName = await getDocs(docRef).data().name.split(" ")[0];
+        const authorFirstName = await getDocs(docRef).data().name.split(" ")[0];
         const newDocRef = await addDoc(colRef, {
-            author: authorName,
-            createdAt: serverTimestamp(),
-            name: authorName + "'s Sandwich",
             ...sandwichData,
+            createdAt: serverTimestamp(),
+            author: authorFirstName,
+            name: sandwich.name || authorFirstName + "'s Sandwich",
         });
         updateDoc(newDocRef, { id: newDocRef.id });
         debug && console.log("Sandwich id added to user:", newDocRef.id);

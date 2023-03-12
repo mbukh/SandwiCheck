@@ -1,17 +1,23 @@
+import { useEffect, useRef } from "react";
+
 import { IngredientsSwiper, Loading, SandwichImage } from "../";
 
-import { ingredientTypes } from "../../constants/";
+import { useSandwichGlobalContext, useAuthGlobalContext } from "../../context/";
 
 import { useSandwich } from "../../hooks/";
 
 const SandwichEditor = () => {
+    const swiperContainerRef = useRef(
+        document.querySelector("div:has(>.swiper-initialized)")
+    );
+    const { ingredients, areIngredientsReady } = useSandwichGlobalContext();
+    const { isUserReady } = useAuthGlobalContext();
     const {
-        isDataLoading,
-        ingredients,
+        ingredientTypes,
         currentIngredientType,
         setCurrentIngredientType,
         sandwich,
-        setSandwich,
+        updateSandwich,
         clearSandwich,
         sandwichName,
         setSandwichName,
@@ -26,15 +32,23 @@ const SandwichEditor = () => {
         saveSandwich();
     };
 
-    const updateSandwichIngredientsHandler = (newData) => {
-        setSandwich((prev) => ({
-            ...prev,
-            ...newData,
-        }));
+    const updateSandwichIngredientsHandler = (newSandwichData) =>
+        updateSandwich(newSandwichData);
+
+    const saveSwiperSize = () => {
+        swiperContainerRef.current.style.height =
+            swiperContainerRef.current.offsetHeight + "px";
     };
 
+    useEffect(() => {
+        if (!swiperContainerRef.current) return;
+        setTimeout(() => (swiperContainerRef.current.style.height = ""), 200);
+    }, [currentIngredientType, swiperContainerRef]);
+
+    if (!areIngredientsReady || !isUserReady) return <Loading />;
+
     return (
-        <div className="flex flex-col justify-end min-h-full pt-6 md:pt-9 lg:pt-12">
+        <div className="create-sandwich flex flex-col min-h-full py-6 md:pt-9 lg:pt-12 mb-4">
             <h1 className="text-center text-l uppercase">Create a sandwich</h1>
             <div className="creation-section flex-col md:flex-row">
                 <div className="create-sandwich-menu my-2">
@@ -42,14 +56,15 @@ const SandwichEditor = () => {
                         {ingredientTypes.map((ingredientType) => (
                             <li key={ingredientType}>
                                 <button
-                                    className={`my-2 md:my-4  text-xs md:text-sm md:text-base ${
+                                    className={`my-2 md:my-4  text-xs md:text-sm md:text-base fit-content ${
                                         ingredientType === currentIngredientType
                                             ? "active"
                                             : ""
                                     }`}
-                                    onClick={() =>
-                                        setCurrentIngredientType(ingredientType)
-                                    }
+                                    onClick={() => {
+                                        saveSwiperSize();
+                                        setCurrentIngredientType(ingredientType);
+                                    }}
                                     disabled={
                                         ingredientType !== "bread" && !sandwich?.bread
                                     }
@@ -61,54 +76,34 @@ const SandwichEditor = () => {
                     </ul>
                 </div>
 
-                {isDataLoading ? (
-                    <Loading />
-                ) : (
-                    <>
-                        <div className="ingredients-menu">
-                            {ingredientTypes.map((ingredientType) => (
-                                <div
-                                    key={ingredientType}
-                                    style={{
-                                        display:
-                                            currentIngredientType !== ingredientType
-                                                ? "none"
-                                                : "",
-                                    }}
-                                ></div>
-                            ))}
-                        </div>
-
-                        <div className="thumb__wrapper flex flex-col flex-shrink-0 justify-between">
-                            {currentIngredientType && (
-                                <IngredientsSwiper
-                                    sandwich={sandwich}
-                                    ingredients={ingredients}
-                                    currentIngredientType={currentIngredientType}
-                                    updateSandwichIngredients={
-                                        updateSandwichIngredientsHandler
-                                    }
-                                />
-                            )}
-                        </div>
-                    </>
-                )}
-            </div>
-            {!isDataLoading && (
-                <div className="result-section relative aspect-ratio-3/2 mx-4 w-full md:w-2/3 lg:w-1/3 mx-auto">
-                    <SandwichImage
-                        sandwich={sandwich}
-                        ingredientTypes={ingredientTypes}
-                        ingredients={ingredients}
-                    />
+                <div
+                    className="thumb__wrapper flex flex-col flex-shrink-0 justify-between"
+                    ref={swiperContainerRef}
+                >
+                    {currentIngredientType && (
+                        <IngredientsSwiper
+                            sandwich={sandwich}
+                            ingredients={ingredients}
+                            currentIngredientType={currentIngredientType}
+                            updateSandwichIngredients={updateSandwichIngredientsHandler}
+                        />
+                    )}
                 </div>
-            )}
+            </div>
+
+            <div className="result-section relative aspect-ratio-3/2 mx-4 w-full md:w-2/3 lg:w-1/3 mx-auto">
+                <SandwichImage
+                    sandwich={sandwich}
+                    ingredientTypes={ingredientTypes}
+                    ingredients={ingredients}
+                />
+            </div>
 
             {currentIngredientType ? (
                 <>
                     <div className="flex justify-center my-4">
                         <button className="btn-wrapper" onClick={clearSandwich}>
-                            clear all
+                            Clear all
                         </button>
                     </div>
 
@@ -118,6 +113,7 @@ const SandwichEditor = () => {
                                 type="text"
                                 name="sandwichName"
                                 placeholder="Sandwich name"
+                                maxLength={25}
                                 onChange={(e) => setSandwichName(e.target.value)}
                                 value={sandwichName}
                             />
@@ -125,7 +121,8 @@ const SandwichEditor = () => {
                                 type="submit"
                                 placeholder="save sandwich"
                                 className="my-4"
-                                disabled={!isSandwichReady}
+                                disabled={!isSandwichReady || sandwichName === ""}
+                                value="Save sandwich"
                             />
                         </form>
                     </div>
