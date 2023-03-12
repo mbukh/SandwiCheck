@@ -4,7 +4,6 @@ import { debug } from "../constants/";
 
 import { ingredientTypes } from "../constants/";
 
-import { readAllIngredients } from "../services/apiIngredients";
 import {
     readSandwichById,
     addSandwichToCurrentUser,
@@ -14,27 +13,10 @@ import {
 } from "../services/apiSandwiches";
 
 const useSandwich = () => {
-    const [isDataLoading, setIsDataLoading] = useState(true);
-    const [ingredients, setIngredients] = useState({});
     const [currentIngredientType, setCurrentIngredientType] = useState("bread");
     const [sandwich, setSandwich] = useState();
     const [sandwichName, setSandwichName] = useState("");
     const [userSandwiches, setUserSandwiches] = useState(null);
-
-    useEffect(() => {
-        const fetchAllIngredients = async () => {
-            const ingredientsData = await readAllIngredients();
-            debug && console.log("All ingredients:", ingredientsData);
-            setIngredients(ingredientsData);
-            setSandwich({ bread: ingredientsData["bread"][0].id });
-            setIsDataLoading(false);
-        };
-        fetchAllIngredients();
-        return () => {
-            clearSandwich();
-            setIsDataLoading(true);
-        };
-    }, []);
 
     const fetchUserSandwiches = useCallback(async (uid = null) => {
         const sandwichesData = uid
@@ -60,7 +42,7 @@ const useSandwich = () => {
         setSandwich({});
         setCurrentIngredientType("");
         setTimeout(() => {
-            setCurrentIngredientType("bread")
+            setCurrentIngredientType("bread");
         }, 400);
     };
 
@@ -70,8 +52,6 @@ const useSandwich = () => {
     };
 
     return {
-        isDataLoading,
-        ingredients,
         ingredientTypes,
         currentIngredientType,
         setCurrentIngredientType,

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 
-import { useUserAuth } from "../../context/UserAuthContext";
+import { useGlobalContext } from "../../context/GlobalContext";
 
 import { Loading, SandwichCard } from "../../components";
 
@@ -13,7 +13,7 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [child, setChild] = useState(null);
     const { childId } = useParams();
-    const { user } = useUserAuth();
+    const { user } = useGlobalContext();
     const {
         ingredients,
         ingredientTypes,

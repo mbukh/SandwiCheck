@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { useNavigate, useParams } from "react-router-dom";
 
-import { useUserAuth } from "../context/UserAuthContext";
+import { useGlobalContext } from "../context/GlobalContext";
 
 import { createUser, updateUserById } from "../services/apiUsers";
 
@@ -13,7 +13,7 @@ const useForm = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState([]);
-    const { logIn, signUp, user } = useUserAuth();
+    const { logIn, signUp, user } = useGlobalContext();
     const navigate = useNavigate();
     const { parentId } = useParams();
     const { validateForm } = useValidate();
@@ -32,8 +32,7 @@ const useForm = () => {
                 name,
                 ...(parentId && { parents: [parentId] }),
             });
-            parentId &&
-                updateUserById(parentId, { children: signUpResult.user.uid });
+            parentId && updateUserById(parentId, { children: signUpResult.user.uid });
             navigate("/home");
         } catch (err) {
             setErrors(["Signup failed, try login instead."]);

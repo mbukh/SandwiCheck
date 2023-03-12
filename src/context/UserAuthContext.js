@@ -13,19 +13,15 @@ import { auth } from "../constants/firebase.config";
 
 import { readUserById } from "../services/apiUsers";
 
-const userAuthContext = createContext();
-
 const readUserInfo = async (currentUser) => {
     const data = await readUserById(currentUser.uid);
     const children = !data.children?.length
         ? null
-        : await Promise.all(
-              data.children.map((childId) => readUserById(childId))
-          );
+        : await Promise.all(data.children.map((childId) => readUserById(childId)));
     return { ...data, children: children };
 };
 
-export const UserAuthContextProvider = ({ children }) => {
+const useAuthContext = () => {
     const [user, setUser] = useState({ uid: null, info: {} });
     const [loadingUser, setLoadingUser] = useState(-1);
 
@@ -61,15 +57,7 @@ export const UserAuthContextProvider = ({ children }) => {
         };
     }, []);
 
-    return (
-        <userAuthContext.Provider
-            value={{ user, logIn, signUp, logOut, loadingUser }}
-        >
-            {children}
-        </userAuthContext.Provider>
-    );
+    return { user, logIn, signUp, logOut, loadingUser };
 };
 
-export const useUserAuth = () => {
-    return useContext(userAuthContext);
-};
+export default useAuthContext;

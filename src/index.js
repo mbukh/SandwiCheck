@@ -2,13 +2,13 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 
-import { UserAuthContextProvider } from "./context/UserAuthContext";
+import { GlobalContextProvider } from "./context/GlobalContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
     // <React.StrictMode>
-        <UserAuthContextProvider>
-            <App />
-        </UserAuthContextProvider>
+    <GlobalContextProvider>
+        <App />
+    </GlobalContextProvider>
     // </React.StrictMode>
 );
