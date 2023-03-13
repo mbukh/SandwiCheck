@@ -38,7 +38,7 @@ const Signup = () => {
             )}
 
             <form
-                className="needs-validation text-left text-sm mt-15 md:mt-20 xl:mt-24 md:px-5"
+                className="needs-validation text-left text-sm mt-1 md:mt-20 xl:mt-24 md:px-5"
                 onSubmit={handleCreateUser}
             >
                 {errors.length > 0 && (
