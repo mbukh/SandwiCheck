@@ -56,12 +56,12 @@
 
 html,
 body {
-    height: 100%;
+    height: 100vh;
+    overflow-x: hidden;
 }
 
 html {
     font-family: LidlFontPro, Trebuchet MS, Arial, sans-serif;
-    overflow-x: hidden;
 }
 
 html:has(.root-portal) {

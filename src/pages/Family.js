@@ -11,8 +11,8 @@ const Family = () => {
 
     return (
         <div className="sandwich-gallery pt-4 pb-12 px-5 md:pt-6 md:pb-16 md:px-12 lg:pb-20 xl:px-20">
+            <h1 className="text-center text-l uppercase">My family</h1>
             <div className="sandwich-gallery-title w-full py-4 px-5 md:py-5 md:px-12 xl:px-20">
-                <h1>My family</h1>
                 <div>
                     {user.info?.type === "parent" && (
                         <>
@@ -44,7 +44,8 @@ const Family = () => {
                                 to={`https://wa.me/?text=Hey%20kids%2C%20join%20me%20at%20SandwiCheck%20and%20be%20a%20part%20of%20my%20sandwich%20squad%21+${window.location.protocol}%2F%2F${window.location.hostname}%2Fsignup%2Fparent%2F${user.uid}`}
                                 target="_blank"
                             >
-                                Send a parent link &nbsp; &nbsp; &nbsp; <i className="icon icon-whatsapp abs top-0 bottom-0 right-0"></i>
+                                Send a link &nbsp; &nbsp; &nbsp;{" "}
+                                <i className="icon icon-whatsapp abs top-0 bottom-0 right-0"></i>
                             </Link>
                         </>
                     )}
