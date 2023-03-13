@@ -66,7 +66,17 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
             <div className="sandwich-gallery pt-4 pb-12 px-5 md:pt-6 md:pb-16 md:px-12 lg:pb-20 xl:px-20">
                 <div className="sandwich-gallery-title w-full py-4 px-5 md:py-5 md:px-12 xl:px-20">
                     <h1>
-                        {child?.name && child?.name + "'s sandwich menu"}
+                        {child?.name && (
+                            <>
+                                {child?.name}"'s sandwich menu"{" "}
+                                <Link
+                                    to="/family"
+                                    className="button bg-magenta inline-block p-2 mr-4 md:my-4 text-xs md:text-sm md:text-base fit-content"
+                                >
+                                    Back
+                                </Link>
+                            </>
+                        )}
                         {galleryType && capitalizeFirst(galleryType) + " sandwiches"}
                         {!childId && !galleryType && "My sandwich menu"}
                     </h1>
