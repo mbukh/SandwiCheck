@@ -33,7 +33,7 @@ const Login = () => {
                 onSubmit={handleLogin}
             >
                 {errors.length > 0 && (
-                    <div className="error-message text-gray-300 text-xs py-2">
+                    <div className="error-message text-base py-2 text-yellow">
                         {errors.map((error, idx) => (
                             <p key={idx}>{error}</p>
                         ))}

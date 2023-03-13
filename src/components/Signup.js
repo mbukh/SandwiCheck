@@ -36,15 +36,6 @@ const Signup = () => {
                         which means that your information will become visible to those who
                         have shared this link with you.
                     </div>
-                    <div className="flex justify-center my-4">
-                        <Link
-                            to={`https://wa.me/?text=Hey%20kids%2C%20join%20me%20at%20SandwiCheck%20and%20be%20a%20part%20of%20my%20sandwich%20squad%21+${window.location.protocol}%2F%2F${window.location.hostname}%2Fsignup%2Fparent%2F${parentId}`}
-                            target="_blank"
-                        >
-                            Send this link to your children{" "}
-                            <i className="icon icon-whatsapp"></i>
-                        </Link>
-                    </div>
                 </>
             )}
 
@@ -53,7 +44,7 @@ const Signup = () => {
                 onSubmit={handleCreateUser}
             >
                 {errors.length > 0 && (
-                    <div className="error-message text-gray-300 text-xs py-2">
+                    <div className="error-message text-base py-2 text-yellow">
                         {errors.map((error, idx) => (
                             <p key={idx}>{error}</p>
                         ))}
