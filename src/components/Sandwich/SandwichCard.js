@@ -22,8 +22,6 @@ const SandwichCard = ({
         </div>
     );
 
-    console.log(ingredients);
-
     return (
         <div
             className={`sandwich-card ${true && "voted"} ${

@@ -230,6 +230,9 @@ button:focus {
 .-ml-2 {
     margin-left: -0.5rem;
 }
+.ml-6 {
+    margin-left: 1.5rem;
+}
 .-mt-1\/2 {
     margin-top: -0.5rem;
 }
@@ -913,6 +916,9 @@ button:focus {
     }
     .xl\:mr-10 {
         margin-right: 2.5rem;
+    }
+    .xl\:ml-10 {
+        margin-left: 2.5rem;
     }
     .xl\:mb-10 {
         margin-bottom: 2.5rem;

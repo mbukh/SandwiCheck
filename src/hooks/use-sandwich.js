@@ -1,8 +1,8 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 
-import { debug } from "../constants/";
+import { debug } from "../constants";
 
-import { ingredientTypes } from "../constants/";
+import { ingredientTypes } from "../constants";
 
 import {
     readSandwichById,

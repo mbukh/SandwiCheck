@@ -96,17 +96,17 @@ const Header = () => {
                                 <>
                                     <NavLink
                                         to="/menu"
-                                        className="mr-6 xl:mx-10 font-bold"
+                                        className="mr-6 font-bold"
                                     >
                                         My menu
                                     </NavLink>
                                     {user.info?.type === "parent" && (
-                                        <NavLink to="/family" className="mr-6 xl:mx-10">
+                                        <NavLink to="/family" className="ml-6 xl:mx-10">
                                             My Family
                                         </NavLink>
                                     )}
 
-                                    <NavLink onClick={logOutHandler} to="/logout">
+                                    <NavLink onClick={logOutHandler} to="/logout" className="xl:ml-4">
                                         Log out
                                     </NavLink>
                                 </>

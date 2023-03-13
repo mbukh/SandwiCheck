@@ -1,4 +1,4 @@
-import { debug, cacheTimeoutInMinutes } from "../constants/";
+import { debug, cacheTimeoutInMinutes } from "../constants";
 
 import { auth, db } from "../constants/firebase.config";
 

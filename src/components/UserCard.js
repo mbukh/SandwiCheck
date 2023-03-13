@@ -3,8 +3,6 @@ import { Link } from "react-router-dom";
 const userCard = ({ isModal = false, index, user }) => {
     const bgIndex = (index % 4) + 1;
 
-    console.log(user);
-
     return (
         <div
             className={`sandwich-card ${true && "voted"} ${

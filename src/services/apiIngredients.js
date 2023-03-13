@@ -1,10 +1,10 @@
-import { debug } from "../constants/";
+import { debug } from "../constants";
 
 import { db } from "../constants/firebase.config";
 
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 
-import { ingredientTypes, cacheTimeoutInMinutes } from "../constants/";
+import { ingredientTypes, cacheTimeoutInMinutes } from "../constants";
 
 import { timeDifference } from "../utils";
 

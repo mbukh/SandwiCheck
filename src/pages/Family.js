@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 
 import { useAuthGlobalContext } from "../context/";
 
@@ -8,6 +8,7 @@ const Family = () => {
     const { user, isUserReady } = useAuthGlobalContext();
 
     if (!isUserReady) return <Loading />;
+    if (isUserReady && !user.uid) return <Navigate to="/login" replace={true} />;
 
     return (
         <div className="sandwich-gallery pt-4 pb-12 px-5 md:pt-6 md:pb-16 md:px-12 lg:pb-20 xl:px-20">
@@ -40,7 +41,7 @@ const Family = () => {
                             </Link>
                             or
                             <Link
-                                className="button bg-magenta inline-block p-2 pr-4 my-2 ml-4 md:my-4 relative text-xs md:text-sm md:text-base fit-content no-wrap"
+                                className="button bg-magenta text-white inline-block p-2 pr-4 my-2 ml-4 md:my-4 relative text-xs md:text-sm md:text-base fit-content no-wrap"
                                 to={`https://wa.me/?text=Hey%20kids%2C%20join%20me%20at%20SandwiCheck%20and%20be%20a%20part%20of%20my%20sandwich%20squad%21+${window.location.protocol}%2F%2F${window.location.hostname}%2Fsignup%2Fparent%2F${user.uid}`}
                                 target="_blank"
                             >

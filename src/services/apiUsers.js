@@ -1,4 +1,4 @@
-import { debug } from "../constants/";
+import { debug } from "../constants";
 
 import { db } from "../constants/firebase.config";
 

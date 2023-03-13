@@ -59,30 +59,28 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
         navigate,
     ]);
 
-    const galleryTypeTitle = galleryType && capitalizeFirst(galleryType) + " sandwiches";
-    const userGalleryTitle = !childId && !galleryType && "My sandwich menu";
-    const childGalleryTitle = child?.name && (
-        <div className="py-4">
-            {child?.name}"'s sandwich menu"{" "}
-            <Link
-                to="/family"
-                className="button bg-magenta inline-block p-2 mr-4 md:my-4 text-xs md:text-sm md:text-base fit-content"
-            >
-                Back
-            </Link>
-        </div>
-    );
-    const galleryTitle =
-        (galleryTypeTitle ? galleryTypeTitle : "") +
-        (userGalleryTitle ? userGalleryTitle : "") +
-        (childGalleryTitle ? childGalleryTitle : "");
+    const childGalleryTitle = child?.name ? child.name + "'s sandwich menu" : "";
+    const galleryTypeTitle = galleryType
+        ? capitalizeFirst(galleryType) + " sandwiches"
+        : "";
+    const userGalleryTitle = !childId && !galleryType ? "My sandwich menu" : "";
 
     if (!areIngredientsReady || !isUserReady || !gallerySandwiches) return <Loading />;
 
     return (
         <>
             <div className="sandwich-gallery pt-4 pb-12 px-5 md:pt-6 md:pb-16 md:px-12 lg:pb-20 xl:px-20">
-                <h1 className="text-center text-l uppercase">{galleryTitle}</h1>
+                <h1 className="text-center text-l uppercase">
+                    {childId && (
+                        <Link
+                            to="/family"
+                            className="button bg-magenta inline-block p-2 mr-4 md:my-4 text-xs md:text-sm md:text-base fit-content"
+                        >
+                            Back
+                        </Link>
+                    )}
+                    {childGalleryTitle || galleryTypeTitle || userGalleryTitle}
+                </h1>
                 <div className="size-full flex flex-wrap -mx-2 sm:-mx-3">
                     {gallerySandwiches.length > 0 ? (
                         gallerySandwiches.map((sandwich, index) => (
@@ -96,13 +94,36 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
                             />
                         ))
                     ) : (
-                        <div>
-                            This menu is empty. <br />
-                            {!childId && (
+                        <div className="flex flex-col justify-center mx-auto">
+                            <div className="text-center my-4 py-4">
+                                This menu is empty.
+                            </div>
+                            {!childId && !galleryType && (
                                 <Link
                                     className="button bg-magenta inline-block p-2 my-2 md:my-4 text-xs md:text-sm md:text-base fit-content"
                                     to="/create"
                                 >
+                                    <svg
+                                        class="inline-block"
+                                        style={{ marginTop: "-3px" }}
+                                        version="1.1"
+                                        width="15"
+                                        height="15"
+                                        viewBox="0 0 10 10"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="mx-2"
+                                    >
+                                        <circle
+                                            cx="7"
+                                            cy="7"
+                                            r="7"
+                                            fill="#e6127d"
+                                        ></circle>
+                                        <path
+                                            d="m6.5333 10.733v-3.2667h-3.2667v-0.93333h3.2667v-3.2667h0.93333v3.2667h3.2667v0.93333h-3.2667v3.2667z"
+                                            fill="#fff"
+                                        ></path>
+                                    </svg>
                                     Create a sandwich
                                 </Link>
                             )}
