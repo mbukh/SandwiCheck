@@ -1,14 +1,14 @@
-import { useState } from "react";
-
 import { Modal } from "./";
 
 import { Signup } from "./";
 
-const SignupModal = ({ closeLink = "" }) => {
-    const [isModalLoading, setIsModalLoading] = useState(false);
-
+const SignupModal = ({ setIsOpenLoginModal, closeLink = "" }) => {
     return (
-        <Modal isModalLoading={isModalLoading} closeLink={closeLink}>
+        <Modal
+            setIsOpenLoginModal={setIsOpenLoginModal}
+            isModalLoading={false}
+            closeLink={closeLink}
+        >
             <Signup />
         </Modal>
     );

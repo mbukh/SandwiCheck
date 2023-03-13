@@ -1,17 +1,20 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
-import { IngredientsSwiper, Loading, SandwichImage } from "../";
+import { useNavigate } from "react-router-dom";
+
+import { IngredientsSwiper, Loading, SandwichImage, SignupModal } from "../";
 
 import { useSandwichGlobalContext, useAuthGlobalContext } from "../../context/";
 
 import { useSandwich } from "../../hooks/";
 
 const SandwichEditor = () => {
+    const [isOpenLoginModal, setIsOpenLoginModal] = useState(false);
     const swiperContainerRef = useRef(
         document.querySelector("div:has(>.swiper-initialized)")
     );
     const { ingredients, areIngredientsReady } = useSandwichGlobalContext();
-    const { isUserReady } = useAuthGlobalContext();
+    const { user, isUserReady } = useAuthGlobalContext();
     const {
         ingredientTypes,
         currentIngredientType,
@@ -22,18 +25,30 @@ const SandwichEditor = () => {
         sandwichName,
         setSandwichName,
         saveSandwich,
+        isSavingSandwich,
     } = useSandwich();
+    const navigate = useNavigate();
 
     const isSandwichReady =
         sandwich?.bread && Object.values(sandwich).filter((val) => val).length > 1;
 
-    const submitSandwichHandler = (e) => {
+    const submitSandwichHandler = async (e) => {
         e.preventDefault();
-        saveSandwich();
+        const newSandwichId = await saveSandwich();
+        setTimeout(() => navigate("/sandwich/" + newSandwichId), 500);
+    };
+
+    const guestUserSubmitHandler = async (e) => {
+        e.preventDefault();
+        setIsOpenLoginModal(true);
     };
 
     const updateSandwichIngredientsHandler = (newSandwichData) =>
         updateSandwich(newSandwichData);
+
+    const changeSandwichNameHandler = (e) => {
+        setSandwichName(e.target.value);
+    };
 
     const saveSwiperSize = () => {
         swiperContainerRef.current.style.height =
@@ -107,25 +122,53 @@ const SandwichEditor = () => {
                         </button>
                     </div>
 
-                    <div className="save-sandwich-section flex justify-center text-center">
-                        <form onSubmit={submitSandwichHandler}>
-                            <input
-                                type="text"
-                                name="sandwichName"
-                                placeholder="Sandwich name"
-                                maxLength={25}
-                                onChange={(e) => setSandwichName(e.target.value)}
-                                value={sandwichName}
-                            />
-                            <input
-                                type="submit"
-                                placeholder="save sandwich"
-                                className="my-4"
-                                disabled={!isSandwichReady || sandwichName === ""}
-                                value="Save sandwich"
-                            />
-                        </form>
-                    </div>
+                    {isSavingSandwich ? (
+                        <Loading />
+                    ) : (
+                        <div className="save-sandwich-section flex justify-center text-center">
+                            <form onSubmit={submitSandwichHandler}>
+                                <input
+                                    type="text"
+                                    name="sandwichName"
+                                    placeholder={
+                                        user.info?.name
+                                            ? user.info?.name.split(" ")[0] +
+                                              "'s Sandwich"
+                                            : "Sandwich name"
+                                    }
+                                    maxLength={25}
+                                    onChange={changeSandwichNameHandler}
+                                    value={sandwichName}
+                                />
+                                {user.uid ? (
+                                    <input
+                                        type="submit"
+                                        placeholder="save sandwich"
+                                        className="my-4"
+                                        disabled={!isSandwichReady}
+                                        value="Save sandwich"
+                                    />
+                                ) : (
+                                    <>
+                                        <button
+                                            placeholder="save sandwich"
+                                            className="my-4"
+                                            disabled={!isSandwichReady}
+                                            onClick={guestUserSubmitHandler}
+                                        >
+                                            Save sandwich
+                                        </button>
+                                        {isOpenLoginModal && (
+                                            <SignupModal
+                                                setIsOpenLoginModal={setIsOpenLoginModal}
+                                                closeLink="stay"
+                                            />
+                                        )}
+                                    </>
+                                )}
+                            </form>
+                        </div>
+                    )}
                 </>
             ) : (
                 <Loading />

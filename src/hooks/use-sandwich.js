@@ -1,4 +1,6 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
+
+import { auth } from "../constants/firebase.config";
 
 import { debug } from "../constants/";
 
@@ -10,13 +12,29 @@ import {
     readLatestSandwiches,
     readSandwichesOfCurrentUser,
     readSandwichesOfUserById,
+    readSandwichFromLocalStorage,
+    updateSandwichToLocalStorage,
+    deleteSandwichFromLocalStorage,
 } from "../services/apiSandwiches";
 
 const useSandwich = () => {
     const [currentIngredientType, setCurrentIngredientType] = useState("bread");
+    const [isSavingSandwich, setIsSavingSandwich] = useState(false);
     const [sandwich, setSandwich] = useState({});
     const [sandwichName, setSandwichName] = useState("");
     const [gallerySandwiches, setGallerySandwiches] = useState(null);
+    const timeout = useRef(null);
+
+    useEffect(() => {
+        const cachedSandwich = readSandwichFromLocalStorage();
+        debug && console.log("Sandwich retrieved from cache:", cachedSandwich);
+        setSandwich(cachedSandwich || {});
+        setSandwichName(cachedSandwich?.name || "");
+    }, [isSavingSandwich]);
+
+    useEffect(() => {
+        updateSandwichToLocalStorage({ ...sandwich, name: sandwichName });
+    }, [sandwich, sandwichName]);
 
     const fetchUserSandwiches = useCallback(async (uid = null) => {
         const sandwichesData = uid
@@ -38,30 +56,45 @@ const useSandwich = () => {
         setSandwich(sandwichData);
     }, []);
 
-    const updateSandwich = useCallback(async (newSandwichData) => {
-        localStorage.setItem(
-            "sandwich",
-            JSON.stringify({ ...newSandwichData, name: sandwichName })
-        );
-        setSandwich((prev) => ({
-            ...prev,
-            ...newSandwichData,
-        }));
-    }, [sandwichName]);
+    const updateSandwich = useCallback(
+        async (newSandwichData) => {
+            timeout.current && clearTimeout(timeout.current);
+            timeout.current = setTimeout(() => {
+                updateSandwichToLocalStorage({
+                    ...sandwich,
+                    ...newSandwichData,
+                    name: sandwichName,
+                });
+            }, 200);
+            setSandwich((prev) => ({
+                ...prev,
+                ...newSandwichData,
+            }));
+        },
+        [sandwich, sandwichName]
+    );
 
     const clearSandwich = useCallback(() => {
         setSandwich({});
+        setSandwichName("");
         setCurrentIngredientType("");
-        localStorage.removeItem("sandwich");
+        deleteSandwichFromLocalStorage();
         setTimeout(() => {
             setCurrentIngredientType("bread");
         }, 400);
     }, []);
 
     const saveSandwich = useCallback(async () => {
+        setIsSavingSandwich(true);
         debug && console.log("Adding a sandwich to current user.");
-        await addSandwichToCurrentUser({ ...sandwich, name: sandwichName });
+        const newSandwichId = await addSandwichToCurrentUser({
+            ...sandwich,
+            name: sandwichName,
+        });
+        if (!newSandwichId) return null;
         clearSandwich();
+        setIsSavingSandwich(false);
+        return newSandwichId;
     }, [clearSandwich, sandwich, sandwichName]);
 
     return {
@@ -75,6 +108,8 @@ const useSandwich = () => {
         sandwichName,
         setSandwichName,
         saveSandwich,
+        isSavingSandwich,
+        setIsSavingSandwich,
         gallerySandwiches,
         setGallerySandwiches,
         fetchUserSandwiches,

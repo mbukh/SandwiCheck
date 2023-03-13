@@ -8,7 +8,7 @@ import { initialize } from "./constants/debug";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-import { Landing, UserHome, Layout, Error404, Cart } from "./pages";
+import { Family, Layout, Error404, Cart } from "./pages";
 
 import {
     SandwichEditor,
@@ -23,6 +23,10 @@ initialize && (async () => await initDB())();
 // ****** *********** ***** //
 
 const router = createBrowserRouter([
+    {
+        path: "/sandwich/:sandwichId",
+        element: <SandwichModal closeLink="/latest" />,
+    },
     {
         path: "/login",
         element: <LoginModal />,
@@ -44,16 +48,12 @@ const router = createBrowserRouter([
         ],
     },
     {
-        path: "/sandwich/:sandwichId",
-        element: <SandwichModal closeLink="/latest" />,
-    },
-    {
         path: "/",
         element: <Layout />,
         children: [
             {
                 path: "/",
-                element: <Landing />,
+                element: <SandwichEditor />,
             },
             {
                 path: "/latest",
@@ -67,18 +67,25 @@ const router = createBrowserRouter([
                     </SandwichGallery>
                 ),
             },
-
             {
-                path: "/home",
-                element: <UserHome />,
-            },
-            {
-                path: "/createSandwich",
+                path: "/create",
                 element: <SandwichEditor />,
             },
             {
-                path: "/child/:childId",
+                path: "/menu",
                 element: <SandwichGallery />,
+            },
+            {
+                path: "/family",
+                element: <Family />,
+            },
+            {
+                path: "/family/:childId",
+                element: <SandwichGallery />,
+            },
+            {
+                path: "/family/:childId/sandwich/:sandwichId",
+                element: <SandwichModal />,
             },
             {
                 path: "/cart",

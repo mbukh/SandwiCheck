@@ -21,6 +21,8 @@ import LoginModal from "./LoginModal";
 import Signup from "./Signup";
 import SignupModal from "./SignupModal";
 
+import UserCard from "./UserCard";
+
 export {
     Loading,
     Header,
@@ -37,4 +39,5 @@ export {
     LoginModal,
     Signup,
     SignupModal,
+    UserCard,
 };

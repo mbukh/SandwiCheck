@@ -2,21 +2,24 @@ import { useEffect, useState } from "react";
 
 import { useParams } from "react-router-dom";
 
+import { useSandwichGlobalContext } from "../../context";
+
 import { useSandwich } from "../../hooks/";
 
 import { SandwichCard, Modal } from "../";
 
 const SandwichModal = ({ closeLink = "" }) => {
     const [isModalLoading, setIsModalLoading] = useState(true);
+    const { ingredients, areIngredientsReady } = useSandwichGlobalContext();
     const { sandwichId } = useParams();
-    const { sandwich, ingredientTypes, ingredients, fetchSandwich } = useSandwich();
+    const { sandwich, ingredientTypes, fetchSandwich } = useSandwich();
 
     useEffect(() => {
         (async () => {
             await fetchSandwich(sandwichId);
-            setIsModalLoading(false);
+            areIngredientsReady && setIsModalLoading(false);
         })();
-    }, [fetchSandwich, sandwichId]);
+    }, [areIngredientsReady, fetchSandwich, sandwichId]);
 
     return (
         <Modal isModalLoading={isModalLoading} closeLink={closeLink}>

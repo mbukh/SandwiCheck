@@ -4,14 +4,22 @@ import { useNavigate } from "react-router-dom";
 
 import { Loading, Portal } from "..";
 
-const Modal = ({ children, isModalLoading = true, closeLink = "" }) => {
+const Modal = ({
+    children,
+    setIsOpenLoginModal,
+    isModalLoading = true,
+    closeLink = "",
+}) => {
     const [isModalShow, setIsModalShow] = useState(true);
     const navigate = useNavigate();
 
     const closeModalHandler = (e) => {
         e.stopPropagation();
-        closeLink ? navigate(closeLink) : navigate(-1);
+        if (closeLink !== "stay") {
+            closeLink ? navigate(closeLink) : navigate(-1);
+        }
         setIsModalShow(false);
+        setIsOpenLoginModal && setIsOpenLoginModal(false);
     };
 
     return (

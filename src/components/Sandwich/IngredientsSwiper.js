@@ -71,12 +71,14 @@ const IngredientsSwiper = ({
     const initSwiperHandler = (swiper) => {
         // first swiper is rendered
         swiperRef.current = swiper;
-        if (currentIngredientType === "bread" && !sandwich?.bread)
-            setTimeout(() => {
-                swiper.slideTo(1);
-                updateSandwichIngredients({ bread: ingredientsOfType[0].id });
-            }, 400);
-        else swiper.slideTo(currentSwipeIndex);
+        setTimeout(() => {
+            if (currentIngredientType === "bread" && !sandwich?.bread)
+                setTimeout(() => {
+                    swiper.slideTo(1);
+                    updateSandwichIngredients({ bread: ingredientsOfType[0].id });
+                }, 400);
+            swiper.slideTo(currentSwipeIndex);
+        }, 100);
     };
 
     const slideChangeHandler = (swiper) => {

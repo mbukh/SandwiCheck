@@ -10,10 +10,11 @@ import { timeDifference } from "../utils";
 
 const readAllIngredientsFromCache = () => {
     const cachedIngredients = JSON.parse(localStorage.getItem("ingredients"));
+    if (!cachedIngredients) return null;
     const cacheExpired =
         timeDifference(cachedIngredients.cachedAt, Date.now()).minutes >
         cacheTimeoutInMinutes;
-    if (!cachedIngredients || cacheExpired) return null;
+    if (cacheExpired) return null;
     debug && console.log("Cache timeout is set to", cacheTimeoutInMinutes, "minutes.");
     return cachedIngredients;
 };

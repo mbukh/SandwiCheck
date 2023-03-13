@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { useAuthGlobalContext, useSandwichGlobalContext } from "../../context/";
 
@@ -20,8 +20,18 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
         fetchUserSandwiches,
         fetchLatestSandwiches,
     } = useSandwich();
+    const navigate = useNavigate();
 
     useEffect(() => {
+        if (
+            childId &&
+            isUserReady &&
+            !user.info?.children?.some((child) => child.id === childId)
+        ) {
+            navigate("/login");
+            return;
+        }
+
         if (!areIngredientsReady || !isUserReady) return;
 
         if (childId) {
@@ -33,20 +43,20 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
             })();
         } else if (galleryType === "latest") {
             (async () => await fetchLatestSandwiches(30))();
-        } else if (user.id) {
+        } else if (user.uid) {
             (async () => await fetchUserSandwiches())();
         }
-        return () => setChild(null);
     }, [
         childId,
         galleryType,
         child?.id,
-        user.id,
+        user.uid,
         user.info?.children,
         fetchLatestSandwiches,
         fetchUserSandwiches,
         areIngredientsReady,
         isUserReady,
+        navigate,
     ]);
 
     if (!areIngredientsReady || !isUserReady || !gallerySandwiches) return <Loading />;
@@ -54,12 +64,11 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
     return (
         <>
             <div className="sandwich-gallery pt-4 pb-12 px-5 md:pt-6 md:pb-16 md:px-12 lg:pb-20 xl:px-20">
-                <div className="sandwich-gallery-title w-full sticky z-5 top-0 py-4 px-5 md:py-5 md:px-12 xl:px-20">
+                <div className="sandwich-gallery-title w-full py-4 px-5 md:py-5 md:px-12 xl:px-20">
                     <h1>
-                        {child?.name && child.name + "'s "}
-                        {galleryType && capitalizeFirst(galleryType) + " "}
-                        {!(child?.Name || galleryType) && user.id && "My "}
-                        sandwich Gallery
+                        {child?.name && child?.name + "'s sandwich menu"}
+                        {galleryType && capitalizeFirst(galleryType) + " sandwiches"}
+                        {!childId && !galleryType && "My sandwich menu"}
                     </h1>
                 </div>
                 <div className="size-full flex flex-wrap -mx-2 sm:-mx-3">
@@ -71,15 +80,21 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
                                 sandwich={sandwich}
                                 ingredientTypes={ingredientTypes}
                                 ingredients={ingredients}
+                                closeBasePath={childId ? "/family/" + childId : ""}
                             />
                         ))
-                    ) : !child ? (
-                        <div>
-                            You currently have no saved sandwiches. <br />
-                            <Link to="/createSandwich">Create you own sandwich.</Link>
-                        </div>
                     ) : (
-                        <div>The gallery is empty.</div>
+                        <div>
+                            This menu is empty. <br />
+                            {!childId && (
+                                <Link
+                                    className="button bg-magenta inline-block p-2 my-2 md:my-4 text-xs md:text-sm md:text-base fit-content"
+                                    to="/create"
+                                >
+                                    Create a sandwich
+                                </Link>
+                            )}
+                        </div>
                     )}
                 </div>
             </div>

@@ -1,4 +1,4 @@
-import { debug } from "../constants/";
+import { debug, cacheTimeoutInMinutes } from "../constants/";
 
 import { auth, db } from "../constants/firebase.config";
 
@@ -14,9 +14,10 @@ import {
     limit,
     where,
     updateDoc,
+    getDoc,
 } from "firebase/firestore";
 
-import { trimObjectEmptyProperties } from "../utils/";
+import { trimObjectEmptyProperties, timeDifference } from "../utils/";
 
 // const isDuplicateSandwich = async (sandwich) => {
 //     try {
@@ -111,12 +112,17 @@ const readSandwichesOfCurrentUser = async () => {
 };
 
 const addSandwichToCurrentUser = async (sandwich) => {
-    const currentUserId = auth.currentUser.uid;
+    const currentUserId = auth.currentUser?.uid;
+    if (!currentUserId) {
+        debug && console.log("No user logged in.");
+        return null;
+    }
     const sandwichData = trimObjectEmptyProperties(sandwich);
     try {
         const docRef = doc(db, "users", currentUserId);
         const colRef = collection(docRef, "sandwiches");
-        const authorFirstName = await getDocs(docRef).data().name.split(" ")[0];
+        const authorSnap = await getDoc(docRef);
+        const authorFirstName = authorSnap.data().name.split(" ")[0];
         const newDocRef = await addDoc(colRef, {
             ...sandwichData,
             createdAt: serverTimestamp(),
@@ -131,10 +137,41 @@ const addSandwichToCurrentUser = async (sandwich) => {
     }
 };
 
+const readSandwichFromLocalStorage = () => {
+    debug && console.log("Reading sandwich from cache.");
+    const cachedSandwich = JSON.parse(localStorage.getItem("sandwich"));
+    if (!cachedSandwich) return null;
+    const cacheExpired =
+        timeDifference(cachedSandwich.updatedAt, Date.now()).minutes >
+        cacheTimeoutInMinutes;
+    if (cacheExpired) return null;
+    debug && console.log("Cache timeout is set to", cacheTimeoutInMinutes, "minutes.");
+    return cachedSandwich;
+};
+
+const updateSandwichToLocalStorage = (sandwichData) => {
+    debug && console.log("Writing sandwich to cache.");
+    return localStorage.setItem(
+        "sandwich",
+        JSON.stringify({
+            ...sandwichData,
+            updatedAt: Date.now(),
+        })
+    );
+};
+
+const deleteSandwichFromLocalStorage = () => {
+    debug && console.log("Removing sandwich from cache.");
+    localStorage.removeItem("sandwich");
+};
+
 export {
     readSandwichById,
     readLatestSandwiches,
     readSandwichesOfUserById,
     readSandwichesOfCurrentUser,
     addSandwichToCurrentUser,
+    readSandwichFromLocalStorage,
+    updateSandwichToLocalStorage,
+    deleteSandwichFromLocalStorage,
 };
