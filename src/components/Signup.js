@@ -27,18 +27,29 @@ const Signup = () => {
             </h4>
 
             {parentId && (
-                <div className="text-magenta text-base py-2 md:text-xl xl:text-3xl">
-                    You are about to be added as a{" "}
-                    <strong className="text-yellow">
-                        dependent in another user's account,
-                    </strong>{" "}
-                    which means that your information will become visible to those who
-                    have shared this link with you.
-                </div>
+                <>
+                    <div className="text-magenta text-base py-2 md:text-xl xl:text-3xl">
+                        You are about to be added as a{" "}
+                        <strong className="text-yellow">
+                            dependent in another user's account,
+                        </strong>{" "}
+                        which means that your information will become visible to those who
+                        have shared this link with you.
+                    </div>
+                    <div className="flex justify-center my-4">
+                        <Link
+                            to={`https://wa.me/?text=Hey%20kids%2C%20join%20me%20at%20SandwiCheck%20and%20be%20a%20part%20of%20my%20sandwich%20squad%21+${window.location.protocol}%2F%2F${window.location.hostname}%2Fsignup%2Fparent%2F${parentId}`}
+                            target="_blank"
+                        >
+                            Send this link to your children{" "}
+                            <i className="icon icon-whatsapp"></i>
+                        </Link>
+                    </div>
+                </>
             )}
 
             <form
-                className="needs-validation text-left text-sm mt-1 md:mt-20 xl:mt-24 md:px-5"
+                className="needs-validation text-left text-sm mt-15 md:mt-20 xl:mt-24 md:px-5"
                 onSubmit={handleCreateUser}
             >
                 {errors.length > 0 && (

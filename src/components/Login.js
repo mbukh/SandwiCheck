@@ -16,14 +16,16 @@ const Login = () => {
             </h4>
 
             {parentId && (
-                <div className="text-magenta text-base py-2 md:text-xl xl:text-3xl">
-                    You are about to be added as a{" "}
-                    <strong className="text-yellow">
-                        dependent in another user's account,
-                    </strong>{" "}
-                    which means that your information will become visible to those who
-                    have shared this link with you.
-                </div>
+                <>
+                    <div className="text-magenta text-base py-2 md:text-xl xl:text-3xl">
+                        You are about to be added as a{" "}
+                        <strong className="text-yellow">
+                            dependent in another user's account,
+                        </strong>{" "}
+                        which means that your information will become visible to those who
+                        have shared this link with you.
+                    </div>
+                </>
             )}
 
             <form
@@ -96,7 +98,10 @@ const Login = () => {
 
             <div className="w-full mb-4 md:mb-6 flex justify-center items-center">
                 Don't have an account?
-                <Link className="mx-2 underline" to={"/signup" + (parentId ? "/parent/" + parentId : "")}>
+                <Link
+                    className="mx-2 underline"
+                    to={"/signup" + (parentId ? "/parent/" + parentId : "")}
+                >
                     Sign up
                 </Link>
             </div>
