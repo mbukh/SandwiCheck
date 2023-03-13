@@ -1,6 +1,6 @@
 {
-    "short_name": "React App",
-    "name": "Create React App Sample",
+    "short_name": "SandwiCheck",
+    "name": "SandwiCheck sandwiches you create",
     "icons": [
         {
             "src": "\/assets\/images\/favicons\/android-icon-36x36.png",
