@@ -19,6 +19,22 @@ const Family = () => {
                             className="button bg-magenta inline-block p-2 my-2 md:my-4 text-xs md:text-sm md:text-base fit-content"
                             to={`/signup/parent/${user.uid}`}
                         >
+                            <svg
+                                class="inline-block"
+                                style={{ marginTop: "-3px" }}
+                                version="1.1"
+                                width="15"
+                                height="15"
+                                viewBox="0 0 10 10"
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="mx-2"
+                            >
+                                <circle cx="7" cy="7" r="7" fill="#e6127d"></circle>
+                                <path
+                                    d="m6.5333 10.733v-3.2667h-3.2667v-0.93333h3.2667v-3.2667h0.93333v3.2667h3.2667v0.93333h-3.2667v3.2667z"
+                                    fill="#fff"
+                                ></path>
+                            </svg>
                             Add a child
                         </Link>
                     )}

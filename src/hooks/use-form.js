@@ -34,7 +34,7 @@ const useForm = () => {
                 ...(parentId && { parents: [parentId] }),
             });
             parentId && updateUserById(parentId, { children: signUpResult.user.uid });
-            // navigate("/home");
+            navigate("/create");
         } catch (err) {
             setErrors(["Signup failed, try login instead."]);
         }
@@ -59,7 +59,7 @@ const useForm = () => {
                         children: loginResult.user.uid,
                     }),
                 ]);
-            navigate("/home");
+            navigate("/menu");
         } catch (err) {
             setErrors(["Login failed, try signup instead."]);
         }
