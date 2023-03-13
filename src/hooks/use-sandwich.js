@@ -1,7 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 
-import { auth } from "../constants/firebase.config";
-
 import { debug } from "../constants/";
 
 import { ingredientTypes } from "../constants/";
