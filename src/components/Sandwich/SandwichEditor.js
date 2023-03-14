@@ -11,7 +11,7 @@ import { useSandwich } from "../../hooks/";
 const SandwichEditor = () => {
     const [isOpenLoginModal, setIsOpenLoginModal] = useState(false);
     const swiperContainerRef = useRef(
-        document.querySelector("div:has(>.swiper-initialized)")
+        document.querySelector("div:has(>.swiper-initialized)") || null
     );
     const { ingredients, areIngredientsReady } = useSandwichGlobalContext();
     const { user, isUserReady } = useAuthGlobalContext();
@@ -51,6 +51,7 @@ const SandwichEditor = () => {
     };
 
     const saveSwiperSize = () => {
+        if (!swiperContainerRef.current) return;
         swiperContainerRef.current.style.height =
             swiperContainerRef.current.offsetHeight + "px";
     };
