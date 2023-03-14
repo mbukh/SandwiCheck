@@ -81,11 +81,19 @@ const Header = () => {
                     <div className="nav-center fl fl-cc">
                         <Link to="/latest" className="no-hover block size-full">
                             <div className="logo m-i-a">
-                                <div className="fl fl-cc text-xs sm:text-base text-sh-5">
-                                    Let us
-                                    <br /> inspire
-                                    <br /> you
-                                </div>
+                                {!user.info?.name ? (
+                                    <div className="fl fl-cc text-xs sm:text-base text-sh-5">
+                                        Let us
+                                        <br /> inspire
+                                        <br /> you
+                                    </div>
+                                ) : (
+                                    <div className="fl fl-cc text-xs sm:text-base text-sh-5">
+                                        Let us
+                                        <br /> inspire you,
+                                        <br/>{user.info.name.split(" ")[0]}
+                                    </div>
+                                )}
                             </div>
                         </Link>
                     </div>
@@ -94,10 +102,7 @@ const Header = () => {
                         <div className="desktop-only lg:inline-block xl:text-lg uppercase text-shadow-10">
                             {user.uid ? (
                                 <>
-                                    <NavLink
-                                        to="/menu"
-                                        className="mr-6 font-bold"
-                                    >
+                                    <NavLink to="/menu" className="mr-6 font-bold">
                                         My menu
                                     </NavLink>
                                     {user.info?.type === "parent" && (
@@ -106,7 +111,11 @@ const Header = () => {
                                         </NavLink>
                                     )}
 
-                                    <NavLink onClick={logOutHandler} to="/logout" className="xl:ml-4">
+                                    <NavLink
+                                        onClick={logOutHandler}
+                                        to="/logout"
+                                        className="ml-6 xl:ml-4"
+                                    >
                                         Log out
                                     </NavLink>
                                 </>
