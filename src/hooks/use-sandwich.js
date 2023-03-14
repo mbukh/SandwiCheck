@@ -10,10 +10,16 @@ import {
     readLatestSandwiches,
     readSandwichesOfCurrentUser,
     readSandwichesOfUserById,
+    updateSandwichVotesCount,
     readSandwichFromLocalStorage,
     updateSandwichToLocalStorage,
     deleteSandwichFromLocalStorage,
 } from "../services/apiSandwiches";
+
+import {
+    didUserVotedForSandwichByIdUsingLocalStorage,
+    updateCurrentUserFavoriteSandwiches,
+} from "../services/apiUsers";
 
 const useSandwich = () => {
     const [currentIngredientType, setCurrentIngredientType] = useState("bread");
@@ -46,6 +52,25 @@ const useSandwich = () => {
         const sandwichesData = await readLatestSandwiches(count);
         debug && console.log("Latest sandwiches:", sandwichesData);
         setGallerySandwiches(sandwichesData);
+    }, []);
+
+    const addLikeToSandwich = async (sandwichId) => {
+        await updateSandwichVotesCount(sandwichId);
+    };
+
+    const hasUserVotedUserForSandwich = useCallback((sandwich, user) => {
+        if (!user.uid) return didUserVotedForSandwichByIdUsingLocalStorage(sandwich.id);
+
+        console.log(sandwich.id);
+        console.log("? === ?");
+        console.log(user.info?.favoriteSandwiches?.toString());
+        
+        return user.info?.favoriteSandwiches?.includes(sandwich.id);
+    }, []);
+
+    const voteForSandwich = useCallback(async (sandwichId) => {
+        await updateCurrentUserFavoriteSandwiches(sandwichId);
+        await updateSandwichVotesCount(sandwichId);
     }, []);
 
     const fetchSandwich = useCallback(async (sandwichId) => {
@@ -113,6 +138,9 @@ const useSandwich = () => {
         fetchUserSandwiches,
         fetchLatestSandwiches,
         fetchSandwich,
+        addLikeToSandwich,
+        hasUserVotedUserForSandwich,
+        voteForSandwich,
     };
 };
 

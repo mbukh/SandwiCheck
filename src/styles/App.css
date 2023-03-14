@@ -396,6 +396,20 @@ button.active {
 }
 /* ***** UTILS ***** */
 
+/* *** ANIMATIONS *** */
+.fadeout {
+    -webkit-animation: fadeout 0.5s ease-out forwards;
+    animation: fadeout 0.5s ease-out forwards;
+}
+.bounce {
+    -webkit-animation: bounce 0.5s;
+    animation: bounce 0.5s;
+    animation-delay: 0.1s;
+    -webkit-animation-iteration-count: 1;
+    animation-iteration-count: 1;
+}
+/* *** ANIMATIONS *** */
+
 /* ***** ***** ***** */
 
 header a {

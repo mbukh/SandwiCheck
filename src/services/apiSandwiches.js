@@ -15,6 +15,9 @@ import {
     where,
     updateDoc,
     getDoc,
+    increment,
+    arrayUnion,
+    setDoc,
 } from "firebase/firestore";
 
 import { trimObjectEmptyProperties, timeDifference } from "../utils/";
@@ -107,7 +110,11 @@ const readSandwichesOfUserById = async (userId) => {
 };
 
 const readSandwichesOfCurrentUser = async () => {
-    const currentUserId = auth.currentUser.uid;
+    const currentUserId = auth.currentUser?.uid;
+    if (!currentUserId) {
+        debug && console.log("No user logged in.");
+        return null;
+    }
     return await readSandwichesOfUserById(currentUserId);
 };
 
@@ -134,6 +141,28 @@ const addSandwichToCurrentUser = async (sandwich) => {
         return newDocRef.id;
     } catch (e) {
         debug && console.error("Error adding sandwich:", e);
+    }
+};
+
+const updateSandwichVotesCount = async (sandwichId) => {
+    try {
+        const colGroupRef = collectionGroup(db, "sandwiches");
+        const q = query(colGroupRef, where("id", "==", sandwichId), limit(1));
+        const docsSnap = await getDocs(q);
+        if (docsSnap.docs.length > 0) {
+            await updateDoc(
+                docsSnap.docs[0].ref,
+                {
+                    votesCount: increment(1),
+                },
+                { merge: true }
+            );
+            debug && console.log("Sandwich got a like");
+        } else {
+            debug && console.log("Sandwich id is invalid for a like.");
+        }
+    } catch (error) {
+        debug && console.error("Error adding a like:", error);
     }
 };
 
@@ -171,6 +200,7 @@ export {
     readSandwichesOfUserById,
     readSandwichesOfCurrentUser,
     addSandwichToCurrentUser,
+    updateSandwichVotesCount,
     readSandwichFromLocalStorage,
     updateSandwichToLocalStorage,
     deleteSandwichFromLocalStorage,

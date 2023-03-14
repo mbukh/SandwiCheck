@@ -63,7 +63,7 @@ const Header = () => {
                 <nav className="nav-container flex justify-between items-center px-5 md:px-12 xl:px-20">
                     <div className="nav-start w-2/5 flex justify-start">
                         <HamburgerMenu
-                            className="mobile-only relative lg:hidden w-10 h-8 -ml-2 focus:outline-none on-top"
+                            className="mobile-only relative lg:hidden w-10 h-8 focus:outline-none on-top"
                             mobileMenuToggler={mobileMenuToggler}
                             isMobileMenuOpen={isMobileMenuOpen}
                         />

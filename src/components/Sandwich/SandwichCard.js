@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { Link } from "react-router-dom";
 
 import { SandwichImage } from "../";
@@ -9,7 +11,11 @@ const SandwichCard = ({
     ingredientTypes,
     ingredients,
     closeBasePath = "",
+    hasUserVoted,
+    voteForSandwich,
 }) => {
+    const [isUserVoting, setIsUserVoting] = useState(false);
+
     const bgIndex = (index % 4) + 1;
 
     const TheSandwichImage = () => (
@@ -75,24 +81,34 @@ const SandwichCard = ({
                 <div className="card-footer relative flex justify-between items-center">
                     <div className="card-footer-start w-1/3 flex justify-start items-center">
                         <i
-                            className="icon icon-votes w-auto h-7 sm:h-8"
+                            className={`icon icon-votes w-auto h-7 sm:h-8 ${
+                                isUserVoting ? "bounce" : ""
+                            }`}
                             title="Favorites counter"
                         ></i>
                         <span className="votesCount text-xs sm:text-sm text-shadow-5">
-                            {sandwich?.votesCount}234
+                            {(sandwich?.votesCount || 0) + isUserVoting}
                         </span>
                     </div>
                     <div className="card-footer-mid w-1/3 text-center">
-                        <button className="btn-wrapper">
-                            <i
-                                className={`icon icon-heart ${
-                                    !isModal
-                                        ? "thumb__vote-btn w-auto h-10 mx-auto leading-none"
-                                        : "thumb__vote-btn w-auto h-10 md:h-16 mx-auto leading-none"
-                                }`}
-                                title="Add to favorites"
-                            ></i>
-                        </button>
+                        {!hasUserVoted && (
+                            <button
+                                className={`btn-wrapper ${isUserVoting ? "fadeout" : ""}`}
+                                onClick={async () => {
+                                    setIsUserVoting(true);
+                                    voteForSandwich(sandwich.id);
+                                }}
+                            >
+                                <i
+                                    className={`icon icon-heart  ${
+                                        !isModal
+                                            ? "thumb__vote-btn w-auto h-10 mx-auto leading-none"
+                                            : "thumb__vote-btn w-auto h-10 md:h-16 mx-auto leading-none"
+                                    }`}
+                                    title="Add to favorites"
+                                ></i>
+                            </button>
+                        )}
                     </div>
                     <div className="card-footer-end w-1/3 flex justify-end">
                         <Link

@@ -496,6 +496,18 @@ button:focus {
         transform: rotate(1turn);
     }
 }
+@-webkit-keyframes fadeout {
+    to {
+        scale: 0;
+        opacity: 0;
+    }
+}
+@keyframes fadeout {
+    to {
+        scale: 0;
+        opacity: 0;
+    }
+}
 @-webkit-keyframes ping {
     75%,
     to {

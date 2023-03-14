@@ -73,7 +73,11 @@ const router = createBrowserRouter([
             },
             {
                 path: "/menu",
-                element: <SandwichGallery />,
+                element: <SandwichGallery galleryType="personal" />,
+            },
+            {
+                path: "/menu/sandwich/:sandwichId",
+                element: <SandwichModal />,
             },
             {
                 path: "/family",

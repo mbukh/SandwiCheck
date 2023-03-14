@@ -65,7 +65,7 @@ const SandwichEditor = () => {
     return (
         <div className="create-sandwich flex flex-col min-h-full py-6 md:pt-9 lg:pt-12 mb-4">
             <h1 className="text-center text-l uppercase">Create a sandwich</h1>
-            <di className="creation-section flex-col md:flex-row">
+            <div className="creation-section flex-col md:flex-row">
                 <div className="create-sandwich-menu my-2">
                     <ul className="flex flex-wrap md:flex-row justify-center">
                         {ingredientTypes.map((ingredientType) => (
@@ -104,7 +104,7 @@ const SandwichEditor = () => {
                         />
                     )}
                 </div>
-            </di>
+            </div>
 
             <div className="result-section relative aspect-ratio-3/2 mx-4 w-full md:w-2/3 lg:w-1/3 mx-auto">
                 <SandwichImage

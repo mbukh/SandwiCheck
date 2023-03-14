@@ -1,6 +1,6 @@
 import { debug } from "../constants";
 
-import { db } from "../constants/firebase.config";
+import { auth, db } from "../constants/firebase.config";
 
 import {
     arrayUnion,
@@ -63,4 +63,50 @@ const updateUserById = async (userId, userData) => {
     }
 };
 
-export { readUserById, createUser, updateUserById };
+const updateCurrentUserFavoriteSandwichesInLocalStorage = (sandwichId) => {
+    const allVotes = JSON.parse(localStorage.getItem("user_votes")) || [];
+    allVotes.push(sandwichId);
+    localStorage.setItem("user_votes", JSON.stringify([...new Set(allVotes)]));
+};
+
+const updateCurrentUserFavoriteSandwiches = async (sandwichId) => {
+    const currentUserId = auth.currentUser?.uid;
+    if (!currentUserId) {
+        updateCurrentUserFavoriteSandwichesInLocalStorage(sandwichId);
+        debug && console.log("No user logged in. Added locally.");
+        return null;
+    }
+    debug && console.log("Adding a favorite sandwiches for:", auth.currentUser.uid);
+    const docRef = doc(db, "users", currentUserId);
+    try {
+        await updateDoc(docRef, {
+            favoriteSandwiches: arrayUnion(sandwichId),
+        });
+        debug &&
+            console.log(
+                "Favorite sandwiches updated for:",
+                currentUserId,
+                "sandwich added:",
+                sandwichId
+            );
+    } catch (e) {
+        debug && console.error("Error adding favorite sandwiches: ", e);
+    }
+};
+
+const didUserVotedForSandwichByIdUsingLocalStorage = (sandwichId) => {
+    const allVotes = JSON.parse(localStorage.getItem("user_votes"));
+    if (allVotes && allVotes.includes(sandwichId)) {
+        debug && console.log("User already voted locally");
+        return true;
+    }
+    return false;
+};
+
+export {
+    readUserById,
+    createUser,
+    updateUserById,
+    didUserVotedForSandwichByIdUsingLocalStorage,
+    updateCurrentUserFavoriteSandwiches,
+};
