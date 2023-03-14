@@ -25,6 +25,7 @@
 -   rules : only parents can see children data (database rule && api check)
 -   [x] sandwich creation to localStorage to save it after registration / login
 -   [ ] suggesting new ingredients / adding notes to the sandwiches (up to 50 characters)
+-   [ ] filter ingredients by the parents (kosher, allergies, vegetarian etc.)
 -   lunch box ads
 -   catering ads
 
