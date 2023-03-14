@@ -16,8 +16,6 @@ import {
     updateDoc,
     getDoc,
     increment,
-    arrayUnion,
-    setDoc,
 } from "firebase/firestore";
 
 import { trimObjectEmptyProperties, timeDifference } from "../utils/";
