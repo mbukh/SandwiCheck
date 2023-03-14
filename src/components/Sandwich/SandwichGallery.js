@@ -100,6 +100,8 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
                                         ? "/family/" + childId
                                         : galleryType === "personal"
                                         ? "/menu"
+                                        : galleryType === "best"
+                                        ? "/"
                                         : ""
                                 }
                                 hasUserVoted={hasUserVotedUserForSandwich(sandwich, user)}
