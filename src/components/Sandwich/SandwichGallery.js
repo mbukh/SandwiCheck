@@ -19,6 +19,7 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
         gallerySandwiches,
         fetchUserSandwiches,
         fetchLatestSandwiches,
+        fetchBestSandwiches,
         hasUserVotedUserForSandwich,
         voteForSandwich,
     } = useSandwich();
@@ -45,6 +46,8 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
             })();
         } else if (galleryType === "latest") {
             (async () => await fetchLatestSandwiches(30))();
+        } else if (galleryType === "best") {
+            (async () => await fetchBestSandwiches(30))();
         } else if (user.uid) {
             (async () => await fetchUserSandwiches())();
         }
@@ -55,6 +58,7 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
         user.uid,
         user.info?.children,
         fetchLatestSandwiches,
+        fetchBestSandwiches,
         fetchUserSandwiches,
         areIngredientsReady,
         isUserReady,
@@ -114,14 +118,13 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
                                         to="/create"
                                     >
                                         <svg
-                                            class="inline-block"
+                                            className="mx-2"
                                             style={{ marginTop: "-3px" }}
                                             version="1.1"
                                             width="15"
                                             height="15"
                                             viewBox="0 0 10 10"
                                             xmlns="http://www.w3.org/2000/svg"
-                                            className="mx-2"
                                         >
                                             <circle
                                                 cx="7"

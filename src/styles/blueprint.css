@@ -508,6 +508,18 @@ button:focus {
         opacity: 0;
     }
 }
+@-webkit-keyframes fade-in {
+    to {
+        scale: 1;
+        opacity: 1;
+    }
+}
+@keyframes fade-in {
+    to {
+        scale: 1;
+        opacity: 1;
+    }
+}
 @-webkit-keyframes ping {
     75%,
     to {

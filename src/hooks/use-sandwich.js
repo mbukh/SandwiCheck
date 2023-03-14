@@ -8,6 +8,7 @@ import {
     readSandwichById,
     addSandwichToCurrentUser,
     readLatestSandwiches,
+    readBestSandwiches,
     readSandwichesOfCurrentUser,
     readSandwichesOfUserById,
     updateSandwichVotesCount,
@@ -54,17 +55,18 @@ const useSandwich = () => {
         setGallerySandwiches(sandwichesData);
     }, []);
 
+    const fetchBestSandwiches = useCallback(async (count = 30) => {
+        const sandwichesData = await readBestSandwiches(count);
+        debug && console.log("Best sandwiches:", sandwichesData);
+        setGallerySandwiches(sandwichesData);
+    }, []);
+
     const addLikeToSandwich = async (sandwichId) => {
         await updateSandwichVotesCount(sandwichId);
     };
 
     const hasUserVotedUserForSandwich = useCallback((sandwich, user) => {
         if (!user.uid) return didUserVotedForSandwichByIdUsingLocalStorage(sandwich.id);
-
-        console.log(sandwich.id);
-        console.log("? === ?");
-        console.log(user.info?.favoriteSandwiches?.toString());
-        
         return user.info?.favoriteSandwiches?.includes(sandwich.id);
     }, []);
 
@@ -137,6 +139,7 @@ const useSandwich = () => {
         setGallerySandwiches,
         fetchUserSandwiches,
         fetchLatestSandwiches,
+        fetchBestSandwiches,
         fetchSandwich,
         addLikeToSandwich,
         hasUserVotedUserForSandwich,

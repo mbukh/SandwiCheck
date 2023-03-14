@@ -8,7 +8,7 @@ import { initialize } from "./constants/debug";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-import { Family, Layout, Error404, Cart } from "./pages";
+import { Family, Layout, Error404, Cart, Landing } from "./pages";
 
 import {
     SandwichEditor,
@@ -53,7 +53,7 @@ const router = createBrowserRouter([
         children: [
             {
                 path: "/",
-                element: <SandwichEditor />,
+                element: <Landing />,
             },
             {
                 path: "/latest",

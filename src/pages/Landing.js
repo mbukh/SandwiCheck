@@ -1,7 +1,7 @@
-import { SandwichEditor } from "../components/";
+import { SandwichGallery } from "../components/";
 
 const Home = () => {
-    return <SandwichEditor />;
+    return <SandwichGallery galleryType="best" />;
 };
 
 export default Home;

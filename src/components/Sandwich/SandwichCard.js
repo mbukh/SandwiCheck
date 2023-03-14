@@ -44,28 +44,27 @@ const SandwichCard = ({
                 }`}
             >
                 <div className="card-header text-center">
-                    {sandwich?.name && (
-                        <h3
-                            className={`card-title ${
-                                !isModal
-                                    ? "thumb__title text-sm sm:text-base xl:text-lg font-bold uppercase text-shadow-5"
-                                    : "thumb__title text-base sm:text-lg lg:text-xl font-bold uppercase text-shadow-5"
-                            }`}
-                        >
-                            {sandwich.name}
-                        </h3>
-                    )}
-                    {sandwich?.author && (
-                        <h5
-                            className={`card-name ${
-                                !isModal
-                                    ? "thumb__name text-xs sm:text-sm text-shadow-5"
-                                    : "thumb__name text-sm sm:text-base lg:text-lg text-shadow-5"
-                            }`}
-                        >
-                            by <span className="capitalize">{sandwich.author}</span>
-                        </h5>
-                    )}
+                    <h3
+                        className={`card-title ${
+                            !isModal
+                                ? "thumb__title text-sm sm:text-base xl:text-lg font-bold uppercase text-shadow-5"
+                                : "thumb__title text-base sm:text-lg lg:text-xl font-bold uppercase text-shadow-5"
+                        }`}
+                    >
+                        {sandwich.name || "Sandwich eater"}
+                    </h3>
+                    <h5
+                        className={`card-name ${
+                            !isModal
+                                ? "thumb__name text-xs sm:text-sm text-shadow-5"
+                                : "thumb__name text-sm sm:text-base lg:text-lg text-shadow-5"
+                        }`}
+                    >
+                        by{" "}
+                        <span className="capitalize">
+                            {sandwich.author || "an anonymous user"}
+                        </span>
+                    </h5>
                 </div>
                 <div className="card-middle">
                     <div className="card-orb w-full mt-auto mx-auto">
@@ -91,24 +90,53 @@ const SandwichCard = ({
                         </span>
                     </div>
                     <div className="card-footer-mid w-1/3 text-center">
-                        {!hasUserVoted && (
-                            <button
-                                className={`btn-wrapper ${isUserVoting ? "fadeout" : ""}`}
-                                onClick={async () => {
-                                    setIsUserVoting(true);
-                                    voteForSandwich(sandwich.id);
-                                }}
-                            >
-                                <i
-                                    className={`icon icon-heart  ${
-                                        !isModal
-                                            ? "thumb__vote-btn w-auto h-10 mx-auto leading-none"
-                                            : "thumb__vote-btn w-auto h-10 md:h-16 mx-auto leading-none"
+                        <div
+                            className={`thumb__vote-btn relative w-auto h-10 mx-auto leading-none
+                                ${isModal ? "md:h-16" : ""}
+                            `}
+                        >
+                            {!hasUserVoted && (
+                                <button
+                                    className={`btn-wrapper ${
+                                        isUserVoting ? "fadeout" : ""
                                     }`}
-                                    title="Add to favorites"
-                                ></i>
-                            </button>
-                        )}
+                                    onClick={async () => {
+                                        setIsUserVoting(true);
+                                        voteForSandwich(sandwich.id);
+                                    }}
+                                >
+                                    <i
+                                        className="icon icon-heart abs inset-0 h-full w-full"
+                                        title="Add to favorites"
+                                    ></i>
+                                </button>
+                            )}
+                            {(hasUserVoted || isUserVoting) && isModal && (
+                                <Link
+                                    to="/create"
+                                    className="fade-in abs flex fl-cc inset-0 h-full w-full"
+                                >
+                                    <svg
+                                        version="1.1"
+                                        width="35"
+                                        height="35"
+                                        viewBox="0 0 15 15"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <circle
+                                            cx="7"
+                                            cy="7"
+                                            r="7"
+                                            style={{ fill: "var(--magenta)" }}
+                                        ></circle>
+                                        <path
+                                            d="m6.5333 10.733v-3.2667h-3.2667v-0.93333h3.2667v-3.2667h0.93333v3.2667h3.2667v0.93333h-3.2667v3.2667z"
+                                            fill="#FFF"
+                                        ></path>
+                                    </svg>
+                                </Link>
+                            )}
+                        </div>
                     </div>
                     <div className="card-footer-end w-1/3 flex justify-end">
                         <Link

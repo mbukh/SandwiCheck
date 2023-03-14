@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { useParams } from "react-router-dom";
 
-import { useSandwichGlobalContext } from "../../context";
+import { useAuthGlobalContext, useSandwichGlobalContext } from "../../context";
 
 import { useSandwich } from "../../hooks/";
 
@@ -10,9 +10,16 @@ import { SandwichCard, Modal } from "../";
 
 const SandwichModal = ({ closeLink = "" }) => {
     const [isModalLoading, setIsModalLoading] = useState(true);
+    const { user } = useAuthGlobalContext();
     const { ingredients, areIngredientsReady } = useSandwichGlobalContext();
     const { sandwichId } = useParams();
-    const { sandwich, ingredientTypes, fetchSandwich } = useSandwich();
+    const {
+        sandwich,
+        ingredientTypes,
+        fetchSandwich,
+        hasUserVotedUserForSandwich,
+        voteForSandwich,
+    } = useSandwich();
 
     useEffect(() => {
         (async () => {
@@ -31,6 +38,9 @@ const SandwichModal = ({ closeLink = "" }) => {
                     sandwich={sandwich}
                     ingredientTypes={ingredientTypes}
                     ingredients={ingredients}
+                    closeBasePath=""
+                    hasUserVoted={hasUserVotedUserForSandwich(sandwich, user)}
+                    voteForSandwich={voteForSandwich}
                 />
             </div>
         </Modal>

@@ -66,6 +66,27 @@ const readSandwichById = async (sandwichId) => {
     }
 };
 
+const readBestSandwiches = async (count = 30) => {
+    try {
+        const colGroupRef = collectionGroup(db, "sandwiches");
+        const q = query(colGroupRef, orderBy("votesCount", "desc"), limit(count));
+        const docsSnap = await getDocs(q);
+        if (docsSnap.docs.length > 0) {
+            const sandwichesData = docsSnap.docs.map((doc) => ({
+                ...doc.data(),
+                id: doc.id,
+            }));
+            debug && console.log("Best sandwiches retrieved.");
+            return sandwichesData;
+        } else {
+            debug && console.log("No best sandwiches found.");
+            return [];
+        }
+    } catch (error) {
+        debug && console.error("Error reading best sandwiches:", error);
+    }
+};
+
 const readLatestSandwiches = async (count = 30) => {
     try {
         const colGroupRef = collectionGroup(db, "sandwiches");
@@ -132,9 +153,9 @@ const addSandwichToCurrentUser = async (sandwich) => {
         const authorFirstName = authorSnap.data().name.split(" ")[0];
         const newDocRef = await addDoc(colRef, {
             ...sandwichData,
-            createdAt: serverTimestamp(),
-            author: authorFirstName,
             name: sandwich.name || authorFirstName + "'s Sandwich",
+            author: authorFirstName,
+            createdAt: serverTimestamp(),
         });
         updateDoc(newDocRef, { id: newDocRef.id });
         debug && console.log("Sandwich id added to user:", newDocRef.id);
@@ -197,6 +218,7 @@ const deleteSandwichFromLocalStorage = () => {
 export {
     readSandwichById,
     readLatestSandwiches,
+    readBestSandwiches,
     readSandwichesOfUserById,
     readSandwichesOfCurrentUser,
     addSandwichToCurrentUser,

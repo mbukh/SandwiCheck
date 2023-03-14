@@ -22,14 +22,13 @@ const Family = () => {
                                 to={`/signup/parent/${user.uid}`}
                             >
                                 <svg
-                                    class="inline-block"
+                                    className="mx-2"
                                     style={{ marginTop: "-3px" }}
                                     version="1.1"
                                     width="15"
                                     height="15"
                                     viewBox="0 0 10 10"
                                     xmlns="http://www.w3.org/2000/svg"
-                                    className="mx-2"
                                 >
                                     <circle cx="7" cy="7" r="7" fill="#e6127d"></circle>
                                     <path
