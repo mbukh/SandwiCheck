@@ -5,6 +5,7 @@
     --black: #000;
     --white: #fff;
     --magenta: #e6127d;
+    --light-gray: #e0e0e0;
 
     --button-color: var(--magenta);
 
@@ -494,7 +495,7 @@ header .mobile-menu.open {
 
 .navbar .logo {
     background: url("../assets/images/orb.png") no-repeat center / contain;
-    width: calc(var(--headerHeight) * 0.9);
+    width: calc(var(--headerHeight) * 0.95);
     aspect-ratio: 1/1;
     user-select: none;
 }
@@ -1066,8 +1067,8 @@ header .mobile-menu.open {
     aspect-ratio: 1/1;
 }
 .icon-close {
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     aspect-ratio: 1/1;
 }
 

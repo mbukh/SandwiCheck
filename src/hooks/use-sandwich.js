@@ -38,8 +38,13 @@ const useSandwich = () => {
     }, [isSavingSandwich]);
 
     useEffect(() => {
+        if (!isSavingSandwich) return;
         updateSandwichToLocalStorage({ ...sandwich, name: sandwichName });
-    }, [sandwich, sandwichName]);
+    }, [isSavingSandwich, sandwich, sandwichName]);
+
+    const updateLocalSandwich = (sandwich) => {
+        updateSandwichToLocalStorage(sandwich);
+    };
 
     const fetchUserSandwiches = useCallback(async (uid = null) => {
         const sandwichesData = uid
@@ -77,8 +82,8 @@ const useSandwich = () => {
 
     const fetchSandwich = useCallback(async (sandwichId) => {
         const sandwichData = await readSandwichById(sandwichId);
-        debug && console.log("Sandwich:", sandwichData);
         setSandwich(sandwichData);
+        debug && console.log("Sandwich:", sandwichData);
     }, []);
 
     const updateSandwich = useCallback(
@@ -144,6 +149,7 @@ const useSandwich = () => {
         addLikeToSandwich,
         hasUserVotedUserForSandwich,
         voteForSandwich,
+        updateLocalSandwich,
     };
 };
 

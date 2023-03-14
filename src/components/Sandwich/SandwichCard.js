@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { SandwichImage } from "../";
 
@@ -13,8 +13,10 @@ const SandwichCard = ({
     closeBasePath = "",
     hasUserVoted,
     voteForSandwich,
+    updateLocalSandwich,
 }) => {
     const [isUserVoting, setIsUserVoting] = useState(false);
+    const navigate = useNavigate();
 
     const bgIndex = (index % 4) + 1;
 
@@ -27,6 +29,16 @@ const SandwichCard = ({
             />
         </div>
     );
+
+    const copyThisSandwichHandler = (e) => {
+        updateLocalSandwich({ ...sandwich, name: "" });
+        navigate("/create");
+    };
+
+    const voteForSandwichHandler = async (e) => {
+        setIsUserVoting(true);
+        voteForSandwich(sandwich.id);
+    };
 
     return (
         <div
@@ -100,10 +112,7 @@ const SandwichCard = ({
                                     className={`btn-wrapper ${
                                         isUserVoting ? "fadeout" : ""
                                     }`}
-                                    onClick={async () => {
-                                        setIsUserVoting(true);
-                                        voteForSandwich(sandwich.id);
-                                    }}
+                                    onClick={voteForSandwichHandler}
                                 >
                                     <i
                                         className="icon icon-heart abs inset-0 h-full w-full"
@@ -111,26 +120,22 @@ const SandwichCard = ({
                                     ></i>
                                 </button>
                             )}
-                            {(hasUserVoted || isUserVoting) && isModal && (
+                            {(hasUserVoted || isUserVoting) && (
                                 <Link
                                     to="/create"
+                                    onClick={copyThisSandwichHandler}
                                     className="fade-in abs flex fl-cc inset-0 h-full w-full"
+                                    title="Copy this sandwich"
                                 >
                                     <svg
                                         version="1.1"
-                                        width="35"
-                                        height="35"
+                                        width={isModal ? "35" : "24"}
+                                        height={isModal ? "35" : "24"}
                                         viewBox="0 0 15 15"
                                         xmlns="http://www.w3.org/2000/svg"
                                     >
-                                        <circle
-                                            cx="7"
-                                            cy="7"
-                                            r="7"
-                                            style={{ fill: "var(--magenta)" }}
-                                        ></circle>
                                         <path
-                                            d="m6.5333 10.733v-3.2667h-3.2667v-0.93333h3.2667v-3.2667h0.93333v3.2667h3.2667v0.93333h-3.2667v3.2667z"
+                                            d="M 15 7.5 C 15 11.642 11.642 15 7.5 15 C 3.358 15 0 11.642 0 7.5 C 0 3.358 3.358 0 7.5 0 C 11.642 0 15 3.358 15 7.5 Z M 8.001 11.5 L 8.001 7.999 L 11.5 7.999 L 11.5 7 L 8.001 7 L 8.001 3.499 L 7 3.499 L 7 7 L 3.501 7 L 3.501 7.999 L 7 7.999 L 7 11.5 L 8.001 11.5 Z"
                                             fill="#FFF"
                                         ></path>
                                     </svg>

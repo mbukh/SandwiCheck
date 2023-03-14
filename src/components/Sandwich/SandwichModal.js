@@ -19,6 +19,7 @@ const SandwichModal = ({ closeLink = "" }) => {
         fetchSandwich,
         hasUserVotedUserForSandwich,
         voteForSandwich,
+        updateLocalSandwich,
     } = useSandwich();
 
     useEffect(() => {
@@ -41,6 +42,7 @@ const SandwichModal = ({ closeLink = "" }) => {
                     closeBasePath=""
                     hasUserVoted={hasUserVotedUserForSandwich(sandwich, user)}
                     voteForSandwich={voteForSandwich}
+                    updateLocalSandwich={updateLocalSandwich}
                 />
             </div>
         </Modal>

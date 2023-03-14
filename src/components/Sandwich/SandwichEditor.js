@@ -10,9 +10,7 @@ import { useSandwich } from "../../hooks/";
 
 const SandwichEditor = () => {
     const [isOpenLoginModal, setIsOpenLoginModal] = useState(false);
-    const swiperContainerRef = useRef(
-        document.querySelector("div:has(>.swiper-initialized)") || null
-    );
+    const swiperContainerRef = useRef(null);
     const { ingredients, areIngredientsReady } = useSandwichGlobalContext();
     const { user, isUserReady } = useAuthGlobalContext();
     const {

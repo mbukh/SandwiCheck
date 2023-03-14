@@ -44,6 +44,7 @@ import { trimObjectEmptyProperties, timeDifference } from "../utils/";
 // };
 
 const readSandwichById = async (sandwichId) => {
+    debug && console.log("Reading sandwich:", sandwichId);
     try {
         const colGroupRef = collectionGroup(db, "sandwiches");
         const q = query(colGroupRef, where("id", "==", sandwichId), limit(1));
@@ -53,11 +54,11 @@ const readSandwichById = async (sandwichId) => {
                 ...docsSnap.docs[0].data(),
                 id: docsSnap.docs[0].id,
             };
-            debug && console.log("Sandwiches retrieved");
+            debug && console.log("Sandwich retrieved.");
             return sandwichData;
         } else {
             debug && console.log("Sandwich not found.");
-            return [];
+            return {};
         }
     } catch (error) {
         debug && console.error("Error reading sandwich:", error);
@@ -194,7 +195,8 @@ const readSandwichFromLocalStorage = () => {
         cacheTimeoutInMinutes;
     if (cacheExpired) return null;
     debug && console.log("Cache timeout is set to", cacheTimeoutInMinutes, "minutes.");
-    return cachedSandwich;
+    const { updatedAt, ...sandwich } = cachedSandwich;
+    return sandwich;
 };
 
 const updateSandwichToLocalStorage = (sandwichData) => {

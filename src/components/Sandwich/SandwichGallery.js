@@ -22,6 +22,7 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
         fetchBestSandwiches,
         hasUserVotedUserForSandwich,
         voteForSandwich,
+        updateLocalSandwich,
     } = useSandwich();
     const navigate = useNavigate();
 
@@ -75,7 +76,7 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
     return (
         <>
             <div className="sandwich-gallery pt-4 pb-12 px-5 md:pt-6 md:pb-16 md:px-12 lg:pb-20 xl:px-20">
-                <h1 className="text-center text-l uppercase">
+                <h1 className="text-center text-l uppercase text-shadow-10">
                     {childId && (
                         <Link
                             to="/family"
@@ -106,6 +107,7 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
                                 }
                                 hasUserVoted={hasUserVotedUserForSandwich(sandwich, user)}
                                 voteForSandwich={voteForSandwich}
+                                updateLocalSandwich={updateLocalSandwich}
                             />
                         ))
                     ) : (
@@ -114,9 +116,9 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
                                 This menu is empty.
                             </div>
                             {
-                                (galleryType = "personal" && (
+                                (galleryType = "personal" && !childId && (
                                     <Link
-                                        className="button bg-magenta inline-block p-2 my-2 md:my-4 text-xs md:text-sm md:text-base fit-content"
+                                        className="button bg-magenta text-white inline-block p-2 my-2 md:my-4 text-xs md:text-sm md:text-base fit-content"
                                         to="/create"
                                     >
                                         <svg
