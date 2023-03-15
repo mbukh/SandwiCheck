@@ -94,7 +94,7 @@ const readLatestSandwiches = async (count = 30) => {
         if (docsSnap.docs.length > 0) {
             const sandwichesData = docsSnap.docs.map((doc) => ({
                 ...doc.data(),
-                id: doc.id,
+                // id: doc.id,
             }));
             debug && console.log("Latest sandwiches retrieved.");
             return sandwichesData;
@@ -156,7 +156,7 @@ const addSandwichToCurrentUser = async (sandwich) => {
             author: authorFirstName,
             createdAt: serverTimestamp(),
         });
-        updateDoc(newDocRef, { id: newDocRef.id });
+        await updateDoc(newDocRef, { id: newDocRef.id });
         debug && console.log("Sandwich id added to user:", newDocRef.id);
         return newDocRef.id;
     } catch (e) {
