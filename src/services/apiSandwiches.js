@@ -5,7 +5,6 @@ import { auth, db } from "../constants/firebase.config";
 import {
     query,
     getDocs,
-    addDoc,
     collection,
     serverTimestamp,
     doc,
@@ -16,6 +15,7 @@ import {
     updateDoc,
     getDoc,
     increment,
+    setDoc,
 } from "firebase/firestore";
 
 import { trimObjectEmptyProperties, timeDifference } from "../utils/";
@@ -150,13 +150,24 @@ const addSandwichToCurrentUser = async (sandwich) => {
         const colRef = collection(docRef, "sandwiches");
         const authorSnap = await getDoc(docRef);
         const authorFirstName = authorSnap.data().name.split(" ")[0];
-        const newDocRef = await addDoc(colRef, {
+        const newDocRef = doc(colRef);
+        const result = await setDoc(newDocRef, {
             ...sandwichData,
+            id: newDocRef.id,
             name: sandwich.name || authorFirstName + "'s Sandwich",
             author: authorFirstName,
             createdAt: serverTimestamp(),
         });
-        await updateDoc(newDocRef, { id: newDocRef.id });
+
+        console.log("newDocRef.id");
+        console.log(newDocRef.id);
+        console.log(newDocRef.id);
+        console.log(newDocRef.id);
+        console.log("result");
+        console.log(result);
+        console.log(result);
+        console.log(result);
+
         debug && console.log("Sandwich id added to user:", newDocRef.id);
         return newDocRef.id;
     } catch (e) {

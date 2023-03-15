@@ -20,8 +20,6 @@ const SandwichEditor = () => {
         sandwich,
         updateSandwich,
         clearSandwich,
-        sandwichName,
-        setSandwichName,
         saveSandwich,
         isSavingSandwich,
     } = useSandwich();
@@ -33,7 +31,11 @@ const SandwichEditor = () => {
     const submitSandwichHandler = async (e) => {
         e.preventDefault();
         const newSandwichId = await saveSandwich();
-        setTimeout(() => navigate("/sandwich/" + newSandwichId), 500);
+        if (!newSandwichId) {
+            // ERROR CODE;
+            return;
+        }
+        setTimeout(() => navigate(`/sandwich/${newSandwichId}`), 500);
     };
 
     const guestUserSubmitHandler = async (e) => {
@@ -45,7 +47,7 @@ const SandwichEditor = () => {
         updateSandwich(newSandwichData);
 
     const changeSandwichNameHandler = (e) => {
-        setSandwichName(e.target.value);
+        updateSandwich({ name: e.target.value });
     };
 
     const saveSwiperSize = () => {
@@ -137,7 +139,7 @@ const SandwichEditor = () => {
                                     }
                                     maxLength={25}
                                     onChange={changeSandwichNameHandler}
-                                    value={sandwichName}
+                                    value={sandwich?.name}
                                 />
                                 {user.uid ? (
                                     <input

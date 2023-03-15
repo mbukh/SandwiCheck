@@ -6,6 +6,8 @@ import { useAuthGlobalContext } from "../context/";
 
 import { createUser, updateUserById } from "../services/apiUsers";
 
+import { readSandwichFromLocalStorage } from "../services/apiSandwiches";
+
 import useValidate from "./use-validate";
 
 const useForm = () => {
@@ -34,7 +36,9 @@ const useForm = () => {
                 ...(parentId && { parents: [parentId] }),
             });
             parentId && updateUserById(parentId, { children: signUpResult.user.uid });
-            navigate("/create");
+            const unExpiredSavedSandwich = readSandwichFromLocalStorage();
+            if (unExpiredSavedSandwich) navigate("/create");
+            else navigate("/menu");
         } catch (err) {
             setErrors(["Signup failed, try login instead."]);
         }
@@ -59,7 +63,9 @@ const useForm = () => {
                         children: loginResult.user.uid,
                     }),
                 ]);
-            navigate("/menu");
+            const unExpiredSavedSandwich = readSandwichFromLocalStorage();
+            if (unExpiredSavedSandwich) navigate("/create");
+            else navigate("/menu");
         } catch (err) {
             setErrors(["Login failed, try signup instead."]);
         }

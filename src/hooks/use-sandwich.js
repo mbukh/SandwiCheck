@@ -26,21 +26,19 @@ const useSandwich = () => {
     const [currentIngredientType, setCurrentIngredientType] = useState("bread");
     const [isSavingSandwich, setIsSavingSandwich] = useState(false);
     const [sandwich, setSandwich] = useState({});
-    const [sandwichName, setSandwichName] = useState("");
     const [gallerySandwiches, setGallerySandwiches] = useState(null);
     const timeout = useRef(null);
 
     useEffect(() => {
-        const cachedSandwich = readSandwichFromLocalStorage();
-        debug && console.log("Sandwich retrieved from cache:", cachedSandwich);
-        setSandwich(cachedSandwich || {});
-        setSandwichName(cachedSandwich?.name || "");
+        const cachedUnexpiredSandwich = readSandwichFromLocalStorage();
+        debug && console.log("Sandwich retrieved from cache:", cachedUnexpiredSandwich);
+        setSandwich(cachedUnexpiredSandwich || {});
     }, [isSavingSandwich]);
 
     useEffect(() => {
         if (!isSavingSandwich) return;
-        updateSandwichToLocalStorage({ ...sandwich, name: sandwichName });
-    }, [isSavingSandwich, sandwich, sandwichName]);
+        updateSandwichToLocalStorage(sandwich);
+    }, [isSavingSandwich, sandwich]);
 
     const updateLocalSandwich = (sandwich) => {
         updateSandwichToLocalStorage(sandwich);
@@ -93,7 +91,6 @@ const useSandwich = () => {
                 updateSandwichToLocalStorage({
                     ...sandwich,
                     ...newSandwichData,
-                    name: sandwichName,
                 });
             }, 200);
             setSandwich((prev) => ({
@@ -101,12 +98,11 @@ const useSandwich = () => {
                 ...newSandwichData,
             }));
         },
-        [sandwich, sandwichName]
+        [sandwich]
     );
 
     const clearSandwich = useCallback(() => {
         setSandwich({});
-        setSandwichName("");
         setCurrentIngredientType("");
         deleteSandwichFromLocalStorage();
         setTimeout(() => {
@@ -117,15 +113,12 @@ const useSandwich = () => {
     const saveSandwich = useCallback(async () => {
         setIsSavingSandwich(true);
         debug && console.log("Adding a sandwich to current user.");
-        const newSandwichId = await addSandwichToCurrentUser({
-            ...sandwich,
-            name: sandwichName,
-        });
+        const newSandwichId = await addSandwichToCurrentUser(sandwich);
         if (!newSandwichId) return null;
         clearSandwich();
         setIsSavingSandwich(false);
         return newSandwichId;
-    }, [clearSandwich, sandwich, sandwichName]);
+    }, [clearSandwich, sandwich]);
 
     return {
         ingredientTypes,
@@ -135,8 +128,6 @@ const useSandwich = () => {
         setSandwich,
         updateSandwich,
         clearSandwich,
-        sandwichName,
-        setSandwichName,
         saveSandwich,
         isSavingSandwich,
         setIsSavingSandwich,
