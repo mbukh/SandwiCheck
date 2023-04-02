@@ -4,7 +4,8 @@ import "./styles/App.css";
 import "./styles/blueprint.css";
 
 import initDB from "./services/initDB";
-import { initialize } from "./constants/debug";
+import getAllDatabaseAsJSON from "./services/Firestore/exportFirestoreToJSON";
+import { initialize, exportJSON } from "./constants/debug";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
@@ -20,6 +21,7 @@ import {
 
 // ***** Reset DB ***** //
 initialize && (async () => await initDB())();
+exportJSON && (async () => await getAllDatabaseAsJSON())();
 // ****** *********** ***** //
 
 const router = createBrowserRouter([
