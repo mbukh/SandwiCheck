@@ -57,7 +57,6 @@ const useSandwich = () => {
         debug && console.log("Latest sandwiches:", sandwichesData);
         setGallerySandwiches(sandwichesData);
     }, []);
-
     const fetchBestSandwiches = useCallback(async (count = 30) => {
         const sandwichesData = await readBestSandwiches(count);
         debug && console.log("Best sandwiches:", sandwichesData);

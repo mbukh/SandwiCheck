@@ -6,7 +6,7 @@ import { useAuthGlobalContext } from "../../context";
 
 import { LoginModal } from "../";
 
-import HamburgerMenu from "./HamburgerMenu";
+import { HamburgerMenu, MobileMenu } from "./";
 
 const Header = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -14,57 +14,30 @@ const Header = () => {
     const { logOut, user } = useAuthGlobalContext();
     const { sandwichId } = useParams();
 
-    const mobileMenuToggler = () => {
+    const toggleMobileMenuHandler = () => {
         setIsMobileMenuOpen((state) => !state);
     };
 
-    const logOutHandler = (e) => {
+    const authHandler = (e) => {
         e.preventDefault();
-        logOut();
-    };
-
-    const loginHandler = (e) => {
-        e.preventDefault();
-        setIsOpenLoginModal(true);
+        e.target.id === "logout" && logOut();
+        e.target.id === "login" && setIsOpenLoginModal(true);
     };
 
     return (
         <header className={sandwichId ? "hide" : ""}>
-            <div
-                className={`mobile-menu fullscreen on-top fl fl-cc fade ${
-                    isMobileMenuOpen ? "open" : "close"
-                }`}
-            >
-                <nav
-                    className="navbar fl fl-col fl-cc uppercase bold text-xl"
-                    onClick={mobileMenuToggler}
-                >
-                    <NavLink to="/create">Build a sandwich</NavLink>
-                    <NavLink to="/latest">Gallery</NavLink>
-                    {user.uid ? (
-                        <>
-                            <NavLink to="/menu">My menu</NavLink>
-                            {user.info?.type === "parent" && (
-                                <NavLink to="/family">My family</NavLink>
-                            )}
-                            <NavLink onClick={logOutHandler} to="/logout">
-                                Log out
-                            </NavLink>
-                        </>
-                    ) : (
-                        <NavLink onClick={loginHandler} to="/in">
-                            Log in
-                        </NavLink>
-                    )}
-                </nav>
-            </div>
+            <MobileMenu
+                isMobileMenuOpen={isMobileMenuOpen}
+                toggleMobileMenuHandler={toggleMobileMenuHandler}
+                authHandler={authHandler}
+                user={user}
+            />
 
             <div className="navbar">
                 <nav className="nav-container flex justify-between items-center px-5 md:px-12 xl:px-20">
                     <div className="nav-start w-2/5 flex justify-start">
                         <HamburgerMenu
-                            className="mobile-only relative lg:hidden w-10 h-8 focus:outline-none on-top"
-                            mobileMenuToggler={mobileMenuToggler}
+                            mobileMenuToggler={toggleMobileMenuHandler}
                             isMobileMenuOpen={isMobileMenuOpen}
                         />
 
@@ -91,7 +64,8 @@ const Header = () => {
                                     <div className="fl fl-cc text-xs sm:text-base text-sh-5">
                                         Let us
                                         <br /> inspire you,
-                                        <br/>{user.info.name.split(" ")[0]}
+                                        <br />
+                                        {user.info.name.split(" ")[0]}
                                     </div>
                                 )}
                             </div>
@@ -112,7 +86,8 @@ const Header = () => {
                                     )}
 
                                     <NavLink
-                                        onClick={logOutHandler}
+                                        id="logout"
+                                        onClick={authHandler}
                                         to="/logout"
                                         className="ml-6 xl:ml-4"
                                     >
@@ -121,7 +96,7 @@ const Header = () => {
                                 </>
                             ) : (
                                 <>
-                                    <NavLink onClick={loginHandler} to="/login">
+                                    <NavLink id="login" onClick={authHandler} to="/login">
                                         Log in
                                     </NavLink>
                                     {isOpenLoginModal && (
