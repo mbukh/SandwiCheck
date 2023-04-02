@@ -21,6 +21,12 @@
 
 #### Ideas:
 
+- user authentication back / front
+- user picture
+- filter words for sandwich names
+- halal, kosher - templates for filter
+- add additional components of the same type
+
 -   rules : only parents can see children data (database rule && api check)
 -   [x] sandwich creation to localStorage to save it after registration / login
 -   [ ] suggesting new ingredients / adding notes to the sandwiches (up to 50 characters)
