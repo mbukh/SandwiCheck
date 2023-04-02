@@ -4,9 +4,9 @@ import { Link, NavLink, useParams } from "react-router-dom";
 
 import { useAuthGlobalContext } from "../../context";
 
-import { LoginModal } from "../";
+import { LoginModal } from "..";
 
-import { HamburgerMenu, MobileMenu } from "./";
+import { HamburgerMenu, MobileMenu } from ".";
 
 const Header = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);

@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
-import { useAuthGlobalContext, useSandwichGlobalContext } from "../../context/";
+import { useAuthGlobalContext, useSandwichGlobalContext } from "../../context";
 
-import { Loading, SandwichCard } from "../../components";
+import { Loading, SandwichCard } from "..";
 
-import { useSandwich } from "../../hooks/";
+import { useSandwich } from "../../hooks";
 
 import { capitalizeFirst } from "../../utils";
 

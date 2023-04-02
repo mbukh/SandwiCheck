@@ -2,11 +2,11 @@ import { useEffect, useRef, useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 
-import { IngredientsSwiper, Loading, SandwichImage, SignupModal } from "../";
+import { IngredientsSwiper, Loading, SandwichImage, SignupModal } from "..";
 
-import { useSandwichGlobalContext, useAuthGlobalContext } from "../../context/";
+import { useSandwichGlobalContext, useAuthGlobalContext } from "../../context";
 
-import { useSandwich } from "../../hooks/";
+import { useSandwich } from "../../hooks";
 
 const SandwichEditor = () => {
     const [isOpenLoginModal, setIsOpenLoginModal] = useState(false);

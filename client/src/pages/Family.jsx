@@ -1,6 +1,6 @@
 import { Link, Navigate } from "react-router-dom";
 
-import { useAuthGlobalContext } from "../context/";
+import { useAuthGlobalContext } from "../context";
 
 import { Loading, UserCard } from "../components";
 

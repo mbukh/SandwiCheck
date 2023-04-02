@@ -17,7 +17,7 @@ import {
     SandwichGallery,
     LoginModal,
     SignupModal,
-} from "./components/";
+} from "./components";
 
 // ***** Reset DB ***** //
 initialize && (async () => await initDB())();

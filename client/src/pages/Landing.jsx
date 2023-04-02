@@ -1,4 +1,4 @@
-import { SandwichGallery } from "../components/";
+import { SandwichGallery } from "../components";
 
 const Home = () => {
     // return <SandwichGallery galleryType="best" />;

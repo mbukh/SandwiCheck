@@ -1,17 +1,17 @@
-import { Modal } from "./";
+import { Modal } from ".";
 
-import { Login } from "./";
+import { Signup } from ".";
 
-const LoginModal = ({ setIsOpenLoginModal, closeLink = "" }) => {
+const SignupModal = ({ setIsOpenLoginModal, closeLink = "" }) => {
     return (
         <Modal
             setIsOpenLoginModal={setIsOpenLoginModal}
             isModalLoading={false}
             closeLink={closeLink}
         >
-            <Login />
+            <Signup />
         </Modal>
     );
 };
 
-export default LoginModal;
+export default SignupModal;

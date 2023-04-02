@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { Link, useNavigate } from "react-router-dom";
 
-import { SandwichImage } from "../";
+import { SandwichImage } from "..";
 
 const SandwichCard = ({
     isModal = false,
