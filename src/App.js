@@ -21,6 +21,7 @@ import {
 
 // ***** Reset DB ***** //
 initialize && (async () => await initDB())();
+// ***** Export DB to console ***** //
 exportJSON && (async () => await getAllDatabaseAsJSON())();
 // ****** *********** ***** //
 
