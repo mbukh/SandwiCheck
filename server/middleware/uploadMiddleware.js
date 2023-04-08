@@ -8,7 +8,7 @@ import createError from "http-errors";
 const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
-    const filetypes = /jpeg|jpg|png|heic/;
+    const filetypes = /jpeg|jpg|png/;
     const mimetype = filetypes.test(file.mimetype);
 
     if (mimetype) {

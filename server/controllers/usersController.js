@@ -1,11 +1,7 @@
 import expressAsyncHandler from "express-async-handler";
 import createError from "http-errors";
 
-import { profilePicturesDir } from "../config/dir.js";
-
 import excludeFields from "../constants/excludeFields.js";
-
-import saveImageFromBuffer from "../utils/saveImageFromBuffer.js";
 
 import User from "../models/userSchema.js";
 
@@ -53,13 +49,6 @@ export const updateUser = expressAsyncHandler(async (req, res, next) => {
 
     if (!user) {
         return next(createError(404, "User not found"));
-    }
-
-    if (req.file && req.file.buffer) {
-        const fileName = `${user._id.toString()}.${req.file.extension}`;
-        await saveImageFromBuffer(req.file.buffer, profilePicturesDir, fileName);
-
-        await User.findByIdAndUpdate(user._id, { profilePicture: fileName });
     }
 
     res.json({ success: true, data: { message: "User updated successfully" } });
