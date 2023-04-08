@@ -5,7 +5,7 @@
         "updatedAt": 1678698396359,
         "name": "Nita's sandwich",
         "toppings": "2aAVNzgBGauvO1SVh7Dq",
-        "createdAt": { "seconds": 1678698499, "nanoseconds": 171000000 },
+        "createdAt": 1678698499,
         "protein": "TLVznvHm4MTGs86zQ46h",
         "condiments": "u04aKNBFOUX54sQ9uJM4",
         "bread": "a4tmdsH4WkWuMhlVW3GR",
@@ -22,7 +22,7 @@
         "votesCount": 5,
         "author": "Ori",
         "condiments": "fTVsYNmECdrMX1s2HvXq",
-        "createdAt": { "seconds": 1678698789, "nanoseconds": 473000000 },
+        "createdAt": 1678698789,
         "userId": "2Jo63FGQsFbLmboOWRzlxkUDXTn1"
     },
     "03Q3rlbm9a1bEcgyZ0cd": {
@@ -31,21 +31,21 @@
         "author": "Moshe",
         "votesCount": 5,
         "bread": "nMKUyL6aveUYTTvA1I69",
-        "createdAt": { "seconds": 1678669905, "nanoseconds": 787000000 },
+        "createdAt": 1678669905,
         "userId": "8aXzQ46Advaptpeq7sSdAJ1I62f2"
     },
     "GsLkwBVaRhGDohln6eao": {
         "id": "GsLkwBVaRhGDohln6eao",
         "condiments": "yR3GWKez1j8zWyTugVRj",
         "votesCount": 2,
-        "createdAt": { "seconds": 1678670003, "nanoseconds": 420000000 },
+        "createdAt": 1678670003,
         "name": "Some Hummus Party",
         "author": "Moshe",
         "bread": "0ie3EblcvbbHyxXF8gyi",
         "userId": "8aXzQ46Advaptpeq7sSdAJ1I62f2"
     },
     "n80yuIgSpfdHdPQs77Rr": {
-        "createdAt": { "seconds": 1678881973, "nanoseconds": 474000000 },
+        "createdAt": 1678881973,
         "name": "Voldemort's secret",
         "protein": "zbAm2U3bvlTe9iEt9yEA",
         "author": "Moshe",
@@ -60,7 +60,7 @@
         "author": "Parent",
         "votesCount": 1,
         "bread": "a4tmdsH4WkWuMhlVW3GR",
-        "createdAt": { "seconds": 1678666800, "nanoseconds": 655000000 },
+        "createdAt": 1678666800,
         "name": "NO#2",
         "toppings": "Gl05D0N1mR4V1HfBEdBs",
         "id": "9hstYA6Ei7jDt14R41wf",
@@ -71,7 +71,7 @@
         "author": "Parent",
         "cheese": "aRXviR8eyk0frnMBu5Wu",
         "id": "fVUAHn7q4BU0VSrhNM8h",
-        "createdAt": { "seconds": 1678666786, "nanoseconds": 370000000 },
+        "createdAt": 1678666786,
         "votesCount": 3,
         "toppings": "2aAVNzgBGauvO1SVh7Dq",
         "bread": "a4tmdsH4WkWuMhlVW3GR",
@@ -83,7 +83,7 @@
         "condiments": "LijjKCzubXd3fk127ijA",
         "id": "htoZB6gseU1MEWmjItY1",
         "author": "איסק",
-        "createdAt": { "seconds": 1680034598, "nanoseconds": 493000000 },
+        "createdAt": 1680034598,
         "toppings": "1NBot25k6fiS1I76jtX0",
         "name": "‏טעים",
         "bread": "CPRkoOLH8edA9Dw4UT71",
@@ -97,13 +97,13 @@
         "cheese": "HOKMqfdHlAmJw3Fj9j2J",
         "id": "xDL6OdFlMlcoXddWYVYU",
         "votesCount": 1,
-        "createdAt": { "seconds": 1680034433, "nanoseconds": 228000000 },
+        "createdAt": 1680034433,
         "protein": "1mx374LH76gnA2OypsUb",
         "bread": "huIkUzWBrqO5ZgTuR4JV",
         "userId": "9vRNbBFYUrdQ0yPBJK7Mqb3gWtD3"
     },
     "dA3JSOwtihZo48HxaqrQ": {
-        "createdAt": { "seconds": 1678813784, "nanoseconds": 927000000 },
+        "createdAt": 1678813784,
         "votesCount": 2,
         "bread": "huIkUzWBrqO5ZgTuR4JV",
         "protein": "otv1Lanx4ms6zHjFeQVh",
@@ -118,7 +118,7 @@
     "2GdOh6jwNHJfeKgsmWKo": {
         "name": "Simple american",
         "id": "2GdOh6jwNHJfeKgsmWKo",
-        "createdAt": { "seconds": 1678880916, "nanoseconds": 883000000 },
+        "createdAt": 1678880916,
         "author": "Child",
         "cheese": "aRXviR8eyk0frnMBu5Wu",
         "bread": "a4tmdsH4WkWuMhlVW3GR",
@@ -128,14 +128,14 @@
         "id": "3dDzZc9i94VmOXDP6jiK",
         "condiments": "DQT3rVXAN7P9nICSVvRc",
         "author": "Child",
-        "createdAt": { "seconds": 1678876198, "nanoseconds": 847000000 },
+        "createdAt": 1678876198,
         "name": "Why not jam",
         "bread": "rukoqOOcbaoiHsTHyLRr",
         "userId": "MMnxO1NqhfNNC2w1L7EVMe4itPN2"
     },
     "OtT8GLf0g9GsEmJYi3jS": {
         "bread": "rukoqOOcbaoiHsTHyLRr",
-        "createdAt": { "seconds": 1678879794, "nanoseconds": 518000000 },
+        "createdAt": 1678879794,
         "id": "OtT8GLf0g9GsEmJYi3jS",
         "protein": "a6A3HOBjOxtjLuscT8Il",
         "name": "Hamdwich",
@@ -148,14 +148,14 @@
         "author": "Child",
         "toppings": "Bnw6CrUFvOmQ9pZSeApU",
         "condiments": "ZTHRvEABoAATHHZBvBNd",
-        "createdAt": { "seconds": 1678874425, "nanoseconds": 489000000 },
+        "createdAt": 1678874425,
         "protein": "TLVznvHm4MTGs86zQ46h",
         "bread": "DJpgdicOQb8Yxzj0XchO",
         "userId": "MMnxO1NqhfNNC2w1L7EVMe4itPN2"
     },
     "cm3AOXVMPGSCk1JZbeVi": {
         "condiments": "LijjKCzubXd3fk127ijA",
-        "createdAt": { "seconds": 1678878293, "nanoseconds": 320000000 },
+        "createdAt": 1678878293,
         "bread": "nMKUyL6aveUYTTvA1I69",
         "author": "Child",
         "name": "The green mass",
@@ -166,7 +166,7 @@
     "cdPuWMJu5wOVKHOG9Pep": {
         "protein": "nBKUGIOvjV3epHtKEIIK",
         "votesCount": 3,
-        "createdAt": { "seconds": 1678882696, "nanoseconds": 243000000 },
+        "createdAt": 1678882696,
         "name": "Yummy yummy ",
         "toppings": "1NBot25k6fiS1I76jtX0",
         "author": "YummyNit",
@@ -183,7 +183,7 @@
         "author": "aviv",
         "name": "the king sandwich",
         "id": "3bsPGGFKApJAj1kbQA1u",
-        "createdAt": { "seconds": 1678894004, "nanoseconds": 257000000 },
+        "createdAt": 1678894004,
         "userId": "VdNMX1KAY1asiTjHlELpuUrryr13"
     },
     "CaWRalUroX6aoxhbDe9x": {
@@ -192,7 +192,7 @@
         "cheese": "pQQgNV6dD6EiZfe78JDr",
         "bread": "0ie3EblcvbbHyxXF8gyi",
         "author": "aviv",
-        "createdAt": { "seconds": 1678894016, "nanoseconds": 718000000 },
+        "createdAt": 1678894016,
         "votesCount": 1,
         "protein": "rARBT1CbLv49xhWNumEH",
         "userId": "VdNMX1KAY1asiTjHlELpuUrryr13"
@@ -201,7 +201,7 @@
         "toppings": "RlvIylkN37RF0T3M2npG",
         "name": "nice sandwich",
         "author": "aviv",
-        "createdAt": { "seconds": 1678894138, "nanoseconds": 511000000 },
+        "createdAt": 1678894138,
         "votesCount": 2,
         "condiments": "cVYopthn4kONiduouPGr",
         "bread": "NTjW9x3b3K4wHsvq9sTf",
@@ -218,7 +218,7 @@
         "condiments": "EWtozimLM4tXvuFszVWj",
         "name": "Ori's Sandwich",
         "id": "SWUk2Z5SvIYeneu33oSd",
-        "createdAt": { "seconds": 1678793331, "nanoseconds": 294000000 },
+        "createdAt": 1678793331,
         "cheese": "aRXviR8eyk0frnMBu5Wu",
         "userId": "WsyhkAZMxlZwskj3QPf2lcLjtzg1"
     },
@@ -229,7 +229,7 @@
         "author": "",
         "name": "Супер сэндвич",
         "cheese": "AfhNqf87gvjy4qJIb6Df",
-        "createdAt": { "seconds": 1680034487, "nanoseconds": 261000000 },
+        "createdAt": 1680034487,
         "protein": "otv1Lanx4ms6zHjFeQVh",
         "id": "ULiPTc5NirMhcmFJc9VL",
         "userId": "YvKwc036R2MkKZVNAMXyJJJxEx22"
@@ -242,14 +242,14 @@
         "id": "YXQSJZWv55yJ8w8DtNbC",
         "protein": "zbAm2U3bvlTe9iEt9yEA",
         "updatedAt": 1678681675455,
-        "createdAt": { "seconds": 1678681745, "nanoseconds": 410000000 },
+        "createdAt": 1678681745,
         "name": "Lika's Sandwich",
         "votesCount": 4,
         "author": "Lika",
         "userId": "fv9fEL4WdXbtd3iMoGd2rRbChat1"
     },
     "MrR7rTcQEw2Wlr7sujk6": {
-        "createdAt": { "seconds": 1678882971, "nanoseconds": 820000000 },
+        "createdAt": 1678882971,
         "toppings": "RlvIylkN37RF0T3M2npG",
         "condiments": "EWtozimLM4tXvuFszVWj",
         "id": "MrR7rTcQEw2Wlr7sujk6",
@@ -261,7 +261,7 @@
         "userId": "p3qtWCpUEmS2jTmLxZZxKMYDRND3"
     },
     "Wj2zNuMydQO69LspTBeM": {
-        "createdAt": { "seconds": 1679229228, "nanoseconds": 236000000 },
+        "createdAt": 1679229228,
         "cheese": "kwSlfq91buZo0fcxBH4W",
         "bread": "eDVT7DyUY3SBSkpRfJbz",
         "toppings": "1NBot25k6fiS1I76jtX0",
@@ -282,7 +282,7 @@
         "author": "Child",
         "name": "Walla sababa",
         "condiments": "EWtozimLM4tXvuFszVWj",
-        "createdAt": { "seconds": 1678674219, "nanoseconds": 780000000 },
+        "createdAt": 1678674219,
         "userId": "v5Vr4TVb7EezZwpSHwgrEqeLyo73"
     },
     "IAPWWlAER292lTnXHfOv": {
@@ -291,7 +291,7 @@
         "author": "Child",
         "condiments": "DQT3rVXAN7P9nICSVvRc",
         "name": "Cheese and strawberry",
-        "createdAt": { "seconds": 1678673971, "nanoseconds": 857000000 },
+        "createdAt": 1678673971,
         "bread": "DJpgdicOQb8Yxzj0XchO",
         "id": "IAPWWlAER292lTnXHfOv",
         "updatedAt": 1678673883655,
@@ -307,11 +307,11 @@
         "id": "lGTM75MfuObkbHC9GHSJ",
         "protein": "zbAm2U3bvlTe9iEt9yEA",
         "condiments": "yR3GWKez1j8zWyTugVRj",
-        "createdAt": { "seconds": 1678674318, "nanoseconds": 437000000 },
+        "createdAt": 1678674318,
         "userId": "v5Vr4TVb7EezZwpSHwgrEqeLyo73"
     },
     "U14wkg4deJGnfBINDiQJ": {
-        "createdAt": { "seconds": 1678679219, "nanoseconds": 237000000 },
+        "createdAt": 1678679219,
         "condiments": "AnyzDezqfbMXDRlawKcG",
         "author": "Parent",
         "id": "U14wkg4deJGnfBINDiQJ",
@@ -330,7 +330,7 @@
         "id": "px6PbSs7qOfQEdDDmTfj",
         "toppings": "bnn7Ls4jg2htesgUCMgK",
         "protein": "zbAm2U3bvlTe9iEt9yEA",
-        "createdAt": { "seconds": 1678893690, "nanoseconds": 926000000 },
+        "createdAt": 1678893690,
         "votesCount": 1,
         "userId": "wY0AHX6NADeP9q9FQQzBYVTVvXi2"
     }

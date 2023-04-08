@@ -21,11 +21,13 @@
 
 #### Ideas:
 
-- user authentication back / front
-- user picture
-- filter words for sandwich names
-- halal, kosher - templates for filter
-- add additional components of the same type
+-   user authentication back / front
+-   user picture
+-   filter words for sandwich names
+-   halal, kosher - templates for filter
+-   plus-minus for quantity
+-   add additional components of the same type
+-   captcha front-end (registration, forgot password)
 
 -   rules : only parents can see children data (database rule && api check)
 -   [x] sandwich creation to localStorage to save it after registration / login
