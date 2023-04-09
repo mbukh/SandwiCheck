@@ -1,7 +1,12 @@
 import expressAsyncHandler from "express-async-handler";
 import createError from "http-errors";
 
+import { profilePicturesDir } from "../config/dir.js";
+
 import excludeFields from "../constants/excludeFields.js";
+
+import { saveImageFromBuffer, removeImage } from "../utils/imageUtils.js";
+import { removeUserConnections } from "../utils/manageUserConnections.js";
 
 import User from "../models/userSchema.js";
 
@@ -25,9 +30,7 @@ export const getUser = expressAsyncHandler(async (req, res, next) => {
         userId = req.params.id;
     }
 
-    const user = await User.findById(userId).select(
-        "-password -resetPasswordToken -resetPasswordExpire"
-    );
+    const user = await User.findById(userId).select(excludeFields);
     if (!user) {
         return next(createError(404, "User not found"));
     }
@@ -38,17 +41,56 @@ export const getUser = expressAsyncHandler(async (req, res, next) => {
 // @route   PUT /api/users/:id
 // @access  Private, Parents
 export const updateUser = expressAsyncHandler(async (req, res, next) => {
-    const { name } = req.body;
+    const { name, removeParentId, removeChildId } = req.body;
+    const file = req.file;
+    let fileName;
 
-    const updateData = { name };
-
-    const user = await User.findByIdAndUpdate(req.params.id, updateData, {
-        new: true,
-        runValidators: true,
-    });
+    const user = await User.findById(req.params.id);
 
     if (!user) {
         return next(createError(404, "User not found"));
+    }
+
+    if (name) {
+        user.name = name;
+    }
+
+    if (file && file.buffer) {
+        fileName = `${user._id.toString()}.${process.env.PROFILE_IMAGE_EXTENSION}`;
+
+        await saveImageFromBuffer(file.buffer, profilePicturesDir, fileName);
+
+        user.profilePicture = fileName;
+    }
+
+    if (removeParentId) {
+        await removeUserConnections({
+            Model: User,
+            user,
+            field: "parents",
+            connectionId: removeParentId,
+        });
+
+        user.parents.pull(removeParentId);
+    }
+
+    if (removeChildId) {
+        await removeUserConnections({
+            Model: User,
+            user,
+            field: "children",
+            connectionId: removeChildId,
+        });
+
+        user.children.pull(removeChildId);
+    }
+
+    try {
+        user.save();
+    } catch (error) {
+        if (fileName) {
+            await removeImage(profilePicturesDir, fileName);
+        }
     }
 
     res.json({ success: true, data: { message: "User updated successfully" } });
@@ -58,9 +100,27 @@ export const updateUser = expressAsyncHandler(async (req, res, next) => {
 // @route   DELETE /api/users/:id
 // @access  Private
 export const deleteUser = expressAsyncHandler(async (req, res, next) => {
-    const user = await User.findByIdAndDelete(req.params.id);
+    const user = await User.findById(req.params.id);
+
     if (!user) {
         return next(createError(404, "User not found"));
     }
+
+    // Remove user from parents' children arrays
+    if (user.parents && user.parents.length) {
+        await removeUserConnections({ Model: User, user, field: "parents" });
+    }
+
+    // Remove user from children's parents arrays
+    if (user.children && user.children.length) {
+        await removeUserConnections({ Model: User, user, field: "children" });
+    }
+
+    // Delete the user
+    await User.findByIdAndDelete(req.params.id);
+
+    const fileName = `${req.params.id}.${process.env.PROFILE_IMAGE_EXTENSION}`;
+    await removeImage(profilePicturesDir, fileName);
+
     res.json({ success: true, data: "User deleted successfully" });
 });

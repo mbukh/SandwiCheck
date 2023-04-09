@@ -23,14 +23,14 @@ const userSchema = new Schema(
         },
         password: { type: String, required: [true, "Password field is required"] },
         profilePicture: { type: String },
-        role: {
-            type: String,
+        roles: {
+            type: [String],
             enum: {
-                values: ["user", "parent", "child"],
-                message: 'Role field must be either "user", "parent", or "child"',
+                values: ["user", "parent", "child", "admin"],
+                message: 'Role must be either "user", "parent", "child" or "admin"',
             },
             required: [true, "Type field is required"],
-            default: "user",
+            default: ["user"],
         },
         favoriteSandwiches: [
             {
@@ -104,7 +104,7 @@ userSchema.post("save", async function (doc, next) {
 });
 
 userSchema.virtual("firstName").get(function () {
-    return this.name.split(" ")[0];
+    return this.name && this.name.split(" ")[0];
 });
 
 const User = mongoose.model("User", userSchema);

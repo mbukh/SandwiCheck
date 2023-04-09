@@ -3,7 +3,7 @@ import crypto from "crypto";
 
 export const generatePasswordToken = (payload) => {
     return jwt.sign(payload, process.env.JWT_SECRET, {
-        expiresIn: Number(process.env.JWT_EXPIRES_IN),
+        expiresIn: process.env.JWT_EXPIRES_IN,
     });
 };
 

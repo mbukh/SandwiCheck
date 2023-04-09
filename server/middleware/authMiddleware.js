@@ -11,29 +11,25 @@ export const protect = expressAsyncHandler(async (req, res, next) => {
     let token;
 
     if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
-        try {
-            token = req.headers.authorization.split(" ")[1];
-
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-            req.user = await User.findById(decoded.id).select(excludeFields);
-
-            next();
-        } catch (error) {
-            next(createError(401, "Not authorized, token failed"));
-        }
+        token = req.headers.authorization.split(" ")[1];
     } else if (req.cookies && req.cookies.token) {
-        try {
-            const decoded = jwt.verify(req.cookies.token, process.env.JWT_SECRET);
-
-            req.user = await User.findById(decoded.id).select("-password");
-
-            next();
-        } catch (error) {
-            next(createError(401, "Not authorized, token failed"));
-        }
+        token = req.cookies.token;
     } else {
-        next(createError(401, "Not authorized, no token"));
+        return next(createError(401, "Not authorized, no token"));
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        req.user = await User.findById(decoded.id).select(excludeFields);
+
+        if (!req.user) {
+            throw new Error();
+        }
+
+        next();
+    } catch (error) {
+        next(createError(401, "Not authorized, token failed"));
     }
 });
 
@@ -43,17 +39,17 @@ export const authorize = (...roles) => {
         const { id } = req.params;
 
         // Check if user is an admin
-        if (user.role === "admin") {
+        if (user.roles.includes("admin")) {
             return next();
         }
 
         // Check if user has a valid role
-        if (!roles.includes(user.role)) {
+        if (roles.length && !roles.some((role) => user.roles.includes(role))) {
             return next(createError(403, "Not authorized to access this resource"));
         }
 
         // Check if user is accessing their own profile or a child's profile
-        if (user._id.toString() === id || user.children.includes(id)) {
+        if (user._id.toString() === id || (user.children && user.children.includes(id))) {
             return next();
         }
 

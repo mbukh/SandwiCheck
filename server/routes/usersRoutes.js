@@ -1,8 +1,8 @@
 import express from "express";
 
 import { protect, authorize } from "../middleware/authMiddleware.js";
-import upload from "../middleware/uploadMiddleware.js";
-import resizeAndCrop from "../middleware/resizeMiddleware.js";
+import uploadImage from "../middleware/uploadMiddleware.js";
+import resizeImage from "../middleware/resizeMiddleware.js";
 
 import {
     getUsers,
@@ -15,14 +15,17 @@ import {
 const router = express.Router({ mergeParams: true });
 
 router.route("/current").get(protect, getUser);
-router
-    .route("/")
-    .get(protect, authorize("admin"), getUsers)
-    .post(protect, authorize("admin"), getUsers);
+router.route("/").post(protect, authorize("admin"), getUsers);
 router
     .route("/:id")
     .get(protect, authorize("parent"), getUser)
-    .put(protect, authorize("user", "parent"), upload, resizeAndCrop, updateUser)
-    .delete(protect, authorize("user", "parent"), deleteUser);
+    .put(
+        protect,
+        authorize("user", "child", "parent"),
+        uploadImage,
+        resizeImage,
+        updateUser
+    )
+    .delete(protect, authorize("user", "child", "parent"), deleteUser);
 
 export default router;

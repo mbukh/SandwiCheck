@@ -1,38 +1,17 @@
-import bcrypt from "bcryptjs";
-
 import createError from "http-errors";
 import expressAsyncHandler from "express-async-handler";
 
-import { profilePicturesDir } from "../config/dir.js";
+import bcrypt from "bcryptjs";
 
 import { generateHtmlMessage, generateTextMessage } from "../constants/mailing.js";
 
+import { createUserConnections } from "../utils/manageUserConnections.js";
+import sendTokenResponse from "../utils/sendTokenResponse.js";
 import * as hashAndTokens from "../utils/hashAndTokens.js";
 import sendEmail from "../utils/mailer.js";
 import delay from "../utils/delay.js";
-import saveImageFromBuffer from "../utils/saveImageFromBuffer.js";
 
 import User from "../models/userSchema.js";
-
-const sendTokenResponse = (statusCode, token, res) => {
-    // Set cookie options
-    const cookieOptions = {
-        expires: new Date(
-            Date.now() + process.env.JWT_COOKIE_EXPIRE_IN_DAYS * 24 * 60 * 60 * 1000
-        ),
-        httpOnly: true,
-    };
-
-    if (process.env.NODE_ENV === "production") {
-        cookieOptions.secure = true;
-    }
-
-    // Set cookie and send response
-    res.status(statusCode).cookie("token", token, cookieOptions).json({
-        success: true,
-        data: { token },
-    });
-};
 
 // @desc    Signup
 // @route   POST /api/auth/signup
@@ -57,19 +36,7 @@ export const signup = expressAsyncHandler(async (req, res, next) => {
     }
 
     if (parentId) {
-        await User.findByIdAndUpdate(user._id, {
-            $push: { parents: parentId },
-        });
-        await User.findByIdAndUpdate(parentId, {
-            $push: { children: user._id },
-        });
-    }
-
-    if (req.file && req.file.buffer) {
-        const fileName = `${user._id.toString()}.${req.file.extension}`;
-        await saveImageFromBuffer(req.file.buffer, profilePicturesDir, fileName);
-
-        await User.findByIdAndUpdate(user._id, { profilePicture: fileName });
+        createUserConnections({ Model: User, user, parentId });
     }
 
     sendTokenResponse(201, hashAndTokens.generatePasswordToken({ id: user._id }), res);
@@ -92,9 +59,7 @@ export const login = expressAsyncHandler(async (req, res, next) => {
     }
 
     if (parentId) {
-        await User.findByIdAndUpdate(user._id, {
-            $addToSet: { parents: parentId },
-        });
+        createUserConnections({ Model: User, user, parentId });
     }
 
     sendTokenResponse(200, hashAndTokens.generatePasswordToken({ id: user._id }), res);

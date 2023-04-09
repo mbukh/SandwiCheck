@@ -22,6 +22,6 @@ const limits = {
     fileSize: Number(process.env.MAX_UPLOAD_SIZE),
 };
 
-const upload = multer({ storage, limits, fileFilter }).single("image");
+const uploadImage = multer({ storage, limits, fileFilter }).single("image");
 
-export default upload;
+export default uploadImage;
