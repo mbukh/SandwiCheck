@@ -19,23 +19,25 @@ const ingredientSchema = new Schema(
             enum: ["bread", "protein", "cheese", "topping", "condiment"],
             required: true,
         },
-        isKosher: {
-            type: Boolean,
-            default: true,
-        },
-        isHalal: {
-            type: Boolean,
-            default: true,
-        },
+        dietaryPreferences: [
+            {
+                type: String,
+                enum: ["halal", "kosher", "vegetarian", "vegan"],
+            },
+        ],
     },
     {
         toJSON: {
+            virtuals: true,
             transform: function (_, ret) {
+                ret.id = ret._id;
+                delete ret._id;
                 delete ret.__v;
                 delete ret.__t;
             },
         },
         toObject: {
+            virtuals: true,
             transform: function (_, ret) {
                 delete ret.__v;
                 delete ret.__t;

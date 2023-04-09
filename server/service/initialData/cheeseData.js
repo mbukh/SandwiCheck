@@ -6,6 +6,7 @@ export const cheeseData = [
         normal: "_5",
         light: "_8",
         type: "cheese",
+        dietaryPreferences: ["vegetarian", "kosher"],
     },
     {
         name: "Provolone",
@@ -14,6 +15,7 @@ export const cheeseData = [
         normal: "_5",
         light: "_8",
         type: "cheese",
+        dietaryPreferences: ["vegetarian", "kosher"],
     },
     {
         name: "Mozzarella",
@@ -22,6 +24,7 @@ export const cheeseData = [
         normal: "_5",
         light: "_8",
         type: "cheese",
+        dietaryPreferences: ["vegetarian", "kosher", "halal"],
     },
     {
         name: "Cheddar",
@@ -30,6 +33,7 @@ export const cheeseData = [
         normal: "_5",
         light: "_8",
         type: "cheese",
+        dietaryPreferences: ["vegetarian", "kosher"],
     },
     {
         name: "Pepper Jack",
@@ -38,6 +42,7 @@ export const cheeseData = [
         normal: "_5",
         light: "_8",
         type: "cheese",
+        dietaryPreferences: ["vegetarian", "kosher"],
     },
     {
         name: "Muenster",
@@ -46,6 +51,7 @@ export const cheeseData = [
         normal: "_5",
         light: "_8",
         type: "cheese",
+        dietaryPreferences: ["vegetarian", "kosher"],
     },
     {
         name: "American",
@@ -54,6 +60,7 @@ export const cheeseData = [
         normal: "_5",
         light: "_8",
         type: "cheese",
+        dietaryPreferences: ["vegetarian", "kosher"],
     },
     {
         name: "Brie",
@@ -62,6 +69,7 @@ export const cheeseData = [
         normal: "_5",
         light: "_8",
         type: "cheese",
+        dietaryPreferences: ["vegetarian"],
     },
     {
         name: "Parmesan",
@@ -70,6 +78,7 @@ export const cheeseData = [
         normal: "_5",
         light: "_8",
         type: "cheese",
+        dietaryPreferences: ["vegetarian"],
     },
     {
         name: "Feta",
@@ -78,5 +87,6 @@ export const cheeseData = [
         normal: "_5",
         light: "_8",
         type: "cheese",
+        dietaryPreferences: ["vegetarian", "halal"],
     },
 ];

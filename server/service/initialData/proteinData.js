@@ -6,6 +6,7 @@ export const proteinData = [
         full: "_1",
         double: "_2",
         type: "protein",
+        dietaryPreferences: ["halal", "kosher"],
     },
     {
         name: "Roast Beef",
@@ -14,6 +15,7 @@ export const proteinData = [
         full: "_1",
         double: "_2",
         type: "protein",
+        dietaryPreferences: ["kosher", "halal"],
     },
     {
         name: "Ham",
@@ -22,6 +24,7 @@ export const proteinData = [
         full: "_1",
         double: "_2",
         type: "protein",
+        dietaryPreferences: [],
     },
     {
         name: "Prosciutto",
@@ -30,6 +33,7 @@ export const proteinData = [
         full: "_1",
         double: "_2",
         type: "protein",
+        dietaryPreferences: [],
     },
     {
         name: "Corned Beef",
@@ -38,6 +42,7 @@ export const proteinData = [
         full: "_1",
         double: "_2",
         type: "protein",
+        dietaryPreferences: ["kosher", "halal"],
     },
     {
         name: "Pastrami",
@@ -46,6 +51,7 @@ export const proteinData = [
         full: "_1",
         double: "_2",
         type: "protein",
+        dietaryPreferences: ["kosher", "halal"],
     },
     {
         name: "Genoa Salami",
@@ -54,6 +60,7 @@ export const proteinData = [
         full: "_1",
         double: "_2",
         type: "protein",
+        dietaryPreferences: [],
     },
     {
         name: "Soppressata",
@@ -62,6 +69,7 @@ export const proteinData = [
         full: "_1",
         double: "_2",
         type: "protein",
+        dietaryPreferences: [],
     },
     {
         name: "Capocollo",
@@ -70,6 +78,7 @@ export const proteinData = [
         full: "_1",
         double: "_2",
         type: "protein",
+        dietaryPreferences: [],
     },
     {
         name: "Pepperoni",
@@ -78,6 +87,7 @@ export const proteinData = [
         full: "_1",
         double: "_2",
         type: "protein",
+        dietaryPreferences: [],
     },
     {
         name: "Baked Chicken",
@@ -86,6 +96,7 @@ export const proteinData = [
         full: "_1",
         double: "_2",
         type: "protein",
+        dietaryPreferences: ["halal", "kosher"],
     },
     {
         name: "Bacon",
@@ -94,6 +105,7 @@ export const proteinData = [
         full: "_1",
         double: "_2",
         type: "protein",
+        dietaryPreferences: [],
     },
     {
         name: "Chicken Salad",
@@ -102,6 +114,7 @@ export const proteinData = [
         full: "_1",
         double: "_2",
         type: "protein",
+        dietaryPreferences: ["halal", "kosher"],
     },
     {
         name: "Tuna Salad",
@@ -110,6 +123,7 @@ export const proteinData = [
         full: "_1",
         double: "_2",
         type: "protein",
+        dietaryPreferences: ["kosher", "halal"],
     },
     {
         name: "Egg Salad",
@@ -118,5 +132,6 @@ export const proteinData = [
         full: "_1",
         double: "_2",
         type: "protein",
+        dietaryPreferences: ["vegetarian", "kosher", "halal"],
     },
 ];
