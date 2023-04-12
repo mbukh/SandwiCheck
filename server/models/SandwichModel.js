@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 
+import { types } from "../constants/ingredientsConstants";
+
 const { Schema } = mongoose;
 
 const sandwichSchema = new Schema(
@@ -52,7 +54,7 @@ const sandwichSchema = new Schema(
 );
 
 function breadValidator(ingredients) {
-    return ingredients.length > 0 && ingredients[0].type === "Bread";
+    return ingredients.length && ingredients[0].type === types.bread;
 }
 
 const Sandwich = mongoose.model("Sandwich", sandwichSchema);

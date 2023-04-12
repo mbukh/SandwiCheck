@@ -11,6 +11,7 @@ import {
 } from "../utils/manageIngredientsImages.js";
 
 import Ingredient from "../models/IngredientModel.js";
+// import Sandwich from "../models/SandwichModel.js";
 
 // @desc    Fetch all ingredients
 // @route   GET /api/ingredients
@@ -144,13 +145,28 @@ export const updateIngredient = expressAsyncHandler(async (req, res, next) => {
 // @route   DELETE /api/ingredients/:id
 // @access  Private/Admin
 export const deleteIngredient = expressAsyncHandler(async (req, res, next) => {
-    const ingredient = await Ingredient.findById(req.params.id);
+    const { id } = req.params;
 
-    if (ingredient) {
-        await ingredient.remove();
-        res.json({ message: "Ingredient removed" });
-    } else {
-        res.status(404);
-        throw new Error("Ingredient not found");
+    // const sandwichWithIngredient = await Sandwich.findOne({ ingredients: id });
+
+    // if (sandwichWithIngredient) {
+    //     return next(
+    //         createHttpError.BadRequest(
+    //             "Cannot delete ingredient, it is currently used in a sandwich"
+    //         )
+    //     );
+    // }
+
+    const ingredient = await Ingredient.findByIdAndDelete(id);
+
+    if (!ingredient) {
+        return next(createHttpError.NotFound("Ingredient not found"));
     }
+
+    await removeAllIngredientImagesByImageBase(ingredient.imageBase);
+
+    res.json({
+        success: true,
+        message: "Ingredient successfully deleted",
+    });
 });

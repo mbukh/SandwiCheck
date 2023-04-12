@@ -121,5 +121,5 @@ export const deleteUser = expressAsyncHandler(async (req, res, next) => {
     const fileName = `${req.params.id}.${process.env.PROFILE_IMAGE_EXTENSION}`;
     await removeFile(profilePicturesDir, fileName);
 
-    res.json({ success: true, data: "User deleted successfully" });
+    res.json({ success: true, message: "User deleted successfully" });
 });
