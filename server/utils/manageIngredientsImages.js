@@ -28,8 +28,6 @@ export const saveIngredientImages = async ({
         ? imageFieldsByType(type)
         : getUploadedImageFieldsByType(reqFiles, type);
 
-    console.log(filenameBase);
-
     try {
         await validateReqFiles(reqFiles, requiredFields);
 
