@@ -17,7 +17,7 @@ import colors from "colors";
 import errorHandler from "./middleware/errorHandler.js";
 
 import ingredientsRoutes from "./routes/ingredientsRoutes.js";
-// import sandwichesRoutes from "./routes/sandwichesRoutes.js";
+import sandwichesRoutes from "./routes/sandwichesRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import usersRoutes from "./routes/usersRoutes.js";
 
@@ -51,7 +51,7 @@ app.use("/api/", limiter);
 
 // === Main routes === //
 app.use("/api/v1/ingredients", ingredientsRoutes);
-// app.use("/api/v1/sandwiches", sandwichesRoutes);
+app.use("/api/v1/sandwiches", sandwichesRoutes);
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/users", usersRoutes);
 

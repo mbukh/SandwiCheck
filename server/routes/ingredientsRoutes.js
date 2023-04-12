@@ -11,7 +11,7 @@ import {
     getIngredient,
     updateIngredient,
     deleteIngredient,
-} from "../controllers/IngredientsController.js";
+} from "../controllers/ingredientsController.js";
 
 // Include other resource routers
 const router = express.Router({ mergeParams: true });

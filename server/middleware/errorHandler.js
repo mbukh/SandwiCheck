@@ -37,7 +37,7 @@ const errorHandler = (err, req, res, next) => {
             error = createError(
                 400,
                 `The file is too large. The maximum file size allowed is ${Math.round(
-                    Number(process.env.MAX_UPLOAD_SIZE_IN_BYTES) / 1024 / 1024
+                    parseInt(process.env.MAX_UPLOAD_SIZE_IN_BYTES) / 1024 / 1024
                 )}MB`
             );
         }

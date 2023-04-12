@@ -3,10 +3,10 @@ import createError from "http-errors";
 
 import jwt from "jsonwebtoken";
 
-import {roles as userRoles} from "../constants/usersConstants.js";
+import { roles as userRoles } from "../constants/usersConstants.js";
 import excludeFields from "../constants/excludeFields.js";
 
-import User from "../models/userModel.js";
+import User from "../models/UserModel.js";
 
 export const protect = expressAsyncHandler(async (req, res, next) => {
     let token;
@@ -50,7 +50,7 @@ export const authorize = (...roles) => {
         }
 
         // Check if user is accessing their own profile
-        if (user._id.toString() === id) {
+        if (user._id.equals(id)) {
             return next();
         }
 

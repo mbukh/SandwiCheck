@@ -17,30 +17,53 @@ import Ingredient from "../models/IngredientModel.js";
 // @route   GET /api/ingredients
 // @access  Public
 export const getIngredients = expressAsyncHandler(async (req, res, next) => {
-    const { dietaryPreferences, type } = { ...req.query, ...req.body };
+    const { dietaryPreferences, type, sortBy } = { ...req.query };
     let query = {};
 
-    if (dietaryPreferences && dietaryPreferences.length) {
-        query.dietaryPreferences = { $all: dietaryPreferences };
+    if (dietaryPreferences) {
+        query.dietaryPreferences = { $all: dietaryPreferences.split(",") };
+    }
+
+    let sort = {};
+
+    if (!sortBy) {
+        sort.displayPriority = 1;
+    } else if (sortBy === "name") {
+        sort.name = 1;
     }
 
     if (type) {
         query.type = type;
     }
 
-    const ingredients = await Ingredient.find(query);
+    const ingredients = await Ingredient.find(query).sort(sort);
+
+    // TODO: paging
 
     res.json({ success: true, data: ingredients });
+});
+
+// @desc    Fetch a single ingredient
+// @route   GET /api/ingredients/:id
+// @access  Public
+export const getIngredient = expressAsyncHandler(async (req, res, next) => {
+    const ingredient = await Ingredient.findById(req.params.id);
+
+    if (!ingredient) {
+        return next(createHttpError.NotFound("Ingredient not found"));
+    }
+
+    res.json({ success: true, data: ingredient });
 });
 
 // @desc    Create an ingredient
 // @route   POST /api/ingredients
 // @access  Private/Admin
 export const createIngredient = expressAsyncHandler(async (req, res, next) => {
-    const { name, type, dietaryPreferences, shape } = req.body;
+    const { name, type, dietaryPreferences, shape, displayPriority } = req.body;
     const reqFiles = req.files;
 
-    if (!name || !type || (isBreadType(type) && !shape)) {
+    if (!name || !type || (isBreadType(type) && !shape) || !displayPriority) {
         return next(createHttpError.BadRequest("All fields are required"));
     }
 
@@ -64,10 +87,11 @@ export const createIngredient = expressAsyncHandler(async (req, res, next) => {
             type,
             shape,
             dietaryPreferences,
+            displayPriority: parseInt(displayPriority),
             imageBase: filenameBase,
         });
 
-        res.json({ success: true, data: ingredient });
+        res.status(201).json({ success: true, data: ingredient });
     } catch (err) {
         await removeAllIngredientImagesByImageBase(filenameBase);
 
@@ -75,24 +99,11 @@ export const createIngredient = expressAsyncHandler(async (req, res, next) => {
     }
 });
 
-// @desc    Fetch a single ingredient
-// @route   GET /api/ingredients/:id
-// @access  Public
-export const getIngredient = expressAsyncHandler(async (req, res, next) => {
-    const ingredient = await Ingredient.findById(req.params.id);
-
-    if (!ingredient) {
-        return next(createHttpError(404, "Ingredient not found"));
-    }
-
-    res.json({ success: true, data: ingredient });
-});
-
 // @desc    Update an ingredient
 // @route   PUT /api/ingredients/:id
 // @access  Private/Admin
 export const updateIngredient = expressAsyncHandler(async (req, res, next) => {
-    const { name, type, dietaryPreferences, shape } = req.body;
+    const { name, type, dietaryPreferences, shape, displayPriority } = req.body;
     const reqFiles = req.files;
 
     const ingredient = await Ingredient.findById(req.params.id);
@@ -101,7 +112,7 @@ export const updateIngredient = expressAsyncHandler(async (req, res, next) => {
         return next(createHttpError(404, "Ingredient not found"));
     }
 
-    if (!name || !type || (isBreadType(type) && !shape)) {
+    if (!name || !type || (isBreadType(type) && !shape) || !displayPriority) {
         return next(createHttpError.BadRequest("Name and type are required fields"));
     }
 
@@ -135,6 +146,7 @@ export const updateIngredient = expressAsyncHandler(async (req, res, next) => {
     ingredient.type = type;
     ingredient.shape = shape;
     ingredient.dietaryPreferences = dietaryPreferences;
+    ingredient.displayPriority = parseInt(displayPriority);
 
     const updatedIngredient = await ingredient.save();
 
@@ -146,6 +158,8 @@ export const updateIngredient = expressAsyncHandler(async (req, res, next) => {
 // @access  Private/Admin
 export const deleteIngredient = expressAsyncHandler(async (req, res, next) => {
     const { id } = req.params;
+
+    // FIXME: uncomment and test this code
 
     // const sandwichWithIngredient = await Sandwich.findOne({ ingredients: id });
 

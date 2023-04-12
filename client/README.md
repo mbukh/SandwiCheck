@@ -28,6 +28,7 @@
 -   plus-minus for quantity
 -   add additional components of the same type
 -   captcha front-end (registration, forgot password)
+-   check if emoji in names are working
 
 -   rules : only parents can see children data (database rule && api check)
 -   [x] sandwich creation to localStorage to save it after registration / login

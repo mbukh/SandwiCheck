@@ -11,7 +11,7 @@ import * as hashAndTokens from "../utils/hashAndTokens.js";
 import sendEmail from "../utils/mailer.js";
 import delay from "../utils/delay.js";
 
-import User from "../models/userModel.js";
+import User from "../models/UserModel.js";
 
 // @desc    Signup
 // @route   POST /api/auth/signup
@@ -40,7 +40,7 @@ export const signup = expressAsyncHandler(async (req, res, next) => {
 
     const passwordHash = await bcrypt.hash(
         password,
-        Number(process.env.BCRYPT_SALT_ROUNDS)
+        parseInt(process.env.BCRYPT_SALT_ROUNDS)
     );
 
     const user = await User.create({
@@ -116,7 +116,7 @@ export const changePassword = expressAsyncHandler(async (req, res, next) => {
         return next(createError(401, "Old password is incorrect"));
     }
 
-    user.password = await bcrypt.hash(password, Number(process.env.BCRYPT_SALT_ROUNDS));
+    user.password = await bcrypt.hash(password, parseInt(process.env.BCRYPT_SALT_ROUNDS));
 
     await user.save();
 
@@ -152,7 +152,8 @@ export const forgotPassword = expressAsyncHandler(async (req, res, next) => {
     const resetToken = hashAndTokens.generateResetPasswordToken();
 
     user.resetPasswordToken = hashAndTokens.hashToken(resetToken);
-    user.resetPasswordExpire = Date.now() + Number(process.env.RESET_PASSWORD_EXPIRES_IN);
+    user.resetPasswordExpire =
+        Date.now() + parseInt(process.env.RESET_PASSWORD_EXPIRES_IN);
 
     await user.save();
 

@@ -54,6 +54,13 @@ const ingredientSchema = new Schema(
                 },
             },
         ],
+        displayPriority: {
+            type: Number,
+            min: [1, "Display priority must be greater than 0"],
+            max: [100, "Display priority must be less than or equal 100"],
+            required: true,
+            default: 0,
+        },
     },
     {
         timestamps: true,

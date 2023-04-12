@@ -6,7 +6,7 @@ import { profilePicturesDir } from "../config/dir.js";
 import { saveBufferToFile, removeFile } from "../utils/fileUtils.js";
 import { removeUserConnections } from "../utils/manageUserConnections.js";
 
-import User from "../models/userModel.js";
+import User from "../models/UserModel.js";
 
 // @desc    Get all users
 // @route   GET /api/users
@@ -18,20 +18,17 @@ export const getUsers = expressAsyncHandler(async (req, res, next) => {
 
 // @desc    Get single user
 // @route   GET /api/users/:id
+// @route   GET /api/current
 // @access  Private +Parents
 export const getUser = expressAsyncHandler(async (req, res, next) => {
-    let userId;
+    const userId = req.params.id ? req.params.id : req.user.id;
 
-    if (!req.params.id) {
-        userId = req.user.id;
-    } else {
-        userId = req.params.id;
-    }
+    const user = await User.findById(userId).populate("sandwiches");
 
-    const user = await User.findById(userId);
     if (!user) {
         return next(createError(404, "User not found"));
     }
+
     res.json({ success: true, data: user });
 });
 
@@ -54,13 +51,8 @@ export const updateUser = expressAsyncHandler(async (req, res, next) => {
         return next(createError(404, "User not found"));
     }
 
-    if (name) {
-        user.name = name;
-    }
-
-    if (dietaryPreferences) {
-        user.dietaryPreferences = dietaryPreferences;
-    }
+    user.name = name;
+    user.dietaryPreferences = dietaryPreferences;
 
     if (removeParentId) {
         const res = await removeUserConnections(user, "parents", removeParentId);
@@ -77,7 +69,7 @@ export const updateUser = expressAsyncHandler(async (req, res, next) => {
     }
 
     if (imageBuffer && !removeProfilePicture) {
-        const fileName = `${user._id.toString()}.${process.env.PROFILE_IMAGE_EXTENSION}`;
+        const fileName = `${user._id}.${process.env.PROFILE_IMAGE_EXTENSION}`;
         const res = await saveBufferToFile(imageBuffer, profilePicturesDir, fileName);
         if (res) {
             user.profilePicture = fileName;

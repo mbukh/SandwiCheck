@@ -5,6 +5,7 @@ export const breadData = [
         imageBase: "20200620_101006",
         shape: "long",
         dietaryPreferences: ["vegetarian", "vegan", "kosher"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-20T06:10:06.000Z"),
     },
     {
@@ -13,6 +14,7 @@ export const breadData = [
         imageBase: "20200620_101033",
         shape: "long",
         dietaryPreferences: ["vegetarian", "vegan", "kosher"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-20T06:10:33.000Z"),
     },
     {
@@ -21,6 +23,7 @@ export const breadData = [
         imageBase: "20200620_101059",
         shape: "long",
         dietaryPreferences: ["vegetarian", "vegan", "kosher", "halal"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-20T06:10:59.000Z"),
     },
     {
@@ -29,6 +32,7 @@ export const breadData = [
         imageBase: "20200620_101114",
         shape: "trapezoid",
         dietaryPreferences: ["vegetarian", "vegan", "kosher"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-20T06:11:14.000Z"),
     },
     {
@@ -37,6 +41,7 @@ export const breadData = [
         imageBase: "20200620_101131",
         shape: "trapezoid",
         dietaryPreferences: ["vegetarian", "kosher"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-20T06:11:31.000Z"),
     },
     {
@@ -45,6 +50,7 @@ export const breadData = [
         imageBase: "20200620_101224",
         shape: "round",
         dietaryPreferences: ["vegetarian", "vegan", "kosher", "halal"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-20T06:12:24.000Z"),
     },
     {
@@ -53,6 +59,7 @@ export const breadData = [
         imageBase: "20200620_101152",
         shape: "round",
         dietaryPreferences: ["vegetarian", "vegan", "kosher", "halal"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-20T06:11:52.000Z"),
     },
     {
@@ -61,6 +68,7 @@ export const breadData = [
         imageBase: "20180222_030637",
         shape: "long",
         dietaryPreferences: ["vegetarian", "vegan", "kosher", "halal"],
+        displayPriority: 50,
         createdAt: new Date("2018-02-21T23:06:37.000Z"),
     },
     {
@@ -69,6 +77,7 @@ export const breadData = [
         imageBase: "20200620_101255",
         shape: "long",
         dietaryPreferences: ["vegetarian", "vegan", "kosher", "halal"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-20T06:12:55.000Z"),
     },
     {
@@ -77,6 +86,7 @@ export const breadData = [
         imageBase: "20220202_050837",
         shape: "trapezoid",
         dietaryPreferences: ["vegetarian", "vegan", "kosher", "halal"],
+        displayPriority: 50,
         createdAt: new Date("2022-02-02T01:08:37.000Z"),
     },
 ];
@@ -90,6 +100,7 @@ export const cheeseData = [
         type: "cheese",
         imageBase: "20200621_083351",
         dietaryPreferences: ["vegetarian", "kosher"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T04:33:51.000Z"),
     },
     {
@@ -97,6 +108,7 @@ export const cheeseData = [
         type: "cheese",
         imageBase: "20200621_083450",
         dietaryPreferences: ["vegetarian", "kosher"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T04:34:50.000Z"),
     },
     {
@@ -104,6 +116,7 @@ export const cheeseData = [
         type: "cheese",
         imageBase: "20200621_083553",
         dietaryPreferences: ["vegetarian", "kosher", "halal"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T04:35:53.000Z"),
     },
     {
@@ -111,6 +124,7 @@ export const cheeseData = [
         type: "cheese",
         imageBase: "20200621_083659",
         dietaryPreferences: ["vegetarian", "kosher"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T04:36:59.000Z"),
     },
     {
@@ -118,6 +132,7 @@ export const cheeseData = [
         type: "cheese",
         imageBase: "20200621_083757",
         dietaryPreferences: ["vegetarian", "kosher"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T04:37:57.000Z"),
     },
     {
@@ -125,6 +140,7 @@ export const cheeseData = [
         type: "cheese",
         imageBase: "20200621_083858",
         dietaryPreferences: ["vegetarian", "kosher"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T04:38:58.000Z"),
     },
     {
@@ -132,6 +148,7 @@ export const cheeseData = [
         type: "cheese",
         imageBase: "20200621_083946",
         dietaryPreferences: ["vegetarian", "kosher"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T04:39:46.000Z"),
     },
     {
@@ -139,6 +156,7 @@ export const cheeseData = [
         type: "cheese",
         imageBase: "20200621_084108",
         dietaryPreferences: ["vegetarian"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T04:41:08.000Z"),
     },
     {
@@ -146,6 +164,7 @@ export const cheeseData = [
         type: "cheese",
         imageBase: "20200621_084307",
         dietaryPreferences: ["vegetarian"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T04:43:07.000Z"),
     },
     {
@@ -153,6 +172,7 @@ export const cheeseData = [
         type: "cheese",
         imageBase: "20200621_092955",
         dietaryPreferences: ["vegetarian", "halal"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T05:29:55.000Z"),
     },
 ];
@@ -166,6 +186,7 @@ export const condimentData = [
         type: "condiment",
         imageBase: "20200621_115703",
         dietaryPreferences: ["vegetarian", "kosher"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T07:57:03.000Z"),
     },
     {
@@ -173,6 +194,7 @@ export const condimentData = [
         type: "condiment",
         imageBase: "20200621_121311",
         dietaryPreferences: ["vegetarian", "kosher"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T08:13:11.000Z"),
     },
     {
@@ -180,6 +202,7 @@ export const condimentData = [
         type: "condiment",
         imageBase: "20200621_121727",
         dietaryPreferences: ["vegetarian", "kosher", "halal"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T08:17:27.000Z"),
     },
     {
@@ -187,6 +210,7 @@ export const condimentData = [
         type: "condiment",
         imageBase: "20200621_121826",
         dietaryPreferences: ["vegetarian", "kosher", "halal"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T08:18:26.000Z"),
     },
     {
@@ -194,6 +218,7 @@ export const condimentData = [
         type: "condiment",
         imageBase: "20200621_121913",
         dietaryPreferences: ["vegetarian", "kosher"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T08:19:13.000Z"),
     },
     {
@@ -201,6 +226,7 @@ export const condimentData = [
         type: "condiment",
         imageBase: "20200621_122357",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T08:23:57.000Z"),
     },
     {
@@ -208,6 +234,7 @@ export const condimentData = [
         type: "condiment",
         imageBase: "20200621_122152",
         dietaryPreferences: ["vegetarian"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T08:21:52.000Z"),
     },
     {
@@ -215,6 +242,7 @@ export const condimentData = [
         type: "condiment",
         imageBase: "20200621_122059",
         dietaryPreferences: ["vegetarian", "kosher", "halal"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T08:20:59.000Z"),
     },
     {
@@ -222,6 +250,7 @@ export const condimentData = [
         type: "condiment",
         imageBase: "20200621_122003",
         dietaryPreferences: ["kosher"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T08:20:03.000Z"),
     },
     {
@@ -229,6 +258,7 @@ export const condimentData = [
         type: "condiment",
         imageBase: "20200621_122556",
         dietaryPreferences: ["vegetarian", "kosher"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T08:25:56.000Z"),
     },
     {
@@ -236,6 +266,7 @@ export const condimentData = [
         type: "condiment",
         imageBase: "20200621_122455",
         dietaryPreferences: ["vegetarian", "kosher", "halal"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T08:24:55.000Z"),
     },
     {
@@ -244,6 +275,7 @@ export const condimentData = [
         imageBase: "20200621_123243",
         dietaryPreferences: ["vegetarian", "kosher"],
         half: "8",
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T08:32:43.000Z"),
     },
     {
@@ -252,6 +284,7 @@ export const condimentData = [
         imageBase: "20200621_123445",
         dietaryPreferences: ["vegetarian", "kosher", "halal"],
         half: "8",
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T08:34:45.000Z"),
     },
     {
@@ -260,6 +293,7 @@ export const condimentData = [
         imageBase: "20200621_123357",
         dietaryPreferences: ["vegetarian"],
         half: "8",
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T08:33:57.000Z"),
     },
     {
@@ -268,6 +302,7 @@ export const condimentData = [
         imageBase: "20200723_023043",
         dietaryPreferences: ["vegetarian", "kosher"],
         half: "8",
+        displayPriority: 50,
         createdAt: new Date("2020-07-22T22:30:43.000Z"),
     },
     {
@@ -276,6 +311,7 @@ export const condimentData = [
         imageBase: "20200621_102757",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
         half: "8",
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T06:27:57.000Z"),
     },
     {
@@ -284,6 +320,7 @@ export const condimentData = [
         imageBase: "20220904_112536",
         dietaryPreferences: ["vegetarian", "kosher", "halal"],
         half: "8",
+        displayPriority: 50,
         createdAt: new Date("2022-09-04T07:25:36.000Z"),
     },
     {
@@ -291,6 +328,7 @@ export const condimentData = [
         type: "condiment",
         imageBase: "20220904_112727",
         dietaryPreferences: ["vegetarian", "kosher", "halal"],
+        displayPriority: 50,
         createdAt: new Date("2022-09-04T07:27:27.000Z"),
     },
 ];
@@ -304,6 +342,7 @@ export const proteinData = [
         type: "protein",
         imageBase: "20200621_081721",
         dietaryPreferences: ["halal", "kosher"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T04:17:21.000Z"),
     },
     {
@@ -311,6 +350,7 @@ export const proteinData = [
         type: "protein",
         imageBase: "20200621_082049",
         dietaryPreferences: ["kosher", "halal"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T04:20:49.000Z"),
     },
     {
@@ -318,6 +358,7 @@ export const proteinData = [
         type: "protein",
         imageBase: "20200621_081904",
         dietaryPreferences: [],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T04:19:04.000Z"),
     },
     {
@@ -325,6 +366,7 @@ export const proteinData = [
         type: "protein",
         imageBase: "20200621_082227",
         dietaryPreferences: [],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T04:22:27.000Z"),
     },
     {
@@ -332,6 +374,7 @@ export const proteinData = [
         type: "protein",
         imageBase: "20200621_082443",
         dietaryPreferences: ["kosher", "halal"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T04:24:43.000Z"),
     },
     {
@@ -339,6 +382,7 @@ export const proteinData = [
         type: "protein",
         imageBase: "20200621_082538",
         dietaryPreferences: ["kosher", "halal"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T04:25:38.000Z"),
     },
     {
@@ -346,6 +390,7 @@ export const proteinData = [
         type: "protein",
         imageBase: "20200621_082005",
         dietaryPreferences: [],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T04:20:05.000Z"),
     },
     {
@@ -353,6 +398,7 @@ export const proteinData = [
         type: "protein",
         imageBase: "20200813_113834",
         dietaryPreferences: [],
+        displayPriority: 50,
         createdAt: new Date("2020-08-13T07:38:34.000Z"),
     },
     {
@@ -360,6 +406,7 @@ export const proteinData = [
         type: "protein",
         imageBase: "20200909_100415",
         dietaryPreferences: [],
+        displayPriority: 50,
         createdAt: new Date("2020-09-09T06:04:15.000Z"),
     },
     {
@@ -367,6 +414,7 @@ export const proteinData = [
         type: "protein",
         imageBase: "20200621_082346",
         dietaryPreferences: [],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T04:23:46.000Z"),
     },
     {
@@ -374,6 +422,7 @@ export const proteinData = [
         type: "protein",
         imageBase: "20200621_082626",
         dietaryPreferences: ["halal", "kosher"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T04:26:26.000Z"),
     },
     {
@@ -381,6 +430,7 @@ export const proteinData = [
         type: "protein",
         imageBase: "20200621_082719",
         dietaryPreferences: [],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T04:27:19.000Z"),
     },
     {
@@ -388,6 +438,7 @@ export const proteinData = [
         type: "protein",
         imageBase: "20200621_082821",
         dietaryPreferences: ["halal", "kosher"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T04:28:21.000Z"),
     },
     {
@@ -395,6 +446,7 @@ export const proteinData = [
         type: "protein",
         imageBase: "20200621_082909",
         dietaryPreferences: ["kosher", "halal"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T04:29:09.000Z"),
     },
     {
@@ -402,6 +454,7 @@ export const proteinData = [
         type: "protein",
         imageBase: "20200621_082959",
         dietaryPreferences: ["vegetarian", "kosher", "halal"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T04:29:59.000Z"),
     },
 ];
@@ -415,6 +468,7 @@ export const toppingData = [
         type: "topping",
         imageBase: "20200621_093051",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T05:30:51.000Z"),
     },
     {
@@ -422,6 +476,7 @@ export const toppingData = [
         type: "topping",
         imageBase: "20200621_093526",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T05:35:26.000Z"),
     },
     {
@@ -429,6 +484,7 @@ export const toppingData = [
         type: "topping",
         imageBase: "20200621_095313",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T05:53:13.000Z"),
     },
     {
@@ -436,6 +492,7 @@ export const toppingData = [
         type: "topping",
         imageBase: "20200621_095441",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T05:54:41.000Z"),
     },
     {
@@ -443,6 +500,7 @@ export const toppingData = [
         type: "topping",
         imageBase: "20200621_095524",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T05:55:24.000Z"),
     },
     {
@@ -450,6 +508,7 @@ export const toppingData = [
         type: "topping",
         imageBase: "20200621_095607",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T05:56:07.000Z"),
     },
     {
@@ -457,6 +516,7 @@ export const toppingData = [
         type: "topping",
         imageBase: "20200621_095722",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T05:57:22.000Z"),
     },
     {
@@ -464,6 +524,7 @@ export const toppingData = [
         type: "topping",
         imageBase: "20200621_095400",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T05:54:00.000Z"),
     },
     {
@@ -471,6 +532,7 @@ export const toppingData = [
         type: "topping",
         imageBase: "20200621_095938",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T05:59:38.000Z"),
     },
     {
@@ -478,6 +540,7 @@ export const toppingData = [
         type: "topping",
         imageBase: "20200621_100026",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T06:00:26.000Z"),
     },
     {
@@ -485,6 +548,7 @@ export const toppingData = [
         type: "topping",
         imageBase: "20200621_100115",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T06:01:15.000Z"),
     },
     {
@@ -492,6 +556,7 @@ export const toppingData = [
         type: "topping",
         imageBase: "20200621_100218",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T06:02:18.000Z"),
     },
     {
@@ -499,6 +564,7 @@ export const toppingData = [
         type: "topping",
         imageBase: "20200621_100648",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T06:06:48.000Z"),
     },
     {
@@ -506,6 +572,7 @@ export const toppingData = [
         type: "topping",
         imageBase: "20200621_100309",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T06:03:09.000Z"),
     },
     {
@@ -513,6 +580,7 @@ export const toppingData = [
         type: "topping",
         imageBase: "20200621_100450",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T06:04:50.000Z"),
     },
     {
@@ -520,6 +588,7 @@ export const toppingData = [
         type: "topping",
         imageBase: "20200621_100559",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T06:05:59.000Z"),
     },
     {
@@ -527,6 +596,7 @@ export const toppingData = [
         type: "topping",
         imageBase: "20200621_100356",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T06:03:56.000Z"),
     },
     {
@@ -534,6 +604,7 @@ export const toppingData = [
         type: "topping",
         imageBase: "20200621_100736",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
+        displayPriority: 50,
         createdAt: new Date("2020-06-21T06:07:36.000Z"),
     },
 ];

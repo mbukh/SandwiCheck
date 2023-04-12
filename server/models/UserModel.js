@@ -43,6 +43,12 @@ const userSchema = new Schema(
                     'Dietary preference must be one of "vegetarian", "kosher", "vegan", or "halal"',
             },
         },
+        sandwiches: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: "Sandwich",
+            },
+        ],
         favoriteSandwiches: [
             {
                 type: Schema.Types.ObjectId,
@@ -87,7 +93,6 @@ const userSchema = new Schema(
         },
     }
 );
-
 
 userSchema.pre("save", async function (next) {
     this.roles = [...new Set(this.roles)];

@@ -1,6 +1,6 @@
 import { roles as userRoles } from "../constants/usersConstants.js";
 
-import User from "../models/userModel.js";
+import User from "../models/UserModel.js";
 
 export const removeUserConnections = async (user, field, connectionId) => {
     const oppositeField = field === "parents" ? "children" : "parents";
@@ -51,7 +51,7 @@ export const removeUserConnections = async (user, field, connectionId) => {
 
 export const createUserParentsConnections = async (user, parentId) => {
     // Escape adding user a their own parents.
-    if (user._id.toString() === parentId) {
+    if (user._id.equals(parentId)) {
         return;
     }
 

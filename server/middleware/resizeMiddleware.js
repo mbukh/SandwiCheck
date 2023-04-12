@@ -1,8 +1,8 @@
 import sharp from "sharp";
 import createHttpError from "http-errors";
 
-const width = Number(process.env.USER_IMAGE_WIDTH);
-const height = Number(process.env.USER_IMAGE_HEIGHT);
+const width = parseInt(process.env.USER_IMAGE_WIDTH);
+const height = parseInt(process.env.USER_IMAGE_HEIGHT);
 
 const resizeImage = async (req, res, next) => {
     if (req.file) {
