@@ -3,24 +3,22 @@ import createError from "http-errors";
 
 import { profilePicturesDir } from "../config/dir.js";
 
-import excludeFields from "../constants/excludeFields.js";
-
-import { saveImageFromBuffer, removeImage } from "../utils/imageUtils.js";
+import { saveBufferToFile, removeFile } from "../utils/fileUtils.js";
 import { removeUserConnections } from "../utils/manageUserConnections.js";
 
-import User from "../models/userSchema.js";
+import User from "../models/userModel.js";
 
 // @desc    Get all users
 // @route   GET /api/users
-// @access  Admin
+// @access  Private/Admin
 export const getUsers = expressAsyncHandler(async (req, res, next) => {
-    const users = await User.find(req.body).select(excludeFields);
+    const users = await User.find(req.body);
     res.json({ success: true, data: users });
 });
 
 // @desc    Get single user
 // @route   GET /api/users/:id
-// @access  Private, Parents
+// @access  Private +Parents
 export const getUser = expressAsyncHandler(async (req, res, next) => {
     let userId;
 
@@ -30,7 +28,7 @@ export const getUser = expressAsyncHandler(async (req, res, next) => {
         userId = req.params.id;
     }
 
-    const user = await User.findById(userId).select(excludeFields);
+    const user = await User.findById(userId);
     if (!user) {
         return next(createError(404, "User not found"));
     }
@@ -39,11 +37,16 @@ export const getUser = expressAsyncHandler(async (req, res, next) => {
 
 // @desc    Update user
 // @route   PUT /api/users/:id
-// @access  Private, Parents
+// @access  Private +Parents
 export const updateUser = expressAsyncHandler(async (req, res, next) => {
-    const { name, removeParentId, removeChildId } = req.body;
-    const file = req.file;
-    let fileName;
+    const {
+        name,
+        dietaryPreferences,
+        removeProfilePicture,
+        removeParentId,
+        removeChildId,
+    } = req.body;
+    const imageBuffer = req.file && req.file.buffer;
 
     const user = await User.findById(req.params.id);
 
@@ -55,50 +58,46 @@ export const updateUser = expressAsyncHandler(async (req, res, next) => {
         user.name = name;
     }
 
-    if (file && file.buffer) {
-        fileName = `${user._id.toString()}.${process.env.PROFILE_IMAGE_EXTENSION}`;
-
-        await saveImageFromBuffer(file.buffer, profilePicturesDir, fileName);
-
-        user.profilePicture = fileName;
+    if (dietaryPreferences) {
+        user.dietaryPreferences = dietaryPreferences;
     }
 
     if (removeParentId) {
-        await removeUserConnections({
-            Model: User,
-            user,
-            field: "parents",
-            connectionId: removeParentId,
-        });
-
-        user.parents.pull(removeParentId);
-    }
-
-    if (removeChildId) {
-        await removeUserConnections({
-            Model: User,
-            user,
-            field: "children",
-            connectionId: removeChildId,
-        });
-
-        user.children.pull(removeChildId);
-    }
-
-    try {
-        user.save();
-    } catch (error) {
-        if (fileName) {
-            await removeImage(profilePicturesDir, fileName);
+        const res = await removeUserConnections(user, "parents", removeParentId);
+        if (res.error) {
+            return next(createError(403, res.error));
         }
     }
 
-    res.json({ success: true, data: { message: "User updated successfully" } });
+    if (removeChildId) {
+        const res = await removeUserConnections(user, "children", removeChildId);
+        if (res.error) {
+            return next(createError(403, res.error));
+        }
+    }
+
+    if (imageBuffer && !removeProfilePicture) {
+        const fileName = `${user._id.toString()}.${process.env.PROFILE_IMAGE_EXTENSION}`;
+        const res = await saveBufferToFile(imageBuffer, profilePicturesDir, fileName);
+        if (res) {
+            user.profilePicture = fileName;
+        }
+    }
+
+    if (removeProfilePicture) {
+        const fileName = user.profilePicture;
+        await removeFile(profilePicturesDir, fileName);
+        user.profilePicture = undefined;
+    }
+
+    const updatedUser = await user.save();
+
+    res.json({ success: true, data: updatedUser });
 });
 
 // @desc    Delete user
 // @route   DELETE /api/users/:id
-// @access  Private
+// @access  Private +Parent
 export const deleteUser = expressAsyncHandler(async (req, res, next) => {
     const user = await User.findById(req.params.id);
 
@@ -108,19 +107,19 @@ export const deleteUser = expressAsyncHandler(async (req, res, next) => {
 
     // Remove user from parents' children arrays
     if (user.parents && user.parents.length) {
-        await removeUserConnections({ Model: User, user, field: "parents" });
+        await removeUserConnections(user, "parents");
     }
 
     // Remove user from children's parents arrays
     if (user.children && user.children.length) {
-        await removeUserConnections({ Model: User, user, field: "children" });
+        await removeUserConnections(user, "children");
     }
 
     // Delete the user
     await User.findByIdAndDelete(req.params.id);
 
     const fileName = `${req.params.id}.${process.env.PROFILE_IMAGE_EXTENSION}`;
-    await removeImage(profilePicturesDir, fileName);
+    await removeFile(profilePicturesDir, fileName);
 
     res.json({ success: true, data: "User deleted successfully" });
 });

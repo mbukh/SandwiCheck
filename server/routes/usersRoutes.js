@@ -1,7 +1,9 @@
 import express from "express";
 
+import { roles as userRoles } from "../constants/usersConstants.js";
+
 import { protect, authorize } from "../middleware/authMiddleware.js";
-import uploadImage from "../middleware/uploadMiddleware.js";
+import upload from "../middleware/uploadMiddleware.js";
 import resizeImage from "../middleware/resizeMiddleware.js";
 
 import {
@@ -14,18 +16,21 @@ import {
 // Include other resource routers
 const router = express.Router({ mergeParams: true });
 
+// Upload image
+export const uploadImage = upload.single("profilePicture");
+
 router.route("/current").get(protect, getUser);
-router.route("/").post(protect, authorize("admin"), getUsers);
+router.route("/").post(protect, authorize(userRoles.admin), getUsers);
 router
     .route("/:id")
-    .get(protect, authorize("parent"), getUser)
+    .get(protect, authorize(userRoles.user, userRoles.parent), getUser)
     .put(
         protect,
-        authorize("user", "child", "parent"),
+        authorize(userRoles.user, userRoles.parent),
         uploadImage,
         resizeImage,
         updateUser
     )
-    .delete(protect, authorize("user", "child", "parent"), deleteUser);
+    .delete(protect, authorize(userRoles.user), deleteUser);
 
 export default router;

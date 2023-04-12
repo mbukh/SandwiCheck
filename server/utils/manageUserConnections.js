@@ -1,12 +1,23 @@
-export const removeUserConnections = async ({ Model, user, field, connectionId }) => {
+import { roles as userRoles } from "../constants/usersConstants.js";
+
+import User from "../models/userModel.js";
+
+export const removeUserConnections = async (user, field, connectionId) => {
     const oppositeField = field === "parents" ? "children" : "parents";
-    const connectionRole = field === "parents" ? "parent" : "child";
-    const selfRole = field === "parents" ? "child" : "parent";
+    const connectionRole = field === "parents" ? userRoles.parent : userRoles.parent;
+    const selfRole = field === "parents" ? userRoles.parent : userRoles.parent;
     // List of ids from a field or a specific id
     const ids = connectionId ? [connectionId] : user[field];
 
+    // Check if a connection is related to the user
+    if (connectionId && !user[field].includes(connectionId)) {
+        return {
+            error: `The ${connectionRole} that you are attempting to remove may not be related to the user`,
+        };
+    }
+
     // Remove connections from the specified field
-    const result = await Model.updateMany(
+    const result = await User.updateMany(
         { _id: { $in: ids } },
         {
             $pull: { [oppositeField]: user._id },
@@ -15,7 +26,7 @@ export const removeUserConnections = async ({ Model, user, field, connectionId }
 
     // If any connections were modified, update their roles
     if (result.modifiedCount > 0) {
-        const result = await Model.updateMany(
+        const result = await User.updateMany(
             {
                 _id: { $in: ids },
                 [oppositeField]: { $size: 0 },
@@ -38,30 +49,34 @@ export const removeUserConnections = async ({ Model, user, field, connectionId }
     }
 };
 
-export const createUserConnections = async ({ Model, user, parentId }) => {
+export const createUserParentsConnections = async (user, parentId) => {
+    // Escape adding user a their own parents.
+    if (user._id.toString() === parentId) {
+        return;
+    }
+
+    // Ignore if parentId doesn't exist in database
+    const parent = await User.findById(parentId);
+    if (!parent) {
+        return;
+    }
+
     // Add parent to a user
-    const currentUser = await Model.findById(user._id);
-
-    if (!currentUser.parents.includes(parentId)) {
-        currentUser.parents.push(parentId);
+    if (!user.parents.includes(parentId)) {
+        user.parents.push(parentId);
     }
-
-    if (!currentUser.roles.includes("child")) {
-        currentUser.roles.push("child");
+    if (!user.roles.includes(userRoles.parent)) {
+        user.roles.push(userRoles.parent);
     }
-
-    await currentUser.save();
+    await user.save();
 
     // Update the parent
-    const parent = await Model.findById(parentId);
-
     if (!parent.children.includes(user._id)) {
         parent.children.push(user._id);
     }
 
-    if (!parent.roles.includes("parent")) {
-        parent.roles.push("parent");
+    if (!parent.roles.includes(userRoles.parent)) {
+        parent.roles.push(userRoles.parent);
     }
-
     await parent.save();
 };

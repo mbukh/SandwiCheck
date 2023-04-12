@@ -3,9 +3,10 @@ import createError from "http-errors";
 
 import jwt from "jsonwebtoken";
 
+import {roles as userRoles} from "../constants/usersConstants.js";
 import excludeFields from "../constants/excludeFields.js";
 
-import User from "../models/userSchema.js";
+import User from "../models/userModel.js";
 
 export const protect = expressAsyncHandler(async (req, res, next) => {
     let token;
@@ -39,7 +40,7 @@ export const authorize = (...roles) => {
         const { id } = req.params;
 
         // Check if user is an admin
-        if (user.roles.includes("admin")) {
+        if (user.roles.includes(userRoles.admin)) {
             return next();
         }
 
@@ -48,8 +49,18 @@ export const authorize = (...roles) => {
             return next(createError(403, "Not authorized to access this resource"));
         }
 
-        // Check if user is accessing their own profile or a child's profile
-        if (user._id.toString() === id || (user.children && user.children.includes(id))) {
+        // Check if user is accessing their own profile
+        if (user._id.toString() === id) {
+            return next();
+        }
+
+        // Check if user is accessing their child's profile
+        if (
+            roles.includes(userRoles.parents) &&
+            user.roles.includes(userRoles.parent) &&
+            user.children &&
+            user.children.includes(id)
+        ) {
             return next();
         }
 

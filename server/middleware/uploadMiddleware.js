@@ -12,6 +12,7 @@ const fileFilter = (req, file, cb) => {
     const mimetype = filetypes.test(file.mimetype);
 
     if (mimetype) {
+        // create req.file.extension
         file.extension = file.mimetype.split("/")[1];
         return cb(null, true);
     }
@@ -19,9 +20,9 @@ const fileFilter = (req, file, cb) => {
 };
 
 const limits = {
-    fileSize: Number(process.env.MAX_UPLOAD_SIZE),
+    fileSize: Number(process.env.MAX_UPLOAD_SIZE_IN_BYTES),
 };
 
-const uploadImage = multer({ storage, limits, fileFilter }).single("image");
+const upload = multer({ storage, limits, fileFilter });
 
-export default uploadImage;
+export default upload;

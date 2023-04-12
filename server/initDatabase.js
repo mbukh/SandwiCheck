@@ -1,44 +1,68 @@
-import dotenv from "dotenv";
-import connectDB from "./config/db.js";
+import fs from "fs/promises";
+import path from "path";
 
-import expressAsyncHandler from "express-async-handler";
+import dotenv from "dotenv";
+dotenv.config({ path: "./config/config.env" });
+
+import connectDB from "./config/db.js";
 
 import colors from "colors";
 
 import mongoose from "mongoose";
-import { Bread, Protein, Cheese, Topping, Condiment } from "./models/ingredientSchema.js";
 
-import { breadData } from "./service/initialData/breadData.js";
-import { proteinData } from "./service/initialData/proteinData.js";
-import { cheeseData } from "./service/initialData/cheeseData.js";
-import { condimentData } from "./service/initialData/condimentData.js";
-import { toppingData } from "./service/initialData/toppingData.js";
+import Ingredient from "./models/IngredientModel.js";
 
-dotenv.config({ path: "./config/config.env" });
-connectDB();
+import {
+    breadData,
+    proteinData,
+    cheeseData,
+    toppingData,
+    condimentData,
+} from "./service/initialData/ingredientsData.js";
 
-console.log(process.env.MONGO_URI);
+const waitForConnection = () => {
+    return new Promise((resolve) => {
+        mongoose.connection.once("connected", () => {
+            resolve();
+        });
+    });
+};
 
-const addData = expressAsyncHandler(async ({ data, Model }) => {
+const addData = async ({ data, Model }) => {
+    const type = data[0].type;
     try {
-        for (const item of data) {
-            const newModel = await Model.create(item);
-            console.log(`Added ${newModel.type}: ${newModel.name}`);
-        }
+        await Model.insertMany(data);
+
+        console.log(`Added to ${type}: ${data.length}`);
     } catch (error) {
-        console.error(`Error adding ${Model.collection.collectionName}:`, error);
+        console.error(`Error adding to ${type}:`.red, error);
     }
-});
+};
 
-const tuplesToProcess = [
-    [breadData, Bread],
-    [proteinData, Protein],
-    [cheeseData, Cheese],
-    [condimentData, Condiment],
-    [toppingData, Topping],
-];
+const main = async () => {
+    try {
+        connectDB();
 
-Promise.all(tuplesToProcess.map(([data, Model]) => addData({ data, Model })))
-    .then(() => console.log("All data added to database"))
-    .catch((error) => console.log(error))
-    .finally(() => mongoose.connection.close());
+        await waitForConnection();
+
+        const tuplesDataModelToProcess = [
+            [breadData, Ingredient],
+            [proteinData, Ingredient],
+            [cheeseData, Ingredient],
+            [toppingData, Ingredient],
+            [condimentData, Ingredient],
+        ];
+
+        await Promise.all(
+            tuplesDataModelToProcess.map(([data, Model]) => addData({ data, Model }))
+        );
+
+        console.log("All data added to database");
+    } catch (error) {
+        console.log(error);
+    } finally {
+        mongoose.connection.close();
+    }
+};
+
+main();
