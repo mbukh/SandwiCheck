@@ -9,12 +9,16 @@ import User from "../models/UserModel.js";
 // @route   GET /api/sandwiches
 // @access  Public
 export const getSandwiches = expressAsyncHandler(async (req, res, next) => {
-    const { dietaryPreferences, sortBy, page, limit } = req.query;
+    const { dietaryPreferences, ingredients, sortBy, page, limit } = req.query;
 
     const query = Sandwich.find();
 
     if (dietaryPreferences) {
-        query.where("dietaryPreferences").all(dietaryPreferences.split(","));
+        query.where("dietaryPreferences").all(dietaryPreferences.split("|"));
+    }
+
+    if (ingredients) {
+        query.where("ingredients").all(ingredients.split("|"));
     }
 
     if (sortBy) {

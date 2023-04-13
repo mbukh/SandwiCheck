@@ -21,7 +21,7 @@ export const getIngredients = expressAsyncHandler(async (req, res, next) => {
     let query = {};
 
     if (dietaryPreferences) {
-        query.dietaryPreferences = { $all: dietaryPreferences.split(",") };
+        query.dietaryPreferences = { $all: dietaryPreferences.split("|") };
     }
 
     let sort = {};
