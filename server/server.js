@@ -1,8 +1,8 @@
 import path from "path";
-import { serverDir, clientDir, uploadsDir } from "./config/dir.js";
+import { configDir, clientDir, uploadsDir } from "./config/dir.js";
 
 import dotenv from "dotenv";
-dotenv.config({ path: path.join(serverDir, "config", "config.env") });
+dotenv.config({ path: path.join(configDir, "config.env") });
 
 import connectDB from "./config/db.js";
 

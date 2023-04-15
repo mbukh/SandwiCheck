@@ -3,7 +3,7 @@ import path from "path";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export const serverDir = path.join(__dirname, "..");
+export const configDir = path.join(__dirname);
 
 export const clientDir = path.join(__dirname, "..", "..", "client", "build");
 

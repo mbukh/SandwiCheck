@@ -1,4 +1,4 @@
-import createError from "http-errors";
+import createHttpError from "http-errors";
 
 const errorHandler = (err, req, res, next) => {
     let error = { ...err, message: err.message, status: err.status };
@@ -16,25 +16,25 @@ const errorHandler = (err, req, res, next) => {
         const message = `Resource not found with id ending ...${String(err.value).slice(
             -6
         )} not found`;
-        error = createError(404, message);
+        error = createHttpError.NotFound(message);
     }
     // Mongoose duplicate key
     if (err.code === 11000) {
         const field_value = error.message.match(/\{(.*)\}/g)[0].replaceAll('"', "");
         const message = `Duplicate data ${field_value}`;
-        error = createError(400, message);
+        error = createHttpError.BadRequest(message);
     }
     // Mongoose validation error
     if (err.name === "ValidationError") {
         const message = Object.values(error.errors)
-            .map((val) => val.properties.message)
+            .map((val) => val.properties?.message)
             .join("; ");
-        error = createError(400, message);
+        error = createHttpError.BadRequest(message);
     }
 
     if (err.name === "MulterError") {
         if (error.code === "LIMIT_FILE_SIZE") {
-            error = createError(
+            error = createHttpError(
                 400,
                 `The file is too large. The maximum file size allowed is ${Math.round(
                     parseInt(process.env.MAX_UPLOAD_SIZE_IN_BYTES) / 1024 / 1024
@@ -44,7 +44,7 @@ const errorHandler = (err, req, res, next) => {
     }
 
     res.status(error.status || 500);
-    res.json({
+    res.status(200).json({
         success: false,
         error: {
             status: error.status,

@@ -3,7 +3,7 @@ dotenv.config({ path: "./config/config.env" });
 
 import multer from "multer";
 
-import createError from "http-errors";
+import createHttpError from "http-errors";
 
 const storage = multer.memoryStorage();
 
@@ -16,7 +16,7 @@ const fileFilter = (req, file, cb) => {
         file.extension = file.mimetype.split("/")[1];
         return cb(null, true);
     }
-    cb(createError(400, "Invalid image file type. Only JPEG and PNG are allowed"));
+    cb(createHttpError.BadRequest("Invalid image file type. Only JPEG and PNG are allowed"));
 };
 
 const limits = {

@@ -1,10 +1,15 @@
 import express from "express";
 
-import { roles as userRoles } from "../constants/usersConstants.js";
+import { ROLES } from "../constants/usersConstants.js";
 
 import { protect, authorize } from "../middleware/authMiddleware.js";
 import upload from "../middleware/uploadMiddleware.js";
 import resizeImage from "../middleware/resizeMiddleware.js";
+
+import {
+    addSandwichToWeekMenu,
+    removeSandwichFromWeekMenu,
+} from "../controllers/userWeekMenuController.js";
 
 import {
     getUsers,
@@ -19,18 +24,25 @@ const router = express.Router({ mergeParams: true });
 // Upload image
 export const uploadImage = upload.single("profilePicture");
 
+router.route("/").post(protect, authorize(ROLES.admin), getUsers);
+
 router.route("/current").get(protect, getUser);
-router.route("/").post(protect, authorize(userRoles.admin), getUsers);
+
 router
-    .route("/:id")
-    .get(protect, authorize(userRoles.user, userRoles.parent), getUser)
+    .route("/:userId/week-menu/:day")
+    .put(protect, authorize(ROLES.user, ROLES.parent), addSandwichToWeekMenu)
+    .delete(protect, authorize(ROLES.user, ROLES.parent), removeSandwichFromWeekMenu);
+
+router
+    .route("/:userId")
+    .get(protect, authorize(ROLES.user, ROLES.parent), getUser)
     .put(
         protect,
-        authorize(userRoles.user, userRoles.parent),
+        authorize(ROLES.user, ROLES.parent),
         uploadImage,
         resizeImage,
         updateUser
     )
-    .delete(protect, authorize(userRoles.user), deleteUser);
+    .delete(protect, authorize(ROLES.user), deleteUser);
 
 export default router;

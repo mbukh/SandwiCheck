@@ -28,7 +28,7 @@ router
     .get(getIngredients)
     .post(protect, authorize("admin"), uploadImages, createIngredient);
 router
-    .route("/:id")
+    .route("/:ingredientId")
     .get(getIngredient)
     .put(protect, authorize("admin"), uploadImages, updateIngredient)
     .delete(protect, authorize("admin"), deleteIngredient);

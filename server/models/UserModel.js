@@ -1,40 +1,78 @@
 import mongoose from "mongoose";
 
-import { roles as userRoles } from "../constants/usersConstants.js";
+import {
+    ROLES,
+    MAX_SANDWICHES_PER_DAY,
+    MAX_TETHERED_CHILDREN,
+} from "../constants/usersConstants.js";
+import { DAYS_OF_WEEK } from "../constants/daysOfWeek.js";
 
 const { Schema } = mongoose;
+
+const weekMenuSchema = new Schema(
+    Object.fromEntries(
+        DAYS_OF_WEEK.map((day) => [
+            day,
+            {
+                type: [
+                    {
+                        sandwich: {
+                            type: Schema.Types.ObjectId,
+                            ref: "Sandwich",
+                        },
+                        quantity: {
+                            type: Number,
+                            default: 0,
+                        },
+                    },
+                ],
+                validate: {
+                    validator: validateDailyMenu,
+                    message: `Cannot add more than ${MAX_SANDWICHES_PER_DAY} sandwiches per day`,
+                },
+            },
+        ])
+    ),
+    { _id: false }
+);
 
 const userSchema = new Schema(
     {
         name: {
             type: String,
-            required: [true, "Name field is required"],
             trim: true,
-            minlength: [3, "Name field must be at least 3 characters long"],
-            maxlength: [50, "Name field must be at most 50 characters long"],
+            minlength: [3, "Name must be at least 3 characters long"],
+            maxlength: [50, "Name must be at most 50 characters long"],
+            required: [true, "Name is required"],
         },
         email: {
             type: String,
-            required: [true, "Email field is required"],
             unique: true,
+            index: true,
+            sparse: true, // unique for non-empty fields
             trim: true,
             lowercase: true,
-            match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Email field is invalid"],
+            match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Email is invalid"],
+            required: [checkChildWithoutEmail, "Email is required"],
         },
         password: {
             type: String,
-            required: [true, "Password field is required"],
+            required: [checkChildWithoutEmail, "Password is required "],
         },
-        profilePicture: { type: String },
+        isTetheredChild: {
+            type: Boolean,
+            default: false,
+        },
         roles: {
             type: [String],
             enum: {
-                values: [...Object.values(userRoles)],
-                message: `Role must be either ${Object.values(userRoles).join(", ")}`,
+                values: [...Object.values(ROLES)],
+                message: `Role must be either ${Object.values(ROLES).join(", ")}`,
             },
             required: [true, "Role is required"],
             default: ["user"],
         },
+        profilePicture: { type: String },
         dietaryPreferences: {
             type: [String],
             enum: {
@@ -49,6 +87,7 @@ const userSchema = new Schema(
                 ref: "Sandwich",
             },
         ],
+        weekMenu: weekMenuSchema,
         favoriteSandwiches: [
             {
                 type: Schema.Types.ObjectId,
@@ -98,23 +137,37 @@ userSchema.pre("save", async function (next) {
     this.roles = [...new Set(this.roles)];
     this.dietaryPreferences = [...new Set(this.dietaryPreferences)];
     this.favoriteSandwiches = [...new Set(this.favoriteSandwiches)];
-    this.parents = [...new Set(this.parents)];
-    this.children = [...new Set(this.children)];
 
-    next();
-});
+    // update tethered child if a child gets an email
+    this.isTetheredChild = this.isTetheredChild && !this.email;
 
-// Post middleware to update sandwich authorName field
-userSchema.post("save", async function (doc, next) {
-    if (this.isModified("name")) {
-        const userId = this.id;
-        const user = await mongoose.model("User").findById(userId);
-        await mongoose
-            .model("Sandwich")
-            .updateMany({ userId }, { authorName: user.firstName });
+    // Check tethered children count when creating a new user or when the name is modified
+    if (this.isNew && this.isTetheredChild) {
+        const childUserCount = await User.countDocuments({
+            parents: this.parents[0],
+            email: { $exists: false },
+        });
+
+        if (childUserCount >= MAX_TETHERED_CHILDREN) {
+            const error = new Error(
+                `You can only have up to ${MAX_TETHERED_CHILDREN} children with no email`
+            );
+            error.name = "ChildUserLimitExceeded";
+            return next(error);
+        }
     }
+
     next();
 });
+
+function checkChildWithoutEmail() {
+    return !this.isTetheredChild;
+}
+
+function validateDailyMenu(value) {
+    const totalSandwiches = value.reduce((acc, day) => acc + day.quantity, 0);
+    return totalSandwiches <= MAX_SANDWICHES_PER_DAY;
+}
 
 userSchema.virtual("firstName").get(function () {
     return this.name && this.name.split(" ")[0];

@@ -12,10 +12,12 @@ const sendTokenResponse = (statusCode, token, res) => {
     }
 
     // Set cookie and send response
-    res.status(statusCode).cookie("token", token, cookieOptions).json({
-        success: true,
-        data: { token },
-    });
+    res.status(statusCode)
+        .cookie(token.name, token.value, cookieOptions)
+        .json({
+            success: true,
+            [token.name]: token.value,
+        });
 };
 
 export default sendTokenResponse;

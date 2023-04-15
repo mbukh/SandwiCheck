@@ -14,7 +14,7 @@ const resizeImage = async (req, res, next) => {
 
             req.file.buffer = resizedBuffer;
         } catch (err) {
-            return next(createHttpError(400, "Unsupported image format"));
+            return next(createHttpError.BadRequest("Unsupported image format"));
         }
     }
 

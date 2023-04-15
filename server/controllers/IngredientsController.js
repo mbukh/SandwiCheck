@@ -11,13 +11,13 @@ import {
 } from "../utils/manageIngredientsImages.js";
 
 import Ingredient from "../models/IngredientModel.js";
-// import Sandwich from "../models/SandwichModel.js";
+import Sandwich from "../models/SandwichModel.js";
 
 // @desc    Fetch all ingredients
 // @route   GET /api/ingredients
 // @access  Public
 export const getIngredients = expressAsyncHandler(async (req, res, next) => {
-    const { dietaryPreferences, type, sortBy } = { ...req.query };
+    const { dietaryPreferences, type, sortBy } = { ...req.query, ...req.body };
     let query = {};
 
     if (dietaryPreferences) {
@@ -38,22 +38,20 @@ export const getIngredients = expressAsyncHandler(async (req, res, next) => {
 
     const ingredients = await Ingredient.find(query).sort(sort);
 
-    // TODO: paging
-
-    res.json({ success: true, data: ingredients });
+    res.status(200).json({ success: true, data: ingredients });
 });
 
 // @desc    Fetch a single ingredient
-// @route   GET /api/ingredients/:id
+// @route   GET /api/ingredients/:ingredientId
 // @access  Public
 export const getIngredient = expressAsyncHandler(async (req, res, next) => {
-    const ingredient = await Ingredient.findById(req.params.id);
+    const ingredient = await Ingredient.findById(req.params.ingredientId);
 
     if (!ingredient) {
         return next(createHttpError.NotFound("Ingredient not found"));
     }
 
-    res.json({ success: true, data: ingredient });
+    res.status(200).json({ success: true, data: ingredient });
 });
 
 // @desc    Create an ingredient
@@ -100,16 +98,16 @@ export const createIngredient = expressAsyncHandler(async (req, res, next) => {
 });
 
 // @desc    Update an ingredient
-// @route   PUT /api/ingredients/:id
+// @route   PUT /api/ingredients/:ingredientId
 // @access  Private/Admin
 export const updateIngredient = expressAsyncHandler(async (req, res, next) => {
     const { name, type, dietaryPreferences, shape, displayPriority } = req.body;
     const reqFiles = req.files;
 
-    const ingredient = await Ingredient.findById(req.params.id);
+    const ingredient = await Ingredient.findById(req.params.ingredientId);
 
     if (!ingredient) {
-        return next(createHttpError(404, "Ingredient not found"));
+        return next(createHttpError.NotFound("Ingredient not found"));
     }
 
     if (!name || !type || (isBreadType(type) && !shape) || !displayPriority) {
@@ -150,37 +148,38 @@ export const updateIngredient = expressAsyncHandler(async (req, res, next) => {
 
     const updatedIngredient = await ingredient.save();
 
-    res.json({ success: true, data: updatedIngredient });
+    res.status(200).json({ success: true, data: updatedIngredient });
 });
 
 // @desc    Delete an ingredient
-// @route   DELETE /api/ingredients/:id
+// @route   DELETE /api/ingredients/:ingredientId
 // @access  Private/Admin
 export const deleteIngredient = expressAsyncHandler(async (req, res, next) => {
-    const { id } = req.params;
+    const ingredientId = req.params.ingredientId;
 
-    // FIXME: uncomment and test this code
+    const sandwichWithIngredient = await Sandwich.findOne({
+        "ingredients.ingredientId": ingredientId,
+    });
 
-    // const sandwichWithIngredient = await Sandwich.findOne({ ingredients: id });
+    if (sandwichWithIngredient) {
+        return next(
+            createHttpError.BadRequest(
+                "Cannot delete ingredient, it is currently used in a sandwich"
+            )
+        );
+    }
 
-    // if (sandwichWithIngredient) {
-    //     return next(
-    //         createHttpError.BadRequest(
-    //             "Cannot delete ingredient, it is currently used in a sandwich"
-    //         )
-    //     );
-    // }
-
-    const ingredient = await Ingredient.findByIdAndDelete(id);
+    const ingredient = await Ingredient.findByIdAndDelete(ingredientId);
 
     if (!ingredient) {
         return next(createHttpError.NotFound("Ingredient not found"));
     }
 
-    await removeAllIngredientImagesByImageBase(ingredient.imageBase);
+    // await removeAllIngredientImagesByImageBase(ingredient.imageBase);
 
-    res.json({
+    res.status(200).json({
         success: true,
         message: "Ingredient successfully deleted",
+        data: ingredient,
     });
 });
