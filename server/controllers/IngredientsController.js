@@ -2,7 +2,7 @@ import expressAsyncHandler from "express-async-handler";
 
 import createHttpError from "http-errors";
 
-import { isBreadType, types } from "../constants/ingredientsConstants.js";
+import { isBreadType, TYPES } from "../constants/ingredientsConstants.js";
 
 import { getTimeBasedFilename } from "../utils/fileUtils.js";
 import {
@@ -117,7 +117,7 @@ export const updateIngredient = expressAsyncHandler(async (req, res, next) => {
     if (ingredient.type !== type && (isBreadType(ingredient.type) || isBreadType(type))) {
         return next(
             createHttpError.BadRequest(
-                `Types can only be swapped between ${Object.values(types)
+                `Types can only be swapped between ${Object.values(TYPES)
                     .filter((type) => !isBreadType(type))
                     .join(", ")}`
             )

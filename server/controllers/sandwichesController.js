@@ -3,6 +3,10 @@ import expressAsyncHandler from "express-async-handler";
 import createHttpError from "http-errors";
 
 import { NO_USER_SANDWICH_USERNAME } from "../constants/sandwichConstants.js";
+import { SANDWICHES_DIR } from "../config/dir.js";
+
+import { removeFile } from "../utils/fileUtils.js";
+import { generateSandwichImage } from "../utils/manageSandwichesImages.js";
 
 import Sandwich from "../models/SandwichModel.js";
 import User from "../models/UserModel.js";
@@ -33,7 +37,7 @@ export const getSandwiches = expressAsyncHandler(async (req, res, next) => {
 
     // Set default values for page and limit if not provided
     const pageNumber = parseInt(page, 10) || 1;
-    const pageLimit = parseInt(limit, 10) || process.env.SANDWICHES_PER_PAGE;
+    const pageLimit = parseInt(limit, 10) || process.env.SANDWICHES_PER_PAGE_DEFAULT;
 
     // Calculate the number of documents to skip based on the current page and limit
     const skipCount = (pageNumber - 1) * pageLimit;
@@ -75,13 +79,21 @@ export const createSandwich = expressAsyncHandler(async (req, res, next) => {
     const { name, ingredients, comment } = req.body;
     const { id: userId, firstName } = req.user;
 
-    const newSandwich = await Sandwich.create({
+    const newSandwich = new Sandwich({
         name,
         ingredients,
         authorName: firstName,
         authorId: userId,
         comment: comment,
     });
+
+    await newSandwich.validate();
+
+    const image = await generateSandwichImage(ingredients);
+
+    newSandwich.image = image;
+
+    newSandwich.save();
 
     const user = await User.findById(req.user._id);
     user.sandwiches.push(newSandwich._id);

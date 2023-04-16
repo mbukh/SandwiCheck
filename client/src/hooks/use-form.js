@@ -31,11 +31,11 @@ const useForm = () => {
         setErrors([]);
         try {
             const signUpResult = await signUp(email, password);
-            await createUser(signUpResult.user.uid, {
+            await createUser(signUpResult.user.id, {
                 name,
                 ...(parentId && { parents: [parentId] }),
             });
-            parentId && updateUserById(parentId, { children: signUpResult.user.uid });
+            parentId && updateUserById(parentId, { children: signUpResult.user.id });
             const unExpiredSavedSandwich = readSandwichFromLocalStorage();
             if (unExpiredSavedSandwich) navigate("/create");
             else navigate("/menu");
@@ -56,11 +56,11 @@ const useForm = () => {
             const loginResult = await logIn(email, password);
             parentId &&
                 Promise.all([
-                    updateUserById(loginResult.user.uid, {
+                    updateUserById(loginResult.user.id, {
                         parents: parentId,
                     }),
                     updateUserById(parentId, {
-                        children: loginResult.user.uid,
+                        children: loginResult.user.id,
                     }),
                 ]);
             const unExpiredSavedSandwich = readSandwichFromLocalStorage();

@@ -54,7 +54,7 @@ const Header = () => {
                     <div className="nav-center fl fl-cc">
                         <Link to="/latest" className="no-hover block size-full">
                             <div className="logo m-i-a">
-                                {!user.info?.name ? (
+                                {!user?.name ? (
                                     <div className="fl fl-cc text-xs sm:text-base text-sh-5">
                                         Let us
                                         <br /> inspire
@@ -65,7 +65,7 @@ const Header = () => {
                                         Let us
                                         <br /> inspire you,
                                         <br />
-                                        {user.info.name.split(" ")[0]}
+                                        {user.name.split(" ")[0]}
                                     </div>
                                 )}
                             </div>
@@ -74,12 +74,12 @@ const Header = () => {
 
                     <div className="nav-end w-2/5 flex justify-end">
                         <div className="desktop-only lg:inline-block xl:text-lg uppercase text-shadow-10">
-                            {user.uid ? (
+                            {user.id ? (
                                 <>
                                     <NavLink to="/menu" className="mr-6 font-bold">
                                         My menu
                                     </NavLink>
-                                    {user.info?.type === "parent" && (
+                                    {user.roles.includes("parent") && (
                                         <NavLink to="/family" className="ml-6 xl:mx-10">
                                             My Family
                                         </NavLink>

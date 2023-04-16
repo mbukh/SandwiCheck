@@ -132,8 +132,8 @@ const SandwichEditor = () => {
                                     type="text"
                                     name="sandwichName"
                                     placeholder={
-                                        user.info?.name
-                                            ? user.info?.name.split(" ")[0] +
+                                        user?.name
+                                            ? user?.name.split(" ")[0] +
                                               "'s Sandwich"
                                             : "Sandwich name"
                                     }
@@ -141,7 +141,7 @@ const SandwichEditor = () => {
                                     onChange={changeSandwichNameHandler}
                                     value={sandwich?.name}
                                 />
-                                {user.uid ? (
+                                {user.id ? (
                                     <input
                                         type="submit"
                                         placeholder="save sandwich"

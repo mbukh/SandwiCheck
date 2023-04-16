@@ -1,4 +1,4 @@
-export const types = {
+export const TYPES = {
     bread: "bread",
     protein: "protein",
     cheese: "cheese",
@@ -6,74 +6,74 @@ export const types = {
     condiment: "condiment",
 };
 
-export const dietaryPreferences = {
+export const DIETARY_PREFERENCES = {
     vegetarian: "vegetarian",
     kosher: "kosher",
     halal: "halal",
     vegan: "vegan",
 };
 
-export const shapes = {
+export const SHAPES = {
     long: "long",
     round: "round",
     trapezoid: "trapezoid",
 };
 
-export const portions = {
+export const PORTIONS = {
     full: "full",
     half: "half",
     double: "double",
 };
 
-export const imageFieldsForAll = [
+export const IMAGE_FIELDS = [
     {
         fieldName: "imageLongDouble",
-        title: `shape: ${shapes.long}, portion: ${portions.double}`,
-        suffix: `_${shapes.long}_${portions.double}`,
+        title: `shape: ${SHAPES.long}, portion: ${PORTIONS.double}`,
+        suffix: `_${SHAPES.long}_${PORTIONS.double}`,
     },
     {
         fieldName: "imageLongFull",
-        title: `shape: ${shapes.long}, portion: ${portions.full}`,
-        suffix: `_${shapes.long}_${portions.full}`,
+        title: `shape: ${SHAPES.long}, portion: ${PORTIONS.full}`,
+        suffix: `_${SHAPES.long}_${PORTIONS.full}`,
     },
     {
         fieldName: "imageLongHalf",
-        title: `shape: ${shapes.long}, portion: ${portions.half}`,
-        suffix: `_${shapes.long}_${portions.half}`,
+        title: `shape: ${SHAPES.long}, portion: ${PORTIONS.half}`,
+        suffix: `_${SHAPES.long}_${PORTIONS.half}`,
     },
     {
         fieldName: "imageRoundDouble",
-        title: `shape: ${shapes.round}, portion: ${portions.double}`,
-        suffix: `_${shapes.round}_${portions.double}`,
+        title: `shape: ${SHAPES.round}, portion: ${PORTIONS.double}`,
+        suffix: `_${SHAPES.round}_${PORTIONS.double}`,
     },
     {
         fieldName: "imageRoundFull",
-        title: `shape: ${shapes.round}, portion: ${portions.full}`,
-        suffix: `_${shapes.round}_${portions.full}`,
+        title: `shape: ${SHAPES.round}, portion: ${PORTIONS.full}`,
+        suffix: `_${SHAPES.round}_${PORTIONS.full}`,
     },
     {
         fieldName: "imageRoundHalf",
-        title: `shape: ${shapes.round}, portion: ${portions.half}`,
-        suffix: `_${shapes.round}_${portions.half}`,
+        title: `shape: ${SHAPES.round}, portion: ${PORTIONS.half}`,
+        suffix: `_${SHAPES.round}_${PORTIONS.half}`,
     },
     {
         fieldName: "imageTrapezoidDouble",
-        title: `shape: ${shapes.trapezoid}, portion: ${portions.double}`,
-        suffix: `_${shapes.trapezoid}_${portions.double}`,
+        title: `shape: ${SHAPES.trapezoid}, portion: ${PORTIONS.double}`,
+        suffix: `_${SHAPES.trapezoid}_${PORTIONS.double}`,
     },
     {
         fieldName: "imageTrapezoidFull",
-        title: `shape: ${shapes.trapezoid}, portion: ${portions.full}`,
-        suffix: `_${shapes.trapezoid}_${portions.full}`,
+        title: `shape: ${SHAPES.trapezoid}, portion: ${PORTIONS.full}`,
+        suffix: `_${SHAPES.trapezoid}_${PORTIONS.full}`,
     },
     {
         fieldName: "imageTrapezoidHalf",
-        title: `shape: ${shapes.trapezoid}, portion: ${portions.half}`,
-        suffix: `_${shapes.trapezoid}_${portions.half}`,
+        title: `shape: ${SHAPES.trapezoid}, portion: ${PORTIONS.half}`,
+        suffix: `_${SHAPES.trapezoid}_${PORTIONS.half}`,
     },
 ];
 
-export const imageFieldsForBread = [
+export const IMAGE_FIELDS_BREAD = [
     {
         fieldName: "imageBread",
         title: `whole unsliced bread`,
@@ -86,10 +86,10 @@ export const imageFieldsForBread = [
     },
 ];
 
-export const allImageFields = [...imageFieldsForAll, ...imageFieldsForBread];
+export const ALL_IMAGE_FIELDS = [...IMAGE_FIELDS, ...IMAGE_FIELDS_BREAD];
 
 export const imageFieldsByType = (type) => {
-    return isBreadType(type) ? imageFieldsForBread : imageFieldsForAll;
+    return isBreadType(type) ? IMAGE_FIELDS_BREAD : IMAGE_FIELDS;
 };
 
-export const isBreadType = (type) => type === types.bread;
+export const isBreadType = (type) => type === TYPES.bread;

@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
 import {
-    dietaryPreferences,
-    portions,
+    DIETARY_PREFERENCES,
+    PORTIONS,
     isBreadType,
 } from "../constants/ingredientsConstants.js";
 
@@ -19,8 +19,8 @@ const ingredientWithPortionSchema = new Schema(
         },
         portion: {
             type: String,
-            enum: [...Object.values(portions)],
-            default: portions.full,
+            enum: [...Object.values(PORTIONS)],
+            default: PORTIONS.full,
             required: true,
         },
     },
@@ -46,6 +46,11 @@ const sandwichSchema = new Schema(
             type: Schema.Types.ObjectId,
             ref: "User",
         },
+        image: {
+            type: String,
+            default: "defaultSandwichImage.png",
+            required: [true, "Sandwich image is required"],
+        },
         votesCount: {
             type: Number,
             default: 0,
@@ -55,16 +60,16 @@ const sandwichSchema = new Schema(
             required: true,
             validate: [
                 ingredientsValidator,
-                "A sandwich must have bread as the first ingredient and at least one more ingredient",
+                "Use bread as the primary ingredient only, and include at least one additional ingredient besides the bread",
             ],
         },
         dietaryPreferences: [
             {
                 type: String,
                 enum: {
-                    values: [...Object.values(dietaryPreferences)],
+                    values: [...Object.values(DIETARY_PREFERENCES)],
                     message: `Dietary preferences must be either ${Object.values(
-                        dietaryPreferences
+                        DIETARY_PREFERENCES
                     ).join(", ")}`,
                 },
             },
@@ -107,13 +112,24 @@ sandwichSchema.pre("save", async function (next) {
     next();
 });
 
-async function ingredientsValidator(ingredientsWithPortion) {
-    if (ingredientsWithPortion.length < 2) return false;
+async function ingredientsValidator(ingredientsWithPortions) {
+    if (ingredientsWithPortions.length < 2) return false;
 
+    // First ingredient is bread
     const firstIngredient = await Ingredient.findById(
-        ingredientsWithPortion[0].ingredientId
+        ingredientsWithPortions[0].ingredientId
     );
-    return firstIngredient && isBreadType(firstIngredient.type);
+
+    // No other bread
+    const otherIngredientIds = ingredientsWithPortions
+        .slice(1)
+        .map((item) => item.ingredientId);
+    const otherIngredient = await Ingredient.find({ _id: { $in: otherIngredientIds } })
+        .select("type")
+        .lean();
+    const isOneBread = !otherIngredient.some((item) => isBreadType(item.type));
+
+    return firstIngredient && isBreadType(firstIngredient.type) && isOneBread;
 }
 
 function setDietaryPreferences(ingredients) {

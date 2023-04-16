@@ -3,12 +3,12 @@ import path from "path";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export const configDir = path.join(__dirname);
+export const CONFIG_DIR = path.join(__dirname);
 
-export const clientDir = path.join(__dirname, "..", "..", "client", "build");
+export const CLIENT_DIR = path.join(__dirname, "..", "..", "client", "build");
 
-export const uploadsDir = path.join(__dirname, "..", "uploads");
+export const UPLOADS_DIR = path.join(__dirname, "..", "uploads");
 
-export const profilePicturesDir = path.join(uploadsDir, "profile-pictures");
-export const ingredientsDir = path.join(uploadsDir, "ingredients");
-export const sandwichesDir = path.join(uploadsDir, "sandwiches");
+export const PROFILE_PICTURES_DIR = path.join(UPLOADS_DIR, "profile-pictures");
+export const INGREDIENTS_DIR = path.join(UPLOADS_DIR, "ingredients");
+export const SANDWICHES_DIR = path.join(UPLOADS_DIR, "sandwiches");

@@ -44,9 +44,9 @@ const useSandwich = () => {
         updateSandwichToLocalStorage(sandwich);
     };
 
-    const fetchUserSandwiches = useCallback(async (uid = null) => {
-        const sandwichesData = uid
-            ? await readSandwichesOfUserById(uid)
+    const fetchUserSandwiches = useCallback(async (id = null) => {
+        const sandwichesData = id
+            ? await readSandwichesOfUserById(id)
             : await readSandwichesOfCurrentUser();
         debug && console.log("User sandwiches:", sandwichesData);
         setGallerySandwiches(sandwichesData);
@@ -68,8 +68,8 @@ const useSandwich = () => {
     };
 
     const hasUserVotedUserForSandwich = useCallback((sandwich, user) => {
-        if (!user.uid) return didUserVotedForSandwichByIdUsingLocalStorage(sandwich.id);
-        return user.info?.favoriteSandwiches?.includes(sandwich.id);
+        if (!user.id) return didUserVotedForSandwichByIdUsingLocalStorage(sandwich.id);
+        return user?.favoriteSandwiches?.includes(sandwich.id);
     }, []);
 
     const voteForSandwich = useCallback(async (sandwichId) => {

@@ -70,13 +70,13 @@ const updateCurrentUserFavoriteSandwichesInLocalStorage = (sandwichId) => {
 };
 
 const updateCurrentUserFavoriteSandwiches = async (sandwichId) => {
-    const currentUserId = auth.currentUser?.uid;
+    const currentUserId = auth.currentUser?.id;
     if (!currentUserId) {
         updateCurrentUserFavoriteSandwichesInLocalStorage(sandwichId);
         debug && console.log("No user logged in. Added locally.");
         return null;
     }
-    debug && console.log("Adding a favorite sandwiches for:", auth.currentUser.uid);
+    debug && console.log("Adding a favorite sandwiches for:", auth.currentuser.id);
     const docRef = doc(db, "users", currentUserId);
     try {
         await updateDoc(docRef, {

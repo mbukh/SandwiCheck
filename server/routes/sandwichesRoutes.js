@@ -16,6 +16,7 @@ import { protect, authorize } from "../middleware/authMiddleware.js";
 const router = express.Router({ mergeParams: true });
 
 router.route("/").get(getSandwiches).post(protect, createSandwich);
+
 router
     .route("/:sandwichId")
     .get(getSandwich)

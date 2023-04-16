@@ -3,7 +3,7 @@ import express from "express";
 import { protect, authorize } from "../middleware/authMiddleware.js";
 import upload from "../middleware/uploadMiddleware.js";
 
-import { allImageFields } from "../constants/ingredientsConstants.js";
+import { ALL_IMAGE_FIELDS } from "../constants/ingredientsConstants.js";
 
 import {
     getIngredients,
@@ -17,7 +17,7 @@ import {
 const router = express.Router({ mergeParams: true });
 
 // Upload images
-const fields = allImageFields.map(({ fieldName }) => ({
+const fields = ALL_IMAGE_FIELDS.map(({ fieldName }) => ({
     name: fieldName,
     maxCount: 1,
 }));

@@ -130,7 +130,7 @@ const readSandwichesOfUserById = async (userId) => {
 };
 
 const readSandwichesOfCurrentUser = async () => {
-    const currentUserId = auth.currentUser?.uid;
+    const currentUserId = auth.currentUser?.id;
     if (!currentUserId) {
         debug && console.log("No user logged in.");
         return null;
@@ -139,7 +139,7 @@ const readSandwichesOfCurrentUser = async () => {
 };
 
 const addSandwichToCurrentUser = async (sandwich) => {
-    const currentUserId = auth.currentUser?.uid;
+    const currentUserId = auth.currentUser?.id;
     if (!currentUserId) {
         debug && console.log("No user logged in.");
         return null;

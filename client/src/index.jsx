@@ -1,19 +1,19 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
+// import App from "./App";
 
 import AuthGlobalContextProvider from "./context/AuthContext";
-import SandwichGlobalContextProvider from "./context/SandwichContext";
+// import SandwichGlobalContextProvider from "./context/SandwichContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
     // <React.StrictMode>
 
-    <SandwichGlobalContextProvider>
+    // <SandwichGlobalContextProvider>
         <AuthGlobalContextProvider>
-            <App />
+            {/* <App /> */}
         </AuthGlobalContextProvider>
-    </SandwichGlobalContextProvider>
+    // </SandwichGlobalContextProvider>
 
     // </React.StrictMode>
 );

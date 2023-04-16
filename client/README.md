@@ -37,6 +37,7 @@
 -   [ ] filter ingredients by the parents (kosher, allergies, vegetarian etc.)
 -   lunch box ads
 -   catering ads
+-   use lean() with mongoose queries where implacable to boost performance
 
 #### Scripts
 

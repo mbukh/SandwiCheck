@@ -30,7 +30,7 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
         if (
             childId &&
             isUserReady &&
-            !user.info?.children?.some((child) => child.id === childId)
+            !user?.children?.some((child) => child.id === childId)
         ) {
             navigate("/login");
             return;
@@ -39,7 +39,7 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
         if (!areIngredientsReady || !isUserReady) return;
 
         if (childId) {
-            const childInfo = user.info.children.find((child) => child.id === childId);
+            const childInfo = user.children.find((child) => child.id === childId);
             if (!childInfo) return;
             (async () => {
                 await fetchUserSandwiches(childInfo.id);
@@ -49,15 +49,15 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
             (async () => await fetchLatestSandwiches(30))();
         } else if (galleryType === "best") {
             (async () => await fetchBestSandwiches(30))();
-        } else if (user.uid) {
+        } else if (user.id) {
             (async () => await fetchUserSandwiches())();
         }
     }, [
         childId,
         galleryType,
         child?.id,
-        user.uid,
-        user.info?.children,
+        user.id,
+        user?.children,
         fetchLatestSandwiches,
         fetchBestSandwiches,
         fetchUserSandwiches,

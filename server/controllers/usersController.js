@@ -1,7 +1,7 @@
 import expressAsyncHandler from "express-async-handler";
 import createHttpError from "http-errors";
 
-import { profilePicturesDir } from "../config/dir.js";
+import { PROFILE_PICTURES_DIR } from "../config/dir.js";
 
 import { ROLES } from "../constants/usersConstants.js";
 import { NO_USER_SANDWICH_USERNAME } from "../constants/sandwichConstants.js";
@@ -105,7 +105,7 @@ export const updateUser = expressAsyncHandler(async (req, res, next) => {
 
     if (imageBuffer && !removeProfilePicture) {
         const fileName = `${user._id}.${process.env.PROFILE_IMAGE_EXTENSION}`;
-        const res = await saveBufferToFile(imageBuffer, profilePicturesDir, fileName);
+        const res = await saveBufferToFile(imageBuffer, PROFILE_PICTURES_DIR, fileName);
         if (res) {
             user.profilePicture = fileName;
         }
@@ -113,7 +113,7 @@ export const updateUser = expressAsyncHandler(async (req, res, next) => {
 
     if (removeProfilePicture) {
         const fileName = user.profilePicture;
-        await removeFile(profilePicturesDir, fileName);
+        await removeFile(PROFILE_PICTURES_DIR, fileName);
         user.profilePicture = undefined;
     }
 
@@ -160,7 +160,7 @@ export const deleteUser = expressAsyncHandler(async (req, res, next) => {
     await User.findByIdAndDelete(req.params.userId);
 
     const fileName = `${req.params.userId}.${process.env.PROFILE_IMAGE_EXTENSION}`;
-    await removeFile(profilePicturesDir, fileName);
+    await removeFile(PROFILE_PICTURES_DIR, fileName);
 
     res.status(200).json({ success: true, message: "User deleted successfully" });
 });

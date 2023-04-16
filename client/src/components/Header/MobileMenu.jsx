@@ -13,10 +13,10 @@ const MobileMenu = ({ isMobileMenuOpen, toggleMobileMenuHandler, authHandler, us
             >
                 <NavLink to="/create">Build a sandwich</NavLink>
                 <NavLink to="/latest">Gallery</NavLink>
-                {user.uid ? (
+                {user.id ? (
                     <>
                         <NavLink to="/menu">My menu</NavLink>
-                        {user.info?.type === "parent" && (
+                        {user.roles.includes("parent") && (
                             <NavLink to="/family">My family</NavLink>
                         )}
                         <NavLink id="logout" onClick={authHandler} to="/logout">

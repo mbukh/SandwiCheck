@@ -8,18 +8,18 @@ const Family = () => {
     const { user, isUserReady } = useAuthGlobalContext();
 
     if (!isUserReady) return <Loading />;
-    if (isUserReady && !user.uid) return <Navigate to="/login" replace={true} />;
+    if (isUserReady && !user.id) return <Navigate to="/login" replace={true} />;
 
     return (
         <div className="sandwich-gallery pt-4 pb-12 px-5 md:pt-6 md:pb-16 md:px-12 lg:pb-20 xl:px-20">
             <h1 className="text-center text-l uppercase">My family</h1>
             <div className="sandwich-gallery-title w-full py-4 px-5 md:py-5 md:px-12 xl:px-20">
                 <div>
-                    {user.info?.type === "parent" && (
+                    {user.roles.includes("parent") && (
                         <>
                             <Link
                                 className="button bg-magenta text-white inline-block p-2 pr-4 mr-4 md:my-4 text-xs md:text-sm md:text-base fit-content text-shadow-10"
-                                to={`/signup/parent/${user.uid}`}
+                                to={`/signup/parent/${user.id}`}
                             >
                                 <svg
                                     className="mx-2"
@@ -41,7 +41,7 @@ const Family = () => {
                             or
                             <Link
                                 className="button bg-magenta text-white inline-block p-2 pr-4 my-2 ml-4 md:my-4 relative text-xs md:text-sm md:text-base fit-content no-wrap text-shadow-10"
-                                to={`https://wa.me/?text=Hey%20kids%2C%20join%20me%20at%20SandwiCheck%20and%20be%20a%20part%20of%20my%20sandwich%20squad%21+${window.location.protocol}%2F%2F${window.location.hostname}%2Fsignup%2Fparent%2F${user.uid}`}
+                                to={`https://wa.me/?text=Hey%20kids%2C%20join%20me%20at%20SandwiCheck%20and%20be%20a%20part%20of%20my%20sandwich%20squad%21+${window.location.protocol}%2F%2F${window.location.hostname}%2Fsignup%2Fparent%2F${user.id}`}
                                 target="_blank"
                             >
                                 Send a link &nbsp; &nbsp; &nbsp;{" "}
@@ -52,8 +52,8 @@ const Family = () => {
                 </div>
             </div>
             <div className="size-full flex flex-wrap -mx-2 sm:-mx-3 text-shadow-10 no-wrap flex-shrink-0">
-                {user.info.children?.length > 0 &&
-                    user.info.children.map((child, index) => (
+                {user.children?.length > 0 &&
+                    user.children.map((child, index) => (
                         <UserCard key={child.id} index={index} user={child} />
                     ))}
             </div>

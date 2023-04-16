@@ -2,13 +2,13 @@ import path from "path";
 import fs from "fs/promises";
 
 import {
-    uploadsDir,
-    profilePicturesDir,
-    ingredientsDir,
-    sandwichesDir,
+    UPLOADS_DIR,
+    PROFILE_PICTURES_DIR,
+    INGREDIENTS_DIR,
+    SANDWICHES_DIR,
 } from "./config/dir.js";
 
-const folders = [uploadsDir, profilePicturesDir, ingredientsDir, sandwichesDir];
+const folders = [UPLOADS_DIR, PROFILE_PICTURES_DIR, INGREDIENTS_DIR, SANDWICHES_DIR];
 
 async function ensureDirectory(folderPath) {
     try {

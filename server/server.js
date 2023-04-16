@@ -1,8 +1,8 @@
 import path from "path";
-import { configDir, clientDir, uploadsDir } from "./config/dir.js";
+import { CONFIG_DIR, CLIENT_DIR, UPLOADS_DIR } from "./config/dir.js";
 
 import dotenv from "dotenv";
-dotenv.config({ path: path.join(configDir, "config.env") });
+dotenv.config({ path: path.join(CONFIG_DIR, "config.env") });
 
 import connectDB from "./config/db.js";
 
@@ -62,9 +62,9 @@ app.use(errorHandler);
 
 // === Forward static content === //
 // Front-End
-app.use("/", express.static(clientDir));
+app.use("/", express.static(CLIENT_DIR));
 // Uploads folder
-app.use("/uploads", express.static(uploadsDir));
+app.use("/uploads", express.static(UPLOADS_DIR));
 
 // Logging
 if (process.env.NODE_ENV !== "production") app.use(morgan("dev"));

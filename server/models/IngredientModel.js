@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 
 import {
-    types,
-    shapes,
-    dietaryPreferences,
+    TYPES,
+    SHAPES,
+    DIETARY_PREFERENCES,
     isBreadType,
 } from "../constants/ingredientsConstants.js";
 
@@ -19,21 +19,21 @@ const ingredientSchema = new Schema(
         type: {
             type: String,
             enum: {
-                values: [...Object.values(types)],
-                message: `Role must be either ${Object.values(types).join(", ")}`,
+                values: [...Object.values(TYPES)],
+                message: `Role must be either ${Object.values(TYPES).join(", ")}`,
             },
             required: true,
         },
         shape: {
             type: String,
-            enum: [...Object.values(shapes)],
+            enum: [...Object.values(SHAPES)],
             validate: {
                 validator: function () {
                     return (
                         !isBreadType(this.type) || (isBreadType(this.type) && this.shape)
                     );
                 },
-                message: `Shape is required when the ingredient type is '${types.bread}'`,
+                message: `Shape is required when the ingredient type is '${TYPES.bread}'`,
             },
             required: function () {
                 return isBreadType(this.type);
@@ -47,9 +47,9 @@ const ingredientSchema = new Schema(
             {
                 type: String,
                 enum: {
-                    values: [...Object.values(dietaryPreferences)],
+                    values: [...Object.values(DIETARY_PREFERENCES)],
                     message: `Dietary preferences must be either ${Object.values(
-                        dietaryPreferences
+                        DIETARY_PREFERENCES
                     ).join(", ")}`,
                 },
             },
@@ -86,7 +86,7 @@ const ingredientSchema = new Schema(
 );
 
 ingredientSchema.pre("save", function (next) {
-    if (this.type !== types.bread) {
+    if (this.type !== TYPES.bread) {
         this.shape = undefined;
     }
 

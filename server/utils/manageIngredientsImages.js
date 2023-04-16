@@ -2,19 +2,19 @@ import createHttpError from "http-errors";
 
 import sharp from "sharp";
 
-import { ingredientsDir } from "../config/dir.js";
+import { INGREDIENTS_DIR } from "../config/dir.js";
 
-import { allImageFields, imageFieldsByType } from "../constants/ingredientsConstants.js";
+import { ALL_IMAGE_FIELDS, imageFieldsByType } from "../constants/ingredientsConstants.js";
 
 import { saveBufferToFile, removeFilesInPath } from "../utils/fileUtils.js";
 
 export const removeAllIngredientImagesByImageBase = async (filenameBase) => {
-    const allPossibleFiles = allImageFields.map(
+    const allPossibleFiles = ALL_IMAGE_FIELDS.map(
         ({ suffix }) =>
             `${filenameBase}${suffix}.${process.env.INGREDIENTS_IMAGE_EXTENSION}`
     );
 
-    await removeFilesInPath(ingredientsDir, allPossibleFiles);
+    await removeFilesInPath(INGREDIENTS_DIR, allPossibleFiles);
 };
 
 export const saveIngredientImages = async ({
@@ -93,7 +93,7 @@ async function saveFiles(reqFiles, requiredFields, filenameBase) {
         requiredFields.map(async ({ fieldName, suffix }) => {
             const { buffer } = reqFiles[fieldName][0];
             const fileName = `${filenameBase}${suffix}.${process.env.INGREDIENTS_IMAGE_EXTENSION}`;
-            const result = await saveBufferToFile(buffer, ingredientsDir, fileName);
+            const result = await saveBufferToFile(buffer, INGREDIENTS_DIR, fileName);
 
             if (!result) {
                 throw new Error("Save error");

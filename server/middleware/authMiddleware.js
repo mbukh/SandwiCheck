@@ -4,7 +4,7 @@ import createHttpError from "http-errors";
 import jwt from "jsonwebtoken";
 
 import { ROLES } from "../constants/usersConstants.js";
-import excludeFields from "../constants/excludeFields.js";
+import EXCLUDED_FIELDS from "../constants/excludeFields.js";
 
 import User from "../models/UserModel.js";
 
@@ -40,7 +40,7 @@ export const protect = expressAsyncHandler(async (req, res, next) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        req.user = await User.findById(decoded.id).select(excludeFields);
+        req.user = await User.findById(decoded.id).select(EXCLUDED_FIELDS);
 
         if (!req.user) {
             throw new Error();
@@ -49,7 +49,7 @@ export const protect = expressAsyncHandler(async (req, res, next) => {
         if (parentToken && req.user.roles.includes(ROLES.child)) {
             const parentDecoded = jwt.verify(parentToken, process.env.JWT_SECRET);
 
-            req.parentUser = await User.findById(parentDecoded.id).select(excludeFields);
+            req.parentUser = await User.findById(parentDecoded.id).select(EXCLUDED_FIELDS);
 
             if (!req.parentUser) {
                 throw new Error();
