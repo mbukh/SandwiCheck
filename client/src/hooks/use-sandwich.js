@@ -9,11 +9,14 @@ import {
     updateSandwichToLocalStorage,
     deleteSandwichFromLocalStorage,
 } from "../services/apiSandwiches";
+import { TYPES } from "../constants";
 
 const useSandwich = () => {
-    const [currentIngredientType, setCurrentIngredientType] = useState("bread");
+    const [currentIngredientType, setCurrentIngredientType] = useState(TYPES.bread);
     const [isSavingSandwich, setIsSavingSandwich] = useState(false);
+    
     const [sandwich, setSandwich] = useState({});
+
     const [gallerySandwiches, setGallerySandwiches] = useState(null);
     const timeout = useRef(null);
 
@@ -58,7 +61,7 @@ const useSandwich = () => {
         setCurrentIngredientType("");
         deleteSandwichFromLocalStorage();
         setTimeout(() => {
-            setCurrentIngredientType("bread");
+            setCurrentIngredientType(TYPES.bread);
         }, 400);
     };
 
