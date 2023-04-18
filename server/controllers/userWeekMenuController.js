@@ -28,11 +28,11 @@ export const addSandwichToWeekMenu = expressAsyncHandler(async (req, res, next) 
     }
 
     const sandwichIndex = user.weekMenu[day].findIndex((sandwichEntry) =>
-        sandwichEntry.sandwich.equals(sandwichId)
+        sandwichEntry.sandwichId.equals(sandwichId)
     );
 
     if (sandwichIndex === -1) {
-        user.weekMenu[day].push({ sandwich: sandwichId, quantity: 1 });
+        user.weekMenu[day].push({ sandwichId, quantity: 1 });
     } else {
         user.weekMenu[day][sandwichIndex].quantity += 1;
     }
@@ -42,6 +42,7 @@ export const addSandwichToWeekMenu = expressAsyncHandler(async (req, res, next) 
     res.status(200).json({
         success: true,
         message: "Sandwich added to the week menu",
+        data: user.weekMenu[day],
     });
 });
 
@@ -62,17 +63,14 @@ export const removeSandwichFromWeekMenu = expressAsyncHandler(async (req, res, n
         return next(createHttpError.NotFound("User not found"));
     }
 
-    if (
-        !user.weekMenu ||
-        !user.weekMenu[day] 
-    ) {
+    if (!user.weekMenu || !user.weekMenu[day]) {
         return next(
             createHttpError.NotFound("No sandwich found in the week menu for this day")
         );
     }
 
     const sandwichIndex = user.weekMenu[day].findIndex((sandwichEntry) =>
-        sandwichEntry.sandwich.equals(sandwichId)
+        sandwichEntry.sandwichId.equals(sandwichId)
     );
 
     if (sandwichIndex === -1) {

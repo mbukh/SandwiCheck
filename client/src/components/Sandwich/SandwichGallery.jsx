@@ -3,75 +3,83 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { useAuthGlobalContext, useSandwichGlobalContext } from "../../context";
 
+import { hasUserVotedUserForSandwich, voteForSandwich } from "../../services/votes";
+
 import { Loading, SandwichCard } from "..";
 
-import { useSandwich } from "../../hooks";
+import useGallery from "../../hooks/use-gallery";
+
+import useSandwich from "../../hooks/use-sandwich";
+
+import { INGREDIENT_TYPES } from "../../constants/ingredientTypes";
 
 import { capitalizeFirst } from "../../utils";
 
 const SandwichGallery = ({ children, galleryType = "" }) => {
-    const [child, setChild] = useState(null);
-    const { user, isUserReady } = useAuthGlobalContext();
+    const [child, setChild] = useState({});
+    const { currentUser, isCurrentUserReady } = useAuthGlobalContext();
     const { ingredients, areIngredientsReady } = useSandwichGlobalContext();
+    const { gallerySandwiches, setGallerySandwiches, fetchSandwiches } = useGallery();
+    const { updateLocalSandwich } = useSandwich();
+    const { fetchUserSandwiches } = useGallery();
+
     const { childId } = useParams();
-    const {
-        ingredientTypes,
-        gallerySandwiches,
-        fetchUserSandwiches,
-        fetchLatestSandwiches,
-        fetchBestSandwiches,
-        hasUserVotedUserForSandwich,
-        voteForSandwich,
-        updateLocalSandwich,
-    } = useSandwich();
     const navigate = useNavigate();
 
     useEffect(() => {
         if (
+            isCurrentUserReady &&
             childId &&
-            isUserReady &&
-            !user?.children?.some((child) => child.id === childId)
+            !currentUser?.children?.some((child) => child.id === childId)
         ) {
             navigate("/login");
             return;
         }
 
-        if (!areIngredientsReady || !isUserReady) return;
+        if (!(areIngredientsReady && isCurrentUserReady)) {
+            return;
+        }
 
-        if (childId) {
-            const childInfo = user.children.find((child) => child.id === childId);
-            if (!childInfo) return;
-            (async () => {
+        (async () => {
+            if (childId) {
+                const childInfo = currentUser.children.find(
+                    (child) => child.id === childId
+                );
+                if (!childInfo) return;
+
                 await fetchUserSandwiches(childInfo.id);
                 setChild(childInfo);
-            })();
-        } else if (galleryType === "latest") {
-            (async () => await fetchLatestSandwiches(30))();
-        } else if (galleryType === "best") {
-            (async () => await fetchBestSandwiches(30))();
-        } else if (user.id) {
-            (async () => await fetchUserSandwiches())();
-        }
+            } else if (galleryType === "latest") {
+                await fetchSandwiches();
+            } else if (galleryType === "best") {
+                await fetchSandwiches({ sortBy: "votesCount" });
+            } else if (currentUser.id) {
+                setGallerySandwiches(currentUser.sandwiches);
+            }
+        })();
     }, [
-        childId,
-        galleryType,
-        child?.id,
-        user.id,
-        user?.children,
-        fetchLatestSandwiches,
-        fetchBestSandwiches,
-        fetchUserSandwiches,
         areIngredientsReady,
-        isUserReady,
+        childId,
+        currentUser.children,
+        currentUser.id,
+        currentUser.sandwiches,
+        fetchSandwiches,
+        galleryType,
+        isCurrentUserReady,
         navigate,
+        setGallerySandwiches,
     ]);
 
     const childGalleryTitle = child?.name ? child.name + "'s sandwich menu" : "";
+
     const galleryTypeTitle =
         galleryType === "latest" ? capitalizeFirst(galleryType) + " sandwiches" : "";
+
     const userGalleryTitle = galleryType === "personal" ? "My sandwich menu" : "";
 
-    if (!areIngredientsReady || !isUserReady || !gallerySandwiches) return <Loading />;
+    if (!(areIngredientsReady && isCurrentUserReady && gallerySandwiches)) {
+        return <Loading />;
+    }
 
     return (
         <>
@@ -94,7 +102,6 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
                                 key={sandwich.id}
                                 index={index}
                                 sandwich={sandwich}
-                                ingredientTypes={ingredientTypes}
                                 ingredients={ingredients}
                                 closeBasePath={
                                     childId
@@ -105,7 +112,10 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
                                         ? ""
                                         : ""
                                 }
-                                hasUserVoted={hasUserVotedUserForSandwich(sandwich, user)}
+                                hasUserVoted={hasUserVotedUserForSandwich(
+                                    sandwich,
+                                    currentUser
+                                )}
                                 voteForSandwich={voteForSandwich}
                                 updateLocalSandwich={updateLocalSandwich}
                             />

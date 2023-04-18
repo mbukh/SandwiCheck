@@ -25,9 +25,13 @@ export const getUsers = expressAsyncHandler(async (req, res, next) => {
 // @route   GET /api/current
 // @access  Private +Parents
 export const getUser = expressAsyncHandler(async (req, res, next) => {
+    // current user or another userID
     const userId = req.params.userId ? req.params.userId : req.user.id;
 
-    const user = await User.findById(userId).populate("sandwiches");
+    const user = await User.findById(userId)
+        .populate("sandwiches")
+        .populate("parents")
+        .populate("children");
 
     if (!user) {
         return next(createHttpError.NotFound("User not found"));
@@ -164,3 +168,31 @@ export const deleteUser = expressAsyncHandler(async (req, res, next) => {
 
     res.status(200).json({ success: true, message: "User deleted successfully" });
 });
+
+// @desc    Add / Remove favorite sandwich
+// @route   POST | DELETE /api/users/:userId/favorite-sandwiches/:sandwichId
+// @access  Private / User
+export const updateFavoriteSandwiches = async (req, res, next) => {
+    const { userId, sandwichId } = req.params;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+        return next(createHttpError.NotFound("User not found"));
+    }
+
+    const isSandwichAlreadyFavorite = user.favoriteSandwiches.includes(sandwichId);
+
+    if (req.method === "POST" && !isSandwichAlreadyFavorite) {
+        user.favoriteSandwiches.push(sandwichId);
+    } else if (req.method === "DELETE" && isSandwichAlreadyFavorite) {
+        user.favoriteSandwiches.pull(sandwichId);
+    }
+
+    await user.save();
+
+    res.status(200).json({
+        success: true,
+        data: user.favoriteSandwiches,
+    });
+};

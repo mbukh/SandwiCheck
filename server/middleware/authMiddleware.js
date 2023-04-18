@@ -11,6 +11,10 @@ import User from "../models/UserModel.js";
 export const protect = expressAsyncHandler(async (req, res, next) => {
     let token, parentToken;
 
+    // console.log(req.originalUrl);
+    // console.log("Cookies: ", req.cookies);
+    // console.log("Signed Cookies: ", req.signedCookies);
+
     // Token Bearer
     if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
         if (req.headers.authorization.split(" ")[2]) {
@@ -49,7 +53,9 @@ export const protect = expressAsyncHandler(async (req, res, next) => {
         if (parentToken && req.user.roles.includes(ROLES.child)) {
             const parentDecoded = jwt.verify(parentToken, process.env.JWT_SECRET);
 
-            req.parentUser = await User.findById(parentDecoded.id).select(EXCLUDED_FIELDS);
+            req.parentUser = await User.findById(parentDecoded.id).select(
+                EXCLUDED_FIELDS
+            );
 
             if (!req.parentUser) {
                 throw new Error();

@@ -1,9 +1,3 @@
-export const ingredientTypes = [
-    "bread",
-    "protein",
-    "cheese",
-    "toppings",
-    "condiments",
-];
+export const INGREDIENT_TYPES = ["bread", "protein", "cheese", "topping", "condiment"];
 
-export const cacheTimeoutInMinutes = 5;
+export const CACHE_TIME_OUT_MINS = 5;

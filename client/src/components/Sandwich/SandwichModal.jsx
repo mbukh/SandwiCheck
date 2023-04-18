@@ -6,16 +6,17 @@ import { useAuthGlobalContext, useSandwichGlobalContext } from "../../context";
 
 import { useSandwich } from "../../hooks";
 
+import { INGREDIENT_TYPES } from "../../constants/ingredientTypes";
+
 import { SandwichCard, Modal } from "..";
 
 const SandwichModal = ({ closeLink = "" }) => {
     const [isModalLoading, setIsModalLoading] = useState(true);
-    const { user } = useAuthGlobalContext();
+    const { currentUser: user } = useAuthGlobalContext();
     const { ingredients, areIngredientsReady } = useSandwichGlobalContext();
     const { sandwichId } = useParams();
     const {
         sandwich,
-        ingredientTypes,
         fetchSandwich,
         hasUserVotedUserForSandwich,
         voteForSandwich,
@@ -37,7 +38,7 @@ const SandwichModal = ({ closeLink = "" }) => {
                     key={sandwichId}
                     index={Math.ceil(Math.random() * 4)}
                     sandwich={sandwich}
-                    ingredientTypes={ingredientTypes}
+                    INGREDIENT_TYPES={INGREDIENT_TYPES}
                     ingredients={ingredients}
                     closeBasePath=""
                     hasUserVoted={hasUserVotedUserForSandwich(sandwich, user)}

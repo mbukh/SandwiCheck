@@ -7,7 +7,7 @@ import { ROLES } from "../constants/usersConstants.js";
 import { generateHtmlMessage, generateTextMessage } from "../constants/mailing.js";
 
 import { createUserParentsConnections } from "../utils/manageUserConnections.js";
-import sendTokenResponse from "../utils/sendTokenResponse.js";
+import { setTokenCookie, removeCookie } from "../utils/cookies.js";
 import * as hashAndTokens from "../utils/hashAndTokens.js";
 import sendEmail from "../utils/mailer.js";
 import delay from "../utils/delay.js";
@@ -46,7 +46,7 @@ export const signup = expressAsyncHandler(async (req, res, next) => {
 
     const passwordHash = await bcrypt.hash(
         password,
-        parseInt(process.env.BCRYPT_SALT_ROUNDS)
+        parseInt(process.env.BCRYPT_SALT_ROUND, 10)
     );
 
     const user = await User.create({
@@ -72,7 +72,12 @@ export const signup = expressAsyncHandler(async (req, res, next) => {
         value: hashAndTokens.generatePasswordToken({ id: user._id }),
     };
 
-    sendTokenResponse(201, token, res);
+    setTokenCookie(token, res);
+
+    res.status(200).json({
+        success: true,
+        data: user,
+    });
 });
 
 // @desc    Login
@@ -87,7 +92,10 @@ export const login = expressAsyncHandler(async (req, res, next) => {
         );
     }
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email })
+        .populate("sandwiches")
+        .populate("parents")
+        .populate("children");
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
         return next(createHttpError.Unauthorized("Invalid email or password"));
@@ -105,7 +113,12 @@ export const login = expressAsyncHandler(async (req, res, next) => {
         value: hashAndTokens.generatePasswordToken({ id: user._id }),
     };
 
-    sendTokenResponse(200, token, res);
+    setTokenCookie(token, res);
+
+    res.status(200).json({
+        success: true,
+        data: user,
+    });
 });
 
 // @desc    Change password
@@ -142,13 +155,16 @@ export const changePassword = expressAsyncHandler(async (req, res, next) => {
         return next(createHttpError.Unauthorized("Old password is incorrect"));
     }
 
-    user.password = await bcrypt.hash(password, parseInt(process.env.BCRYPT_SALT_ROUNDS));
+    user.password = await bcrypt.hash(
+        password,
+        parseInt(process.env.BCRYPT_SALT_ROUND, 10)
+    );
 
     await user.save();
 
     res.status(200).json({
         success: true,
-        message: "Password updated successfully",
+        message: "Password updated successfully, you may log in now",
     });
 });
 
@@ -179,7 +195,7 @@ export const forgotPassword = expressAsyncHandler(async (req, res, next) => {
 
     user.resetPasswordToken = hashAndTokens.hashToken(resetToken);
     user.resetPasswordExpire =
-        Date.now() + parseInt(process.env.RESET_PASSWORD_EXPIRES_IN);
+        Date.now() + parseInt(process.env.RESET_PASSWORD_EXPIRES_I, 10);
 
     await user.save();
 
@@ -223,7 +239,7 @@ export const resetPassword = expressAsyncHandler(async (req, res, next) => {
 
     res.status(200).json({
         success: true,
-        message: "Password updated successfully",
+        message: "Password updated successfully. You may log in now",
     });
 });
 
@@ -231,13 +247,11 @@ export const resetPassword = expressAsyncHandler(async (req, res, next) => {
 // @route   POST /api/auth/logout
 // @access  Private
 export const logout = expressAsyncHandler(async (req, res, next) => {
-    res.clearCookie("token");
-    res.clearCookie("childToken");
+    removeCookie("token", res);
+    removeCookie("childToken", res);
 
     res.status(200).json({
         success: true,
         message: "User logged out",
-        token: "none",
-        childToken: "none",
     });
 });

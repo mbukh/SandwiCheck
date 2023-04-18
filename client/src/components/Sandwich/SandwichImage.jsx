@@ -1,9 +1,9 @@
 import { assembleImageSrc } from "../../utils";
 
-const SandwichImage = ({ sandwich, ingredientTypes, ingredients, className = "" }) => {
+const SandwichImage = ({ sandwich, INGREDIENT_TYPES, ingredients, className = "" }) => {
     return (
         <div className={`sandwich-images ${className}`}>
-            {ingredientTypes.map(
+            {INGREDIENT_TYPES.map(
                 (ingredientType) =>
                     sandwich.hasOwnProperty(ingredientType) &&
                     sandwich[ingredientType] && (
@@ -14,7 +14,7 @@ const SandwichImage = ({ sandwich, ingredientTypes, ingredients, className = "" 
                                 ingredients,
                                 ingredientType,
                                 proteinPortion: "full",
-                                optionSize: "normal",
+                                optionSize: "full",
                             })}
                             className="absolute inset-0 object-contain size-full no-drag no-select"
                             alt={ingredientType}

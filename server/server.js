@@ -7,6 +7,7 @@ dotenv.config({ path: path.join(CONFIG_DIR, "config.env") });
 import connectDB from "./config/db.js";
 
 import express from "express";
+import cookieParser from "cookie-parser";
 
 import cors from "cors";
 import xss from "xss-clean";
@@ -31,10 +32,17 @@ const app = express();
 app.use(morgan("dev"));
 
 // CORS cross-domain access
-app.use(cors());
+app.use(
+    cors({
+        origin: process.env.CLIENT_URL,
+        credentials: true,
+    })
+);
 
 // Body parser middleware
 app.use(express.json());
+// Cookies parser
+app.use(cookieParser());
 
 // ==== Security ==== //
 // parse URL-encoded data received from the client

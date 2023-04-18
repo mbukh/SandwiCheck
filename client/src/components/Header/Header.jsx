@@ -11,7 +11,7 @@ import { HamburgerMenu, MobileMenu } from ".";
 const Header = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isOpenLoginModal, setIsOpenLoginModal] = useState(false);
-    const { logOut, user } = useAuthGlobalContext();
+    const { logOut, currentUser: user } = useAuthGlobalContext();
     const { sandwichId } = useParams();
 
     const toggleMobileMenuHandler = () => {

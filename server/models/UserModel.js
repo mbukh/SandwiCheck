@@ -16,7 +16,7 @@ const weekMenuSchema = new Schema(
             {
                 type: [
                     {
-                        sandwich: {
+                        sandwichId: {
                             type: Schema.Types.ObjectId,
                             ref: "Sandwich",
                         },
@@ -61,7 +61,7 @@ const userSchema = new Schema(
         },
         isTetheredChild: {
             type: Boolean,
-            default: false,
+            default: undefined,
         },
         roles: {
             type: [String],
@@ -139,7 +139,7 @@ userSchema.pre("save", async function (next) {
     this.favoriteSandwiches = [...new Set(this.favoriteSandwiches)];
 
     // update tethered child if a child gets an email
-    this.isTetheredChild = this.isTetheredChild && !this.email;
+    this.isTetheredChild = this.isTetheredChild && !this.email ? true : undefined;
 
     // Check tethered children count when creating a new user or when the name is modified
     if (this.isNew && this.isTetheredChild) {

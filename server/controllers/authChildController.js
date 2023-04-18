@@ -2,7 +2,7 @@ import createHttpError from "http-errors";
 import expressAsyncHandler from "express-async-handler";
 
 import { createUserParentsConnections } from "../utils/manageUserConnections.js";
-import sendTokenResponse from "../utils/sendTokenResponse.js";
+import { setTokenCookie, removeCookie } from "../utils/cookies.js";
 import * as hashAndTokens from "../utils/hashAndTokens.js";
 
 import User from "../models/UserModel.js";
@@ -31,7 +31,12 @@ export const createChildUser = expressAsyncHandler(async (req, res, next) => {
         value: hashAndTokens.generatePasswordToken({ id: childUser._id }),
     };
 
-    sendTokenResponse(201, token, res);
+    setTokenCookie(token, res);
+
+    res.status(200).json({
+        success: true,
+        data: childUser,
+    });
 });
 
 // @desc    Create a chid account
@@ -44,14 +49,19 @@ export const switchToParent = expressAsyncHandler(async (req, res, next) => {
         );
     }
 
-    res.clearCookie("childToken");
+    removeCookie("childToken", res);
 
     const token = {
         name: "token",
         value: hashAndTokens.generatePasswordToken({ id: req.parentUser._id }),
     };
 
-    sendTokenResponse(200, token, res);
+    setTokenCookie(token, res);
+
+    res.status(200).json({
+        success: true,
+        data: req.parentUser,
+    });
 });
 
 // @desc    Login
@@ -80,5 +90,10 @@ export const loginChildUser = expressAsyncHandler(async (req, res, next) => {
         value: hashAndTokens.generatePasswordToken({ id: childUser._id }),
     };
 
-    sendTokenResponse(200, token, res);
+    setTokenCookie(token, res);
+
+    res.status(200).json({
+        success: true,
+        data: childUser,
+    });
 });

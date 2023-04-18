@@ -31,8 +31,9 @@ export const getSandwiches = expressAsyncHandler(async (req, res, next) => {
         query.where("ingredients.ingredientId").all(ingredientIds);
     }
 
+    // default sort by creation date
     if (sortBy) {
-        query.sort(sortBy === "createdAt" ? "-createdAt" : "-votesCount");
+        query.sort(sortBy === "votesCount" || "votes" ? "-votesCount" : "-createdAt");
     }
 
     // Set default values for page and limit if not provided
@@ -59,7 +60,7 @@ export const getSandwiches = expressAsyncHandler(async (req, res, next) => {
 // @access  Public
 export const getSandwich = expressAsyncHandler(async (req, res, next) => {
     const sandwich = await Sandwich.findById(req.params.sandwichId).populate(
-        "ingredients"
+        "ingredients.ingredientId"
     );
 
     if (!sandwich) {
@@ -79,9 +80,14 @@ export const createSandwich = expressAsyncHandler(async (req, res, next) => {
     const { name, ingredients, comment } = req.body;
     const { id: userId, firstName } = req.user;
 
+    const newIngredients = ingredients.map(({ ingredientId, portion }) => ({
+        ingredientId,
+        portion,
+    }));
+
     const newSandwich = new Sandwich({
         name,
-        ingredients,
+        ingredients: newIngredients,
         authorName: firstName,
         authorId: userId,
         comment: comment,
@@ -118,19 +124,40 @@ export const updateSandwich = expressAsyncHandler(async (req, res, next) => {
         return next(createHttpError.NotFound("Sandwich not found"));
     }
 
+    const newIngredients = ingredients.map(({ ingredientId, portion }) => ({
+        ingredientId,
+        portion,
+    }));
+
     const timeDiff = (Date.now() - sandwich.createdAt) / 1000 / 60;
 
-    if (timeDiff > parseInt(process.env.SANDWICH_UPDATE_EXPIRES_IN_MINS)) {
+    if (timeDiff > parseInt(process.env.SANDWICH_UPDATE_EXPIRES_IN_MIN, 10)) {
         return next(
             createHttpError.Forbidden(
-                "Too much time passed, you can't update the sandwich. Copy"
+                `A sandwich can only be updated within the first ` +
+                    `${process.env.SANDWICH_UPDATE_EXPIRES_IN_MINS} minutes.` +
+                    `Please create a new sandwich instead.`
             )
         );
     }
 
     sandwich.name = name;
-    sandwich.ingredients = ingredients;
+    sandwich.ingredients = newIngredients;
     sandwich.comment = comment;
+
+    await sandwich.validate();
+
+    const newImage = await generateSandwichImage(ingredients);
+
+    // Clear unused sandwich image
+    if (newImage !== sandwich.image) {
+        const sandwichesWithOldImage = await Sandwich.find({ image: oldImage });
+        if (!sandwichesWithOldImage.length) {
+            removeFile(SANDWICHES_DIR, oldImage);
+        }
+    }
+
+    sandwich.image = newImage;
 
     await sandwich.save();
 
@@ -168,3 +195,30 @@ export const deleteSandwich = expressAsyncHandler(async (req, res, next) => {
         message: "Sandwich removed from the user",
     });
 });
+
+// @desc    Update vote count of a sandwich
+// @route   POST|DELETE /api/sandwiches/:sandwichId/vote
+// @access  Private
+export const updateSandwichVotesCount = async (req, res, next) => {
+    const { sandwichId } = req.params;
+    const method = req.method;
+
+    const updateOperation = method === "POST" ? "$inc" : "$dec";
+
+    const sandwich = await Sandwich.findByIdAndUpdate(
+        sandwichId,
+        {
+            [updateOperation]: { votesCount: 1 },
+        },
+        { new: true }
+    );
+
+    if (!sandwich) {
+        return next(createHttpError.NotFound("Sandwich not found"));
+    }
+
+    res.status(200).json({
+        success: true,
+        data: sandwich,
+    });
+};

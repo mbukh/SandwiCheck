@@ -1,54 +1,106 @@
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
-import * as api from "../services/api";
+import * as apiAuth from "../services/apiAuth";
 
-import { debug } from "../constants";
+import * as apiUsers from "../services/apiUsers";
+
+import useUser from "../hooks/use-user";
+
+import { LOGGED_IN_USER_TIME_OUT_DAYS } from "../constants";
+
+import { timeDifference } from "../utils";
+
+import { logResponse } from "../utils/log";
 
 const AuthGlobalContext = createContext();
 
 const AuthGlobalContextProvider = ({ children }) => {
-    const [user, setUser] = useState({ id: null, info: {} });
-    const [isUserReady, setIsUserReady] = useState(false);
+    const { currentUser, setCurrentUser, isCurrentUserReady, setIsCurrentUserReady } =
+        useUser();
 
-    const logIn = useCallback(async (email, password) => {
-        try {
-            const { data } = await api.login(email, password);
-            setUser({ id: data.user.id, info: data.user });
-        } catch (error) {
-            debug && console.error("Error logging in:", error);
-        }
-    }, []);
+    const logIn = async (email, password, parentId) => {
+        setIsCurrentUserReady(false);
 
-    const signUp = useCallback(async (email, password, name, role, parentId) => {
-        try {
-            const { data } = await api.signup(email, password, name, role, parentId);
-            setUser({ id: data.user.id, info: data.user });
-        } catch (error) {
-            debug && console.error("Error signing up:", error);
-        }
-    }, []);
+        const res = await apiAuth.login({ email, password, parentId });
+        logResponse("🚪 Logging in", res);
 
-    const logOut = useCallback(async () => {
-        try {
-            await api.logout();
-            setUser({ id: null, info: {} });
-        } catch (error) {
-            debug && console.error("Error logging out:", error);
+        if (!res.data) {
+            setCurrentUser({});
+            return null;
         }
-    }, []);
+
+        setCurrentUser(res.data);
+
+        localStorage.setItem("loggedIn", JSON.stringify(Date.now()));
+
+        setIsCurrentUserReady(true);
+    };
+
+    const signUp = async ({ email, password, name, role, parentId }) => {
+        setIsCurrentUserReady(false);
+
+        const res = await apiAuth.signup({ email, password, name, role, parentId });
+        logResponse("🎊 Signing up", res);
+
+        if (!res.data) {
+            setCurrentUser({});
+            return null;
+        }
+
+        setCurrentUser(res.data);
+
+        localStorage.setItem("loggedIn", JSON.stringify(Date.now()));
+
+        setIsCurrentUserReady(true);
+    };
+
+    const logOut = async () => {
+        setIsCurrentUserReady(false);
+
+        const res = await apiAuth.logout();
+        logResponse("🔓 Logout", res);
+
+        setCurrentUser({});
+
+        localStorage.removeItem("loggedIn");
+
+        setIsCurrentUserReady(true);
+    };
 
     useEffect(() => {
+        // Check wether a user logged in and time out cookies not passed
+        const lastLoginAt = JSON.parse(localStorage.getItem("loggedIn"));
+        const loggedInFor = timeDifference(lastLoginAt, Date.now()).days;
+        if (loggedInFor > LOGGED_IN_USER_TIME_OUT_DAYS) {
+            localStorage.removeItem("loggedIn");
+        }
+
+        // Skip readCurrent user for not logged in user
+        if (!JSON.parse(localStorage.getItem("loggedIn"))) {
+            setIsCurrentUserReady(true);
+            return;
+        }
+
         (async () => {
-            if (user.id) {
-                const userInfo = await api.readCurrentUser(user);
-                setUser((prevUser) => ({ ...prevUser, info: { ...userInfo } }));
-                setIsUserReady(true);
-            }
+            const res = await apiUsers.fetchCurrentUser();
+            logResponse("👽 Current user info", res);
+
+            setCurrentUser(res.data || {});
+
+            setIsCurrentUserReady(true);
         })();
-    }, [user, user.id]);
+    }, []);
 
     return (
-        <AuthGlobalContext.Provider value={{ user, isUserReady, logIn, signUp, logOut }}>
+        <AuthGlobalContext.Provider
+            value={{
+                currentUser,
+                isCurrentUserReady,
+                logIn,
+                signUp,
+                logOut,
+            }}
+        >
             {children}
         </AuthGlobalContext.Provider>
     );

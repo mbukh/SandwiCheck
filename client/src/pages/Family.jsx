@@ -5,10 +5,10 @@ import { useAuthGlobalContext } from "../context";
 import { Loading, UserCard } from "../components";
 
 const Family = () => {
-    const { user, isUserReady } = useAuthGlobalContext();
+    const { user, isCurrentUserReady } = useAuthGlobalContext();
 
-    if (!isUserReady) return <Loading />;
-    if (isUserReady && !user.id) return <Navigate to="/login" replace={true} />;
+    if (!isCurrentUserReady) return <Loading />;
+    if (isCurrentUserReady && !user.id) return <Navigate to="/login" replace={true} />;
 
     return (
         <div className="sandwich-gallery pt-4 pb-12 px-5 md:pt-6 md:pb-16 md:px-12 lg:pb-20 xl:px-20">

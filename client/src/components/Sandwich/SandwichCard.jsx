@@ -2,17 +2,17 @@ import { useState } from "react";
 
 import { Link, useNavigate } from "react-router-dom";
 
-import { SandwichImage } from "..";
+import { INGREDIENT_TYPES } from "../../constants/ingredientTypes";
+
+import { voteForSandwich } from "../../services/votes";
 
 const SandwichCard = ({
     isModal = false,
     index,
     sandwich,
-    ingredientTypes,
     ingredients,
     closeBasePath = "",
     hasUserVoted,
-    voteForSandwich,
     updateLocalSandwich,
 }) => {
     const [isUserVoting, setIsUserVoting] = useState(false);
@@ -22,11 +22,14 @@ const SandwichCard = ({
 
     const TheSandwichImage = () => (
         <div className="relative aspect-ratio-square">
-            <SandwichImage
-                sandwich={sandwich}
-                ingredientTypes={ingredientTypes}
-                ingredients={ingredients}
-            />
+            <div className="sandwich-images">
+                <img
+                    src={sandwich.image}
+                    className="absolute inset-0 object-contain size-full no-drag no-select"
+                    alt={sandwich.name}
+                    loading="lazy"
+                />
+            </div>
         </div>
     );
 
@@ -37,7 +40,7 @@ const SandwichCard = ({
 
     const voteForSandwichHandler = async (e) => {
         setIsUserVoting(true);
-        voteForSandwich(sandwich.id);
+        await voteForSandwich(sandwich.id);
     };
 
     return (
@@ -72,10 +75,7 @@ const SandwichCard = ({
                                 : "thumb__name text-sm sm:text-base lg:text-lg text-shadow-5"
                         }`}
                     >
-                        by{" "}
-                        <span className="capitalize">
-                            {sandwich.author || "an anonymous user"}
-                        </span>
+                        by <span className="capitalize">{sandwich.authorName}</span>
                     </h5>
                 </div>
                 <div className="card-middle">
@@ -165,7 +165,7 @@ const SandwichCard = ({
                             Ingredients:
                         </h5>
                         <ul className="text-sm sm:text-base">
-                            {ingredientTypes.map(
+                            {INGREDIENT_TYPES.map(
                                 (ingredientType) =>
                                     sandwich.hasOwnProperty(ingredientType) &&
                                     sandwich[ingredientType] && (

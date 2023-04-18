@@ -7,6 +7,7 @@ import {
     createSandwich,
     getSandwich,
     updateSandwich,
+    updateSandwichVotesCount,
     deleteSandwich,
 } from "../controllers/sandwichesController.js";
 
@@ -16,6 +17,11 @@ import { protect, authorize } from "../middleware/authMiddleware.js";
 const router = express.Router({ mergeParams: true });
 
 router.route("/").get(getSandwiches).post(protect, createSandwich);
+
+router
+    .route("/:sandwichId/vote")
+    .post(protect, authorize(ROLES.user), updateSandwichVotesCount)
+    .delete(protect, authorize(ROLES.user), updateSandwichVotesCount);
 
 router
     .route("/:sandwichId")

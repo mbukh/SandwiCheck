@@ -1,113 +1,113 @@
-import { debug } from "../constants";
+import axios from "axios";
 
-import { auth, db } from "../constants/firebase.config";
+import { log, logResponse } from "../utils/log";
 
-import {
-    arrayUnion,
-    doc,
-    getDoc,
-    serverTimestamp,
-    setDoc,
-    updateDoc,
-} from "firebase/firestore";
+import { handleResponse } from "../utils/api-utils";
 
-const readUserById = async (userId) => {
-    const docRef = doc(db, "users", userId);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-        const userObject = { ...docSnap.data(), id: docSnap.id };
-        debug && console.log("User data retrieved:", userObject);
-        return userObject;
-    } else {
-        debug && console.log("No such user!");
-        return null;
-    }
+const api = axios.create({
+    baseURL: `${process.env.REACT_APP_API_SERVER}/api/v1/users`,
+    headers: {
+        "Access-Control-Allow-Origin": process.env.REACT_APP_HOST,
+        "Content-Type": "application/json",
+    },
+    withCredentials: true,
+    credentials: "include",
+});
+
+/*
+1. GET /api/users
+   Access: Private/Admin
+
+2. GET /api/users/current
+   Access: Private
+
+3. POST /api/users/:userId/favorite-sandwiches/:sandwichId
+   DELETE /api/users/:userId/favorite-sandwiches/:sandwichId
+   Access: Private/User
+
+4. PUT /api/users/:userId/week-menu/:day
+   DELETE /api/users/:userId/week-menu/:day
+   Access: Private/User, Private/Parent
+   Parameters:
+    body: { sandwichId }
+
+5. GET /api/users/:userId
+   Access: Private/User, Private/Parent
+
+6. PUT /api/users/:userId
+   Access: Private/User, Private/Parent
+   Parameters:
+    body: {name,
+           email,
+           role,
+           dietaryPreferences,
+           removeProfilePicture,
+           unlinkParentId,
+           unlinkChildId}
+    file: {imageBuffer}
+
+7. DELETE /api/users/:userId
+   Access: Private/User
+*/
+
+export const fetchCurrentUser = async () => {
+    return await handleResponse(async () => api.get(`/current`));
 };
 
-const createUser = async (userId, userData) => {
-    debug && console.log("Creating a new user");
-    try {
-        await setDoc(doc(db, "users", userId), {
-            ...userData,
-            type: "parent",
-            ...(userData?.parents && {
-                parents: userData.parents,
-                type: "child",
-            }),
-            createdAt: serverTimestamp(),
-        });
-        debug && console.log("User created with ID: ", userId);
-    } catch (e) {
-        debug && console.error("Error adding user: ", e);
-    }
+export const fetchUserById = async (userId) => {
+    return await handleResponse(async () => api.get(`/${userId}`));
 };
 
-const updateUserById = async (userId, userData) => {
-    debug && console.log("Updating a user", userId);
-    const docRef = doc(db, "users", userId);
-    try {
-        await updateDoc(docRef, {
-            ...userData,
-            ...(userData?.children && {
-                children: arrayUnion(userData.children),
-                type: "parent",
-            }),
-            ...(userData?.parents && {
-                parents: arrayUnion(userData.parents),
-                type: "child",
-            }),
-        });
-        debug && console.log("User updated with ID: ", userId);
-    } catch (e) {
-        debug && console.error("Error updating user: ", e);
-    }
+export const updateUserById = async ({
+    name,
+    email,
+    role,
+    dietaryPreferences,
+    unlinkParentId,
+    unlinkChildId,
+    removeProfilePicture,
+    file,
+}) => {
+    const formData = new FormData();
+
+    if (name) formData.append("name", name);
+    if (email) formData.append("email", email);
+    if (role) formData.append("role", role);
+    if (dietaryPreferences) formData.append("dietaryPreferences", dietaryPreferences);
+    if (unlinkParentId) formData.append("unlinkParentId", unlinkParentId);
+    if (unlinkChildId) formData.append("unlinkChildId", unlinkChildId);
+    if (removeProfilePicture)
+        formData.append("removeProfilePicture", removeProfilePicture);
+    if (file && file.imageBuffer)
+        formData.append("file", file.imageBuffer, "profile-picture.png");
+
+    const config = {
+        headers: {
+            ...api.defaults.headers,
+            "Content-Type": "multipart/form-data",
+        },
+    };
+
+    return await handleResponse(async () => api.put(`/update`, formData, config));
 };
 
-const updateCurrentUserFavoriteSandwichesInLocalStorage = (sandwichId) => {
+const addSandwichToFavoritesInLocalStorage = (sandwichId) => {
     const allVotes = JSON.parse(localStorage.getItem("user_votes")) || [];
     allVotes.push(sandwichId);
     localStorage.setItem("user_votes", JSON.stringify([...new Set(allVotes)]));
 };
 
-const updateCurrentUserFavoriteSandwiches = async (sandwichId) => {
-    const currentUserId = auth.currentUser?.id;
-    if (!currentUserId) {
-        updateCurrentUserFavoriteSandwichesInLocalStorage(sandwichId);
-        debug && console.log("No user logged in. Added locally.");
-        return null;
-    }
-    debug && console.log("Adding a favorite sandwiches for:", auth.currentuser.id);
-    const docRef = doc(db, "users", currentUserId);
-    try {
-        await updateDoc(docRef, {
-            favoriteSandwiches: arrayUnion(sandwichId),
-        });
-        debug &&
-            console.log(
-                "Favorite sandwiches updated for:",
-                currentUserId,
-                "sandwich added:",
-                sandwichId
-            );
-    } catch (e) {
-        debug && console.error("Error adding favorite sandwiches: ", e);
-    }
+export const addSandwichToFavoritesByUserId = async ({ userId, sandwichId }) => {
+    return await handleResponse(async () =>
+        api.get(`/users/${userId}/favorite-sandwiches/${sandwichId}`)
+    );
 };
 
-const didUserVotedForSandwichByIdUsingLocalStorage = (sandwichId) => {
+export const didUserVotedForSandwichByIdUsingLocalStorage = (sandwichId) => {
     const allVotes = JSON.parse(localStorage.getItem("user_votes"));
     if (allVotes && allVotes.includes(sandwichId)) {
-        debug && console.log("User already voted locally");
+        log("User already voted locally");
         return true;
     }
     return false;
-};
-
-
-export {
-    readUserById,
-    createUser,
-    updateUserById,
-    didUserVotedForSandwichByIdUsingLocalStorage,
-    updateCurrentUserFavoriteSandwiches,
 };

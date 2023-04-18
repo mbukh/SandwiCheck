@@ -143,7 +143,7 @@ const IngredientsSwiper = ({
                                     ingredients,
                                     ingredientType: currentIngredientType,
                                     proteinPortion: "full",
-                                    optionSize: "normal",
+                                    optionSize: "full",
                                 })}
                                 className="inset-0 object-contain size-full no-drag"
                                 alt={ingredient.name}

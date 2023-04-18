@@ -37,14 +37,14 @@ const errorHandler = (err, req, res, next) => {
             error = createHttpError(
                 400,
                 `The file is too large. The maximum file size allowed is ${Math.round(
-                    parseInt(process.env.MAX_UPLOAD_SIZE_IN_BYTES) / 1024 / 1024
+                    parseInt(process.env.MAX_UPLOAD_SIZE_IN_BYTE, 10) / 1024 / 1024
                 )}MB`
             );
         }
     }
 
     res.status(error.status || 500);
-    res.status(200).json({
+    res.json({
         success: false,
         error: {
             status: error.status,

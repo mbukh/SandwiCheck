@@ -16,6 +16,7 @@ import {
     getUser,
     updateUser,
     deleteUser,
+    updateFavoriteSandwiches,
 } from "../controllers/usersController.js";
 
 // Include other resource routers
@@ -24,9 +25,14 @@ const router = express.Router({ mergeParams: true });
 // Upload image
 export const uploadImage = upload.single("profilePicture");
 
-router.route("/").post(protect, authorize(ROLES.admin), getUsers);
+router.route("/").get(protect, authorize(ROLES.admin), getUsers);
 
 router.route("/current").get(protect, getUser);
+
+router
+    .route("/:userId/favorite-sandwiches/:sandwichId")
+    .post(protect, authorize(ROLES.user), updateFavoriteSandwiches)
+    .delete(protect, authorize(ROLES.user), updateFavoriteSandwiches);
 
 router
     .route("/:userId/week-menu/:day")

@@ -12,7 +12,7 @@ const SandwichEditor = () => {
     const [isOpenLoginModal, setIsOpenLoginModal] = useState(false);
     const swiperContainerRef = useRef(null);
     const { ingredients, areIngredientsReady } = useSandwichGlobalContext();
-    const { user, isUserReady } = useAuthGlobalContext();
+    const { user, isCurrentUserReady } = useAuthGlobalContext();
     const {
         ingredientTypes,
         currentIngredientType,
@@ -61,7 +61,7 @@ const SandwichEditor = () => {
         setTimeout(() => (swiperContainerRef.current.style.height = ""), 200);
     }, [currentIngredientType, swiperContainerRef]);
 
-    if (!areIngredientsReady || !isUserReady) return <Loading />;
+    if (!areIngredientsReady || !isCurrentUserReady) return <Loading />;
 
     return (
         <div className="create-sandwich flex flex-col min-h-full py-6 md:pt-9 lg:pt-12 mb-4">
@@ -133,8 +133,7 @@ const SandwichEditor = () => {
                                     name="sandwichName"
                                     placeholder={
                                         user?.name
-                                            ? user?.name.split(" ")[0] +
-                                              "'s Sandwich"
+                                            ? user?.name.split(" ")[0] + "'s Sandwich"
                                             : "Sandwich name"
                                     }
                                     maxLength={25}

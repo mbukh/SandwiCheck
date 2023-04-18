@@ -6,6 +6,8 @@ import {
     isBreadType,
 } from "../constants/ingredientsConstants.js";
 
+import { MAX_INGREDIENTS_COUNT } from "../constants/sandwichConstants.js";
+
 import Ingredient from "./IngredientModel.js";
 
 const { Schema } = mongoose;
@@ -54,6 +56,7 @@ const sandwichSchema = new Schema(
         votesCount: {
             type: Number,
             default: 0,
+            min: [0, "A number of votes can be a positive number only"],
         },
         ingredients: {
             type: [ingredientWithPortionSchema],
@@ -113,23 +116,36 @@ sandwichSchema.pre("save", async function (next) {
 });
 
 async function ingredientsValidator(ingredientsWithPortions) {
-    if (ingredientsWithPortions.length < 2) return false;
+    if (ingredientsWithPortions.length < 2) {
+        throw new Error("At least two ingredients are required");
+    }
 
-    // First ingredient is bread
+    if (ingredientsWithPortions.length > MAX_INGREDIENTS_COUNT) {
+        throw new Error(`No more than ${MAX_INGREDIENTS_COUNT} ingredients are allowed`);
+    }
+
     const firstIngredient = await Ingredient.findById(
         ingredientsWithPortions[0].ingredientId
     );
 
-    // No other bread
+    if (!firstIngredient || !isBreadType(firstIngredient.type)) {
+        throw new Error("The first ingredient must be bread");
+    }
+
     const otherIngredientIds = ingredientsWithPortions
         .slice(1)
         .map((item) => item.ingredientId);
-    const otherIngredient = await Ingredient.find({ _id: { $in: otherIngredientIds } })
+    const otherIngredients = await Ingredient.find({ _id: { $in: otherIngredientIds } })
         .select("type")
         .lean();
-    const isOneBread = !otherIngredient.some((item) => isBreadType(item.type));
 
-    return firstIngredient && isBreadType(firstIngredient.type) && isOneBread;
+    const isOneBread = !otherIngredients.some((item) => isBreadType(item.type));
+
+    if (!isOneBread) {
+        throw new Error("Only one bread is allowed as the primary ingredient");
+    }
+
+    return true;
 }
 
 function setDietaryPreferences(ingredients) {

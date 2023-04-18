@@ -1,72 +1,108 @@
-import { debug } from "../constants";
+import axios from "axios";
 
-import { db } from "../constants/firebase.config";
+import { log, logResponse } from "../utils/log";
 
-import { collection, getDocs, query, orderBy } from "firebase/firestore";
+import { INGREDIENT_TYPES, CACHE_TIME_OUT_MINS } from "../constants";
 
-import { ingredientTypes, cacheTimeoutInMinutes } from "../constants";
+import { handleResponse } from "../utils/api-utils";
 
 import { timeDifference } from "../utils";
 
-const readAllIngredientsFromCache = () => {
-    const cachedIngredients = JSON.parse(localStorage.getItem("ingredients"));
-    if (!cachedIngredients) return null;
-    const cacheExpired =
-        timeDifference(cachedIngredients.cachedAt, Date.now()).minutes >
-        cacheTimeoutInMinutes;
-    if (cacheExpired) return null;
-    debug && console.log("Cache timeout is set to", cacheTimeoutInMinutes, "minutes.");
-    return cachedIngredients;
+const api = axios.create({
+    baseURL: `${process.env.REACT_APP_API_SERVER}/api/v1/ingredients`,
+    headers: {
+        "Access-Control-Allow-Origin": process.env.REACT_APP_HOST,
+        "Content-Type": "application/json",
+    },
+    withCredentials: true,
+    credentials: "include",
+});
+
+/*
+1.  GET /api/ingredients
+    Access: Public
+    Parameters:
+        query, body: { dietaryPreferences, type, sortBy }
+
+2.  GET /api/ingredients/:ingredientId
+    Access: Public
+
+3.  POST /api/ingredients
+    Access: Private/Admin
+    Parameters:
+        body: { name, type, dietaryPreferences, shape, displayPriority }
+        files: { reqFiles }
+
+4.  PUT /api/ingredients/:ingredientId
+    Access: Private/Admin
+    Parameters:
+        body: { name, type, dietaryPreferences, shape, displayPriority }
+        files: { reqFiles }
+
+5.  DELETE /api/ingredients/:ingredientId
+    Access: Private/Admin
+*/
+
+const fetchIngredients = async (query) => {
+    return await handleResponse(async () => api.get("/", { params: query }));
 };
 
-const readAllIngredients = async () => {
+// =================
+
+export const getAllIngredients = async () => {
     const cachedIngredients = readAllIngredientsFromCache();
+
     if (cachedIngredients) {
-        debug && console.log("All ingredients retrieved from cache:", cachedIngredients);
+        log("📝 💾 All ingredients retrieved from cache", cachedIngredients);
         return cachedIngredients;
     }
 
-    try {
-        const resultArray = await Promise.all(
-            ingredientTypes.map((ingredientType) =>
-                readIngredientCollection(ingredientType)
-            )
-        );
-        const resultObject = resultArray.reduce(
-            (a, v, i) => ({ ...a, [ingredientTypes[i]]: v }),
-            {}
-        );
-        localStorage.setItem(
-            "ingredients",
-            JSON.stringify({ ...resultObject, cachedAt: Date.now() })
-        );
-        debug && console.log("All ingredients retrieved:", resultObject);
-        return resultObject;
-    } catch (error) {
-        debug && console.error("Error retrieving all ingredients:", error);
-        return null;
-    }
+    const res = await fetchIngredients();
+    logResponse("📝 Fetch all ingredients", res);
+
+    const groupedIngredients = groupAndSortIngredients(res.data || []);
+
+    localStorage.setItem(
+        "ingredients",
+        JSON.stringify({ ...groupedIngredients, cachedAt: Date.now() })
+    );
+
+    return groupedIngredients;
 };
 
-const readIngredientCollection = async (collectionName) => {
-    try {
-        const collectionRef = collection(db, collectionName);
-        const docsSnap = await getDocs(query(collectionRef, orderBy("name")));
-        if (docsSnap.docs.length > 0) {
-            debug && console.log("Ingredients retrieved for:", collectionName);
-            return docsSnap.docs.map((doc) => ({
-                ...doc.data(),
-                id: doc.id,
-            }));
+// UTILS //
+
+function readAllIngredientsFromCache() {
+    const cachedIngredients = JSON.parse(localStorage.getItem("ingredients"));
+
+    if (!cachedIngredients) return null;
+
+    const cacheExpired =
+        timeDifference(cachedIngredients.cachedAt, Date.now()).minutes >
+        CACHE_TIME_OUT_MINS;
+
+    if (cacheExpired) return null;
+
+    log("⌛️ Cache timeout is set to", CACHE_TIME_OUT_MINS, "minutes.");
+
+    return cachedIngredients;
+}
+
+function groupAndSortIngredients(ingredients) {
+    const groupedIngredients = ingredients.reduce((acc, ingredient) => {
+        if (!acc[ingredient.type]) {
+            acc[ingredient.type] = [];
         }
-    } catch (error) {
-        debug &&
-            console.error(
-                "Error retrieving ingredients for " + collectionName + ":",
-                error
-            );
-        return null;
-    }
-};
+        acc[ingredient.type].push(ingredient);
+        return acc;
+    }, {});
 
-export { readAllIngredients };
+    // sort by display priority
+    INGREDIENT_TYPES.forEach((type) => {
+        if (!groupedIngredients[type]) return;
+
+        groupedIngredients[type].sort((a, b) => b.displayPriority - a.displayPriority);
+    });
+
+    return groupedIngredients;
+}

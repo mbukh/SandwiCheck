@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-import { readAllIngredients } from "../services/apiIngredients";
+import { getAllIngredients } from "../services/apiIngredients";
 
 const SandwichGlobalContext = createContext();
 
@@ -12,7 +12,7 @@ const SandwichGlobalContextProvider = ({ children }) => {
         !areIngredientsReady &&
             (async () => {
                 try {
-                    const ingredientsData = await readAllIngredients();
+                    const ingredientsData = await getAllIngredients();
                     setIngredients(ingredientsData);
                     setAreIngredientsReady(true);
                 } catch (error) {
