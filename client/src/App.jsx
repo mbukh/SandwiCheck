@@ -8,7 +8,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Family, Layout, Error404, Cart } from "./pages";
 
 import {
-    // SandwichEditor,
+    SandwichEditor,
     // SandwichModal,
     SandwichGallery,
     // LoginModal,
@@ -60,10 +60,10 @@ const router = createBrowserRouter([
             //         </SandwichGallery>
             //     ),
             // },
-            // {
-            //     path: "/create",
-            //     element: <SandwichEditor />,
-            // },
+            {
+                path: "/create",
+                element: <SandwichEditor />,
+            },
             // {
             //     path: "/menu",
             //     element: <SandwichGallery galleryType="personal" />,

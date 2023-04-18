@@ -7,12 +7,40 @@ import nextImg from "../../assets/images/icons/arrow-next.svg";
 import prevImg from "../../assets/images/icons/arrow-previous.svg";
 
 import { assembleImageSrc } from "../../utils";
+import { isBreadType } from "../../constants/ingredientTypes";
+
+const breakpoints = {
+    640: {
+        slidesPerView: 3,
+        spaceBetween: 0,
+    },
+    768: {
+        slidesPerView: 3,
+        spaceBetween: 0,
+    },
+    1024: {
+        slidesPerView: 5,
+        spaceBetween: 0,
+    },
+    1280: {
+        slidesPerView: 5,
+        spaceBetween: 100,
+    },
+    1500: {
+        slidesPerView: 7,
+        spaceBetween: 50,
+    },
+    1900: {
+        slidesPerView: 7,
+        spaceBetween: 100,
+    },
+};
 
 const IngredientsSwiper = ({
     sandwich,
     ingredients,
     currentIngredientType,
-    updateSandwichIngredients,
+    updateSandwich,
 }) => {
     const [navigation, setNavigation] = useState({ prev: false, next: true });
     const swiperRef = useRef();
@@ -24,33 +52,6 @@ const IngredientsSwiper = ({
     );
     const currentSwipeIndex =
         ingredientsOfType.indexOf(chosenCurrentIngredientOfType) + 1;
-
-    const breakpoints = {
-        640: {
-            slidesPerView: 3,
-            spaceBetween: 0,
-        },
-        768: {
-            slidesPerView: 3,
-            spaceBetween: 0,
-        },
-        1024: {
-            slidesPerView: 5,
-            spaceBetween: 0,
-        },
-        1280: {
-            slidesPerView: 5,
-            spaceBetween: 100,
-        },
-        1500: {
-            slidesPerView: 7,
-            spaceBetween: 50,
-        },
-        1900: {
-            slidesPerView: 7,
-            spaceBetween: 100,
-        },
-    };
 
     useEffect(() => {
         // swipe is being rerendered
@@ -72,10 +73,10 @@ const IngredientsSwiper = ({
         // first swiper is rendered
         swiperRef.current = swiper;
         setTimeout(() => {
-            if (currentIngredientType === "bread" && !sandwich?.bread)
+            if (isBreadType(currentIngredientType) && !sandwich?.bread)
                 setTimeout(() => {
                     swiper.slideTo(1);
-                    updateSandwichIngredients({ bread: ingredientsOfType[0].id });
+                    updateSandwich({ bread: ingredientsOfType[0].id });
                 }, 400);
             swiper.slideTo(currentSwipeIndex);
         }, 100);
@@ -83,11 +84,11 @@ const IngredientsSwiper = ({
 
     const slideChangeHandler = (swiper) => {
         // swipe action
-        if (currentIngredientType === "bread" && swiper.activeIndex === 0) {
+        if (isBreadType(currentIngredientType) && swiper.activeIndex === 0) {
             setTimeout(() => initSwiperHandler(swiper), 400);
             return;
         }
-        updateSandwichIngredients({
+        updateSandwich({
             [currentIngredientType]:
                 ingredientsOfType[swiper.activeIndex - 1]?.id || null,
         });
@@ -142,8 +143,6 @@ const IngredientsSwiper = ({
                                     },
                                     ingredients,
                                     ingredientType: currentIngredientType,
-                                    proteinPortion: "full",
-                                    optionSize: "full",
                                 })}
                                 className="inset-0 object-contain size-full no-drag"
                                 alt={ingredient.name}

@@ -2,8 +2,8 @@ export const TYPES = {
     bread: "bread",
     protein: "protein",
     cheese: "cheese",
-    topping: "topping",
-    condiment: "condiment",
+    toppings: "toppings",
+    condiments: "condiments",
 };
 
 export const DIETARY_PREFERENCES = {

@@ -27,9 +27,9 @@ export const getIngredients = expressAsyncHandler(async (req, res, next) => {
     let sort = {};
 
     if (!sortBy) {
-        sort.displayPriority = 1;
+        sort.displayPriority = -1;
     } else if (sortBy === "name") {
-        sort.name = 1;
+        sort.name = -1;
     }
 
     if (type) {

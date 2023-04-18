@@ -6,7 +6,7 @@ import { useAuthGlobalContext, useSandwichGlobalContext } from "../../context";
 
 import { useSandwich } from "../../hooks";
 
-import { INGREDIENT_TYPES } from "../../constants/ingredientTypes";
+import { TYPES } from "../../constants/ingredientTypes";
 
 import { SandwichCard, Modal } from "..";
 
@@ -38,7 +38,7 @@ const SandwichModal = ({ closeLink = "" }) => {
                     key={sandwichId}
                     index={Math.ceil(Math.random() * 4)}
                     sandwich={sandwich}
-                    INGREDIENT_TYPES={INGREDIENT_TYPES}
+                    TYPES={TYPES}
                     ingredients={ingredients}
                     closeBasePath=""
                     hasUserVoted={hasUserVotedUserForSandwich(sandwich, user)}

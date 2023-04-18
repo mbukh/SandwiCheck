@@ -2,7 +2,7 @@ import axios from "axios";
 
 import { log, logResponse } from "../utils/log";
 
-import { INGREDIENT_TYPES, CACHE_TIME_OUT_MINS } from "../constants";
+import { TYPES, CACHE_TIME_OUT_MINS } from "../constants";
 
 import { handleResponse } from "../utils/api-utils";
 
@@ -23,6 +23,7 @@ const api = axios.create({
     Access: Public
     Parameters:
         query, body: { dietaryPreferences, type, sortBy }
+        sortBy:(def)"displayPriority"|"name"
 
 2.  GET /api/ingredients/:ingredientId
     Access: Public
@@ -43,31 +44,41 @@ const api = axios.create({
     Access: Private/Admin
 */
 
-const fetchIngredients = async (query) => {
-    return await handleResponse(async () => api.get("/", { params: query }));
+const fetchIngredients = async ({ dietaryPreferences, type, sortBy }) => {
+    // sortBy:(def)"displayPriority"|"name"
+    return await handleResponse(async () =>
+        api.get("/", { params: { dietaryPreferences, type, sortBy } })
+    );
 };
 
 // =================
 
 export const getAllIngredients = async () => {
-    const cachedIngredients = readAllIngredientsFromCache();
+    let ingredients;
 
-    if (cachedIngredients) {
-        log("📝 💾 All ingredients retrieved from cache", cachedIngredients);
-        return cachedIngredients;
+    ingredients = readAllIngredientsFromCache();
+    if (ingredients) {
+        log("📝 💾 Read ingredients from cache", ingredients);
+
+        log("📝 ⏰ Ingredients cache timeout is set to", CACHE_TIME_OUT_MINS, "minutes.");
+
+        return { data: ingredients };
     }
 
-    const res = await fetchIngredients();
+    const res = await fetchIngredients({});
     logResponse("📝 Fetch all ingredients", res);
 
-    const groupedIngredients = groupAndSortIngredients(res.data || []);
+    if (!res.data) {
+        return;
+    }
 
-    localStorage.setItem(
-        "ingredients",
-        JSON.stringify({ ...groupedIngredients, cachedAt: Date.now() })
-    );
+    ingredients = groupIngredientsByTypes(res.data);
 
-    return groupedIngredients;
+    const result = { ...ingredients, cachedAt: Date.now() };
+
+    localStorage.setItem("ingredients", JSON.stringify(result));
+
+    return { data: result };
 };
 
 // UTILS //
@@ -83,12 +94,10 @@ function readAllIngredientsFromCache() {
 
     if (cacheExpired) return null;
 
-    log("⌛️ Cache timeout is set to", CACHE_TIME_OUT_MINS, "minutes.");
-
     return cachedIngredients;
 }
 
-function groupAndSortIngredients(ingredients) {
+function groupIngredientsByTypes(ingredients) {
     const groupedIngredients = ingredients.reduce((acc, ingredient) => {
         if (!acc[ingredient.type]) {
             acc[ingredient.type] = [];
@@ -96,13 +105,6 @@ function groupAndSortIngredients(ingredients) {
         acc[ingredient.type].push(ingredient);
         return acc;
     }, {});
-
-    // sort by display priority
-    INGREDIENT_TYPES.forEach((type) => {
-        if (!groupedIngredients[type]) return;
-
-        groupedIngredients[type].sort((a, b) => b.displayPriority - a.displayPriority);
-    });
 
     return groupedIngredients;
 }

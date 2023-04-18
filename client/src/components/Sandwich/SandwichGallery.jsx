@@ -11,7 +11,7 @@ import useGallery from "../../hooks/use-gallery";
 
 import useSandwich from "../../hooks/use-sandwich";
 
-import { INGREDIENT_TYPES } from "../../constants/ingredientTypes";
+import { TYPES } from "../../constants/ingredientTypes";
 
 import { capitalizeFirst } from "../../utils";
 

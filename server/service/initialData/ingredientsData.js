@@ -1,7 +1,9 @@
+import { TYPES } from "../../constants/ingredientsConstants.js";
+
 export const breadData = [
     {
         name: "Ciabatta",
-        type: "bread",
+        type: TYPES.bread,
         imageBase: "20200620_101006",
         shape: "long",
         dietaryPreferences: ["vegetarian", "vegan", "kosher"],
@@ -10,7 +12,7 @@ export const breadData = [
     },
     {
         name: "Semolina",
-        type: "bread",
+        type: TYPES.bread,
         imageBase: "20200620_101033",
         shape: "long",
         dietaryPreferences: ["vegetarian", "vegan", "kosher"],
@@ -19,7 +21,7 @@ export const breadData = [
     },
     {
         name: "Multi-Grain",
-        type: "bread",
+        type: TYPES.bread,
         imageBase: "20200620_101059",
         shape: "long",
         dietaryPreferences: ["vegetarian", "vegan", "kosher", "halal"],
@@ -28,7 +30,7 @@ export const breadData = [
     },
     {
         name: "Rye",
-        type: "bread",
+        type: TYPES.bread,
         imageBase: "20200620_101114",
         shape: "trapezoid",
         dietaryPreferences: ["vegetarian", "vegan", "kosher"],
@@ -37,7 +39,7 @@ export const breadData = [
     },
     {
         name: "Croissant",
-        type: "bread",
+        type: TYPES.bread,
         imageBase: "20200620_101131",
         shape: "trapezoid",
         dietaryPreferences: ["vegetarian", "kosher"],
@@ -46,7 +48,7 @@ export const breadData = [
     },
     {
         name: "Whole Wheat",
-        type: "bread",
+        type: TYPES.bread,
         imageBase: "20200620_101224",
         shape: "round",
         dietaryPreferences: ["vegetarian", "vegan", "kosher", "halal"],
@@ -55,7 +57,7 @@ export const breadData = [
     },
     {
         name: "White",
-        type: "bread",
+        type: TYPES.bread,
         imageBase: "20200620_101152",
         shape: "round",
         dietaryPreferences: ["vegetarian", "vegan", "kosher", "halal"],
@@ -64,7 +66,7 @@ export const breadData = [
     },
     {
         name: "Whole Wheat Wrap",
-        type: "bread",
+        type: TYPES.bread,
         imageBase: "20180222_030637",
         shape: "long",
         dietaryPreferences: ["vegetarian", "vegan", "kosher", "halal"],
@@ -73,7 +75,7 @@ export const breadData = [
     },
     {
         name: "Lettuce Wrap",
-        type: "bread",
+        type: TYPES.bread,
         imageBase: "20200620_101255",
         shape: "long",
         dietaryPreferences: ["vegetarian", "vegan", "kosher", "halal"],
@@ -82,7 +84,7 @@ export const breadData = [
     },
     {
         name: "Gluten-Free",
-        type: "bread",
+        type: TYPES.bread,
         imageBase: "20220202_050837",
         shape: "trapezoid",
         dietaryPreferences: ["vegetarian", "vegan", "kosher", "halal"],
@@ -97,7 +99,7 @@ export const breadData = [
 export const cheeseData = [
     {
         name: "Swiss",
-        type: "cheese",
+        type: TYPES.cheese,
         imageBase: "20200621_083351",
         dietaryPreferences: ["vegetarian", "kosher"],
         displayPriority: 80,
@@ -105,7 +107,7 @@ export const cheeseData = [
     },
     {
         name: "Provolone",
-        type: "cheese",
+        type: TYPES.cheese,
         imageBase: "20200621_083450",
         dietaryPreferences: ["vegetarian", "kosher"],
         displayPriority: 70,
@@ -113,7 +115,7 @@ export const cheeseData = [
     },
     {
         name: "Mozzarella",
-        type: "cheese",
+        type: TYPES.cheese,
         imageBase: "20200621_083553",
         dietaryPreferences: ["vegetarian", "kosher", "halal"],
         displayPriority: 100,
@@ -121,7 +123,7 @@ export const cheeseData = [
     },
     {
         name: "Cheddar",
-        type: "cheese",
+        type: TYPES.cheese,
         imageBase: "20200621_083659",
         dietaryPreferences: ["vegetarian", "kosher"],
         displayPriority: 90,
@@ -129,7 +131,7 @@ export const cheeseData = [
     },
     {
         name: "Pepper Jack",
-        type: "cheese",
+        type: TYPES.cheese,
         imageBase: "20200621_083757",
         dietaryPreferences: ["vegetarian", "kosher"],
         displayPriority: 75,
@@ -137,7 +139,7 @@ export const cheeseData = [
     },
     {
         name: "Muenster",
-        type: "cheese",
+        type: TYPES.cheese,
         imageBase: "20200621_083858",
         dietaryPreferences: ["vegetarian", "kosher"],
         displayPriority: 60,
@@ -145,7 +147,7 @@ export const cheeseData = [
     },
     {
         name: "American",
-        type: "cheese",
+        type: TYPES.cheese,
         imageBase: "20200621_083946",
         dietaryPreferences: ["vegetarian", "kosher"],
         displayPriority: 95,
@@ -153,7 +155,7 @@ export const cheeseData = [
     },
     {
         name: "Brie",
-        type: "cheese",
+        type: TYPES.cheese,
         imageBase: "20200621_084108",
         dietaryPreferences: ["vegetarian"],
         displayPriority: 50,
@@ -161,7 +163,7 @@ export const cheeseData = [
     },
     {
         name: "Parmesan",
-        type: "cheese",
+        type: TYPES.cheese,
         imageBase: "20200621_084307",
         dietaryPreferences: ["vegetarian"],
         displayPriority: 65,
@@ -169,7 +171,7 @@ export const cheeseData = [
     },
     {
         name: "Feta",
-        type: "cheese",
+        type: TYPES.cheese,
         imageBase: "20200621_092955",
         dietaryPreferences: ["vegetarian", "halal"],
         displayPriority: 55,
@@ -183,7 +185,7 @@ export const cheeseData = [
 export const condimentData = [
     {
         name: "Mayonnaise",
-        type: "condiment",
+        type: TYPES.condiments,
         imageBase: "20200621_115703",
         dietaryPreferences: ["vegetarian", "kosher"],
         displayPriority: 100,
@@ -191,7 +193,7 @@ export const condimentData = [
     },
     {
         name: "Spicy Mayonnaise",
-        type: "condiment",
+        type: TYPES.condiments,
         imageBase: "20200621_121311",
         dietaryPreferences: ["vegetarian", "kosher"],
         displayPriority: 90,
@@ -199,7 +201,7 @@ export const condimentData = [
     },
     {
         name: "Spicy Brown Mustard",
-        type: "condiment",
+        type: TYPES.condiments,
         imageBase: "20200621_121727",
         dietaryPreferences: ["vegetarian", "kosher", "halal"],
         displayPriority: 60,
@@ -207,7 +209,7 @@ export const condimentData = [
     },
     {
         name: "Dijon Mustard",
-        type: "condiment",
+        type: TYPES.condiments,
         imageBase: "20200621_121826",
         dietaryPreferences: ["vegetarian", "kosher", "halal"],
         displayPriority: 70,
@@ -215,7 +217,7 @@ export const condimentData = [
     },
     {
         name: "Honey Mustard",
-        type: "condiment",
+        type: TYPES.condiments,
         imageBase: "20200621_121913",
         dietaryPreferences: ["vegetarian", "kosher"],
         displayPriority: 50,
@@ -223,7 +225,7 @@ export const condimentData = [
     },
     {
         name: "Oil & Vinegar",
-        type: "condiment",
+        type: TYPES.condiments,
         imageBase: "20200621_122357",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
         displayPriority: 30,
@@ -231,7 +233,7 @@ export const condimentData = [
     },
     {
         name: "Pesto",
-        type: "condiment",
+        type: TYPES.condiments,
         imageBase: "20200621_122152",
         dietaryPreferences: ["vegetarian"],
         displayPriority: 20,
@@ -239,7 +241,7 @@ export const condimentData = [
     },
     {
         name: "Balsamic Dressing",
-        type: "condiment",
+        type: TYPES.condiments,
         imageBase: "20200621_122059",
         dietaryPreferences: ["vegetarian", "kosher", "halal"],
         displayPriority: 10,
@@ -247,7 +249,7 @@ export const condimentData = [
     },
     {
         name: "Russian Dressing",
-        type: "condiment",
+        type: TYPES.condiments,
         imageBase: "20200621_122003",
         dietaryPreferences: ["kosher"],
         displayPriority: 5,
@@ -255,7 +257,7 @@ export const condimentData = [
     },
     {
         name: "Horseradish",
-        type: "condiment",
+        type: TYPES.condiments,
         imageBase: "20200621_122556",
         dietaryPreferences: ["vegetarian", "kosher"],
         displayPriority: 40,
@@ -263,7 +265,7 @@ export const condimentData = [
     },
     {
         name: "BBQ Sauce",
-        type: "condiment",
+        type: TYPES.condiments,
         imageBase: "20200621_122455",
         dietaryPreferences: ["vegetarian", "kosher", "halal"],
         displayPriority: 80,
@@ -271,7 +273,7 @@ export const condimentData = [
     },
     {
         name: "Ranch",
-        type: "condiment",
+        type: TYPES.condiments,
         imageBase: "20200621_123243",
         dietaryPreferences: ["vegetarian", "kosher"],
         displayPriority: 95,
@@ -279,7 +281,7 @@ export const condimentData = [
     },
     {
         name: "Sriracha",
-        type: "condiment",
+        type: TYPES.condiments,
         imageBase: "20200621_123445",
         dietaryPreferences: ["vegetarian", "kosher", "halal"],
         displayPriority: 85,
@@ -287,7 +289,7 @@ export const condimentData = [
     },
     {
         name: "Thai Peanut",
-        type: "condiment",
+        type: TYPES.condiments,
         imageBase: "20200621_123357",
         dietaryPreferences: ["vegetarian"],
         displayPriority: 15,
@@ -295,7 +297,7 @@ export const condimentData = [
     },
     {
         name: "Honey",
-        type: "condiment",
+        type: TYPES.condiments,
         imageBase: "20200723_023043",
         dietaryPreferences: ["vegetarian", "kosher"],
         displayPriority: 25,
@@ -303,7 +305,7 @@ export const condimentData = [
     },
     {
         name: "Hummus",
-        type: "condiment",
+        type: TYPES.condiments,
         imageBase: "20200621_102757",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
         displayPriority: 45,
@@ -311,7 +313,7 @@ export const condimentData = [
     },
     {
         name: "Peanut Butter",
-        type: "condiment",
+        type: TYPES.condiments,
         imageBase: "20220904_112536",
         dietaryPreferences: ["vegetarian", "kosher", "halal"],
         displayPriority: 35,
@@ -319,7 +321,7 @@ export const condimentData = [
     },
     {
         name: "Strawberry Preserves",
-        type: "condiment",
+        type: TYPES.condiments,
         imageBase: "20220904_112727",
         dietaryPreferences: ["vegetarian", "kosher", "halal"],
         displayPriority: 55,
@@ -333,7 +335,7 @@ export const condimentData = [
 export const proteinData = [
     {
         name: "Turkey",
-        type: "protein",
+        type: TYPES.protein,
         imageBase: "20200621_081721",
         dietaryPreferences: ["halal", "kosher"],
         displayPriority: 100,
@@ -341,7 +343,7 @@ export const proteinData = [
     },
     {
         name: "Roast Beef",
-        type: "protein",
+        type: TYPES.protein,
         imageBase: "20200621_082049",
         dietaryPreferences: ["kosher", "halal"],
         displayPriority: 90,
@@ -349,7 +351,7 @@ export const proteinData = [
     },
     {
         name: "Ham",
-        type: "protein",
+        type: TYPES.protein,
         imageBase: "20200621_081904",
         dietaryPreferences: [],
         displayPriority: 85,
@@ -357,7 +359,7 @@ export const proteinData = [
     },
     {
         name: "Prosciutto",
-        type: "protein",
+        type: TYPES.protein,
         imageBase: "20200621_082227",
         dietaryPreferences: [],
         displayPriority: 70,
@@ -365,7 +367,7 @@ export const proteinData = [
     },
     {
         name: "Corned Beef",
-        type: "protein",
+        type: TYPES.protein,
         imageBase: "20200621_082443",
         dietaryPreferences: ["kosher", "halal"],
         displayPriority: 80,
@@ -373,7 +375,7 @@ export const proteinData = [
     },
     {
         name: "Pastrami",
-        type: "protein",
+        type: TYPES.protein,
         imageBase: "20200621_082538",
         dietaryPreferences: ["kosher", "halal"],
         displayPriority: 75,
@@ -381,7 +383,7 @@ export const proteinData = [
     },
     {
         name: "Genoa Salami",
-        type: "protein",
+        type: TYPES.protein,
         imageBase: "20200621_082005",
         dietaryPreferences: [],
         displayPriority: 65,
@@ -389,7 +391,7 @@ export const proteinData = [
     },
     {
         name: "Soppressata",
-        type: "protein",
+        type: TYPES.protein,
         imageBase: "20200813_113834",
         dietaryPreferences: [],
         displayPriority: 60,
@@ -397,7 +399,7 @@ export const proteinData = [
     },
     {
         name: "Capocollo",
-        type: "protein",
+        type: TYPES.protein,
         imageBase: "20200909_100415",
         dietaryPreferences: [],
         displayPriority: 55,
@@ -405,7 +407,7 @@ export const proteinData = [
     },
     {
         name: "Pepperoni",
-        type: "protein",
+        type: TYPES.protein,
         imageBase: "20200621_082346",
         dietaryPreferences: [],
         displayPriority: 50,
@@ -413,7 +415,7 @@ export const proteinData = [
     },
     {
         name: "Baked Chicken",
-        type: "protein",
+        type: TYPES.protein,
         imageBase: "20200621_082626",
         dietaryPreferences: ["halal", "kosher"],
         displayPriority: 95,
@@ -421,7 +423,7 @@ export const proteinData = [
     },
     {
         name: "Bacon",
-        type: "protein",
+        type: TYPES.protein,
         imageBase: "20200621_082719",
         dietaryPreferences: [],
         displayPriority: 45,
@@ -429,7 +431,7 @@ export const proteinData = [
     },
     {
         name: "Chicken Salad",
-        type: "protein",
+        type: TYPES.protein,
         imageBase: "20200621_082821",
         dietaryPreferences: ["halal", "kosher"],
         displayPriority: 40,
@@ -437,7 +439,7 @@ export const proteinData = [
     },
     {
         name: "Tuna Salad",
-        type: "protein",
+        type: TYPES.protein,
         imageBase: "20200621_082909",
         dietaryPreferences: ["kosher", "halal"],
         displayPriority: 30,
@@ -445,7 +447,7 @@ export const proteinData = [
     },
     {
         name: "Egg Salad",
-        type: "protein",
+        type: TYPES.protein,
         imageBase: "20200621_082959",
         dietaryPreferences: ["vegetarian", "kosher", "halal"],
         displayPriority: 20,
@@ -459,7 +461,7 @@ export const proteinData = [
 export const toppingData = [
     {
         name: "Tomatoes",
-        type: "topping",
+        type: TYPES.toppings,
         imageBase: "20200621_093051",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
         displayPriority: 90,
@@ -467,7 +469,7 @@ export const toppingData = [
     },
     {
         name: "Lettuce",
-        type: "topping",
+        type: TYPES.toppings,
         imageBase: "20200621_093526",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
         displayPriority: 95,
@@ -475,7 +477,7 @@ export const toppingData = [
     },
     {
         name: "Onions",
-        type: "topping",
+        type: TYPES.toppings,
         imageBase: "20200621_095313",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
         displayPriority: 85,
@@ -483,7 +485,7 @@ export const toppingData = [
     },
     {
         name: "Arugula",
-        type: "topping",
+        type: TYPES.toppings,
         imageBase: "20200621_095441",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
         displayPriority: 60,
@@ -491,7 +493,7 @@ export const toppingData = [
     },
     {
         name: "Spinach",
-        type: "topping",
+        type: TYPES.toppings,
         imageBase: "20200621_095524",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
         displayPriority: 75,
@@ -499,7 +501,7 @@ export const toppingData = [
     },
     {
         name: "Kale",
-        type: "topping",
+        type: TYPES.toppings,
         imageBase: "20200621_095607",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
         displayPriority: 55,
@@ -507,7 +509,7 @@ export const toppingData = [
     },
     {
         name: "Alfalfa Sprouts",
-        type: "topping",
+        type: TYPES.toppings,
         imageBase: "20200621_095722",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
         displayPriority: 40,
@@ -515,7 +517,7 @@ export const toppingData = [
     },
     {
         name: "Cucumbers",
-        type: "topping",
+        type: TYPES.toppings,
         imageBase: "20200621_095400",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
         displayPriority: 70,
@@ -523,7 +525,7 @@ export const toppingData = [
     },
     {
         name: "Pickles",
-        type: "topping",
+        type: TYPES.toppings,
         imageBase: "20200621_095938",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
         displayPriority: 80,
@@ -531,7 +533,7 @@ export const toppingData = [
     },
     {
         name: "Olives",
-        type: "topping",
+        type: TYPES.toppings,
         imageBase: "20200621_100026",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
         displayPriority: 65,
@@ -539,7 +541,7 @@ export const toppingData = [
     },
     {
         name: "Banana Peppers",
-        type: "topping",
+        type: TYPES.toppings,
         imageBase: "20200621_100115",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
         displayPriority: 50,
@@ -547,7 +549,7 @@ export const toppingData = [
     },
     {
         name: "Jalapenos",
-        type: "topping",
+        type: TYPES.toppings,
         imageBase: "20200621_100218",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
         displayPriority: 45,
@@ -555,7 +557,7 @@ export const toppingData = [
     },
     {
         name: "Roasted Red Peppers",
-        type: "topping",
+        type: TYPES.toppings,
         imageBase: "20200621_100648",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
         displayPriority: 35,
@@ -563,7 +565,7 @@ export const toppingData = [
     },
     {
         name: "Sliced Apple",
-        type: "topping",
+        type: TYPES.toppings,
         imageBase: "20200621_100309",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
         displayPriority: 25,
@@ -571,7 +573,7 @@ export const toppingData = [
     },
     {
         name: "Coleslaw",
-        type: "topping",
+        type: TYPES.toppings,
         imageBase: "20200621_100450",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
         displayPriority: 30,
@@ -579,7 +581,7 @@ export const toppingData = [
     },
     {
         name: "Sauerkraut",
-        type: "topping",
+        type: TYPES.toppings,
         imageBase: "20200621_100559",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
         displayPriority: 20,
@@ -587,7 +589,7 @@ export const toppingData = [
     },
     {
         name: "Kettle Cooked Chips",
-        type: "topping",
+        type: TYPES.toppings,
         imageBase: "20200621_100356",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
         displayPriority: 15,
@@ -595,7 +597,7 @@ export const toppingData = [
     },
     {
         name: "Avocado",
-        type: "topping",
+        type: TYPES.toppings,
         imageBase: "20200621_100736",
         dietaryPreferences: ["vegetarian", "kosher", "halal", "vegan"],
         displayPriority: 100,

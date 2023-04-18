@@ -1,3 +1,5 @@
+import { EXTENSION, PORTIONS, TYPES } from "../constants/ingredientTypes";
+
 export const trimObjectEmptyProperties = (obj) =>
     Object.fromEntries(Object.entries(obj).filter(([_, v]) => v != null));
 
@@ -6,30 +8,30 @@ export const capitalizeFirst = (string) =>
 
 export const capitalize = (str) => str.replace(/\b\w/g, (l) => l.toUpperCase());
 
-export const assembleImageSrc = ({
-    sandwich,
-    ingredients,
-    ingredientType,
-    proteinPortion,
-    optionSize,
-}) => {
+export const assembleImageSrc = ({ sandwich, ingredients, ingredientType }) => {
+    const portion = PORTIONS.full;
+
     const ingredient = ingredients[ingredientType].find(
         (ingredient) => ingredient.id === sandwich[ingredientType]
     );
-    const folder = "/assets/images/ingredients/";
-    const filenameBase = ingredient.imageBase;
+
+    const path = `${process.env.REACT_APP_API_SERVER}/uploads/ingredients/`;
+
     const breadShape =
-        ingredients["bread"].find((bread) => bread.id === sandwich?.bread)?.shape ||
-        "round";
-    const extension = ".png";
+        ingredients[TYPES.bread].find((bread) => bread.id === sandwich?.bread)
+            ?.shape || "round";
+
     const suffix = {
-        bread: ["", "sliced"][+(Object.values(sandwich).filter((x) => !!x).length > 1)],
-        protein: breadShape + ingredient[proteinPortion],
-        cheese: breadShape + ingredient[optionSize],
-        toppings: breadShape + ingredient[optionSize],
-        condiments: breadShape + ingredient[optionSize],
+        bread: ["", "_sliced"][+(Object.values(sandwich).filter((x) => !!x).length > 1)],
+        protein: `_${breadShape}_${portion}`,
+        cheese: `_${breadShape}_${portion}`,
+        toppings: `_${breadShape}_${portion}`,
+        condiments: `_${breadShape}_${portion}`,
     };
-    return folder + filenameBase + suffix[ingredientType] + extension;
+
+    const extension = `.${EXTENSION}`;
+
+    return path + ingredient.imageBase + suffix[ingredientType] + extension;
 };
 
 export const timeDifference = (date1, date2) => {

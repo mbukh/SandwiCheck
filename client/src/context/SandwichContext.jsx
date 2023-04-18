@@ -1,25 +1,11 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext } from "react";
 
-import { getAllIngredients } from "../services/apiIngredients";
+import useIngredients from "../hooks/use-ingredients";
 
 const SandwichGlobalContext = createContext();
 
 const SandwichGlobalContextProvider = ({ children }) => {
-    const [ingredients, setIngredients] = useState([]);
-    const [areIngredientsReady, setAreIngredientsReady] = useState(false);
-
-    useEffect(() => {
-        !areIngredientsReady &&
-            (async () => {
-                try {
-                    const ingredientsData = await getAllIngredients();
-                    setIngredients(ingredientsData);
-                    setAreIngredientsReady(true);
-                } catch (error) {
-                    setAreIngredientsReady(false);
-                }
-            })();
-    }, [areIngredientsReady]);
+    const { ingredients, areIngredientsReady } = useIngredients();
 
     return (
         <SandwichGlobalContext.Provider value={{ ingredients, areIngredientsReady }}>

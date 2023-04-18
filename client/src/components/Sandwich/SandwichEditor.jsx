@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 
 import { IngredientsSwiper, Loading, SandwichImage, SignupModal } from "..";
 
+import { isBreadType } from "../../constants/ingredientTypes";
+
 import { useSandwichGlobalContext, useAuthGlobalContext } from "../../context";
 
 import { useSandwich } from "../../hooks";
@@ -12,16 +14,21 @@ const SandwichEditor = () => {
     const [isOpenLoginModal, setIsOpenLoginModal] = useState(false);
     const swiperContainerRef = useRef(null);
     const { ingredients, areIngredientsReady } = useSandwichGlobalContext();
-    const { user, isCurrentUserReady } = useAuthGlobalContext();
+    const { currentUser, isCurrentUserReady } = useAuthGlobalContext();
     const {
-        ingredientTypes,
         currentIngredientType,
         setCurrentIngredientType,
         sandwich,
+        setSandwich,
         updateSandwich,
         clearSandwich,
         saveSandwich,
         isSavingSandwich,
+        setIsSavingSandwich,
+        gallerySandwiches,
+        setGallerySandwiches,
+        fetchSandwich,
+        updateLocalSandwich,
     } = useSandwich();
     const navigate = useNavigate();
 
@@ -42,9 +49,6 @@ const SandwichEditor = () => {
         e.preventDefault();
         setIsOpenLoginModal(true);
     };
-
-    const updateSandwichIngredientsHandler = (newSandwichData) =>
-        updateSandwich(newSandwichData);
 
     const changeSandwichNameHandler = (e) => {
         updateSandwich({ name: e.target.value });
@@ -69,23 +73,19 @@ const SandwichEditor = () => {
             <div className="creation-section flex-col md:flex-row">
                 <div className="create-sandwich-menu my-2">
                     <ul className="flex flex-wrap md:flex-row justify-center">
-                        {ingredientTypes.map((ingredientType) => (
-                            <li key={ingredientType}>
+                        {Object.values(Object.keys(ingredients)).map((type) => (
+                            <li key={type}>
                                 <button
                                     className={`my-2 md:my-4  text-xs md:text-sm md:text-base fit-content ${
-                                        ingredientType === currentIngredientType
-                                            ? "active"
-                                            : ""
+                                        type === currentIngredientType ? "active" : ""
                                     }`}
                                     onClick={() => {
                                         saveSwiperSize();
-                                        setCurrentIngredientType(ingredientType);
+                                        setCurrentIngredientType(type);
                                     }}
-                                    disabled={
-                                        ingredientType !== "bread" && !sandwich?.bread
-                                    }
+                                    disabled={!isBreadType(type) && !sandwich?.bread}
                                 >
-                                    {ingredientType}
+                                    {type}
                                 </button>
                             </li>
                         ))}
@@ -101,18 +101,14 @@ const SandwichEditor = () => {
                             sandwich={sandwich}
                             ingredients={ingredients}
                             currentIngredientType={currentIngredientType}
-                            updateSandwichIngredients={updateSandwichIngredientsHandler}
+                            updateSandwich={updateSandwich}
                         />
                     )}
                 </div>
             </div>
 
             <div className="result-section relative aspect-ratio-3/2 mx-4 w-full md:w-2/3 lg:w-1/3 mx-auto">
-                <SandwichImage
-                    sandwich={sandwich}
-                    ingredientTypes={ingredientTypes}
-                    ingredients={ingredients}
-                />
+                <SandwichImage sandwich={sandwich} ingredients={ingredients} />
             </div>
 
             {currentIngredientType ? (
@@ -132,15 +128,16 @@ const SandwichEditor = () => {
                                     type="text"
                                     name="sandwichName"
                                     placeholder={
-                                        user?.name
-                                            ? user?.name.split(" ")[0] + "'s Sandwich"
+                                        currentUser?.name
+                                            ? currentUser?.name.split(" ")[0] +
+                                              "'s Sandwich"
                                             : "Sandwich name"
                                     }
                                     maxLength={25}
                                     onChange={changeSandwichNameHandler}
                                     value={sandwich?.name}
                                 />
-                                {user.id ? (
+                                {currentUser.id ? (
                                     <input
                                         type="submit"
                                         placeholder="save sandwich"

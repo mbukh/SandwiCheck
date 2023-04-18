@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { Link, useNavigate } from "react-router-dom";
 
-import { INGREDIENT_TYPES } from "../../constants/ingredientTypes";
+import { TYPES } from "../../constants/ingredientTypes";
 
 import { voteForSandwich } from "../../services/votes";
 
@@ -165,7 +165,7 @@ const SandwichCard = ({
                             Ingredients:
                         </h5>
                         <ul className="text-sm sm:text-base">
-                            {INGREDIENT_TYPES.map(
+                            {TYPES.map(
                                 (ingredientType) =>
                                     sandwich.hasOwnProperty(ingredientType) &&
                                     sandwich[ingredientType] && (

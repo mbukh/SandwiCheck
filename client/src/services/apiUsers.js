@@ -91,16 +91,16 @@ export const updateUserById = async ({
     return await handleResponse(async () => api.put(`/update`, formData, config));
 };
 
-const addSandwichToFavoritesInLocalStorage = (sandwichId) => {
-    const allVotes = JSON.parse(localStorage.getItem("user_votes")) || [];
-    allVotes.push(sandwichId);
-    localStorage.setItem("user_votes", JSON.stringify([...new Set(allVotes)]));
-};
-
 export const addSandwichToFavoritesByUserId = async ({ userId, sandwichId }) => {
     return await handleResponse(async () =>
         api.get(`/users/${userId}/favorite-sandwiches/${sandwichId}`)
     );
+};
+
+const addSandwichToFavoritesInLocalStorage = (sandwichId) => {
+    const allVotes = JSON.parse(localStorage.getItem("user_votes")) || [];
+    allVotes.push(sandwichId);
+    localStorage.setItem("user_votes", JSON.stringify([...new Set(allVotes)]));
 };
 
 export const didUserVotedForSandwichByIdUsingLocalStorage = (sandwichId) => {

@@ -76,7 +76,7 @@ export const readSandwichFromLocalStorage = () => {
         timeDifference(cachedSandwich.updatedAt, Date.now()).minutes >
         CACHE_TIME_OUT_MINS;
     if (cacheExpired) return null;
-    log("Cache timeout is set to", CACHE_TIME_OUT_MINS, "minutes");
+    log("🥪 ⏰ Sandwich cache timeout is set to", CACHE_TIME_OUT_MINS, "minutes");
     const { updatedAt, ...sandwich } = cachedSandwich;
     return sandwich;
 };

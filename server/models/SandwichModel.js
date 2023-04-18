@@ -139,6 +139,10 @@ async function ingredientsValidator(ingredientsWithPortions) {
         .select("type")
         .lean();
 
+    if (otherIngredients.length != otherIngredientIds.length) {
+        throw new Error("One of the ingredients doesn't exist");
+    }
+
     const isOneBread = !otherIngredients.some((item) => isBreadType(item.type));
 
     if (!isOneBread) {
