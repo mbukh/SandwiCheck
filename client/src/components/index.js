@@ -4,7 +4,7 @@ import Footer from "./Footer";
 
 import {
     SandwichGallery,
-    SandwichImage,
+    SandwichBuildImage,
     SandwichEditor,
     SandwichCard,
     SandwichModal,
@@ -28,7 +28,7 @@ export {
     Header,
     Footer,
     SandwichGallery,
-    SandwichImage,
+    SandwichBuildImage,
     SandwichEditor,
     SandwichCard,
     SandwichModal,

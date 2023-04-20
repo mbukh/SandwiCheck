@@ -1,26 +1,25 @@
-import { assembleImageSrc } from "../../utils/index";
+import { Link } from "react-router-dom";
 
-const SandwichImage = ({ sandwich, ingredients }) => {
-    return (
-        <div className="sandwich-images">
-            {Object.keys(ingredients).map(
-                (ingredientType) =>
-                    sandwich.hasOwnProperty(ingredientType) &&
-                    sandwich[ingredientType] && (
-                        <img
-                            key={ingredientType}
-                            src={assembleImageSrc({
-                                sandwich,
-                                ingredients,
-                                ingredientType,
-                            })}
-                            className="absolute inset-0 object-contain size-full no-drag no-select"
-                            alt={ingredientType}
-                            loading="lazy"
-                        />
-                    )
-            )}
+const SandwichImage = ({ sandwich, closeBasePath }) => {
+    const TheSandwichImage = () => (
+        <div className="relative aspect-ratio-square">
+            <div className="sandwich-images">
+                <img
+                    src={sandwich.image}
+                    className="absolute inset-0 object-contain size-full no-drag no-select"
+                    alt={sandwich.name}
+                    loading="lazy"
+                />
+            </div>
         </div>
+    );
+
+    return closeBasePath ? (
+        <Link to={`${closeBasePath}/sandwich/${sandwich.id}`}>
+            <TheSandwichImage />
+        </Link>
+    ) : (
+        <TheSandwichImage />
     );
 };
 

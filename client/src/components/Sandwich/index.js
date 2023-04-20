@@ -1,6 +1,6 @@
 import SandwichGallery from "./SandwichGallery";
 
-import SandwichImage from "./SandwichImage";
+import SandwichBuildImage from "./SandwichBuildImage";
 
 import SandwichEditor from "./SandwichEditor";
 
@@ -10,4 +10,4 @@ import SandwichModal from "./SandwichModal";
 
 import IngredientsSwiper from "./IngredientsSwiper";
 
-export { SandwichGallery, SandwichImage, SandwichEditor, SandwichCard, SandwichModal, IngredientsSwiper };
+export { SandwichGallery, SandwichBuildImage, SandwichEditor, SandwichCard, SandwichModal, IngredientsSwiper };

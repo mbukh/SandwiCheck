@@ -6,38 +6,27 @@ import { TYPES } from "../../constants/ingredients-constants";
 
 import { hasUserVotedUserForSandwich, voteForSandwich } from "../../services/votes";
 
-import { updateSandwichInCache } from "../services/api-sandwiches";
+import { updateSandwichInCache } from "../../services/api-sandwiches";
 
-const SandwichCard = ({
-    currentUser,
-    index,
-    sandwich,
-    ingredients,
-    isModal = false,
-    closeBasePath = "",
-}) => {
+import { useAuthGlobalContext } from "../../context";
+
+import SandwichImage from "./SandwichImage";
+
+const SandwichCard = ({ index, sandwich, ingredients, closeBasePath = "" }) => {
     const [isUserVoting, setIsUserVoting] = useState(false);
+    const { currentUser } = useAuthGlobalContext;
+
     const navigate = useNavigate();
+
+    const isModal = closeBasePath ? true : false;
 
     const isVotedByUser = hasUserVotedUserForSandwich(sandwich, currentUser);
 
     const bgIndex = (index % 4) + 1;
 
-    const TheSandwichImage = () => (
-        <div className="relative aspect-ratio-square">
-            <div className="sandwich-images">
-                <img
-                    src={sandwich.image}
-                    className="absolute inset-0 object-contain size-full no-drag no-select"
-                    alt={sandwich.name}
-                    loading="lazy"
-                />
-            </div>
-        </div>
-    );
-
     const copyThisSandwichHandler = (e) => {
         e.preventDefault();
+
         updateSandwichInCache(sandwich);
         navigate("/create");
     };
@@ -84,13 +73,10 @@ const SandwichCard = ({
                 </div>
                 <div className="card-middle">
                     <div className="card-orb w-full mt-auto mx-auto">
-                        {!isModal ? (
-                            <Link to={`${closeBasePath}/sandwich/${sandwich.id}`}>
-                                <TheSandwichImage />
-                            </Link>
-                        ) : (
-                            <TheSandwichImage />
-                        )}
+                        <SandwichImage
+                            sandwich={sandwich}
+                            closeBasePath={closeBasePath}
+                        />
                     </div>
                 </div>
                 <div className="card-footer relative flex justify-between items-center">

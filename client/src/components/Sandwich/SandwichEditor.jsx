@@ -2,19 +2,21 @@ import { useEffect, useRef, useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 
-import { IngredientsSwiper, Loading, SandwichImage, SignupModal } from "..";
+import { IngredientsSwiper, Loading, SandwichBuildImage, SignupModal } from "..";
 
 import { isBreadType } from "../../constants/ingredients-constants";
 
-import { useSandwichGlobalContext, useAuthGlobalContext } from "../../context";
+import { useIngredientsGlobalContext, useAuthGlobalContext } from "../../context";
 
 import { useSandwich } from "../../hooks";
 
 const SandwichEditor = () => {
     const [isOpenLoginModal, setIsOpenLoginModal] = useState(false);
     const swiperContainerRef = useRef(null);
-    const { ingredients, areIngredientsReady } = useSandwichGlobalContext();
+
+    const { ingredients, areIngredientsReady } = useIngredientsGlobalContext();
     const { currentUser, isCurrentUserReady } = useAuthGlobalContext();
+
     const {
         currentIngredientType,
         setCurrentIngredientType,
@@ -24,6 +26,7 @@ const SandwichEditor = () => {
         saveSandwich,
         isSavingSandwich,
     } = useSandwich();
+
     const navigate = useNavigate();
 
     const isSandwichReady =
@@ -48,18 +51,21 @@ const SandwichEditor = () => {
         sandwichDispatch({ type: "SET_NAME", name: e.target.value });
     };
 
-    const saveSwiperSize = () => {
+    const retainSwiperHeight = () => {
         if (!swiperContainerRef.current) return;
         swiperContainerRef.current.style.height =
             swiperContainerRef.current.offsetHeight + "px";
     };
 
     useEffect(() => {
-        if (!swiperContainerRef.current) return;
-        setTimeout(() => (swiperContainerRef.current.style.height = ""), 200);
+        if (swiperContainerRef.current) {
+            setTimeout(() => (swiperContainerRef.current.style.height = ""), 200);
+        }
     }, [currentIngredientType, swiperContainerRef]);
 
-    if (!areIngredientsReady || !isCurrentUserReady) return <Loading />;
+    if (!areIngredientsReady || !isCurrentUserReady) {
+        return <Loading />;
+    }
 
     return (
         <div className="create-sandwich flex flex-col min-h-full py-6 md:pt-9 lg:pt-12 mb-4">
@@ -74,7 +80,7 @@ const SandwichEditor = () => {
                                         type === currentIngredientType ? "active" : ""
                                     }`}
                                     onClick={() => {
-                                        saveSwiperSize();
+                                        retainSwiperHeight();
                                         setCurrentIngredientType(type);
                                     }}
                                     disabled={!isBreadType(type) && !sandwich?.bread}
@@ -95,14 +101,14 @@ const SandwichEditor = () => {
                             sandwich={sandwich}
                             ingredients={ingredients}
                             currentIngredientType={currentIngredientType}
-                            updateSandwich={updateSandwich}
+                            sandwichDispatch={sandwichDispatch}
                         />
                     )}
                 </div>
             </div>
 
             <div className="result-section relative aspect-ratio-3/2 mx-4 w-full md:w-2/3 lg:w-1/3 mx-auto">
-                <SandwichImage sandwich={sandwich} ingredients={ingredients} />
+                <SandwichBuildImage sandwich={sandwich} ingredients={ingredients} />
             </div>
 
             {currentIngredientType ? (
