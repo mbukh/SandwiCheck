@@ -1,65 +1,72 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useReducer, useCallback } from "react";
 
 import { log, logResponse } from "../utils/log";
+
+import { TYPES } from "../constants/ingredients-constants";
 
 import {
     fetchSandwichById,
     createSandwich,
-    readSandwichFromLocalStorage,
-    updateSandwichToLocalStorage,
-    deleteSandwichFromLocalStorage,
-} from "../services/apiSandwiches";
-import { TYPES } from "../constants";
+    readSandwichFromCache,
+    updateSandwichInCache,
+    deleteSandwichFromCache,
+} from "../services/api-sandwiches";
+
+import sandwichReducer from "../reducers/sandwich-reducer";
 
 const useSandwich = () => {
     const [currentIngredientType, setCurrentIngredientType] = useState(TYPES.bread);
     const [isSavingSandwich, setIsSavingSandwich] = useState(false);
-    
-    const [sandwich, setSandwich] = useState({});
-
     const [gallerySandwiches, setGallerySandwiches] = useState(null);
-    const timeout = useRef(null);
+
+    const [sandwich, sandwichDispatch] = useReducer(sandwichReducer, {});
+
+    // const timeout = useRef(null);
 
     useEffect(() => {
-        const cachedUnexpiredSandwich = readSandwichFromLocalStorage();
-        log("Sandwich retrieved from cache", cachedUnexpiredSandwich);
-        setSandwich(cachedUnexpiredSandwich || {});
+        const sandwichFromCache = readSandwichFromCache();
+        log("Sandwich retrieved from cache", sandwichFromCache);
+
+        if (sandwichFromCache) {
+            sandwichDispatch({ type: "SET_SANDWICH", sandwich: sandwichFromCache });
+        }
     }, [isSavingSandwich]);
 
     useEffect(() => {
-        if (!isSavingSandwich) return;
-        updateSandwichToLocalStorage(sandwich);
+        if (isSavingSandwich) {
+            updateSandwichInCache(sandwich);
+        }
     }, [isSavingSandwich, sandwich]);
 
-    const updateLocalSandwich = (sandwich) => {
-        updateSandwichToLocalStorage(sandwich);
-    };
-
-    const fetchSandwich = async (sandwichId) => {
+    const getSandwich = useCallback(async (sandwichId) => {
         const res = await fetchSandwichById(sandwichId);
         logResponse("🥪 Read sandwich", res);
 
-        setSandwich(res.data || {});
-    };
+        sandwichDispatch({ type: "SET_SANDWICH", sandwich: res.date || {} });
+    }, []);
 
-    const updateSandwich = async (newSandwichData) => {
-        timeout.current && clearTimeout(timeout.current);
-        timeout.current = setTimeout(() => {
-            updateSandwichToLocalStorage({
-                ...sandwich,
-                ...newSandwichData,
-            });
-        }, 200);
-        setSandwich((prev) => ({
-            ...prev,
-            ...newSandwichData,
-        }));
-    };
+    // const updateSandwich = async (newSandwichData) => {
+    //     timeout.current && clearTimeout(timeout.current);
+    //     timeout.current = setTimeout(() => {
+    //         updateSandwichInCache({
+    //             ...sandwich,
+    //             ...newSandwichData,
+    //         });
+    //     }, 200);
+
+    //     sandwichDispatch((prev) => ({
+    //         ...prev,
+    //         ...newSandwichData,
+    //     }));
+    // };
 
     const clearSandwich = () => {
-        setSandwich({});
+        sandwichDispatch({ type: "CLEAR" });
+
         setCurrentIngredientType("");
-        deleteSandwichFromLocalStorage();
+
+        deleteSandwichFromCache();
+
         setTimeout(() => {
             setCurrentIngredientType(TYPES.bread);
         }, 400);
@@ -69,9 +76,11 @@ const useSandwich = () => {
         setIsSavingSandwich(true);
 
         const res = await createSandwich(sandwich);
-        logResponse("👽🥪 Create sandwich", res);
+        logResponse("👽 🥪 Create sandwich", res);
 
-        if (!res.data) return null;
+        if (!res.data) {
+            return null;
+        }
 
         clearSandwich();
         setIsSavingSandwich(false);
@@ -83,16 +92,14 @@ const useSandwich = () => {
         currentIngredientType,
         setCurrentIngredientType,
         sandwich,
-        setSandwich,
-        updateSandwich,
-        clearSandwich,
+        sandwichDispatch,
         saveSandwich,
         isSavingSandwich,
         setIsSavingSandwich,
         gallerySandwiches,
         setGallerySandwiches,
-        fetchSandwich,
-        updateLocalSandwich,
+        updateSandwichInCache,
+        getSandwich,
     };
 };
 

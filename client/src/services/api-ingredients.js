@@ -2,7 +2,7 @@ import axios from "axios";
 
 import { log, logResponse } from "../utils/log";
 
-import { TYPES, CACHE_TIME_OUT_MINS } from "../constants";
+import { INGREDIENTS_CACHE_TIME_OUT_MINS } from "../constants/ingredients-constants";
 
 import { handleResponse } from "../utils/api-utils";
 
@@ -60,7 +60,11 @@ export const getAllIngredients = async () => {
     if (ingredients) {
         log("📝 💾 Read ingredients from cache", ingredients);
 
-        log("📝 ⏰ Ingredients cache timeout is set to", CACHE_TIME_OUT_MINS, "minutes.");
+        log(
+            "📝 ⏰ Ingredients cache timeout is set to",
+            INGREDIENTS_CACHE_TIME_OUT_MINS,
+            "minutes."
+        );
 
         return { data: ingredients };
     }
@@ -68,33 +72,30 @@ export const getAllIngredients = async () => {
     const res = await fetchIngredients({});
     logResponse("📝 Fetch all ingredients", res);
 
-    if (!res.data) {
-        return;
+    if (res.data) {
+        ingredients = groupIngredientsByTypes(res.data);
+
+        localStorage.setItem("ingredients", JSON.stringify(ingredients));
+        localStorage.setItem("ingredients-cashedAt", JSON.stringify(Date.now()));
     }
 
-    ingredients = groupIngredientsByTypes(res.data);
-
-    const result = { ...ingredients, cachedAt: Date.now() };
-
-    localStorage.setItem("ingredients", JSON.stringify(result));
-
-    return { data: result };
+    return { data: ingredients };
 };
 
 // UTILS //
 
 function readAllIngredientsFromCache() {
-    const cachedIngredients = JSON.parse(localStorage.getItem("ingredients"));
+    const ingredients = JSON.parse(localStorage.getItem("ingredients"));
+    const cachedAt = JSON.parse(localStorage.getItem("ingredients-cashedAt"));
 
-    if (!cachedIngredients) return null;
+    if (!ingredients) return null;
 
     const cacheExpired =
-        timeDifference(cachedIngredients.cachedAt, Date.now()).minutes >
-        CACHE_TIME_OUT_MINS;
+        timeDifference(cachedAt, Date.now()).minutes > INGREDIENTS_CACHE_TIME_OUT_MINS;
 
     if (cacheExpired) return null;
 
-    return cachedIngredients;
+    return ingredients;
 }
 
 function groupIngredientsByTypes(ingredients) {

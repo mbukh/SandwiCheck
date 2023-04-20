@@ -1,4 +1,4 @@
-import { debug } from "../constants";
+import { debug } from "../constants/debug";
 
 export function log() {
     debug && console.log.apply(console, arguments);

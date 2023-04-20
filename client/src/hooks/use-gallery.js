@@ -2,9 +2,9 @@ import { useState, useEffect, useRef, useCallback } from "react";
 
 import { log, logResponse } from "../utils/log";
 
-import * as apiSandwiches from "../services/apiSandwiches";
+import * as apiSandwiches from "../services/api-sandwiches";
 
-import * as apiUsers from "../services/apiUsers";
+import * as apiUsers from "../services/api-users";
 
 const useGallery = () => {
     const [gallerySandwiches, setGallerySandwiches] = useState([]);

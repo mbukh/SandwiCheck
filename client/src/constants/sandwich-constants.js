@@ -1,0 +1,1 @@
+export const SANDWICH_CACHE_TIME_OUT_DAYS = 7;

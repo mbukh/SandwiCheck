@@ -4,9 +4,9 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { useAuthGlobalContext } from "../context/";
 
-import { updateUserById } from "../services/apiUsers";
+import { updateUserById } from "../services/api-users";
 
-import { readSandwichFromLocalStorage } from "../services/apiSandwiches";
+import { readSandwichFromCache } from "../services/api-sandwiches";
 
 import useValidate from "./use-validate";
 
@@ -27,7 +27,7 @@ const useForm = () => {
     const navigate = useNavigate();
 
     const redirectUser = () => {
-        const unExpiredSavedSandwich = readSandwichFromLocalStorage();
+        const unExpiredSavedSandwich = readSandwichFromCache();
         if (unExpiredSavedSandwich) {
             navigate("/create");
         } else {

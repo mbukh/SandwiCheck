@@ -6,8 +6,8 @@ import "swiper/css";
 import nextImg from "../../assets/images/icons/arrow-next.svg";
 import prevImg from "../../assets/images/icons/arrow-previous.svg";
 
-import { assembleImageSrc } from "../../utils";
-import { isBreadType } from "../../constants/ingredientTypes";
+import { assembleImageSrc } from "../../utils/index";
+import { isBreadType } from "../../constants/ingredients-constants";
 
 const breakpoints = {
     640: {

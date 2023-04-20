@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import { IngredientsSwiper, Loading, SandwichImage, SignupModal } from "..";
 
-import { isBreadType } from "../../constants/ingredientTypes";
+import { isBreadType } from "../../constants/ingredients-constants";
 
 import { useSandwichGlobalContext, useAuthGlobalContext } from "../../context";
 
@@ -19,16 +19,10 @@ const SandwichEditor = () => {
         currentIngredientType,
         setCurrentIngredientType,
         sandwich,
-        setSandwich,
-        updateSandwich,
+        sandwichDispatch,
         clearSandwich,
         saveSandwich,
         isSavingSandwich,
-        setIsSavingSandwich,
-        gallerySandwiches,
-        setGallerySandwiches,
-        fetchSandwich,
-        updateLocalSandwich,
     } = useSandwich();
     const navigate = useNavigate();
 
@@ -51,7 +45,7 @@ const SandwichEditor = () => {
     };
 
     const changeSandwichNameHandler = (e) => {
-        updateSandwich({ name: e.target.value });
+        sandwichDispatch({ type: "SET_NAME", name: e.target.value });
     };
 
     const saveSwiperSize = () => {

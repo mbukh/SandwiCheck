@@ -6,29 +6,29 @@ import { useAuthGlobalContext, useSandwichGlobalContext } from "../../context";
 
 import { useSandwich } from "../../hooks";
 
-import { TYPES } from "../../constants/ingredientTypes";
+import { TYPES } from "../../constants/ingredients-constants";
 
 import { SandwichCard, Modal } from "..";
 
 const SandwichModal = ({ closeLink = "" }) => {
     const [isModalLoading, setIsModalLoading] = useState(true);
-    const { currentUser: user } = useAuthGlobalContext();
+    const { currentUser } = useAuthGlobalContext();
     const { ingredients, areIngredientsReady } = useSandwichGlobalContext();
     const { sandwichId } = useParams();
     const {
         sandwich,
-        fetchSandwich,
+        getSandwich,
         hasUserVotedUserForSandwich,
         voteForSandwich,
-        updateLocalSandwich,
+        updateSandwichInCache,
     } = useSandwich();
 
     useEffect(() => {
         (async () => {
-            await fetchSandwich(sandwichId);
+            await getSandwich(sandwichId);
             areIngredientsReady && setIsModalLoading(false);
         })();
-    }, [areIngredientsReady, fetchSandwich, sandwichId]);
+    }, [areIngredientsReady, getSandwich, sandwichId]);
 
     return (
         <Modal isModalLoading={isModalLoading} closeLink={closeLink}>
@@ -41,9 +41,9 @@ const SandwichModal = ({ closeLink = "" }) => {
                     TYPES={TYPES}
                     ingredients={ingredients}
                     closeBasePath=""
-                    hasUserVoted={hasUserVotedUserForSandwich(sandwich, user)}
+                    isVotedByUser={hasUserVotedUserForSandwich(sandwich, currentUser)}
                     voteForSandwich={voteForSandwich}
-                    updateLocalSandwich={updateLocalSandwich}
+                    updateSandwichInCache={updateSandwichInCache}
                 />
             </div>
         </Modal>

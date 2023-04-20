@@ -2,21 +2,24 @@ import { useState } from "react";
 
 import { Link, useNavigate } from "react-router-dom";
 
-import { TYPES } from "../../constants/ingredientTypes";
+import { TYPES } from "../../constants/ingredients-constants";
 
-import { voteForSandwich } from "../../services/votes";
+import { hasUserVotedUserForSandwich, voteForSandwich } from "../../services/votes";
+
+import { updateSandwichInCache } from "../services/api-sandwiches";
 
 const SandwichCard = ({
-    isModal = false,
+    currentUser,
     index,
     sandwich,
     ingredients,
+    isModal = false,
     closeBasePath = "",
-    hasUserVoted,
-    updateLocalSandwich,
 }) => {
     const [isUserVoting, setIsUserVoting] = useState(false);
     const navigate = useNavigate();
+
+    const isVotedByUser = hasUserVotedUserForSandwich(sandwich, currentUser);
 
     const bgIndex = (index % 4) + 1;
 
@@ -34,13 +37,14 @@ const SandwichCard = ({
     );
 
     const copyThisSandwichHandler = (e) => {
-        updateLocalSandwich({ ...sandwich, name: "" });
+        e.preventDefault();
+        updateSandwichInCache(sandwich);
         navigate("/create");
     };
 
     const voteForSandwichHandler = async (e) => {
         setIsUserVoting(true);
-        await voteForSandwich(sandwich.id);
+        await voteForSandwich({ userId: currentUser.id, sandwichId: sandwich.id });
     };
 
     return (
@@ -107,7 +111,7 @@ const SandwichCard = ({
                                 ${isModal ? "md:h-16" : ""}
                             `}
                         >
-                            {!hasUserVoted && (
+                            {!isVotedByUser && (
                                 <button
                                     className={`btn-wrapper ${
                                         isUserVoting ? "fadeout" : ""
@@ -120,7 +124,7 @@ const SandwichCard = ({
                                     ></i>
                                 </button>
                             )}
-                            {(hasUserVoted || isUserVoting) && (
+                            {(isVotedByUser || isUserVoting) && (
                                 <Link
                                     to="/create"
                                     onClick={copyThisSandwichHandler}

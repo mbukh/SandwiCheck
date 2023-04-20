@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 import { logResponse } from "../utils/log";
 
-import { getAllIngredients } from "../services/apiIngredients";
+import { getAllIngredients } from "../services/api-ingredients";
 
 const useIngredients = () => {
     const [ingredients, setIngredients] = useState([]);

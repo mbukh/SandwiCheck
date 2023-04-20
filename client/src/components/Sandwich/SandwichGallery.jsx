@@ -3,15 +3,13 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { useAuthGlobalContext, useSandwichGlobalContext } from "../../context";
 
-import { hasUserVotedUserForSandwich, voteForSandwich } from "../../services/votes";
-
 import { Loading, SandwichCard } from "..";
 
 import useGallery from "../../hooks/use-gallery";
 
 import useSandwich from "../../hooks/use-sandwich";
 
-import { TYPES } from "../../constants/ingredientTypes";
+// import { TYPES } from "../../constants/ingredients-constants";
 
 import { capitalizeFirst } from "../../utils";
 
@@ -20,7 +18,7 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
     const { currentUser, isCurrentUserReady } = useAuthGlobalContext();
     const { ingredients, areIngredientsReady } = useSandwichGlobalContext();
     const { gallerySandwiches, setGallerySandwiches, fetchSandwiches } = useGallery();
-    const { updateLocalSandwich } = useSandwich();
+    const { updateSandwichInCache } = useSandwich();
     const { fetchUserSandwiches } = useGallery();
 
     const { childId } = useParams();
@@ -112,12 +110,7 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
                                         ? ""
                                         : ""
                                 }
-                                hasUserVoted={hasUserVotedUserForSandwich(
-                                    sandwich,
-                                    currentUser
-                                )}
-                                voteForSandwich={voteForSandwich}
-                                updateLocalSandwich={updateLocalSandwich}
+                                updateSandwichInCache={updateSandwichInCache}
                             />
                         ))
                     ) : (

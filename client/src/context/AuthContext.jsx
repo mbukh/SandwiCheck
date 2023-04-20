@@ -1,12 +1,12 @@
 import { createContext, useContext, useEffect } from "react";
 
-import * as apiAuth from "../services/apiAuth";
+import * as apiAuth from "../services/api-auth";
 
-import * as apiUsers from "../services/apiUsers";
+import * as apiUsers from "../services/api-users";
 
 import useUser from "../hooks/use-user";
 
-import { LOGGED_IN_USER_TIME_OUT_DAYS } from "../constants";
+import { LOGGED_IN_USER_TIME_OUT_DAYS } from "../constants/user-constants";
 
 import { timeDifference } from "../utils";
 

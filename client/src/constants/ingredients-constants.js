@@ -22,4 +22,4 @@ export const isBreadType = (type) => type === TYPES.bread;
 
 export const EXTENSION = "png";
 
-export const CACHE_TIME_OUT_MINS = 5;
+export const INGREDIENTS_CACHE_TIME_OUT_MINS = 5;

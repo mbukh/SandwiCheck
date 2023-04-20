@@ -1,10 +1,10 @@
 import axios from "axios";
 
-import { debug, CACHE_TIME_OUT_MINS } from "../constants";
+import { SANDWICH_CACHE_TIME_OUT_DAYS } from "../constants/sandwich-constants";
 
 import { log, logResponse } from "../utils/log";
 
-import { trimObjectEmptyProperties, timeDifference } from "../utils";
+import { trimObjectEmptyProperties, timeDifference } from "../utils/index";
 
 import { handleResponse } from "../utils/api-utils";
 
@@ -68,31 +68,33 @@ export const removeVoteFromSandwich = async (sandwichId) => {
     return await handleResponse(async () => api.delete(`/${sandwichId}/vote`));
 };
 
-export const readSandwichFromLocalStorage = () => {
-    log("Reading sandwich from cache");
-    const cachedSandwich = JSON.parse(localStorage.getItem("sandwich"));
-    if (!cachedSandwich) return null;
+export const readSandwichFromCache = () => {
+    log("🥪 💾 Reading sandwich from cache");
+
+    const sandwich = JSON.parse(localStorage.getItem("sandwich"));
+    const cachedAt = JSON.parse(localStorage.getItem("sandwich-cachedAt"));
+
     const cacheExpired =
-        timeDifference(cachedSandwich.updatedAt, Date.now()).minutes >
-        CACHE_TIME_OUT_MINS;
-    if (cacheExpired) return null;
-    log("🥪 ⏰ Sandwich cache timeout is set to", CACHE_TIME_OUT_MINS, "minutes");
-    const { updatedAt, ...sandwich } = cachedSandwich;
+        timeDifference(cachedAt, Date.now()).days > SANDWICH_CACHE_TIME_OUT_DAYS;
+
+    if (!sandwich || cacheExpired) {
+        return null;
+    }
+
+    log("🥪 ⏰ Sandwich cache timeout is set to", SANDWICH_CACHE_TIME_OUT_DAYS, "days");
+
     return sandwich;
 };
 
-export const updateSandwichToLocalStorage = (sandwichData) => {
+export const updateSandwichInCache = (sandwich) => {
     log("Writing sandwich to cache");
-    return localStorage.setItem(
-        "sandwich",
-        JSON.stringify({
-            ...sandwichData,
-            updatedAt: Date.now(),
-        })
-    );
+
+    localStorage.setItem("sandwich", JSON.stringify(sandwich));
+    localStorage.setItem("sandwich-cachedAt", JSON.stringify(Date.now()));
 };
 
-export const deleteSandwichFromLocalStorage = () => {
+export const deleteSandwichFromCache = () => {
     log("Removing sandwich from cache");
+
     localStorage.removeItem("sandwich");
 };
