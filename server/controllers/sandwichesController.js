@@ -80,6 +80,8 @@ export const createSandwich = expressAsyncHandler(async (req, res, next) => {
     const { name, ingredients, comment } = req.body;
     const { id: userId, firstName } = req.user;
 
+    console.log(req.body);
+
     const saveIngredients = ingredients.map(({ id, portion }) => ({
         ingredientId: id,
         portion,
@@ -95,7 +97,7 @@ export const createSandwich = expressAsyncHandler(async (req, res, next) => {
 
     await newSandwich.validate();
 
-    const image = await generateSandwichImage(ingredients);
+    const image = await generateSandwichImage(saveIngredients);
 
     newSandwich.image = image;
 
@@ -147,7 +149,7 @@ export const updateSandwich = expressAsyncHandler(async (req, res, next) => {
 
     await sandwich.validate();
 
-    const newImage = await generateSandwichImage(ingredients);
+    const newImage = await generateSandwichImage(newIngredients);
 
     // Clear unused sandwich image
     if (newImage !== sandwich.image) {
