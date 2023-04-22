@@ -80,8 +80,6 @@ export const createSandwich = expressAsyncHandler(async (req, res, next) => {
     const { name, ingredients, comment } = req.body;
     const { id: userId, firstName } = req.user;
 
-
-
     const saveIngredients = ingredients.map(({ id, portion }) => ({
         ingredientId: id,
         portion,
@@ -97,13 +95,13 @@ export const createSandwich = expressAsyncHandler(async (req, res, next) => {
 
     await newSandwich.validate();
 
-    // newSandwich.image = await generateSandwichImage(saveIngredients);
+    newSandwich.image = await generateSandwichImage(saveIngredients);
 
-    // newSandwich.save();
+    newSandwich.save();
 
-    // const user = await User.findById(req.user._id);
-    // user.sandwiches.push(newSandwich._id);
-    // await user.save();
+    const user = await User.findById(req.user._id);
+    user.sandwiches.push(newSandwich._id);
+    await user.save();
 
     res.status(201).json({
         success: true,

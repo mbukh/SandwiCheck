@@ -85,7 +85,7 @@ export const createIngredient = expressAsyncHandler(async (req, res, next) => {
             type,
             shape,
             dietaryPreferences,
-            displayPriority: parseInt(displayPriorit, 10),
+            displayPriority: parseInt(displayPriority, 10),
             imageBase: filenameBase,
         });
 
@@ -144,7 +144,7 @@ export const updateIngredient = expressAsyncHandler(async (req, res, next) => {
     ingredient.type = type;
     ingredient.shape = shape;
     ingredient.dietaryPreferences = dietaryPreferences;
-    ingredient.displayPriority = parseInt(displayPriorit, 10);
+    ingredient.displayPriority = parseInt(displayPriority, 10);
 
     const updatedIngredient = await ingredient.save();
 

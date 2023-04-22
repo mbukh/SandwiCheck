@@ -144,8 +144,7 @@ async function ingredientsValidator(ingredientsWithPortions) {
 
     const isNotFullPortionData = ingredientsWithPortions.some(
         (ingredient) =>
-            ingredient.ingredientId !== firstIngredient &&
-            !ingredient.hasOwnProperty("portion")
+            !firstIngredient._id.equals(ingredient.ingredientId) && !ingredient.portion
     );
     if (isNotFullPortionData) {
         throw new Error("Some of the ingredients lack portion data");
