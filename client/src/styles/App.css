@@ -364,6 +364,9 @@ button.active {
 /* *** BACKGROUNDS *** */
 
 /* ***** UTILS ***** */
+.not-allowed {
+    cursor: not-allowed;
+}
 .hide {
     display: none;
 }
@@ -973,6 +976,15 @@ header .mobile-menu.open {
 
 .builder__slider .swiper-button-next {
     right: 1.25rem;
+}
+
+.builder__spacer-buttons button > img {
+    height: 18px;
+    width: auto;
+}
+.builder__spacer-buttons button:disabled,
+.builder__spacer-buttons .button:disabled {
+    opacity: 0.2;
 }
 
 @media (min-width: 768px) {

@@ -18,7 +18,9 @@ const Toast = ({ message }) => {
         visible && (
             <div className="toast">
                 <p>{message}</p>
-                <button onClick={() => setVisible(false)}>X</button>
+                <button className="btn-wrapper ml-1" onClick={() => setVisible(false)}>
+                    <span className="text-magenta text-shadow-3  ml-1">X</span>
+                </button>
             </div>
         )
     );

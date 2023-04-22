@@ -73,7 +73,7 @@ export const getAllIngredients = async () => {
     logResponse("📝 Fetch all ingredients", res);
 
     if (res.data) {
-        ingredients = groupIngredientsByTypes(res.data);
+        ingredients = res.data;
 
         localStorage.setItem("ingredients", JSON.stringify(ingredients));
         localStorage.setItem("ingredients-cashedAt", JSON.stringify(Date.now()));
@@ -96,16 +96,4 @@ function readAllIngredientsFromCache() {
     if (cacheExpired) return null;
 
     return ingredients;
-}
-
-function groupIngredientsByTypes(ingredients) {
-    const groupedIngredients = ingredients.reduce((acc, ingredient) => {
-        if (!acc[ingredient.type]) {
-            acc[ingredient.type] = [];
-        }
-        acc[ingredient.type].push(ingredient);
-        return acc;
-    }, {});
-
-    return groupedIngredients;
 }

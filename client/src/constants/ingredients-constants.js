@@ -16,6 +16,7 @@ export const PORTIONS = {
     half: "half",
     full: "full",
     double: "double",
+    defaultPortion: "half",
 };
 
 export const isBreadType = (type) => type === TYPES.bread;

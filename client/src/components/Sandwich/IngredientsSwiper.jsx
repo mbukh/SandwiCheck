@@ -1,38 +1,59 @@
 import { useEffect, useRef, useState } from "react";
 
 import { Swiper, SwiperSlide } from "swiper/react";
+import { A11y, Keyboard } from "swiper";
 
 import "swiper/css";
 import "../../styles/Swiper.css";
 
-import { assembleImageSrc } from "../../utils/index";
 import { isBreadType } from "../../constants/ingredients-constants";
 import { breakpoints } from "../../constants/swiper-constants";
 
-import SwiperZeroOption from "./SwiperZeroOption";
+import { getTopIngredientOfCurrentType } from "../../utils/sandwich-utils";
+
+import SwiperSlideElementNone from "./SwiperSlideElementNone";
 import SwiperNavigationButton from "./SwiperNavigationButton";
+import SwipeSlideElement from "./SwipeSlideElement";
+
+import { useIngredientsGlobalContext } from "../../context";
 
 const IngredientsSwiper = ({
     sandwich,
-    ingredients,
-    currentIngredientType,
+    currentType,
     sandwichDispatch,
+    currentIngredient,
+    setCurrentIngredient,
 }) => {
     const [navigation, setNavigation] = useState({ prev: false, next: true });
     const swiperRef = useRef();
+    const { ingredients } = useIngredientsGlobalContext();
 
-    const ingredientsOfType = ingredients[currentIngredientType];
+    const ingredientsOfType = ingredients[currentType];
 
-    const chosenCurrentIngredientOfType = ingredientsOfType.find(
-        (ingredient) => ingredient.id === sandwich[currentIngredientType]
+    const topIngredientOfCurrentType = getTopIngredientOfCurrentType(
+        sandwich,
+        ingredientsOfType,
+        currentType
     );
-    const currentSwipeIndex =
-        ingredientsOfType.indexOf(chosenCurrentIngredientOfType) + 1;
+
+    const currentSwipeIndex = ingredientsOfType.indexOf(topIngredientOfCurrentType) + 1;
 
     useEffect(() => {
-        // swipe is being rerendered
+        if (!currentIngredient) {
+            // set last ingredient of this type when switching type
+            setCurrentIngredient(topIngredientOfCurrentType);
+        }
+    }, [
+        currentType,
+        currentIngredient,
+        topIngredientOfCurrentType,
+        setCurrentIngredient,
+    ]);
+
+    useEffect(() => {
+        // rewind when swipe is being rerendered
         swiperRef.current.slideTo(currentSwipeIndex);
-    }, [currentSwipeIndex, ingredientsOfType?.length]);
+    }, [currentType, currentSwipeIndex]);
 
     const updateNavigationButtons = (activeIndex) => {
         const navUpdate = {
@@ -48,26 +69,28 @@ const IngredientsSwiper = ({
     const initSwiperHandler = (swiper) => {
         // first swiper is rendered
         swiperRef.current = swiper;
+
         setTimeout(() => {
-            if (isBreadType(currentIngredientType) && !sandwich?.bread)
+            if (isBreadType(currentType) && !sandwich.length)
                 setTimeout(() => {
                     swiper.slideTo(1);
-                    sandwichDispatch({ bread: ingredientsOfType[0].id });
+
+                    setCurrentIngredient(ingredientsOfType[0]);
                 }, 400);
+
             swiper.slideTo(currentSwipeIndex);
         }, 100);
     };
 
     const slideChangeHandler = (swiper) => {
         // swipe action
-        if (isBreadType(currentIngredientType) && swiper.activeIndex === 0) {
-            setTimeout(() => initSwiperHandler(swiper), 400);
+        if (isBreadType(currentType) && swiper.activeIndex === 0) {
+            setTimeout(() => initSwiperHandler(swiper), 300);
             return;
         }
-        sandwichDispatch({
-            [currentIngredientType]:
-                ingredientsOfType[swiper.activeIndex - 1]?.id || null,
-        });
+
+        setCurrentIngredient(ingredientsOfType[swiper.activeIndex - 1] || {});
+
         updateNavigationButtons(swiper.activeIndex);
     };
 
@@ -81,18 +104,21 @@ const IngredientsSwiper = ({
             keyboard={{
                 enabled: true,
             }}
+            a11y={{ enabled: true }}
             slideToClickedSlide={true}
             onSwiper={initSwiperHandler}
             onSlideChange={slideChangeHandler}
             onReachBeginning={() => setNavigation({ prev: false, next: true })}
             onReachEnd={() => setNavigation({ prev: true, next: false })}
             breakpoints={breakpoints}
+            modules={[A11y, Keyboard]}
         >
             <SwiperSlide className="choice-null no-select">
                 {({ isActive }) => (
-                    <SwiperZeroOption
+                    <SwiperSlideElementNone
+                        currentType={currentType}
                         isActive={isActive}
-                        currentIngredientType={currentIngredientType}
+                        sandwich={sandwich}
                     />
                 )}
             </SwiperSlide>
@@ -100,27 +126,12 @@ const IngredientsSwiper = ({
             {ingredientsOfType.map((ingredient) => (
                 <SwiperSlide key={ingredient.id} className="no-select">
                     {({ isActive }) => (
-                        <div
-                            className={`swiper-slide-container relative aspect-ration-4/3 ${
-                                isActive ? "active" : ""
-                            }`}
-                        >
-                            <img
-                                src={assembleImageSrc({
-                                    sandwich: {
-                                        ...sandwich,
-                                        [currentIngredientType]: ingredient.id,
-                                    },
-                                    ingredients,
-                                    ingredientType: currentIngredientType,
-                                })}
-                                className="inset-0 object-contain size-full no-drag"
-                                alt={ingredient.name}
-                            />
-                            <div className="inline-block max-w-full rounded box-shadow-5 bg-white text-magenta text-xxs uppercase fit-content py-1 px-4">
-                                {ingredient.name}
-                            </div>
-                        </div>
+                        <SwipeSlideElement
+                            ingredient={ingredient}
+                            sandwich={sandwich}
+                            currentType={currentType}
+                            isActive={isActive}
+                        />
                     )}
                 </SwiperSlide>
             ))}

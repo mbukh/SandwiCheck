@@ -2,15 +2,22 @@ import { useEffect, useRef, useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 
-import { IngredientsSwiper, Loading, SandwichBuildImage, SignupModal } from "..";
+import { TYPES } from "../../constants/ingredients-constants";
 
-import { isBreadType } from "../../constants/ingredients-constants";
+import { checkIngredientTypeInSandwich } from "../../utils/sandwich-utils";
 
 import { useIngredientsGlobalContext, useAuthGlobalContext } from "../../context";
 
 import { useSandwich } from "../../hooks";
 
+import { IngredientsSwiper, Loading, SandwichBuildImage, SignupModal } from "..";
+
+import SandwichBuildButtons from "./SandwichBuildButtons";
+import IngredientsTypesSelector from "./IngredientsTypesSelector";
+
 const SandwichEditor = () => {
+    const [currentIngredient, setCurrentIngredient] = useState({});
+
     const [isOpenLoginModal, setIsOpenLoginModal] = useState(false);
     const swiperContainerRef = useRef(null);
 
@@ -18,8 +25,8 @@ const SandwichEditor = () => {
     const { currentUser, isCurrentUserReady } = useAuthGlobalContext();
 
     const {
-        currentIngredientType,
-        setCurrentIngredientType,
+        currentType,
+        setCurrentType,
         sandwich,
         sandwichDispatch,
         clearSandwich,
@@ -29,12 +36,12 @@ const SandwichEditor = () => {
 
     const navigate = useNavigate();
 
-    const isSandwichReady =
-        sandwich?.bread && Object.values(sandwich).filter((val) => val).length > 1;
+    const isSandwichReady = sandwich.ingredients.length > 1;
 
     const submitSandwichHandler = async (e) => {
         e.preventDefault();
         const newSandwichId = await saveSandwich();
+
         if (!newSandwichId) {
             // ERROR CODE;
             return;
@@ -48,20 +55,14 @@ const SandwichEditor = () => {
     };
 
     const changeSandwichNameHandler = (e) => {
-        sandwichDispatch({ type: "SET_NAME", name: e.target.value });
-    };
-
-    const retainSwiperHeight = () => {
-        if (!swiperContainerRef.current) return;
-        swiperContainerRef.current.style.height =
-            swiperContainerRef.current.offsetHeight + "px";
+        sandwichDispatch({ type: "SET_NAME", payload: e.target.value });
     };
 
     useEffect(() => {
         if (swiperContainerRef.current) {
             setTimeout(() => (swiperContainerRef.current.style.height = ""), 200);
         }
-    }, [currentIngredientType, swiperContainerRef]);
+    }, [currentType, swiperContainerRef]);
 
     if (!areIngredientsReady || !isCurrentUserReady) {
         return <Loading />;
@@ -71,47 +72,49 @@ const SandwichEditor = () => {
         <div className="create-sandwich flex flex-col min-h-full py-6 md:pt-9 lg:pt-12 mb-4">
             <h1 className="text-center text-l uppercase">Create a sandwich</h1>
             <div className="creation-section flex-col md:flex-row">
-                <div className="create-sandwich-menu my-2">
-                    <ul className="flex flex-wrap md:flex-row justify-center">
-                        {Object.values(Object.keys(ingredients)).map((type) => (
-                            <li key={type}>
-                                <button
-                                    className={`my-2 md:my-4  text-xs md:text-sm md:text-base fit-content ${
-                                        type === currentIngredientType ? "active" : ""
-                                    }`}
-                                    onClick={() => {
-                                        retainSwiperHeight();
-                                        setCurrentIngredientType(type);
-                                    }}
-                                    disabled={!isBreadType(type) && !sandwich?.bread}
-                                >
-                                    {type}
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
+                <IngredientsTypesSelector
+                    ingredients={ingredients}
+                    currentType={currentType}
+                    sandwich={sandwich}
+                    setCurrentType={setCurrentType}
+                    swiperContainerRef={swiperContainerRef}
+                />
 
                 <div
                     className="thumb__wrapper flex flex-col flex-shrink-0 justify-between"
                     ref={swiperContainerRef}
                 >
-                    {currentIngredientType && (
+                    {currentType && (
                         <IngredientsSwiper
                             sandwich={sandwich}
-                            ingredients={ingredients}
-                            currentIngredientType={currentIngredientType}
+                            currentType={currentType}
+                            currentIngredient={currentIngredient}
+                            setCurrentIngredient={setCurrentIngredient}
                             sandwichDispatch={sandwichDispatch}
                         />
                     )}
                 </div>
             </div>
 
-            <div className="result-section relative aspect-ratio-3/2 mx-4 w-full md:w-2/3 lg:w-1/3 mx-auto">
-                <SandwichBuildImage sandwich={sandwich} ingredients={ingredients} />
+            <div className="builder-section flex justify-center mt-5">
+                <SandwichBuildButtons
+                    sandwich={sandwich}
+                    sandwichDispatch={sandwichDispatch}
+                    currentIngredient={currentIngredient}
+                    currentType={currentType}
+                />
             </div>
 
-            {currentIngredientType ? (
+            {checkIngredientTypeInSandwich(TYPES.bread, sandwich) && (
+                <div className="result-section relative aspect-ratio-3/2 mx-4 w-full md:w-2/3 lg:w-1/3 mx-auto">
+                    <SandwichBuildImage
+                        sandwich={sandwich}
+                        currentIngredient={currentIngredient}
+                    />
+                </div>
+            )}
+
+            {currentType ? (
                 <>
                     <div className="flex justify-center my-4">
                         <button className="btn-wrapper" onClick={clearSandwich}>

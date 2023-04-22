@@ -1,12 +1,18 @@
 import { useState, useEffect } from "react";
 
-import { logResponse } from "../utils/log";
-
 import { getAllIngredients } from "../services/api-ingredients";
 
+import { groupIngredientsByTypes } from "../utils/ingredients-utils";
+
 const useIngredients = () => {
-    const [ingredients, setIngredients] = useState([]);
+    const [ingredients, setIngredients] = useState({});
     const [areIngredientsReady, setAreIngredientsReady] = useState(false);
+    const [ingredientsRawList, setIngredientsRawList] = useState([]);
+    const [rerenderIndex, setRerenderIndex] = useState(0);
+
+    const forceFetchIngredients = () => {
+        setRerenderIndex((prev) => prev + 1);
+    };
 
     useEffect(() => {
         if (areIngredientsReady) {
@@ -22,12 +28,18 @@ const useIngredients = () => {
                 return;
             }
 
-            setIngredients(res.data);
+            setIngredients(groupIngredientsByTypes(res.data));
+            setIngredientsRawList(res.data);
             setAreIngredientsReady(true);
         })();
-    }, [areIngredientsReady]);
+    }, [areIngredientsReady, rerenderIndex]);
 
-    return { ingredients, setIngredients, areIngredientsReady, setAreIngredientsReady };
+    return {
+        ingredients,
+        ingredientsRawList,
+        areIngredientsReady,
+        forceFetchIngredients,
+    };
 };
 
 export default useIngredients;

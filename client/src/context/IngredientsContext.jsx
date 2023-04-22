@@ -5,10 +5,22 @@ import useIngredients from "../hooks/use-ingredients";
 const IngredientsGlobalContext = createContext();
 
 const SandwichGlobalContextProvider = ({ children }) => {
-    const { ingredients, areIngredientsReady } = useIngredients();
+    const {
+        ingredients,
+        ingredientsRawList,
+        areIngredientsReady,
+        forceFetchIngredients,
+    } = useIngredients();
 
     return (
-        <IngredientsGlobalContext.Provider value={{ ingredients, areIngredientsReady }}>
+        <IngredientsGlobalContext.Provider
+            value={{
+                ingredients,
+                ingredientsRawList,
+                areIngredientsReady,
+                forceFetchIngredients,
+            }}
+        >
             {children}
         </IngredientsGlobalContext.Provider>
     );

@@ -1,3 +1,11 @@
+import { PORTIONS } from "../constants/ingredients-constants";
+
+// sandwich = {
+//     name: "",
+//     ingredients: [{ ingredientId, ingredientType, portion }],
+//     comment: "",
+// };
+
 const sandwichReducer = (state, action) => {
     switch (action.type) {
         case "ADD_INGREDIENT":
@@ -6,26 +14,19 @@ const sandwichReducer = (state, action) => {
             return {
                 ...state,
                 ingredients: state.ingredients.filter(
-                    (ingredient) => ingredient.ingredientId !== action.payload
+                    (ingredient) => ingredient.id !== action.payload
                 ),
             };
-        case "MOVE_UP":
-            const indexUp = state.ingredients.findIndex(
-                (ingredient) => ingredient.ingredientId === action.payload
-            );
-            if (indexUp <= 0) return state;
+        case "REMOVE_INGREDIENTS_OF_TYPE":
             return {
                 ...state,
-                ingredients: [
-                    ...state.ingredients.slice(0, indexUp - 1),
-                    state.ingredients[indexUp],
-                    state.ingredients[indexUp - 1],
-                    ...state.ingredients.slice(indexUp + 1),
-                ],
+                ingredients: state.ingredients.filter(
+                    (ingredient) => ingredient.type !== action.payload
+                ),
             };
-        case "MOVE_DOWN":
+        case "MOVE_UP_INGREDIENT":
             const indexDown = state.ingredients.findIndex(
-                (ingredient) => ingredient.ingredientId === action.payload
+                (ingredient) => ingredient.id === action.payload
             );
             if (indexDown < 0 || indexDown === state.ingredients.length - 1) return state;
             return {
@@ -37,14 +38,52 @@ const sandwichReducer = (state, action) => {
                     ...state.ingredients.slice(indexDown + 2),
                 ],
             };
-        case "RESET_SANDWICH":
+        case "MOVE_DOWN_INGREDIENT":
+            const indexUp = state.ingredients.findIndex(
+                (ingredient) => ingredient.id === action.payload
+            );
+            if (indexUp <= 0) return state;
             return {
-                name: "",
-                ingredients: [],
-                comment: "",
+                ...state,
+                ingredients: [
+                    ...state.ingredients.slice(0, indexUp - 1),
+                    state.ingredients[indexUp],
+                    state.ingredients[indexUp - 1],
+                    ...state.ingredients.slice(indexUp + 1),
+                ],
             };
-        case "SET_SANDWICH":
-            return action.payload;
+        case "INCREASE_PORTION":
+            return {
+                ...state,
+                ingredients: state.ingredients.map((ingredient) =>
+                    ingredient.id === action.payload
+                        ? {
+                              ...ingredient,
+                              portion:
+                                  ingredient.portion === PORTIONS.half
+                                      ? PORTIONS.full
+                                      : PORTIONS.double,
+                          }
+                        : ingredient
+                ),
+            };
+        case "DECREASE_PORTION":
+            return {
+                ...state,
+                ingredients: state.ingredients.map((ingredient) =>
+                    ingredient.id === action.payload
+                        ? {
+                              ...ingredient,
+                              portion:
+                                  ingredient.portion === PORTIONS.double
+                                      ? PORTIONS.full
+                                      : PORTIONS.half,
+                          }
+                        : ingredient
+                ),
+            };
+        case "UPDATE_INGREDIENTS":
+            return { ...state, ingredients: action.payload };
         case "SET_NAME":
             return { ...state, name: action.payload };
         case "SET_COMMENT":

@@ -1,8 +1,10 @@
-import { useState, useEffect, useRef, useReducer, useCallback } from "react";
+import { useState, useEffect, useReducer, useCallback } from "react";
 
 import { log, logResponse } from "../utils/log";
 
 import { TYPES } from "../constants/ingredients-constants";
+
+import { EMPTY_SANDWICH } from "../constants/sandwich-constants";
 
 import {
     fetchSandwichById,
@@ -15,11 +17,11 @@ import {
 import sandwichReducer from "../reducers/sandwich-reducer";
 
 const useSandwich = () => {
-    const [currentIngredientType, setCurrentIngredientType] = useState(TYPES.bread);
+    const [currentType, setCurrentType] = useState(TYPES.bread);
     const [isSavingSandwich, setIsSavingSandwich] = useState(false);
     const [gallerySandwiches, setGallerySandwiches] = useState(null);
 
-    const [sandwich, sandwichDispatch] = useReducer(sandwichReducer, {});
+    const [sandwich, sandwichDispatch] = useReducer(sandwichReducer, EMPTY_SANDWICH);
 
     // const timeout = useRef(null);
 
@@ -28,7 +30,7 @@ const useSandwich = () => {
         log("Sandwich retrieved from cache", sandwichFromCache);
 
         if (sandwichFromCache) {
-            sandwichDispatch({ type: "SET_SANDWICH", sandwich: sandwichFromCache });
+            sandwichDispatch({ type: "UPDATE_INGREDIENTS", payload: sandwichFromCache });
         }
     }, [isSavingSandwich]);
 
@@ -42,7 +44,10 @@ const useSandwich = () => {
         const res = await fetchSandwichById(sandwichId);
         logResponse("🥪 Read sandwich", res);
 
-        sandwichDispatch({ type: "SET_SANDWICH", sandwich: res.date || {} });
+        sandwichDispatch({
+            type: "UPDATE_INGREDIENTS",
+            payload: res.date || EMPTY_SANDWICH,
+        });
     }, []);
 
     // const updateSandwich = async (newSandwichData) => {
@@ -61,14 +66,14 @@ const useSandwich = () => {
     // };
 
     const clearSandwich = () => {
-        sandwichDispatch({ type: "CLEAR" });
+        sandwichDispatch({ type: "UPDATE_INGREDIENTS", payload: EMPTY_SANDWICH });
 
-        setCurrentIngredientType("");
+        setCurrentType("");
 
         deleteSandwichFromCache();
 
         setTimeout(() => {
-            setCurrentIngredientType(TYPES.bread);
+            setCurrentType(TYPES.bread);
         }, 400);
     };
 
@@ -89,8 +94,8 @@ const useSandwich = () => {
     };
 
     return {
-        currentIngredientType,
-        setCurrentIngredientType,
+        currentType,
+        setCurrentType,
         sandwich,
         sandwichDispatch,
         saveSandwich,

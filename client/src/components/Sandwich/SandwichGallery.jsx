@@ -64,6 +64,7 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
         currentUser.id,
         currentUser.sandwiches,
         fetchSandwiches,
+        fetchUserSandwiches,
         galleryType,
         isCurrentUserReady,
         navigate,

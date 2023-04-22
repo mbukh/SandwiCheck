@@ -2,19 +2,22 @@ import { useState } from "react";
 
 import { Link, useNavigate } from "react-router-dom";
 
-import { TYPES } from "../../constants/ingredients-constants";
-
 import { hasUserVotedUserForSandwich, voteForSandwich } from "../../services/votes";
+
+import { hydrateSandwichIngredientsData } from "../../utils/sandwich-utils";
 
 import { updateSandwichInCache } from "../../services/api-sandwiches";
 
-import { useAuthGlobalContext } from "../../context";
+import { useAuthGlobalContext } from "../../context/AuthContext";
+import { useIngredientsGlobalContext } from "../../context/IngredientsContext";
 
 import SandwichImage from "./SandwichImage";
+import SandwichIngredientsList from "./SandwichIngredientsList";
 
 const SandwichCard = ({ index, sandwich, ingredients, closeBasePath = "" }) => {
     const [isUserVoting, setIsUserVoting] = useState(false);
     const { currentUser } = useAuthGlobalContext;
+    const { ingredientsRawList } = useIngredientsGlobalContext;
 
     const navigate = useNavigate();
 
@@ -27,7 +30,11 @@ const SandwichCard = ({ index, sandwich, ingredients, closeBasePath = "" }) => {
     const copyThisSandwichHandler = (e) => {
         e.preventDefault();
 
-        updateSandwichInCache(sandwich);
+        const hydratedSandwich = hydrateSandwichIngredientsData(
+            sandwich,
+            ingredientsRawList
+        );
+        updateSandwichInCache(hydratedSandwich);
         navigate("/create");
     };
 
@@ -88,7 +95,7 @@ const SandwichCard = ({ index, sandwich, ingredients, closeBasePath = "" }) => {
                             title="Favorites counter"
                         ></i>
                         <span className="votesCount text-xs sm:text-sm text-shadow-5">
-                            {(sandwich?.votesCount || 0) + isUserVoting}
+                            {sandwich.votesCount + (isUserVoting ? 1 : 0)}
                         </span>
                     </div>
                     <div className="card-footer-mid w-1/3 text-center">
@@ -149,30 +156,10 @@ const SandwichCard = ({ index, sandwich, ingredients, closeBasePath = "" }) => {
             </div>
 
             {isModal && (
-                <div className="thumb__ingredients flex md:flex-col md:justify-center text-left mx-auto pt-8 pb-0 pr-4 md:py-0 md:pl-8 md:pr-4 text-shadow-5">
-                    <div>
-                        <h5 className="ml-4 mb-4 text-sm sm:text-base uppercase">
-                            Ingredients:
-                        </h5>
-                        <ul className="text-sm sm:text-base">
-                            {TYPES.map(
-                                (ingredientType) =>
-                                    sandwich.hasOwnProperty(ingredientType) &&
-                                    sandwich[ingredientType] && (
-                                        <li key={ingredientType}>
-                                            {
-                                                ingredients[ingredientType].find(
-                                                    (ingredient) =>
-                                                        ingredient.id ===
-                                                        sandwich[ingredientType]
-                                                ).name
-                                            }
-                                        </li>
-                                    )
-                            )}
-                        </ul>
-                    </div>
-                </div>
+                <SandwichIngredientsList
+                    sandwich={sandwich}
+                    ingredientsRawList={ingredientsRawList}
+                />
             )}
         </div>
     );

@@ -97,7 +97,7 @@ export const addSandwichToFavoritesByUserId = async ({ userId, sandwichId }) => 
     );
 };
 
-const addSandwichToFavoritesInLocalStorage = (sandwichId) => {
+export const addSandwichToFavoritesInLocalStorage = (sandwichId) => {
     const allVotes = JSON.parse(localStorage.getItem("user_votes")) || [];
     allVotes.push(sandwichId);
     localStorage.setItem("user_votes", JSON.stringify([...new Set(allVotes)]));
