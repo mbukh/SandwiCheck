@@ -36,7 +36,9 @@ const useSandwich = () => {
     }, [isSavingSandwich]);
 
     useEffect(() => {
-        updateSandwichInCache(sandwich);
+        if (isSavingSandwich) {
+            updateSandwichInCache(sandwich);
+        }
     }, [isSavingSandwich, sandwich]);
 
     const getSandwich = useCallback(async (sandwichId) => {
