@@ -14,7 +14,7 @@ import { capitalizeFirst } from "../../utils";
 const SandwichGallery = ({ children, galleryType = "" }) => {
     const [child, setChild] = useState({});
     const { currentUser, isCurrentUserReady } = useAuthGlobalContext();
-    const { ingredients, areIngredientsReady } = useIngredientsGlobalContext();
+    const { areIngredientsReady } = useIngredientsGlobalContext();
     const { gallerySandwiches, setGallerySandwiches, fetchSandwiches } = useGallery();
     const { fetchUserSandwiches } = useGallery();
 
@@ -45,7 +45,7 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
                 await fetchUserSandwiches(childInfo.id);
                 setChild(childInfo);
             } else if (galleryType === "latest") {
-                await fetchSandwiches();
+                await fetchSandwiches({});
             } else if (galleryType === "best") {
                 await fetchSandwiches({ sortBy: "votesCount" });
             } else if (currentUser.id) {
@@ -73,7 +73,7 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
 
     const userGalleryTitle = galleryType === "personal" ? "My sandwich menu" : "";
 
-    if (!(areIngredientsReady && isCurrentUserReady && gallerySandwiches)) {
+    if (!areIngredientsReady || !isCurrentUserReady) {
         return <Loading />;
     }
 
@@ -98,16 +98,17 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
                                 key={sandwich.id}
                                 index={index}
                                 sandwich={sandwich}
-                                ingredients={ingredients}
                                 closeBasePath={
                                     childId
                                         ? "/family/" + childId
                                         : galleryType === "personal"
                                         ? "/menu"
-                                        : galleryType === "best"
+                                        : galleryType === "best" ||
+                                          galleryType === "latest"
                                         ? ""
                                         : ""
                                 }
+                                isModal={false}
                             />
                         ))
                     ) : (

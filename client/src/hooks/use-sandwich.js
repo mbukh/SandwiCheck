@@ -30,7 +30,7 @@ const useSandwich = () => {
 
         log("Sandwich retrieved from cache", sandwichFromCache);
 
-        if (sandwichFromCache) {
+        if (sandwichFromCache && sandwichFromCache.id) {
             sandwichDispatch({ type: "UPDATE_SANDWICH", payload: sandwichFromCache });
         }
     }, [isSavingSandwich]);
@@ -45,8 +45,8 @@ const useSandwich = () => {
 
         if (res.success) {
             sandwichDispatch({
-                type: "UPDATE_INGREDIENTS",
-                payload: res.date || EMPTY_SANDWICH,
+                type: "UPDATE_SANDWICH",
+                payload: res.data || EMPTY_SANDWICH,
             });
         }
     }, []);
@@ -68,6 +68,9 @@ const useSandwich = () => {
 
         const res = await createSandwich(sandwich);
         logResponse("👽 🥪 Create sandwich", res);
+        if (res.success) {
+            clearSandwich();
+        }
 
         setIsSavingSandwich(false);
         return res;

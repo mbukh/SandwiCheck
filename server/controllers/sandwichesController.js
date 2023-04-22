@@ -59,9 +59,7 @@ export const getSandwiches = expressAsyncHandler(async (req, res, next) => {
 // @route   GET /api/sandwiches/:sandwichId
 // @access  Public
 export const getSandwich = expressAsyncHandler(async (req, res, next) => {
-    const sandwich = await Sandwich.findById(req.params.sandwichId).populate(
-        "ingredients.ingredientId"
-    );
+    const sandwich = await Sandwich.findById(req.params.sandwichId)
 
     if (!sandwich) {
         return next(createHttpError.NotFound("Sandwich not found"));

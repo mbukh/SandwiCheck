@@ -4,7 +4,11 @@ import arrowUpImg from "../../assets/images/icons/arrow-up.svg";
 import arrowDownImg from "../../assets/images/icons/arrow-down.svg";
 import binImg from "../../assets/images/icons/bin.svg";
 
-import { PORTIONS, DEFAULT_PORTION, isBreadType } from "../../constants/ingredients-constants";
+import {
+    PORTIONS,
+    DEFAULT_PORTION,
+    isBreadType,
+} from "../../constants/ingredients-constants";
 import { MAX_INGREDIENTS_COUNT } from "../../constants/sandwich-constants";
 
 import {
@@ -35,7 +39,7 @@ const SandwichBuildButtons = ({
             showToast(`Maximum of ${MAX_INGREDIENTS_COUNT} ingredients reached`);
             return;
         }
-        if (ingredientPlace.isPresent) {
+        if (!isCurrentlyBread && ingredientPlace.isPresent) {
             showToast(`The ingredient has been already added`);
             return;
         }

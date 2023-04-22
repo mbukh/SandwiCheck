@@ -1,3 +1,5 @@
+export const INGREDIENTS_IMAGES_PATH = "uploads/ingredients/";
+
 export const TYPES = {
     bread: "bread",
     protein: "protein",

@@ -14,14 +14,12 @@ import { useIngredientsGlobalContext } from "../../context/IngredientsContext";
 import SandwichImage from "./SandwichImage";
 import SandwichIngredientsList from "./SandwichIngredientsList";
 
-const SandwichCard = ({ index, sandwich, ingredients, closeBasePath = "" }) => {
+const SandwichCard = ({ index, sandwich, closeBasePath = "", isModal }) => {
     const [isUserVoting, setIsUserVoting] = useState(false);
-    const { currentUser } = useAuthGlobalContext;
-    const { ingredientsRawList } = useIngredientsGlobalContext;
+    const { currentUser } = useAuthGlobalContext();
+    const { ingredientsRawList } = useIngredientsGlobalContext();
 
     const navigate = useNavigate();
-
-    const isModal = closeBasePath ? true : false;
 
     const isVotedByUser = hasUserVotedUserForSandwich(sandwich, currentUser);
 
@@ -83,6 +81,7 @@ const SandwichCard = ({ index, sandwich, ingredients, closeBasePath = "" }) => {
                         <SandwichImage
                             sandwich={sandwich}
                             closeBasePath={closeBasePath}
+                            isModal={isModal}
                         />
                     </div>
                 </div>

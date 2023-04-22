@@ -1,4 +1,5 @@
 import { hydrateSandwichIngredientsData } from "../../utils/sandwich-utils";
+import { capitalizeFirst } from "../../utils/index";
 
 const SandwichIngredientsList = ({ sandwich, ingredientsRawList }) => {
     const hydratedSandwich = hydrateSandwichIngredientsData(sandwich, ingredientsRawList);
@@ -10,10 +11,15 @@ const SandwichIngredientsList = ({ sandwich, ingredientsRawList }) => {
                 <ul className="text-sm sm:text-base">
                     {hydratedSandwich.ingredients.map((ingredient) => (
                         <li key={ingredient.id}>
-                            {ingredient.name} ({ingredient.portion} portion)
+                            {capitalizeFirst(ingredient.type)}: {ingredient.name}
+                            <br />
+                            <span className="text-s">({ingredient.portion} portion)</span>
                         </li>
                     ))}
                 </ul>
+                <div className="my-5"></div>
+                <h5 className="ml-4 mb-4 text-sm sm:text-base uppercase">Comment:</h5>
+                <div className="ml-1">{sandwich.comment}</div>
             </div>
         </div>
     );

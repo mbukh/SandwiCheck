@@ -2,8 +2,8 @@ import {
     TYPES,
     EXTENSION,
     SHAPES,
-    PORTIONS,
     DEFAULT_PORTION,
+    INGREDIENTS_IMAGES_PATH,
 } from "../constants/ingredients-constants";
 
 export const generateIngredientImageSrc = ({
@@ -13,7 +13,7 @@ export const generateIngredientImageSrc = ({
 }) => {
     const { imageBase, type, portion = DEFAULT_PORTION } = ingredient;
 
-    const path = `${process.env.REACT_APP_API_SERVER}/uploads/ingredients/`;
+    const path = `${process.env.REACT_APP_API_SERVER}/${INGREDIENTS_IMAGES_PATH}`;
 
     const breadShape = sandwich.ingredients[0]?.shape || SHAPES.long;
 

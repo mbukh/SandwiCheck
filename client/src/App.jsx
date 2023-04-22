@@ -9,17 +9,17 @@ import { Family, Layout, Error404, Cart } from "./pages";
 
 import {
     SandwichEditor,
-    // SandwichModal,
+    SandwichModal,
     SandwichGallery,
     // LoginModal,
     // SignupModal,
 } from "./components";
 
 const router = createBrowserRouter([
-    // {
-    //     path: "/sandwich/:sandwichId",
-    //     element: <SandwichModal closeLink="/latest" />,
-    // },
+    {
+        path: "/sandwich/:sandwichId",
+        element: <SandwichModal closeLink="/latest" />,
+    },
     // {
     //     path: "/login",
     //     element: <LoginModal />,

@@ -11,11 +11,11 @@ const useGallery = () => {
 
     const fetchSandwiches = useCallback(
         async ({
-            dietaryPreferences = undefined,
-            ingredients = undefined,
+            dietaryPreferences = [],
+            ingredients = [],
             sortBy = "createdAt", // votesCount || votes
-            page = undefined,
-            limit = undefined,
+            page = 1,
+            limit = 48,
         }) => {
             const res = await apiSandwiches.fetchSandwiches({
                 dietaryPreferences,

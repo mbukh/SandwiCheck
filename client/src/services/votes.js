@@ -8,10 +8,6 @@ import {
 export const hasUserVotedUserForSandwich = (sandwich, user) => {
     if (!user.id) return didUserVotedForSandwichByIdUsingLocalStorage(sandwich.id);
 
-    if (!user.favoriteSandwiches) {
-        return false;
-    }
-
     return user.favoriteSandwiches.includes(sandwich.id);
 };
 

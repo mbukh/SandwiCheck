@@ -40,8 +40,11 @@ const AuthGlobalContextProvider = ({ children }) => {
         (async () => {
             const res = await apiUsers.fetchCurrentUser();
             logResponse("👽 Current user info", res);
-
-            setCurrentUser(res.data || {});
+            if (res.success) {
+                setCurrentUser(res.data);
+            } else {
+                setCurrentUser({});
+            }
 
             setIsCurrentUserReady(true);
         })();

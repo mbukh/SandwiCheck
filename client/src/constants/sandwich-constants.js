@@ -1,3 +1,5 @@
+export const SANDWICH_IMAGES_PATH = "uploads/sandwiches/"
+
 export const SANDWICH_CACHE_TIME_OUT_DAYS = 7;
 
 export const EMPTY_SANDWICH = {
