@@ -142,6 +142,15 @@ async function ingredientsValidator(ingredientsWithPortions) {
         throw new Error("The first ingredient must be bread");
     }
 
+    const isNotFullPortionData = ingredientsWithPortions.some(
+        (ingredient) =>
+            ingredient.ingredientId !== firstIngredient &&
+            !ingredient.hasOwnProperty("portion")
+    );
+    if (isNotFullPortionData) {
+        throw new Error("Some of the ingredients lack portion data");
+    }
+
     const otherIngredientIds = ingredientsWithPortions
         .slice(1)
         .map((item) => item.ingredientId);
