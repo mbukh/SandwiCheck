@@ -5,58 +5,63 @@ import { useAuthGlobalContext } from "../../context";
 
 import useToast from "../../hooks/use-toast";
 
+import validateForm from "../../utils/validate-utils";
+
 import { Loading, SignupModal } from "..";
 
 const SandwichSaveForm = ({
     sandwich,
-    clearSandwich,
     isSavingSandwich,
     saveSandwich,
     sandwichDispatch,
+    canGoNextType,
+    goToNextIngredientsType,
+    clearSandwich,
 }) => {
+    const [isCommentOpen, setIsCommentOpen] = useState(false);
     const [isOpenLoginModal, setIsOpenLoginModal] = useState(false);
     const { currentUser } = useAuthGlobalContext();
     const navigate = useNavigate();
     const { showToast, toastComponents } = useToast();
 
+    const defaultName = currentUser.firstName + "'s Sandwich";
+
     const isSandwichReady = sandwich.ingredients.length > 1;
 
-    const validateNameAndComment = () => {
-        const invalidName = sandwich.name.length > 0 && sandwich.name.length < 3;
-        const invalidComment = sandwich.comment.length > 100;
-
-        if (invalidName) {
-            showToast();
-        }
-        if (invalidComment) {
-            showToast();
-        }
-
-        if (invalidName || invalidComment) {
-            return false;
-        }
-
-        return true;
-    };
-
     const submitSandwichHandler = async (e) => {
-        e.preventDefault();
+        // e.preventDefault();
 
-        if (!validateNameAndComment()) {
-            return false;
-        }
+        // const errorMessages = validateForm({
+        //     sandwichName: sandwich.name,
+        //     sandwichComment: sandwich.comment,
+        // });
+        // errorMessages.forEach((message) => showToast(message));
 
-        const newSandwichId = await saveSandwich();
+        // if (errorMessages.length > 0) {
+        //     return false;
+        // }
 
-        if (!newSandwichId) {
-            // ERROR CODE;
-            return;
-        }
-        setTimeout(() => navigate(`/sandwich/${newSandwichId}`), 500);
+        // let res;
+        // if (!sandwich.name) {
+        //     res = await saveSandwich(sandwich);
+        // } else {
+        //     res = await saveSandwich({ ...sandwich, name: defaultName });
+        // }
+
+        // if (!res.error) {
+        //     showToast("Error ocurred while saving the sandwich");
+        //     showToast(res.error.me);
+
+
+        //     return;
+        // }
+
+        // setTimeout(() => navigate(`/sandwich/${newSandwichId}`), 500);
     };
 
     const guestUserSubmitHandler = async (e) => {
         e.preventDefault();
+
         setIsOpenLoginModal(true);
     };
 
@@ -68,59 +73,82 @@ const SandwichSaveForm = ({
         sandwichDispatch({ type: "SET_COMMENT", payload: e.target.value });
     };
 
+    if (!sandwich.ingredients.length && !sandwich.name && !sandwich.comment) {
+        return;
+    }
+
     return (
         <>
             <div className="flex justify-center my-4">
-                <button className="btn-wrapper" onClick={clearSandwich}>
-                    Clear all
-                </button>
+                {sandwich.ingredients.length > 0 && canGoNextType && (
+                    <button className="text-cyan2" onClick={goToNextIngredientsType}>
+                        next
+                    </button>
+                )}
+                {(sandwich.ingredients.length > 0 ||
+                    sandwich.name ||
+                    sandwich.comment) && (
+                    <button className="btn-wrapper" onClick={clearSandwich}>
+                        Clear all
+                    </button>
+                )}
             </div>
-
             {isSavingSandwich ? (
                 <Loading />
             ) : (
                 <div className="save-sandwich-section flex justify-center text-center">
-                    <form onSubmit={submitSandwichHandler}>
+                    <form
+                        onSubmit={
+                            currentUser.id
+                                ? submitSandwichHandler
+                                : guestUserSubmitHandler
+                        }
+                        className="flex flex-col"
+                    >
                         <input
                             type="text"
-                            name="sandwichName"
-                            placeholder={
-                                currentUser?.name
-                                    ? currentUser?.name.split(" ")[0] + "'s Sandwich"
-                                    : "Sandwich name"
-                            }
-                            maxLength={25}
+                            name="name"
+                            placeholder={currentUser.id ? defaultName : "Sandwich name"}
+                            maxLength={15}
                             onChange={changeSandwichNameHandler}
-                            value={sandwich?.name}
+                            value={sandwich.name}
+                            className="my-4"
                         />
-                        {currentUser.id ? (
-                            <input
-                                type="submit"
-                                placeholder="save sandwich"
-                                className="my-4"
-                                disabled={!isSandwichReady}
-                                value="Save sandwich"
-                            />
-                        ) : (
-                            <>
+                        <div>
+                            {isCommentOpen || sandwich.comment ? (
+                                <textarea
+                                    className="text-gray-800"
+                                    type="text"
+                                    name="comment"
+                                    placeholder="Comment"
+                                    maxLength={100}
+                                    onChange={changeSandwichCommentHandler}
+                                    value={sandwich.comment}
+                                ></textarea>
+                            ) : (
                                 <button
-                                    placeholder="save sandwich"
-                                    className="my-4"
-                                    disabled={!isSandwichReady}
-                                    onClick={guestUserSubmitHandler}
+                                    className="text-xs text-magenta text-gray-500"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        setIsCommentOpen(true);
+                                    }}
                                 >
-                                    Save sandwich
+                                    Add comment...
                                 </button>
-                                {isOpenLoginModal && (
-                                    <SignupModal
-                                        setIsOpenLoginModal={setIsOpenLoginModal}
-                                        closeLink="stay"
-                                    />
-                                )}
-                            </>
-                        )}
+                            )}
+                        </div>
+                        <input
+                            type="submit"
+                            placeholder="save sandwich"
+                            disabled={!isSandwichReady}
+                            value="Save sandwich"
+                            className="my-4"
+                        />
                     </form>
                 </div>
+            )}
+            {isOpenLoginModal && (
+                <SignupModal setIsOpenLoginModal={setIsOpenLoginModal} closeLink="stay" />
             )}
             {toastComponents}
         </>

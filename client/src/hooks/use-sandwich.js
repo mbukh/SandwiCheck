@@ -50,7 +50,7 @@ const useSandwich = () => {
     }, []);
 
     const clearSandwich = () => {
-        sandwichDispatch({ type: "UPDATE_INGREDIENTS", payload: EMPTY_SANDWICH });
+        sandwichDispatch({ type: "UPDATE_SANDWICH", payload: EMPTY_SANDWICH });
 
         setCurrentType("");
 
@@ -61,20 +61,14 @@ const useSandwich = () => {
         }, 400);
     };
 
-    const saveSandwich = async () => {
+    const saveSandwich = async (sandwich) => {
         setIsSavingSandwich(true);
 
         const res = await createSandwich(sandwich);
         logResponse("👽 🥪 Create sandwich", res);
 
-        if (!res.data) {
-            return null;
-        }
-
-        clearSandwich();
         setIsSavingSandwich(false);
-
-        return res.data;
+        return res;
     };
 
     return {
@@ -82,12 +76,13 @@ const useSandwich = () => {
         setCurrentType,
         sandwich,
         sandwichDispatch,
-        saveSandwich,
         isSavingSandwich,
         setIsSavingSandwich,
         gallerySandwiches,
         setGallerySandwiches,
         getSandwich,
+        clearSandwich,
+        saveSandwich,
     };
 };
 

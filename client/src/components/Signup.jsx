@@ -1,8 +1,13 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
-import { useForm } from "../hooks";
+import { ROLES } from "../constants/user-constants";
+
+import useForm from "../hooks/use-form";
+import useToast from "../hooks/use-toast";
 
 const Signup = () => {
+    const { showToast, toastComponents } = useToast();
     const {
         name,
         setName,
@@ -12,10 +17,16 @@ const Signup = () => {
         setPassword,
         confirmPassword,
         setConfirmPassword,
-        errors,
-        handleCreateUser,
+        signUpHandler,
+        role,
+        setRole,
         parentId,
+        errors,
     } = useForm();
+
+    useEffect(() => {
+        errors.forEach((error) => showToast(error));
+    }, [errors, showToast]);
 
     return (
         <div className="login max-w-screen-md text-white text-center mx-auto">
@@ -41,16 +52,8 @@ const Signup = () => {
 
             <form
                 className="needs-validation text-left text-sm mt-15 md:mt-20 xl:mt-24 md:px-5"
-                onSubmit={handleCreateUser}
+                onSubmit={signUpHandler}
             >
-                {errors.length > 0 && (
-                    <div className="error-message text-base py-2 text-yellow">
-                        {errors.map((error, idx) => (
-                            <p key={idx}>{error}</p>
-                        ))}
-                    </div>
-                )}
-
                 <div className="mb-4 md:mb-6">
                     <input
                         className="w-full appearance-none focus:outline-none rounded-lg box-shadow-10 bg-white text-magenta text-base xl:text-xl py-2 px-4 md:px-6 xl:py-3 xl:px-8 xl:box-shadow-20"
@@ -119,7 +122,33 @@ const Signup = () => {
                         </label>
                     </div>
                 ) : (
-                    <div className="mb-2 md:mb-5 custom-control custom-checkbox"></div>
+                    <div className="mb-2 md:mb-5 w-1/2">
+                        <div class="gallery__filter-county relative">
+                            <select
+                                class="w-full py-1 px-4 md:px-6 appearance-none focus:outline-none rounded-lg box-shadow-10 bg-white text-magenta text-sm uppercase"
+                                title="Choose role"
+                                required={true}
+                                name="role"
+                                onChange={(e) => setRole(e.target.value)}
+                            >
+                                <option value="">Choose role</option>
+                                {ROLES.map((role, index) => (
+                                    <option key={index} value={role}>
+                                        {role}
+                                    </option>
+                                ))}
+                            </select>
+                            <div class="select__arrow pointer-events-none absolute top-0 bottom-0 right-0 flex items-center text-magenta py-1 px-3 md:pr-6">
+                                <svg
+                                    class="fill-current w-auto h-3"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 4 5"
+                                >
+                                    <path d="M2 0L0 2h4zm0 5L0 3h4z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
                 )}
 
                 <button
@@ -141,6 +170,7 @@ const Signup = () => {
                     Log In
                 </Link>
             </div>
+            {toastComponents}
         </div>
     );
 };

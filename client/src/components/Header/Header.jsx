@@ -67,7 +67,7 @@ const Header = () => {
                                         Let us
                                         <br /> inspire you,
                                         <br />
-                                        {user.name.split(" ")[0]}
+                                        {user.firstName}
                                     </div>
                                 )}
                             </div>

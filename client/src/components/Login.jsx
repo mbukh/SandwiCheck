@@ -1,10 +1,17 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
-import { useForm } from "../hooks";
+import useForm from "../hooks/use-form";
+import useToast from "../hooks/use-toast";
 
 const Login = () => {
-    const { email, setEmail, password, setPassword, errors, handleLogin, parentId } =
-        useForm();
+    const { showToast, toastComponents } = useToast();
+    const { email, setEmail, password, setPassword, LoginHandler, parentId, errors } =
+    useForm();
+
+    useEffect(() => {
+        errors.forEach((error) => showToast(error));
+    }, [errors, showToast]);
 
     return (
         <div className="login max-w-screen-md text-white text-center mx-auto">
@@ -30,16 +37,8 @@ const Login = () => {
 
             <form
                 className="needs-validation text-left text-sm mt-15 md:mt-20 xl:mt-24 md:px-5"
-                onSubmit={handleLogin}
+                onSubmit={LoginHandler}
             >
-                {errors.length > 0 && (
-                    <div className="error-message text-base py-2 text-yellow">
-                        {errors.map((error, idx) => (
-                            <p key={idx}>{error}</p>
-                        ))}
-                    </div>
-                )}
-
                 <div className="mb-4 md:mb-6">
                     <input
                         className="w-full appearance-none focus:outline-none rounded-lg box-shadow-10 bg-white text-magenta text-base xl:text-xl py-2 px-4 md:px-6 xl:py-3 xl:px-8 xl:box-shadow-20"
@@ -105,6 +104,7 @@ const Login = () => {
                     Sign up
                 </Link>
             </div>
+            {toastComponents}
         </div>
     );
 };

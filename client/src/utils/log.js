@@ -5,6 +5,10 @@ export function log() {
 }
 
 export function logResponse(title, response) {
-    debug && response.message && console.log(title, "(message):", response.message);
-    debug && response.data && console.log(title, "(response):", response.data);
+    if (response.success) {
+        debug && response.message && console.log(title, "(message):", response.message);
+        debug && response.data && console.log(title, "(response):", response.data);
+    } else {
+        debug && console.log(title, "(error):", response.error.message);
+    }
 }

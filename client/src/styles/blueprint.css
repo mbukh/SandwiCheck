@@ -17,6 +17,28 @@ input[type="submit"]:disabled {
 button:focus {
     outline: none;
 }
+input::-moz-placeholder {
+    color: #bdbdbd;
+}
+
+input:-ms-input-placeholder {
+    color: #bdbdbd;
+}
+
+input::placeholder {
+    color: #bdbdbd;
+}
+
+select:required:invalid,
+select option[value=""] {
+    color: #bdbdbd;
+}
+
+.appearance-none {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
 .rounded {
     border-radius: 0.25rem;
 }
@@ -426,6 +448,10 @@ button:focus {
 .text-gray-300 {
     color: #e0e0e0;
     color: rgba(224, 224, 224, var(--text-opacity));
+}
+.text-gray-500 {
+    color: #ababab;
+    color: rgba(171, 171, 171, var(--text-opacity));
 }
 .text-gray-800 {
     color: #424242;

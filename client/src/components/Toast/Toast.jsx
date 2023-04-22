@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import "./Toast.css";
 
-const TOAST_TIMEOUT = 3000;
-const FADE_DURATION = 1000;
+const TOAST_TIMEOUT = 3500;
+const FADE_DURATION = 1500;
 
 const Toast = ({ message }) => {
     const [visible, setVisible] = useState(true);

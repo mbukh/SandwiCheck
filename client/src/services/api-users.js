@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { log, logResponse } from "../utils/log";
+import { log } from "../utils/log";
 
 import { handleResponse } from "../utils/api-utils";
 

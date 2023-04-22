@@ -24,6 +24,7 @@ const SandwichBuildButtons = ({
     const [ingredientPlace, setIngredientPlace] = useState({});
     const { showToast, toastComponents } = useToast();
 
+    const isSandwichEmpty = !sandwich.ingredients.length;
     const isTypeInSandwich = checkIngredientTypeInSandwich(currentType, sandwich);
     const isEmptyIngredient = !currentIngredient.id;
     const isCurrentlyBread = isBreadType(currentIngredient.type);
@@ -80,6 +81,10 @@ const SandwichBuildButtons = ({
         sandwichDispatch({ type: "MOVE_DOWN_INGREDIENT", payload: currentIngredient.id });
     };
 
+    if (!currentType) {
+        return;
+    }
+
     return (
         <div className="builder__spacer-buttons inline-flex justify-center h-8 px-2 bg-white text-magenta text-xs rounded-lg box-shadow-5">
             <button
@@ -87,7 +92,7 @@ const SandwichBuildButtons = ({
                     ingredientPlace.isPresent || (isEmptyIngredient && !isTypeInSandwich)
                         ? "text-cyan2"
                         : "fill-magenta"
-                }`}
+                } ${isSandwichEmpty ? "flex items-center justify-center" : ""}`}
                 disabled={isMaxIngredientsReached && !ingredientPlace.isPresent}
                 style={ingredientPlace.isPresent ? { cursor: "not-allowed" } : {}}
                 title="Confirm ingredient"
@@ -106,6 +111,7 @@ const SandwichBuildButtons = ({
                 >
                     <path d="m9 0c-4.9706 0-9 4.0294-9 9s4.0294 9 9 9 9-4.0294 9-9-4.0294-9-9-9zm0 1.7419c4.0112 0 7.2581 3.2462 7.2581 7.2581 0 4.0112-3.2462 7.2581-7.2581 7.2581-4.0112 0-7.2581-3.2462-7.2581-7.2581 0-4.0112 3.2462-7.2581 7.2581-7.2581m5.088 4.7274-0.81784-0.82444c-0.16937-0.17075-0.4451-0.17187-0.61585-0.0025l-5.1297 5.0885-2.1699-2.1875c-0.16937-0.17075-0.4451-0.17187-0.61585-0.0025l-0.82448 0.81784c-0.17075 0.16937-0.17187 0.4451-0.0025 0.61588l3.2945 3.3211c0.16937 0.17075 0.4451 0.17187 0.61585 0.0025l6.2633-6.213c0.17071-0.1694 0.1718-0.44514 0.0024-0.61588z" />
                 </svg>
+                {isSandwichEmpty && <div className="ml-1">add</div>}
             </button>
             {!isCurrentlyBread && !isEmptyIngredient && (
                 <>

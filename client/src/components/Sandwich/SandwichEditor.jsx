@@ -26,10 +26,22 @@ const SandwichEditor = () => {
         setCurrentType,
         sandwich,
         sandwichDispatch,
-        clearSandwich,
         saveSandwich,
         isSavingSandwich,
+        clearSandwich,
     } = useSandwich();
+
+    const canGoNextType =
+        Object.keys(ingredients).indexOf(currentType) <
+        Object.keys(ingredients).length - 1;
+
+    const goToNextIngredientsType = () => {
+        const types = Object.keys(ingredients);
+        const currentIndex = types.indexOf(currentType);
+        if (currentIndex < types.length - 1) {
+            setCurrentType(types[currentIndex + 1]);
+        }
+    };
 
     useEffect(() => {
         if (swiperContainerRef.current) {
@@ -90,10 +102,12 @@ const SandwichEditor = () => {
             {currentType ? (
                 <SandwichSaveForm
                     sandwich={sandwich}
-                    clearSandwich={clearSandwich}
                     isSavingSandwich={isSavingSandwich}
                     saveSandwich={saveSandwich}
                     sandwichDispatch={sandwichDispatch}
+                    goToNextIngredientsType={goToNextIngredientsType}
+                    clearSandwich={clearSandwich}
+                    canGoNextType={canGoNextType}
                 />
             ) : (
                 <Loading />

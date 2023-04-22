@@ -4,11 +4,9 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { useAuthGlobalContext } from "../context/";
 
-import { updateUserById } from "../services/api-users";
-
 import { readSandwichFromCache } from "../services/api-sandwiches";
 
-import useValidate from "./use-validate";
+import validateForm from "../utils/validate-utils";
 
 const useForm = () => {
     const [name, setName] = useState("");
@@ -21,7 +19,6 @@ const useForm = () => {
     const [errors, setErrors] = useState([]);
 
     const { logIn, signUp, currentUser: user } = useAuthGlobalContext();
-    const { validateForm } = useValidate();
 
     const { parentId } = useParams();
     const navigate = useNavigate();
@@ -35,42 +32,35 @@ const useForm = () => {
         }
     };
 
-    const handleCreateUser = async (e) => {
+    const LoginHandler = async (e) => {
         e.preventDefault();
-
-        const errorMessages = validateForm({ name, email, password, confirmPassword });
-        if (errorMessages.length) {
-            setErrors(errorMessages);
-            return false;
-        }
-
         setErrors([]);
 
-        const res = await signUp(email, password, role, parentId);
-        if (!res.data) {
-            setErrors(res.message);
-            return;
+        const errorMessages = validateForm({ email, password });
+        if (errorMessages.length) {
+            return setErrors(errorMessages);
+        }
+
+        const res = await logIn({ email, password, parentId });
+        if (res.error) {
+            return setErrors(["Login failed, try signup instead"]);
         }
 
         redirectUser();
     };
 
-    const handleLogin = async (e) => {
+    const signUpHandler = async (e) => {
         e.preventDefault();
-
-        const errorMessages = validateForm({ email, password });
-        if (errorMessages.length) {
-            setErrors(errorMessages);
-            return false;
-        }
-
         setErrors([]);
 
-        const res = await logIn(email, password, parentId);
+        const errorMessages = validateForm({ name, email, password, confirmPassword });
+        if (errorMessages.length) {
+            return setErrors(errorMessages);
+        }
 
-        if (!res.data) {
-            setErrors(["Login failed, try signup instead."]);
-            return;
+        const res = await signUp({ name, email, password, role, parentId });
+        if (res.error) {
+            return setErrors([res.error.message]);
         }
 
         redirectUser();
@@ -96,8 +86,8 @@ const useForm = () => {
         logIn,
         signUp,
         user,
-        handleLogin,
-        handleCreateUser,
+        LoginHandler,
+        signUpHandler,
         navigate,
         parentId,
         role,

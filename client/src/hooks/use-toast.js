@@ -8,7 +8,7 @@ const useToast = () => {
     const [toasts, setToasts] = useState([]);
 
     const showToast = useCallback((message) => {
-        const key = Date.now();
+        const key = message + Date.now();
         setToasts((prevToasts) => [...prevToasts, { key, message }]);
     }, []);
 

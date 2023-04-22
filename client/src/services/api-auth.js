@@ -56,7 +56,7 @@ const api = axios.create({
   Access: Private
 */
 
-export const signup = async (email, password, name, role, parentId) => {
+export const signup = async ({ email, password, name, role, parentId }) => {
     return await handleResponse(async () => {
         return api.post("/signup", { email, password, name, role, parentId });
     });

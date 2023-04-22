@@ -71,7 +71,7 @@ const IngredientsSwiper = ({
         swiperRef.current = swiper;
 
         setTimeout(() => {
-            if (isBreadType(currentType) && !sandwich.length)
+            if (isBreadType(currentType) && !sandwich.ingredients.length)
                 setTimeout(() => {
                     swiper.slideTo(1);
 
