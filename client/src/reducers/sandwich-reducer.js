@@ -2,7 +2,7 @@ import { PORTIONS } from "../constants/ingredients-constants";
 
 // sandwich = {
 //     name: "",
-//     ingredients: [{ ingredientId, ingredientType, portion }],
+//     ingredients: [{ id, ingredientType, portion }],
 //     comment: "",
 // };
 

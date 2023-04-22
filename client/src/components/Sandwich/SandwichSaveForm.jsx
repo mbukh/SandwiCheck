@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { MAX_COMMENT_LENGTH, MAX_NAME_LENGTH } from "../../constants/sandwich-constants";
+
 import { useAuthGlobalContext } from "../../context";
 
 import useToast from "../../hooks/use-toast";
@@ -29,34 +31,31 @@ const SandwichSaveForm = ({
     const isSandwichReady = sandwich.ingredients.length > 1;
 
     const submitSandwichHandler = async (e) => {
-        // e.preventDefault();
+        e.preventDefault();
 
-        // const errorMessages = validateForm({
-        //     sandwichName: sandwich.name,
-        //     sandwichComment: sandwich.comment,
-        // });
-        // errorMessages.forEach((message) => showToast(message));
+        const errorMessages = validateForm({
+            sandwichName: sandwich.name,
+            sandwichComment: sandwich.comment,
+        });
 
-        // if (errorMessages.length > 0) {
-        //     return false;
-        // }
+        if (errorMessages.length > 0) {
+            return errorMessages.forEach((message) => showToast(message));
+        }
 
-        // let res;
-        // if (!sandwich.name) {
-        //     res = await saveSandwich(sandwich);
-        // } else {
-        //     res = await saveSandwich({ ...sandwich, name: defaultName });
-        // }
+        let readySandwich;
+        if (!sandwich.name) {
+            readySandwich = { ...sandwich, name: defaultName };
+        } else {
+            readySandwich = sandwich;
+        }
 
-        // if (!res.error) {
-        //     showToast("Error ocurred while saving the sandwich");
-        //     showToast(res.error.me);
-
-
-        //     return;
-        // }
-
-        // setTimeout(() => navigate(`/sandwich/${newSandwichId}`), 500);
+        const res = await saveSandwich(readySandwich);
+        if (res.error) {
+            showToast(res.error.message);
+            return;
+        } else {
+            setTimeout(() => navigate(`/sandwich/${res.data.id}`), 500);
+        }
     };
 
     const guestUserSubmitHandler = async (e) => {
@@ -109,7 +108,7 @@ const SandwichSaveForm = ({
                             type="text"
                             name="name"
                             placeholder={currentUser.id ? defaultName : "Sandwich name"}
-                            maxLength={15}
+                            maxLength={MAX_NAME_LENGTH}
                             onChange={changeSandwichNameHandler}
                             value={sandwich.name}
                             className="my-4"
@@ -124,6 +123,7 @@ const SandwichSaveForm = ({
                                     maxLength={100}
                                     onChange={changeSandwichCommentHandler}
                                     value={sandwich.comment}
+                                    maxLength={MAX_COMMENT_LENGTH}
                                 ></textarea>
                             ) : (
                                 <button

@@ -1,13 +1,16 @@
+import { MAX_USER_NAME_LENGTH } from "../constants/user-constants";
+import { MAX_NAME_LENGTH, MAX_COMMENT_LENGTH } from "../constants/sandwich-constants";
+
 const validateForm = ({
-    email = undefined,
-    name = undefined,
-    firstName = undefined,
-    lastName = undefined,
-    password = undefined,
-    confirmPassword = undefined,
-    role = undefined,
-    sandwichName = undefined,
-    sandwichComment = undefined,
+    email = null,
+    name = null,
+    firstName = null,
+    lastName = null,
+    password = null,
+    confirmPassword = null,
+    role = null,
+    sandwichName = null,
+    sandwichComment = null,
 }) => {
     const errorMessages = [];
 
@@ -20,8 +23,11 @@ const validateForm = ({
     name != null &&
         name.length < 3 &&
         errorMessages.push("Please provide a valid full name");
+    name != null &&
+        name.length > MAX_USER_NAME_LENGTH &&
+        errorMessages.push("Full name is too long");
 
-    firstName &&
+    lastName != null &&
         firstName.length < 3 &&
         errorMessages.push("Please provide a valid first name");
 
@@ -46,9 +52,12 @@ const validateForm = ({
         sandwichName.length > 0 &&
         sandwichName.length < 3 &&
         errorMessages.push("Sandwich name is too brief");
+    sandwichName != null &&
+        sandwichName.length > MAX_NAME_LENGTH &&
+        errorMessages.push("Sandwich name is too long");
 
     sandwichComment != null &&
-        sandwichComment.length > 100 &&
+        sandwichComment.length > MAX_COMMENT_LENGTH &&
         errorMessages.push("Comment is too long");
 
     return errorMessages;

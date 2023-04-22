@@ -57,7 +57,7 @@ export const fetchSandwichById = async (sandwichId) => {
 
 export const createSandwich = async (query) => {
     //name, ingredients, comment
-    return await handleResponse(async () => api.post("/", { params: query }));
+    return await handleResponse(async () => api.post("/", query));
 };
 
 export const addVoteToSandwich = async (sandwichId) => {

@@ -4,6 +4,7 @@ import {
     ROLES,
     MAX_SANDWICHES_PER_DAY,
     MAX_TETHERED_CHILDREN,
+    MAX_USER_NAME_LENGTH,
 } from "../constants/usersConstants.js";
 import { DAYS_OF_WEEK } from "../constants/daysOfWeek.js";
 
@@ -42,7 +43,10 @@ const userSchema = new Schema(
             type: String,
             trim: true,
             minlength: [3, "Name must be at least 3 characters long"],
-            maxlength: [50, "Name must be at most 50 characters long"],
+            maxlength: [
+                MAX_USER_NAME_LENGTH,
+                `Name must be at most ${MAX_USER_NAME_LENGTH} characters long`,
+            ],
             required: [true, "Name is required"],
         },
         email: {

@@ -43,10 +43,12 @@ const useSandwich = () => {
         const res = await fetchSandwichById(sandwichId);
         logResponse("🥪 Read sandwich", res);
 
-        sandwichDispatch({
-            type: "UPDATE_INGREDIENTS",
-            payload: res.date || EMPTY_SANDWICH,
-        });
+        if (res.success) {
+            sandwichDispatch({
+                type: "UPDATE_INGREDIENTS",
+                payload: res.date || EMPTY_SANDWICH,
+            });
+        }
     }, []);
 
     const clearSandwich = () => {

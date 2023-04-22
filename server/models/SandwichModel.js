@@ -6,7 +6,11 @@ import {
     isBreadType,
 } from "../constants/ingredientsConstants.js";
 
-import { MAX_INGREDIENTS_COUNT } from "../constants/sandwichConstants.js";
+import {
+    MAX_INGREDIENTS_COUNT,
+    MAX_NAME_LENGTH,
+    MAX_COMMENT_LENGTH,
+} from "../constants/sandwichConstants.js";
 
 import Ingredient from "./IngredientModel.js";
 
@@ -38,7 +42,10 @@ const sandwichSchema = new Schema(
             required: [true, "Sandwich name is required"],
             trim: true,
             minlength: [3, "Name field must be at least 3 characters long"],
-            maxlength: [15, "Name field must be at most 15 characters long"],
+            maxlength: [
+                MAX_NAME_LENGTH,
+                `Name field must be at most ${MAX_NAME_LENGTH} characters long`,
+            ],
         },
         authorName: {
             type: String,
@@ -80,7 +87,10 @@ const sandwichSchema = new Schema(
         comment: {
             type: String,
             trim: true,
-            maxlength: [100, "Keep your comment within 100 characters"],
+            maxlength: [
+                MAX_COMMENT_LENGTH,
+                `Keep your comment within ${MAX_COMMENT_LENGTH} characters`,
+            ],
         },
     },
     {

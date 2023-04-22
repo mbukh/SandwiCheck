@@ -7,3 +7,6 @@ export const EMPTY_SANDWICH = {
 };
 
 export const MAX_INGREDIENTS_COUNT = 10;
+
+export const MAX_NAME_LENGTH = 25;
+export const MAX_COMMENT_LENGTH = 75;

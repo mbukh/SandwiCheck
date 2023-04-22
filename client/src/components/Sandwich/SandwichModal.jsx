@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 
 import { useIngredientsGlobalContext } from "../../context";
 
-import { useSandwich } from "../../hooks";
+import useSandwich from "../../hooks/use-sandwich";
 
 import { SandwichCard, Modal } from "..";
 

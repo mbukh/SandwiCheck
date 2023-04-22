@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
-import { ROLES } from "../constants/user-constants";
+import { MAX_USER_NAME_LENGTH, ROLES } from "../constants/user-constants";
 
 import useForm from "../hooks/use-form";
 import useToast from "../hooks/use-toast";
@@ -18,7 +18,7 @@ const Signup = () => {
         confirmPassword,
         setConfirmPassword,
         signUpHandler,
-        role,
+        // role,
         setRole,
         parentId,
         errors,
@@ -61,7 +61,7 @@ const Signup = () => {
                         type="name"
                         placeholder="Full name"
                         value={name}
-                        maxLength="30"
+                        maxLength={MAX_USER_NAME_LENGTH}
                         onChange={(e) => setName(e.target.value)}
                         required
                     />
