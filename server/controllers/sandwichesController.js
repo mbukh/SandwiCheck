@@ -80,14 +80,14 @@ export const createSandwich = expressAsyncHandler(async (req, res, next) => {
     const { name, ingredients, comment } = req.body;
     const { id: userId, firstName } = req.user;
 
-    const newIngredients = ingredients.map(({ ingredientId, portion }) => ({
-        ingredientId,
+    const saveIngredients = ingredients.map(({ id, portion }) => ({
+        ingredientId: id,
         portion,
     }));
 
     const newSandwich = new Sandwich({
         name,
-        ingredients: newIngredients,
+        ingredients: saveIngredients,
         authorName: firstName,
         authorId: userId,
         comment: comment,
@@ -124,8 +124,8 @@ export const updateSandwich = expressAsyncHandler(async (req, res, next) => {
         return next(createHttpError.NotFound("Sandwich not found"));
     }
 
-    const newIngredients = ingredients.map(({ ingredientId, portion }) => ({
-        ingredientId,
+    const newIngredients = ingredients.map(({ id, portion }) => ({
+        ingredientId: id,
         portion,
     }));
 
