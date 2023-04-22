@@ -9,10 +9,6 @@ import { Loading, SandwichCard } from "..";
 
 import useGallery from "../../hooks/use-gallery";
 
-import useSandwich from "../../hooks/use-sandwich";
-
-// import { TYPES } from "../../constants/ingredients-constants";
-
 import { capitalizeFirst } from "../../utils";
 
 const SandwichGallery = ({ children, galleryType = "" }) => {

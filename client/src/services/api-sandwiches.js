@@ -2,9 +2,9 @@ import axios from "axios";
 
 import { SANDWICH_CACHE_TIME_OUT_DAYS } from "../constants/sandwich-constants";
 
-import { log, logResponse } from "../utils/log";
+import { log } from "../utils/log";
 
-import { trimObjectEmptyProperties, timeDifference } from "../utils/index";
+import { timeDifference } from "../utils/index";
 
 import { handleResponse } from "../utils/api-utils";
 

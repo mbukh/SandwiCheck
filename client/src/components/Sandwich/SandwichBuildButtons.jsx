@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
-
+import portionImg from "../../assets/images/icons/portion.svg";
 // import confirmImg from "../../assets/images/icons/confirm.svg";
 import arrowUpImg from "../../assets/images/icons/arrow-up.svg";
 import arrowDownImg from "../../assets/images/icons/arrow-down.svg";
 import binImg from "../../assets/images/icons/bin.svg";
 
-import { PORTIONS, isBreadType } from "../../constants/ingredients-constants";
+import { PORTIONS, DEFAULT_PORTION, isBreadType } from "../../constants/ingredients-constants";
 import { MAX_INGREDIENTS_COUNT } from "../../constants/sandwich-constants";
 
 import {
@@ -21,7 +20,6 @@ const SandwichBuildButtons = ({
     currentIngredient,
     currentType,
 }) => {
-    const [ingredientPlace, setIngredientPlace] = useState({});
     const { showToast, toastComponents } = useToast();
 
     const isSandwichEmpty = !sandwich.ingredients.length;
@@ -30,14 +28,7 @@ const SandwichBuildButtons = ({
     const isCurrentlyBread = isBreadType(currentIngredient.type);
     const isMaxIngredientsReached =
         sandwich.ingredients.length + 1 > MAX_INGREDIENTS_COUNT;
-
-    useEffect(() => {
-        setIngredientPlace(getIngredientPlaceInSandwich(currentIngredient, sandwich));
-
-        return () => {
-            setIngredientPlace({});
-        };
-    }, [currentIngredient, sandwich]);
+    const ingredientPlace = getIngredientPlaceInSandwich(currentIngredient, sandwich);
 
     const confirmHandler = (e) => {
         if (isMaxIngredientsReached) {
@@ -53,7 +44,7 @@ const SandwichBuildButtons = ({
             sandwichDispatch({
                 type: "UPDATE_INGREDIENTS",
                 payload: [
-                    { ...currentIngredient, portion: PORTIONS.defaultPortion },
+                    { ...currentIngredient, portion: DEFAULT_PORTION },
                     ...sandwich.ingredients.slice(1),
                 ],
             });
@@ -81,12 +72,30 @@ const SandwichBuildButtons = ({
         sandwichDispatch({ type: "MOVE_DOWN_INGREDIENT", payload: currentIngredient.id });
     };
 
+    const changePortionHandler = (e) => {
+        sandwichDispatch({ type: "CYCLE_PORTION", payload: currentIngredient.id });
+    };
+
     if (!currentType) {
         return;
     }
 
     return (
         <div className="builder__spacer-buttons inline-flex justify-center h-8 px-2 bg-white text-magenta text-xs rounded-lg box-shadow-5">
+            {!isCurrentlyBread && !isEmptyIngredient && (
+                <>
+                    <button
+                        className={`btn-wrapper px-2 ${
+                            ingredientPlace.isPresent ? "fill-magenta" : "fill-cyan2"
+                        }`}
+                        disabled={!ingredientPlace.isPresent}
+                        onClick={changePortionHandler}
+                    >
+                        <img src={portionImg} alt="Up icon" width="54" height="54" />
+                    </button>
+                    <div className="mx-1"></div>
+                </>
+            )}
             <button
                 className={`btn-wrapper px-2 ${
                     ingredientPlace.isPresent || (isEmptyIngredient && !isTypeInSandwich)

@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 
-import { useNavigate } from "react-router-dom";
-
 import { TYPES } from "../../constants/ingredients-constants";
 
 import { checkIngredientTypeInSandwich } from "../../utils/sandwich-utils";

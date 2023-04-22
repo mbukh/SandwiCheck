@@ -14,7 +14,7 @@ const useForm = () => {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [role, setRole] = useState("");
-    const [files, setFiles] = useState({});
+    // const [files, setFiles] = useState({});
 
     const [errors, setErrors] = useState([]);
 
@@ -67,9 +67,9 @@ const useForm = () => {
     };
 
     const handleFileChange = (event) => {
-        setFiles((prev) => {
-            return { ...prev, [event.target.name]: event.target.files[0] };
-        });
+        // setFiles((prev) => {
+        //     return { ...prev, [event.target.name]: event.target.files[0] };
+        // });
     };
 
     return {

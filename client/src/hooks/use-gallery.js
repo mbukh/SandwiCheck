@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useCallback } from "react";
 
-import { log, logResponse } from "../utils/log";
+import { logResponse } from "../utils/log";
 
 import * as apiSandwiches from "../services/api-sandwiches";
 

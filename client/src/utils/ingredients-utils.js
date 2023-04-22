@@ -1,11 +1,17 @@
-import { TYPES, EXTENSION, SHAPES, PORTIONS } from "../constants/ingredients-constants";
+import {
+    TYPES,
+    EXTENSION,
+    SHAPES,
+    PORTIONS,
+    DEFAULT_PORTION,
+} from "../constants/ingredients-constants";
 
 export const generateIngredientImageSrc = ({
     ingredient,
     sandwich,
     imageType = "swiper",
 }) => {
-    const { imageBase, type, portion = PORTIONS.defaultPortion } = ingredient;
+    const { imageBase, type, portion = DEFAULT_PORTION } = ingredient;
 
     const path = `${process.env.REACT_APP_API_SERVER}/uploads/ingredients/`;
 

@@ -1,4 +1,4 @@
-import { PORTIONS } from "../constants/ingredients-constants";
+import { PORTIONS,DEFAULT_PORTION } from "../constants/ingredients-constants";
 
 // sandwich = {
 //     name: "",
@@ -9,7 +9,13 @@ import { PORTIONS } from "../constants/ingredients-constants";
 const sandwichReducer = (state, action) => {
     switch (action.type) {
         case "ADD_INGREDIENT":
-            return { ...state, ingredients: [...state.ingredients, action.payload] };
+            return {
+                ...state,
+                ingredients: [
+                    ...state.ingredients,
+                    { portion: DEFAULT_PORTION, ...action.payload },
+                ],
+            };
         case "REMOVE_INGREDIENT":
             return {
                 ...state,
@@ -67,6 +73,18 @@ const sandwichReducer = (state, action) => {
                         : ingredient
                 ),
             };
+        case "CYCLE_PORTION":
+            return {
+                ...state,
+                ingredients: state.ingredients.map((ingredient) =>
+                    ingredient.id === action.payload
+                        ? {
+                              ...ingredient,
+                              portion: getNextPortion(ingredient.portion),
+                          }
+                        : ingredient
+                ),
+            };
         case "DECREASE_PORTION":
             return {
                 ...state,
@@ -96,3 +114,18 @@ const sandwichReducer = (state, action) => {
 };
 
 export default sandwichReducer;
+
+// UTILS
+
+function getNextPortion(currentPortion) {
+    const portionValues = Object.values(PORTIONS);
+    const currentIndex = portionValues.indexOf(currentPortion);
+
+    // If the current portion is the last in the array, return the first portion
+    if (currentIndex === portionValues.length - 1) {
+        return portionValues[0];
+    }
+
+    // Otherwise, return the next portion in the array
+    return portionValues[currentIndex + 1];
+}

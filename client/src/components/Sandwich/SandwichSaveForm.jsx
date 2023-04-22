@@ -120,10 +120,9 @@ const SandwichSaveForm = ({
                                     type="text"
                                     name="comment"
                                     placeholder="Comment"
-                                    maxLength={100}
+                                    maxLength={MAX_COMMENT_LENGTH}
                                     onChange={changeSandwichCommentHandler}
                                     value={sandwich.comment}
-                                    maxLength={MAX_COMMENT_LENGTH}
                                 ></textarea>
                             ) : (
                                 <button

@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 
 import * as apiAuth from "../services/api-auth";
 
-import { log, logResponse } from "../utils/log";
+import { logResponse } from "../utils/log";
 
 const useUser = () => {
     const [currentUser, setCurrentUser] = useState({});
