@@ -84,6 +84,8 @@ const sandwichReducer = (state, action) => {
             };
         case "UPDATE_INGREDIENTS":
             return { ...state, ingredients: action.payload };
+        case "UPDATE_SANDWICH":
+            return action.payload;
         case "SET_NAME":
             return { ...state, name: action.payload };
         case "SET_COMMENT":

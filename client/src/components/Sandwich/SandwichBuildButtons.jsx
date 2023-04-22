@@ -21,7 +21,6 @@ const SandwichBuildButtons = ({
     currentIngredient,
     currentType,
 }) => {
-    const [error, setError] = useState("");
     const [ingredientPlace, setIngredientPlace] = useState({});
     const { showToast, toastComponents } = useToast();
 
@@ -35,15 +34,17 @@ const SandwichBuildButtons = ({
         setIngredientPlace(getIngredientPlaceInSandwich(currentIngredient, sandwich));
 
         return () => {
-            setError("");
             setIngredientPlace({});
         };
     }, [currentIngredient, sandwich]);
 
     const confirmHandler = (e) => {
         if (isMaxIngredientsReached) {
-            setError(`Maximum of ${MAX_INGREDIENTS_COUNT} ingredients reached`);
             showToast(`Maximum of ${MAX_INGREDIENTS_COUNT} ingredients reached`);
+            return;
+        }
+        if (ingredientPlace.isPresent) {
+            showToast(`The ingredient has been already added`);
             return;
         }
 
@@ -55,7 +56,7 @@ const SandwichBuildButtons = ({
                     ...sandwich.ingredients.slice(1),
                 ],
             });
-        } else if (!ingredientPlace.isPresent) {
+        } else {
             sandwichDispatch({
                 type: "ADD_INGREDIENT",
                 payload: currentIngredient,
@@ -64,12 +65,10 @@ const SandwichBuildButtons = ({
     };
 
     const removeHandler = (e) => {
-        setError("");
         sandwichDispatch({ type: "REMOVE_INGREDIENT", payload: currentIngredient.id });
     };
 
     const clearOfCurrentTypeHandler = (e) => {
-        setError("");
         sandwichDispatch({ type: "REMOVE_INGREDIENTS_OF_TYPE", payload: currentType });
     };
 
@@ -135,8 +134,6 @@ const SandwichBuildButtons = ({
                     </button>
                 </>
             )}
-            <br />
-            {error}
             {toastComponents}
         </div>
     );

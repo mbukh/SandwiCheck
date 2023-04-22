@@ -24,9 +24,14 @@ const MobileMenu = ({ isMobileMenuOpen, toggleMobileMenuHandler, authHandler, us
                         </NavLink>
                     </>
                 ) : (
-                    <NavLink id="login" onClick={authHandler} to="/in">
-                        Log in
-                    </NavLink>
+                    <>
+                        <NavLink id="login" onClick={authHandler} to="/in">
+                            Log in
+                        </NavLink>
+                        <NavLink id="signup" onClick={authHandler} to="/in">
+                            Signup
+                        </NavLink>
+                    </>
                 )}
             </nav>
         </div>

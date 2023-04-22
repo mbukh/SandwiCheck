@@ -4,13 +4,14 @@ import { Link, NavLink, useParams } from "react-router-dom";
 
 import { useAuthGlobalContext } from "../../context";
 
-import { LoginModal } from "..";
+import { LoginModal, SignupModal } from "..";
 
 import { HamburgerMenu, MobileMenu } from ".";
 
 const Header = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isOpenLoginModal, setIsOpenLoginModal] = useState(false);
+    const [isOpenSignupModal, setIsOpenSignupModal] = useState(false);
     const { logOut, currentUser: user } = useAuthGlobalContext();
     const { sandwichId } = useParams();
 
@@ -22,6 +23,7 @@ const Header = () => {
         e.preventDefault();
         e.target.id === "logout" && logOut();
         e.target.id === "login" && setIsOpenLoginModal(true);
+        e.target.id === "signup" && setIsOpenSignupModal(true);
     };
 
     return (
@@ -96,15 +98,34 @@ const Header = () => {
                                 </>
                             ) : (
                                 <>
-                                    <NavLink id="login" onClick={authHandler} to="/login">
+                                    <NavLink
+                                        id="login"
+                                        onClick={authHandler}
+                                        to="/login"
+                                        className="mr-6"
+                                    >
                                         Log in
+                                        {isOpenLoginModal && (
+                                            <LoginModal
+                                                setIsOpenLoginModal={setIsOpenLoginModal}
+                                                closeLink="stay"
+                                            />
+                                        )}
                                     </NavLink>
-                                    {isOpenLoginModal && (
-                                        <LoginModal
-                                            setIsOpenLoginModal={setIsOpenLoginModal}
-                                            closeLink="stay"
-                                        />
-                                    )}
+                                    <NavLink
+                                        id="signup"
+                                        onClick={authHandler}
+                                        to="/signup"
+                                        className="font-bold"
+                                    >
+                                        Signup
+                                        {isOpenSignupModal && (
+                                            <SignupModal
+                                                setIsOpenLoginModal={setIsOpenSignupModal}
+                                                closeLink="stay"
+                                            />
+                                        )}
+                                    </NavLink>
                                 </>
                             )}
                         </div>

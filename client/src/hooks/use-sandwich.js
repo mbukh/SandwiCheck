@@ -27,17 +27,16 @@ const useSandwich = () => {
 
     useEffect(() => {
         const sandwichFromCache = readSandwichFromCache();
+
         log("Sandwich retrieved from cache", sandwichFromCache);
 
         if (sandwichFromCache) {
-            sandwichDispatch({ type: "UPDATE_INGREDIENTS", payload: sandwichFromCache });
+            sandwichDispatch({ type: "UPDATE_SANDWICH", payload: sandwichFromCache });
         }
     }, [isSavingSandwich]);
 
     useEffect(() => {
-        if (isSavingSandwich) {
-            updateSandwichInCache(sandwich);
-        }
+        updateSandwichInCache(sandwich);
     }, [isSavingSandwich, sandwich]);
 
     const getSandwich = useCallback(async (sandwichId) => {
@@ -49,21 +48,6 @@ const useSandwich = () => {
             payload: res.date || EMPTY_SANDWICH,
         });
     }, []);
-
-    // const updateSandwich = async (newSandwichData) => {
-    //     timeout.current && clearTimeout(timeout.current);
-    //     timeout.current = setTimeout(() => {
-    //         updateSandwichInCache({
-    //             ...sandwich,
-    //             ...newSandwichData,
-    //         });
-    //     }, 200);
-
-    //     sandwichDispatch((prev) => ({
-    //         ...prev,
-    //         ...newSandwichData,
-    //     }));
-    // };
 
     const clearSandwich = () => {
         sandwichDispatch({ type: "UPDATE_INGREDIENTS", payload: EMPTY_SANDWICH });
@@ -103,7 +87,6 @@ const useSandwich = () => {
         setIsSavingSandwich,
         gallerySandwiches,
         setGallerySandwiches,
-        updateSandwichInCache,
         getSandwich,
     };
 };

@@ -14,7 +14,7 @@ const SwiperSlideElementNone = ({ currentType, isActive, sandwich }) => {
                 {isTypeInSandwich
                     ? isBreadType(currentType)
                         ? `Choose your ${TYPES.bread}`
-                        : `Remove ${currentType} from sandwich`
+                        : `Remove ${currentType}`
                     : `No ${currentType}`}
             </div>
         </div>

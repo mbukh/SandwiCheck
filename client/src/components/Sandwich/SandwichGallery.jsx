@@ -20,7 +20,6 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
     const { currentUser, isCurrentUserReady } = useAuthGlobalContext();
     const { ingredients, areIngredientsReady } = useIngredientsGlobalContext();
     const { gallerySandwiches, setGallerySandwiches, fetchSandwiches } = useGallery();
-    const { updateSandwichInCache } = useSandwich();
     const { fetchUserSandwiches } = useGallery();
 
     const { childId } = useParams();
@@ -113,7 +112,6 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
                                         ? ""
                                         : ""
                                 }
-                                updateSandwichInCache={updateSandwichInCache}
                             />
                         ))
                     ) : (
