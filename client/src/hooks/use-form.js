@@ -1,8 +1,7 @@
 import { useState } from "react";
-
 import { useNavigate, useParams } from "react-router-dom";
 
-import { useAuthGlobalContext } from "../context/";
+import useAuthGlobalContext from "../context/AuthContext";
 
 import { readSandwichFromCache } from "../services/api-sandwiches";
 

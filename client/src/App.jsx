@@ -5,15 +5,16 @@ import "./styles/blueprint.css";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-import { Family, Layout, Error404, Cart } from "./pages";
+import Family from "./pages/Family";
+import Layout from "./pages/Layout";
+import Error404 from "./pages/Error404";
+import Cart from "./pages/Cart";
 
-import {
-    SandwichEditor,
-    SandwichModal,
-    SandwichGallery,
-    LoginModal,
-    SignupModal,
-} from "./components";
+import SandwichEditor from "./components/Sandwich/Builder/SandwichEditor";
+import SandwichModal from "./components/Sandwich/SandwichModal";
+import SandwichGallery from "./components/Sandwich/SandwichGallery";
+import LoginModal from "./components/LoginModal";
+import SignupModal from "./components/SignupModal";
 
 const router = createBrowserRouter([
     {
@@ -76,18 +77,18 @@ const router = createBrowserRouter([
                 path: "/family",
                 element: <Family />,
             },
-            // {
-            //     path: "/family/:childId",
-            //     element: <SandwichGallery />,
-            // },
-            // {
-            //     path: "/family/:childId/sandwich/:sandwichId",
-            //     element: <SandwichModal />,
-            // },
-            // {
-            //     path: "/cart",
-            //     element: <Cart />,
-            // },
+            {
+                path: "/family/:childId",
+                element: <SandwichGallery />,
+            },
+            {
+                path: "/family/:childId/sandwich/:sandwichId",
+                element: <SandwichModal />,
+            },
+            {
+                path: "/cart",
+                element: <Cart />,
+            },
         ],
     },
     {

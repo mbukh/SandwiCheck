@@ -3,13 +3,14 @@ import { useNavigate } from "react-router-dom";
 
 import { MAX_COMMENT_LENGTH, MAX_NAME_LENGTH } from "../../constants/sandwich-constants";
 
-import { useAuthGlobalContext } from "../../context";
+import useAuthGlobalContext from "../../context/AuthContext";
 
 import useToast from "../../hooks/use-toast";
 
 import validateForm from "../../utils/validate-utils";
 
-import { Loading, SignupModal } from "..";
+import Loading from "../Loading";
+import SignupModal from "../SignupModal";
 
 const SandwichSaveForm = ({
     sandwich,

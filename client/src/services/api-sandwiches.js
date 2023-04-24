@@ -4,7 +4,7 @@ import { SANDWICH_CACHE_TIME_OUT_DAYS } from "../constants/sandwich-constants";
 
 import { log } from "../utils/log";
 
-import { timeDifference } from "../utils/index";
+import { timeDifference } from "../utils/utils";
 
 import { handleResponse } from "../utils/api-utils";
 

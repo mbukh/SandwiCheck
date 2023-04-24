@@ -4,18 +4,18 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { A11y, Keyboard } from "swiper";
 
 import "swiper/css";
-import "../../styles/Swiper.css";
+import "../../../styles/Swiper.css";
 
-import { isBreadType } from "../../constants/ingredients-constants";
-import { breakpoints } from "../../constants/swiper-constants";
+import { isBreadType } from "../../../constants/ingredients-constants";
+import { breakpoints } from "../../../constants/swiper-constants";
 
-import { getTopIngredientOfCurrentType } from "../../utils/sandwich-utils";
+import { getTopIngredientOfCurrentType } from "../../../utils/sandwich-utils";
 
-import SwiperSlideElementNone from "./SwiperSlideElementNone";
-import SwiperNavigationButton from "./SwiperNavigationButton";
-import SwipeSlideElement from "./SwipeSlideElement";
+import SwiperSlideElementNone from "../SwiperSlideElementNone";
+import SwiperNavigationButton from "../SwiperNavigationButton";
+import SwipeSlideElement from "../SwipeSlideElement";
 
-import { useIngredientsGlobalContext } from "../../context";
+import useIngredientsGlobalContext from "../../../context/IngredientsContext";
 
 const IngredientsSwiper = ({
     sandwich,

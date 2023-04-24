@@ -1,18 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 
-import { TYPES } from "../../constants/ingredients-constants";
+import { TYPES } from "../../../constants/ingredients-constants";
 
-import { checkIngredientTypeInSandwich } from "../../utils/sandwich-utils";
+import { checkIngredientTypeInSandwich } from "../../../utils/sandwich-utils";
 
-import { useIngredientsGlobalContext, useAuthGlobalContext } from "../../context";
+import useIngredientsGlobalContext from "../../../context/IngredientsContext";
+import useAuthGlobalContext from "../../../context/AuthContext";
 
-import { useSandwich } from "../../hooks";
+import useSandwich from "../../../hooks/use-sandwich";
 
-import { IngredientsSwiper, Loading, SandwichBuildImage } from "..";
+import IngredientsSwiper from "../../Sandwich/Builder/IngredientsSwiper";
+import Loading from "../../Loading";
+import SandwichBuildImage from "../../Sandwich//Builder/SandwichBuildImage";
 
 import SandwichBuildButtons from "./SandwichBuildButtons";
 import IngredientsTypesSelector from "./IngredientsTypesSelector";
-import SandwichSaveForm from "./SandwichSaveForm";
+import SandwichSaveForm from "../SandwichSaveForm";
 
 const SandwichEditor = () => {
     const [currentIngredient, setCurrentIngredient] = useState({});

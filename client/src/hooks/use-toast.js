@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 
-import { Portal } from "../components";
+import Portal from "../components/Helper/Portal";
 
 import Toast from "../components/Toast/Toast";
 

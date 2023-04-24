@@ -1,5 +1,5 @@
-import { isBreadType } from "../../constants/ingredients-constants";
-import { checkIngredientTypeInSandwich } from "../../utils/sandwich-utils";
+import { isBreadType } from "../../../constants/ingredients-constants";
+import { checkIngredientTypeInSandwich } from "../../../utils/sandwich-utils";
 
 const IngredientsTypesSelector = ({
     ingredients,

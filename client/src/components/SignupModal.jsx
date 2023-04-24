@@ -1,6 +1,5 @@
-import { Modal } from ".";
-
-import { Signup } from ".";
+import Modal from "./Helper/Modal";
+import Signup from "./Signup";
 
 const SignupModal = ({ setIsOpenLoginModal, closeLink = "" }) => {
     return (

@@ -1,8 +1,9 @@
 import { Link, Navigate } from "react-router-dom";
 
-import { useAuthGlobalContext } from "../context";
+import useAuthGlobalContext from "../context/AuthContext";
 
-import { Loading, UserCard } from "../components";
+import Loading from "../components/Loading";
+import UserCard from "../components/UserCard";
 
 const Family = () => {
     const { currentUser, isCurrentUserReady } = useAuthGlobalContext();

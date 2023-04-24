@@ -6,7 +6,7 @@ import { INGREDIENTS_CACHE_TIME_OUT_MINS } from "../constants/ingredients-consta
 
 import { handleResponse } from "../utils/api-utils";
 
-import { timeDifference } from "../utils";
+import { timeDifference } from "../utils/utils";
 
 const api = axios.create({
     baseURL: `${process.env.REACT_APP_API_SERVER}/api/v1/ingredients`,

@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-
 import { useParams } from "react-router-dom";
 
-import { useIngredientsGlobalContext } from "../../context";
+import useIngredientsGlobalContext from "../../context/IngredientsContext";
 
 import useSandwich from "../../hooks/use-sandwich";
 
-import { SandwichCard, Modal } from "..";
+import SandwichCard from "../Sandwich/SandwichCard";
+import Modal from "../Helper/Modal";
 
 const SandwichModal = ({ closeLink = "" }) => {
     const [isModalLoading, setIsModalLoading] = useState(true);

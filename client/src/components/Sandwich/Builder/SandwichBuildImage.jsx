@@ -1,4 +1,4 @@
-import { generateIngredientImageSrc } from "../../utils/ingredients-utils";
+import { generateIngredientImageSrc } from "../../../utils/ingredients-utils";
 
 const SandwichBuildImage = ({ sandwich }) => {
     return (

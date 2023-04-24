@@ -1,22 +1,22 @@
-import portionImg from "../../assets/images/icons/portion.svg";
-// import confirmImg from "../../assets/images/icons/confirm.svg";
-import arrowUpImg from "../../assets/images/icons/arrow-up.svg";
-import arrowDownImg from "../../assets/images/icons/arrow-down.svg";
-import binImg from "../../assets/images/icons/bin.svg";
+import portionImg from "../../../assets/images/icons/portion.svg";
+// import confirmImg from "../../../assets/images/icons/confirm.svg";
+import arrowUpImg from "../../../assets/images/icons/arrow-up.svg";
+import arrowDownImg from "../../../assets/images/icons/arrow-down.svg";
+import binImg from "../../../assets/images/icons/bin.svg";
 
 import {
     PORTIONS,
     DEFAULT_PORTION,
     isBreadType,
-} from "../../constants/ingredients-constants";
-import { MAX_INGREDIENTS_COUNT } from "../../constants/sandwich-constants";
+} from "../../../constants/ingredients-constants";
+import { MAX_INGREDIENTS_COUNT } from "../../../constants/sandwich-constants";
 
 import {
     checkIngredientTypeInSandwich,
     getIngredientPlaceInSandwich,
-} from "../../utils/sandwich-utils";
+} from "../../../utils/sandwich-utils";
 
-import useToast from "../../hooks/use-toast";
+import useToast from "../../../hooks/use-toast";
 
 const SandwichBuildButtons = ({
     sandwich,
@@ -92,6 +92,21 @@ const SandwichBuildButtons = ({
                         className={`btn-wrapper px-2 ${
                             ingredientPlace.isPresent ? "fill-magenta" : "fill-cyan2"
                         }`}
+                        style={
+                            ingredientPlace.isPresent
+                                ? {
+                                      opacity:
+                                          0.3 +
+                                          Object.values(PORTIONS).indexOf(
+                                              sandwich.ingredients.find(
+                                                  (ingredient) =>
+                                                      ingredient.id ===
+                                                      currentIngredient.id
+                                              ).portion
+                                          ),
+                                  }
+                                : {}
+                        }
                         disabled={!ingredientPlace.isPresent}
                         onClick={changePortionHandler}
                     >
