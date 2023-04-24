@@ -3,8 +3,8 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 
 import EmptyGallery from "./EmptyGallery";
 
-import useAuthGlobalContext from "../../context/AuthContext";
-import useIngredientsGlobalContext from "../../context/IngredientsContext";
+import { useAuthGlobalContext } from "../../context/AuthContext";
+import { useIngredientsGlobalContext } from "../../context/IngredientsContext";
 
 import Loading from "../Loading";
 import SandwichCard from "../Sandwich/SandwichCard";

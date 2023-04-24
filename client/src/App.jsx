@@ -10,7 +10,7 @@ import Layout from "./pages/Layout";
 import Error404 from "./pages/Error404";
 import Cart from "./pages/Cart";
 
-import SandwichEditor from "./components/Sandwich/Builder/SandwichEditor";
+import SandwichBuilder from "./components/Sandwich/Builder/SandwichBuilder";
 import SandwichModal from "./components/Sandwich/SandwichModal";
 import SandwichGallery from "./components/Sandwich/SandwichGallery";
 import LoginModal from "./components/LoginModal";
@@ -63,7 +63,7 @@ const router = createBrowserRouter([
             },
             {
                 path: "/create",
-                element: <SandwichEditor />,
+                element: <SandwichBuilder />,
             },
             {
                 path: "/menu",

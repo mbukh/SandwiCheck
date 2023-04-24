@@ -4,20 +4,20 @@ import { TYPES } from "../../../constants/ingredients-constants";
 
 import { checkIngredientTypeInSandwich } from "../../../utils/sandwich-utils";
 
-import useIngredientsGlobalContext from "../../../context/IngredientsContext";
-import useAuthGlobalContext from "../../../context/AuthContext";
+import { useIngredientsGlobalContext } from "../../../context/IngredientsContext";
+import { useAuthGlobalContext } from "../../../context/AuthContext";
 
 import useSandwich from "../../../hooks/use-sandwich";
 
-import IngredientsSwiper from "../../Sandwich/Builder/IngredientsSwiper";
+import IngredientsSwiper from "./IngredientsSwiper";
 import Loading from "../../Loading";
-import SandwichBuildImage from "../../Sandwich//Builder/SandwichBuildImage";
+import SandwichBuildImage from "./SandwichBuildImage";
 
 import SandwichBuildButtons from "./SandwichBuildButtons";
 import IngredientsTypesSelector from "./IngredientsTypesSelector";
 import SandwichSaveForm from "../SandwichSaveForm";
 
-const SandwichEditor = () => {
+const SandwichBuilder = () => {
     const [currentIngredient, setCurrentIngredient] = useState({});
     const swiperContainerRef = useRef(null);
     const { ingredients, areIngredientsReady } = useIngredientsGlobalContext();
@@ -117,4 +117,4 @@ const SandwichEditor = () => {
     );
 };
 
-export default SandwichEditor;
+export default SandwichBuilder;

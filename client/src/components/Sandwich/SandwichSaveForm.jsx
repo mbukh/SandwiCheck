@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { MAX_COMMENT_LENGTH, MAX_NAME_LENGTH } from "../../constants/sandwich-constants";
 
-import useAuthGlobalContext from "../../context/AuthContext";
+import { useAuthGlobalContext } from "../../context/AuthContext";
 
 import useToast from "../../hooks/use-toast";
 

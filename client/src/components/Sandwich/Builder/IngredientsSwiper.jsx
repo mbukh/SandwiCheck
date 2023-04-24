@@ -15,7 +15,7 @@ import SwiperSlideElementNone from "../SwiperSlideElementNone";
 import SwiperNavigationButton from "../SwiperNavigationButton";
 import SwipeSlideElement from "../SwipeSlideElement";
 
-import useIngredientsGlobalContext from "../../../context/IngredientsContext";
+import { useIngredientsGlobalContext } from "../../../context/IngredientsContext";
 
 const IngredientsSwiper = ({
     sandwich,
