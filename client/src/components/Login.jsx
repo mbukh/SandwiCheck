@@ -44,6 +44,7 @@ const Login = () => {
                         className="w-full appearance-none focus:outline-none rounded-lg box-shadow-10 bg-white text-magenta text-base xl:text-xl py-2 px-4 md:px-6 xl:py-3 xl:px-8 xl:box-shadow-20"
                         name="email"
                         type="email"
+                        autoComplete="email"
                         placeholder="E-mail address"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -56,6 +57,7 @@ const Login = () => {
                         className="w-full appearance-none focus:outline-none rounded-lg box-shadow-10 bg-white text-magenta text-base xl:text-xl py-2 px-4 md:px-6 xl:py-3 xl:px-8 xl:box-shadow-20"
                         name="password"
                         type="password"
+                        autoComplete="current-password"
                         placeholder="Password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
@@ -73,7 +75,7 @@ const Login = () => {
                             value="1"
                             required
                         />
-                        <label className="custom-control-label" for="termsCheckbox">
+                        <label className="custom-control-label" htmlFor="termsCheckbox">
                             <span>
                                 I agree to be added
                                 <span className="text-magenta"> as a dependent</span> in

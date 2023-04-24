@@ -6,21 +6,19 @@ import { A11y, Keyboard } from "swiper";
 import "swiper/css";
 import "../../../styles/Swiper.css";
 
+import { useIngredientsGlobalContext } from "../../../context/IngredientsContext";
+
 import { isBreadType } from "../../../constants/ingredients-constants";
 import { breakpoints } from "../../../constants/swiper-constants";
-
 import { getTopIngredientOfCurrentType } from "../../../utils/sandwich-utils";
 
 import SwiperSlideElementNone from "../SwiperSlideElementNone";
 import SwiperNavigationButton from "../SwiperNavigationButton";
-import SwipeSlideElement from "../SwipeSlideElement";
-
-import { useIngredientsGlobalContext } from "../../../context/IngredientsContext";
+import SwipeSlideElement from "./SwipeSlideElement";
 
 const IngredientsSwiper = ({
     sandwich,
     currentType,
-    sandwichDispatch,
     currentIngredient,
     setCurrentIngredient,
 }) => {

@@ -27,19 +27,17 @@ const useSandwich = () => {
 
     useEffect(() => {
         const sandwichFromCache = readSandwichFromCache();
-
         log("Sandwich retrieved from cache", sandwichFromCache);
 
-        if (sandwichFromCache && sandwichFromCache.id) {
-            sandwichDispatch({ type: "UPDATE_SANDWICH", payload: sandwichFromCache });
+        if (!sandwichFromCache) {
+            return;
         }
+        sandwichDispatch({ type: "UPDATE_SANDWICH", payload: sandwichFromCache });
     }, [isSavingSandwich]);
 
     useEffect(() => {
-        if (isSavingSandwich) {
-            updateSandwichInCache(sandwich);
-        }
-    }, [isSavingSandwich, sandwich]);
+        updateSandwichInCache(sandwich);
+    }, [sandwich]);
 
     const getSandwich = useCallback(async (sandwichId) => {
         const res = await fetchSandwichById(sandwichId);

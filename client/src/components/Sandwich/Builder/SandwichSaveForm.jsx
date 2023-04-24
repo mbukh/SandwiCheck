@@ -1,16 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { MAX_COMMENT_LENGTH, MAX_NAME_LENGTH } from "../../constants/sandwich-constants";
+import {
+    MAX_COMMENT_LENGTH,
+    MAX_NAME_LENGTH,
+} from "../../../constants/sandwich-constants";
+import validateForm from "../../../utils/validate-utils";
 
-import { useAuthGlobalContext } from "../../context/AuthContext";
+import { useAuthGlobalContext } from "../../../context/AuthContext";
+import useToast from "../../../hooks/use-toast";
 
-import useToast from "../../hooks/use-toast";
-
-import validateForm from "../../utils/validate-utils";
-
-import Loading from "../Loading";
-import SignupModal from "../SignupModal";
+import Loading from "../../Loading";
+import SignupModal from "../../SignupModal";
 
 const SandwichSaveForm = ({
     sandwich,
@@ -23,12 +24,11 @@ const SandwichSaveForm = ({
 }) => {
     const [isCommentOpen, setIsCommentOpen] = useState(false);
     const [isOpenLoginModal, setIsOpenLoginModal] = useState(false);
-    const { currentUser } = useAuthGlobalContext();
     const navigate = useNavigate();
+    const { currentUser } = useAuthGlobalContext();
     const { showToast, toastComponents } = useToast();
 
     const defaultName = currentUser.firstName + "'s Sandwich";
-
     const isSandwichReady = sandwich.ingredients.length > 1;
 
     const submitSandwichHandler = async (e) => {
@@ -43,17 +43,13 @@ const SandwichSaveForm = ({
             return errorMessages.forEach((message) => showToast(message));
         }
 
-        let readySandwich;
-        if (!sandwich.name) {
-            readySandwich = { ...sandwich, name: defaultName };
-        } else {
-            readySandwich = sandwich;
-        }
+        let readySandwich = !sandwich.name
+            ? { ...sandwich, name: defaultName }
+            : sandwich;
 
         const res = await saveSandwich(readySandwich);
         if (res.error) {
             showToast(res.error.message);
-            return;
         } else {
             setTimeout(() => navigate(`/sandwich/${res.data.id}`), 500);
         }
@@ -61,7 +57,6 @@ const SandwichSaveForm = ({
 
     const guestUserSubmitHandler = async (e) => {
         e.preventDefault();
-
         setIsOpenLoginModal(true);
     };
 

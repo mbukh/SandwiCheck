@@ -1,6 +1,6 @@
 import { generateIngredientImageSrc } from "../../../utils/ingredients-utils";
 
-const SandwichBuildImage = ({ sandwich }) => {
+const SandwichBuilderImage = ({ sandwich }) => {
     return (
         <div className="sandwich-images">
             {sandwich.ingredients.map((ingredient, index) => (
@@ -20,4 +20,4 @@ const SandwichBuildImage = ({ sandwich }) => {
     );
 };
 
-export default SandwichBuildImage;
+export default SandwichBuilderImage;

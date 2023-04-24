@@ -4,6 +4,7 @@ import {
     TYPES,
     SHAPES,
     DIETARY_PREFERENCES,
+    PRODUCTS,
     isBreadType,
 } from "../constants/ingredientsConstants.js";
 
@@ -19,8 +20,11 @@ const ingredientSchema = new Schema(
         type: {
             type: String,
             enum: {
-                values: [...Object.values(TYPES)],
-                message: `Role must be either ${Object.values(TYPES).join(", ")}`,
+                values: [...Object.values(TYPES), ...Object.values(PRODUCTS)],
+                message: `Role must be either ${[
+                    ...Object.values(TYPES),
+                    ...Object.values(PRODUCTS),
+                ].join(", ")}`,
             },
             required: true,
         },

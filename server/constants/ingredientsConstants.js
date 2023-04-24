@@ -93,3 +93,9 @@ export const imageFieldsByType = (type) => {
 };
 
 export const isBreadType = (type) => type === TYPES.bread;
+
+export const PRODUCTS = {
+    meat: "meat",
+    fish: "fish",
+    diary: "diary",
+};

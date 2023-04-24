@@ -96,14 +96,15 @@ const SandwichBuildButtons = ({
                             ingredientPlace.isPresent
                                 ? {
                                       opacity:
-                                          0.3 +
-                                          Object.values(PORTIONS).indexOf(
-                                              sandwich.ingredients.find(
-                                                  (ingredient) =>
-                                                      ingredient.id ===
-                                                      currentIngredient.id
-                                              ).portion
-                                          ),
+                                          0.4 +
+                                          0.2 *
+                                              Object.values(PORTIONS).indexOf(
+                                                  sandwich.ingredients.find(
+                                                      (ingredient) =>
+                                                          ingredient.id ===
+                                                          currentIngredient.id
+                                                  ).portion
+                                              ),
                                   }
                                 : {}
                         }

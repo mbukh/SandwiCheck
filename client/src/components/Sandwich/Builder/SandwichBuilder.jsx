@@ -11,11 +11,11 @@ import useSandwich from "../../../hooks/use-sandwich";
 
 import IngredientsSwiper from "./IngredientsSwiper";
 import Loading from "../../Loading";
-import SandwichBuildImage from "./SandwichBuildImage";
+import SandwichBuilderImage from "./SandwichBuilderImage";
 
 import SandwichBuildButtons from "./SandwichBuildButtons";
 import IngredientsTypesSelector from "./IngredientsTypesSelector";
-import SandwichSaveForm from "../SandwichSaveForm";
+import SandwichSaveForm from "./SandwichSaveForm";
 
 const SandwichBuilder = () => {
     const [currentIngredient, setCurrentIngredient] = useState({});
@@ -93,7 +93,7 @@ const SandwichBuilder = () => {
 
             {checkIngredientTypeInSandwich(TYPES.bread, sandwich) && (
                 <div className="result-section relative aspect-ratio-3/2 mx-4 w-full md:w-2/3 lg:w-1/3 mx-auto">
-                    <SandwichBuildImage
+                    <SandwichBuilderImage
                         sandwich={sandwich}
                         currentIngredient={currentIngredient}
                     />

@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import {
     DIETARY_PREFERENCES,
     PORTIONS,
+    PRODUCTS,
     isBreadType,
 } from "../constants/ingredientsConstants.js";
 
@@ -77,7 +78,7 @@ const sandwichSchema = new Schema(
             {
                 type: String,
                 enum: {
-                    values: [...Object.values(DIETARY_PREFERENCES)],
+                    values: Object.values(DIETARY_PREFERENCES),
                     message: `Dietary preferences must be either ${Object.values(
                         DIETARY_PREFERENCES
                     ).join(", ")}`,
@@ -183,6 +184,19 @@ function setDietaryPreferences(ingredients) {
             ingredient.dietaryPreferences.includes(preference)
         );
     });
+
+    // Kosher not mixing meat and diary
+    const hasDiary = ingredients.some((ingredient) =>
+        ingredient.dietaryPreferences.includes(PRODUCTS.diary)
+    );
+    const hasMeat = ingredients.some((ingredient) =>
+        ingredient.dietaryPreferences.includes(PRODUCTS.meat)
+    );
+    if (hasDiary && hasMeat) {
+        intersection = intersection.filter(
+            (preference) => preference !== DIETARY_PREFERENCES.kosher
+        );
+    }
 
     return intersection;
 }

@@ -72,6 +72,7 @@ const Signup = () => {
                         className="w-full appearance-none focus:outline-none rounded-lg box-shadow-10 bg-white text-magenta text-base xl:text-xl py-2 px-4 md:px-6 xl:py-3 xl:px-8 xl:box-shadow-20"
                         name="email"
                         type="email"
+                        autoComplete="email"
                         placeholder="E-mail address"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -84,6 +85,7 @@ const Signup = () => {
                         className="w-full appearance-none focus:outline-none rounded-lg box-shadow-10 bg-white text-magenta text-base xl:text-xl py-2 px-4 md:px-6 xl:py-3 xl:px-8 xl:box-shadow-20"
                         name="password"
                         type="password"
+                        autoComplete="new-password"
                         placeholder="Password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
@@ -96,6 +98,7 @@ const Signup = () => {
                         className="w-full appearance-none focus:outline-none rounded-lg box-shadow-10 bg-white text-magenta text-base xl:text-xl py-2 px-4 md:px-6 xl:py-3 xl:px-8 xl:box-shadow-20"
                         name="password"
                         type="password"
+                        autoComplete="new-password"
                         placeholder="Confirm password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
@@ -113,7 +116,7 @@ const Signup = () => {
                             value="1"
                             required
                         />
-                        <label className="custom-control-label" for="termsCheckbox">
+                        <label className="custom-control-label" htmlFor="termsCheckbox">
                             <span>
                                 I agree to be added
                                 <span className="text-magenta"> as a dependent</span> in
@@ -123,9 +126,9 @@ const Signup = () => {
                     </div>
                 ) : (
                     <div className="mb-2 md:mb-5 w-1/2">
-                        <div class="gallery__filter-county relative">
+                        <div className="gallery__filter-county relative">
                             <select
-                                class="w-full py-1 px-4 md:px-6 appearance-none focus:outline-none rounded-lg box-shadow-10 bg-white text-magenta text-sm uppercase"
+                                className="w-full py-1 px-4 md:px-6 appearance-none focus:outline-none rounded-lg box-shadow-10 bg-white text-magenta text-sm uppercase"
                                 title="Choose role"
                                 required={true}
                                 name="role"
@@ -138,9 +141,9 @@ const Signup = () => {
                                     </option>
                                 ))}
                             </select>
-                            <div class="select__arrow pointer-events-none absolute top-0 bottom-0 right-0 flex items-center text-magenta py-1 px-3 md:pr-6">
+                            <div className="select__arrow pointer-events-none absolute top-0 bottom-0 right-0 flex items-center text-magenta py-1 px-3 md:pr-6">
                                 <svg
-                                    class="fill-current w-auto h-3"
+                                    className="fill-current w-auto h-3"
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 4 5"
                                 >

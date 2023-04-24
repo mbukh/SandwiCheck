@@ -26,3 +26,9 @@ export const isBreadType = (type) => type === TYPES.bread;
 export const EXTENSION = "png";
 
 export const INGREDIENTS_CACHE_TIME_OUT_MINS = 5;
+
+export const PRODUCTS = {
+    meat: "meat",
+    fish: "fish",
+    diary: "diary",
+};
