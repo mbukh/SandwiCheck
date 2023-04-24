@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect } from "react";
 
 import * as apiUsers from "../services/api-users";
 
-import useUser from "../hooks/use-user";
+import useUser from "../hooks//use-user";
 
 import { LOGGED_IN_USER_TIME_OUT_DAYS } from "../constants/user-constants";
 

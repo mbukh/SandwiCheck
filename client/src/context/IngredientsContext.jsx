@@ -4,7 +4,7 @@ import useIngredients from "../hooks/use-ingredients";
 
 const IngredientsGlobalContext = createContext();
 
-const SandwichGlobalContextProvider = ({ children }) => {
+const IngredientsGlobalContextProvider = ({ children }) => {
     const {
         ingredients,
         ingredientsRawList,
@@ -28,4 +28,4 @@ const SandwichGlobalContextProvider = ({ children }) => {
 
 export const useIngredientsGlobalContext = () => useContext(IngredientsGlobalContext);
 
-export default SandwichGlobalContextProvider;
+export default IngredientsGlobalContextProvider;
