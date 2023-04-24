@@ -13,7 +13,7 @@ root.render(
         <AuthGlobalContextProvider>
             <App />
         </AuthGlobalContextProvider>
-     </IngredientsGlobalContextProvider>
+    </IngredientsGlobalContextProvider>
 
     // </React.StrictMode>
 );
