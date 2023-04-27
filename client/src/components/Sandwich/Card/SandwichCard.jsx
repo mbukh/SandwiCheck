@@ -8,8 +8,8 @@ import { hydrateSandwichIngredientsData } from "../../../utils/sandwich-utils";
 
 import { updateSandwichInCache } from "../../../services/api-sandwiches";
 
-import { useAuthGlobalContext } from "../../../context/AuthContext";
-import { useIngredientsGlobalContext } from "../../../context/IngredientsContext";
+import { useAuthGlobalContext } from "../../../context/AuthGlobalContext";
+import { useIngredientsGlobalContext } from "../../../context/IngredientsGlobalContext";
 
 import SandwichImage from "../SandwichImage";
 import SandwichIngredientsList from "./SandwichIngredientsList";

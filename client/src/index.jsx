@@ -2,18 +2,18 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 
-import AuthGlobalContextProvider from "./context/AuthContext";
-import IngredientsGlobalContextProvider from "./context/IngredientsContext";
+import AuthGlobalContextProvider from "./context/AuthGlobalContext";
+import IngredientsGlobalContextProvider from "./context/IngredientsGlobalContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
     // <React.StrictMode>
 
-    <IngredientsGlobalContextProvider>
-        <AuthGlobalContextProvider>
+    <AuthGlobalContextProvider>
+        <IngredientsGlobalContextProvider>
             <App />
-        </AuthGlobalContextProvider>
-    </IngredientsGlobalContextProvider>
+        </IngredientsGlobalContextProvider>
+    </AuthGlobalContextProvider>
 
     // </React.StrictMode>
 );

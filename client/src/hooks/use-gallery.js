@@ -3,7 +3,6 @@ import { useState, useCallback } from "react";
 import { logResponse } from "../utils/log";
 
 import * as apiSandwiches from "../services/api-sandwiches";
-
 import * as apiUsers from "../services/api-users";
 
 const useGallery = () => {
@@ -36,7 +35,7 @@ const useGallery = () => {
         logResponse("🍔👽 Fetch user with sandwiches", res);
 
         if (res.data) {
-            setGallerySandwiches(res.data.sandwiches || []);
+            setGallerySandwiches(res.data.sandwiches );
         }
     }, []);
 

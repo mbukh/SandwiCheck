@@ -12,8 +12,8 @@ import {
     createSandwich,
 } from "../services/api-sandwiches";
 
-import { useIngredientsGlobalContext } from "../context/IngredientsContext";
-import { useAuthGlobalContext } from "../context/AuthContext";
+import { useIngredientsGlobalContext } from "../context/IngredientsGlobalContext";
+import { useAuthGlobalContext } from "../context/AuthGlobalContext";
 
 import useSandwich from "../hooks/use-sandwich";
 

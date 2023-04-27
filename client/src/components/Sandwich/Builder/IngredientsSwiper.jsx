@@ -6,7 +6,7 @@ import { A11y, Keyboard } from "swiper";
 import "swiper/css";
 import "../../../styles/Swiper.css";
 
-import { useIngredientsGlobalContext } from "../../../context/IngredientsContext";
+import { useIngredientsGlobalContext } from "../../../context/IngredientsGlobalContext";
 import { useSandwichContext } from "../../../context/SandwichContext";
 
 import { isBreadType } from "../../../constants/ingredients-constants";

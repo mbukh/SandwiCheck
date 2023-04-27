@@ -1,25 +1,27 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
-import EmptyGallery from "./EmptyGallery";
-
-import { useAuthGlobalContext } from "../../context/AuthContext";
-import { useIngredientsGlobalContext } from "../../context/IngredientsContext";
-
-import Loading from "../Loading";
-import SandwichCard from "../Sandwich/Card/SandwichCard";
+import { capitalizeFirst } from "../../utils/utils";
 
 import useGallery from "../../hooks/use-gallery";
 
-import { capitalizeFirst } from "../../utils/utils";
+import { useAuthGlobalContext } from "../../context/AuthGlobalContext";
+import { useIngredientsGlobalContext } from "../../context/IngredientsGlobalContext";
+
+import Loading from "../Loading";
+import EmptyGallery from "./EmptyGallery";
+import SandwichCard from "../Sandwich/Card/SandwichCard";
 
 const SandwichGallery = ({ children, galleryType = "" }) => {
     const [child, setChild] = useState({});
     const { currentUser, isCurrentUserReady } = useAuthGlobalContext();
     const { areIngredientsReady } = useIngredientsGlobalContext();
-    const { gallerySandwiches, setGallerySandwiches, fetchSandwiches } = useGallery();
-    const { fetchUserSandwiches } = useGallery();
-
+    const {
+        gallerySandwiches,
+        setGallerySandwiches,
+        fetchSandwiches,
+        fetchUserSandwiches,
+    } = useGallery();
     const { childId } = useParams();
     const navigate = useNavigate();
 
@@ -33,7 +35,7 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
             return;
         }
 
-        if (!(areIngredientsReady && isCurrentUserReady)) {
+        if (!areIngredientsReady || !isCurrentUserReady) {
             return;
         }
 
@@ -42,10 +44,10 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
                 const childInfo = currentUser.children.find(
                     (child) => child.id === childId
                 );
-                if (!childInfo) return;
-
-                await fetchUserSandwiches(childInfo.id);
-                setChild(childInfo);
+                if (childInfo) {
+                    await fetchUserSandwiches(childInfo.id);
+                    setChild(childInfo);
+                }
             } else if (galleryType === "latest") {
                 await fetchSandwiches({});
             } else if (galleryType === "best") {

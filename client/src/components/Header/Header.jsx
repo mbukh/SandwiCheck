@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, NavLink, useParams } from "react-router-dom";
 
-import { useAuthGlobalContext } from "../../context/AuthContext";
+import { useAuthGlobalContext } from "../../context/AuthGlobalContext";
 
 import LoginModal from "../Login/LoginModal";
 import SignupModal from "../Signup/SignupModal";

@@ -13,7 +13,6 @@ import sandwichReducer from "../reducers/sandwich-reducer";
 const useSandwich = () => {
     const [currentType, setCurrentType] = useState(TYPES.bread);
     const [isSavingSandwich, setIsSavingSandwich] = useState(false);
-    const [gallerySandwiches, setGallerySandwiches] = useState(null);
     const [sandwich, sandwichDispatch] = useReducer(sandwichReducer, EMPTY_SANDWICH);
 
     const getSandwich = useCallback(async (sandwichId) => {
@@ -35,8 +34,6 @@ const useSandwich = () => {
         sandwichDispatch,
         isSavingSandwich,
         setIsSavingSandwich,
-        gallerySandwiches,
-        setGallerySandwiches,
         getSandwich,
     };
 };

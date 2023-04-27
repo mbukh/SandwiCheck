@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import { useIngredientsGlobalContext } from "../../context/IngredientsContext";
+import { useIngredientsGlobalContext } from "../../context/IngredientsGlobalContext";
 
 import useSandwich from "../../hooks/use-sandwich";
 

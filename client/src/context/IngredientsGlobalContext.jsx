@@ -1,10 +1,12 @@
-import { useState, useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 import { getAllIngredients } from "../services/api-ingredients";
 
 import { groupIngredientsByTypes } from "../utils/ingredients-utils";
 
-const useIngredients = () => {
+const IngredientsGlobalContext = createContext();
+
+const IngredientsGlobalContextProvider = ({ children }) => {
     const [ingredients, setIngredients] = useState({});
     const [areIngredientsReady, setAreIngredientsReady] = useState(false);
     const [ingredientsRawList, setIngredientsRawList] = useState([]);
@@ -34,12 +36,20 @@ const useIngredients = () => {
         })();
     }, [areIngredientsReady, rerenderIndex]);
 
-    return {
-        ingredients,
-        ingredientsRawList,
-        areIngredientsReady,
-        forceFetchIngredients,
-    };
+    return (
+        <IngredientsGlobalContext.Provider
+            value={{
+                ingredients,
+                ingredientsRawList,
+                areIngredientsReady,
+                forceFetchIngredients,
+            }}
+        >
+            {children}
+        </IngredientsGlobalContext.Provider>
+    );
 };
 
-export default useIngredients;
+export const useIngredientsGlobalContext = () => useContext(IngredientsGlobalContext);
+
+export default IngredientsGlobalContextProvider;

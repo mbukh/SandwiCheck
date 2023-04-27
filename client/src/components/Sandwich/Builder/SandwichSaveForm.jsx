@@ -7,7 +7,7 @@ import {
 } from "../../../constants/sandwich-constants";
 import validateForm from "../../../utils/validate-utils";
 
-import { useAuthGlobalContext } from "../../../context/AuthContext";
+import { useAuthGlobalContext } from "../../../context/AuthGlobalContext";
 import { useSandwichContext } from "../../../context/SandwichContext";
 
 import useToast from "../../../hooks/use-toast";
