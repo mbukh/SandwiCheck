@@ -251,7 +251,7 @@ export const condimentData = [
         name: "Russian Dressing",
         type: TYPES.condiments,
         imageBase: "20200621_122003",
-        dietaryPreferences: ["kosher"],
+        dietaryPreferences: ["kosher", "diary"],
         displayPriority: 5,
         createdAt: new Date("2020-06-21T08:20:03.000Z"),
     },
