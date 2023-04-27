@@ -1,5 +1,5 @@
 import { isBreadType } from "../../../constants/ingredients-constants";
-import { checkSandwichHasType } from "../../../utils/sandwich-utils";
+import { isTypeInSandwich } from "../../../utils/sandwich-utils";
 
 import { useSandwichContext } from "../../../context/SandwichContext";
 
@@ -13,11 +13,11 @@ const IngredientsTypesSelector = () => {
             swiperContainerRef.current.offsetHeight + "px";
     };
 
-    let getButtonClasses = (type) => {
+    const getButtonClasses = (type) => {
         const classes = "my-2 md:my-4  text-xs md:text-sm md:text-base fit-content";
         const activeClass = type === currentType ? " active" : "";
 
-        const presetType = checkSandwichHasType(type, sandwich) ? " text-cyan2" : "";
+        const presetType = isTypeInSandwich(type, sandwich) ? " text-cyan2" : "";
 
         return classes + activeClass + presetType;
     };

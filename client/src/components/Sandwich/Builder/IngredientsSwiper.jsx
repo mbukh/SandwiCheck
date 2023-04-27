@@ -24,7 +24,7 @@ const IngredientsSwiper = () => {
     const { sandwich, currentType, currentIngredient, setCurrentIngredient } =
         useSandwichContext();
 
-    const ingredientsOfType = ingredients[currentType];
+    const ingredientsOfType = ingredients[currentType] || [];
 
     const topIngredientOfCurrentType = getTopIngredientOfCurrentType(
         sandwich,

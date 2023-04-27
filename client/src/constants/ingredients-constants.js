@@ -8,6 +8,13 @@ export const TYPES = {
     condiments: "condiments",
 };
 
+export const DIETARY_PREFERENCES = {
+    vegetarian: "vegetarian",
+    kosher: "kosher",
+    halal: "halal",
+    vegan: "vegan",
+};
+
 export const SHAPES = {
     long: "long",
     round: "round",

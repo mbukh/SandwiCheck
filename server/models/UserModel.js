@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+import { DIETARY_PREFERENCES } from "../constants/ingredientsConstants.js";
 import {
     ROLES,
     MAX_SANDWICHES_PER_DAY,
@@ -80,9 +81,10 @@ const userSchema = new Schema(
         dietaryPreferences: {
             type: [String],
             enum: {
-                values: ["vegetarian", "kosher", "vegan", "halal"],
-                message:
-                    'Dietary preference must be one of "vegetarian", "kosher", "vegan", or "halal"',
+                values: Object.values(DIETARY_PREFERENCES),
+                message: `Dietary preference must be one of ${Object.values(
+                    DIETARY_PREFERENCES
+                ).join(", ")}`,
             },
         },
         sandwiches: [

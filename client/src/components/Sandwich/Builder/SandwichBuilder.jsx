@@ -2,7 +2,7 @@ import { useEffect } from "react";
 
 import { TYPES } from "../../../constants/ingredients-constants";
 
-import { checkSandwichHasType } from "../../../utils/sandwich-utils";
+import { isTypeInSandwich } from "../../../utils/sandwich-utils";
 
 import { useSandwichContext } from "../../../context/SandwichContext";
 
@@ -16,6 +16,7 @@ import SandwichSaveForm from "./SandwichSaveForm";
 const SandwichBuilder = () => {
     const {
         currentType,
+        currentIngredient,
         sandwich,
         swiperContainerRef,
         areIngredientsReady,
@@ -47,10 +48,10 @@ const SandwichBuilder = () => {
             </div>
 
             <div className="builder-section flex justify-center mt-5">
-                <SandwichBuildButtons />
+                {currentType && currentIngredient && <SandwichBuildButtons />}
             </div>
 
-            {checkSandwichHasType(TYPES.bread, sandwich) && (
+            {isTypeInSandwich(TYPES.bread, sandwich) && (
                 <div className="result-section relative aspect-ratio-3/2 mx-4 w-full md:w-2/3 lg:w-1/3 mx-auto">
                     <SandwichBuilderImage />
                 </div>

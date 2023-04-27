@@ -12,8 +12,9 @@ import {
 import { MAX_INGREDIENTS_COUNT } from "../../../constants/sandwich-constants";
 
 import {
-    checkSandwichHasType,
+    isTypeInSandwich,
     getIngredientPlaceInSandwich,
+    doesStayKosherWithIngredient,
 } from "../../../utils/sandwich-utils";
 
 import { useSandwichContext } from "../../../context/SandwichContext";
@@ -21,17 +22,17 @@ import { useSandwichContext } from "../../../context/SandwichContext";
 import useToast from "../../../hooks/use-toast";
 
 const SandwichBuildButtons = () => {
-    const { sandwich, sandwichDispatch, currentIngredient, currentType } =
+    const { sandwich, sandwichDispatch, currentIngredient, currentType, hasToBeKosher } =
         useSandwichContext();
     const { showToast, toastComponents } = useToast();
 
     const isSandwichEmpty = !sandwich.ingredients.length;
-    const isTypeInSandwich = checkSandwichHasType(currentType, sandwich);
     const isEmptyIngredient = !currentIngredient.id;
     const isCurrentlyBread = isBreadType(currentIngredient.type);
     const isMaxIngredientsReached =
         sandwich.ingredients.length + 1 > MAX_INGREDIENTS_COUNT;
     const ingredientPlace = getIngredientPlaceInSandwich(currentIngredient, sandwich);
+    const isStillKosher = doesStayKosherWithIngredient(currentIngredient, sandwich);
 
     const confirmHandler = (e) => {
         if (isMaxIngredientsReached) {
@@ -40,6 +41,11 @@ const SandwichBuildButtons = () => {
         }
         if (!isCurrentlyBread && ingredientPlace.isPresent) {
             showToast(`The ingredient has been already added`);
+            return;
+        }
+
+        if (hasToBeKosher && !isStillKosher) {
+            showToast(`Account set to kosher: cannot mix meat and dairy`);
             return;
         }
 
@@ -79,10 +85,6 @@ const SandwichBuildButtons = () => {
         sandwichDispatch({ type: "CYCLE_PORTION", payload: currentIngredient.id });
     };
 
-    if (!currentType) {
-        return;
-    }
-
     return (
         <div className="builder__spacer-buttons inline-flex justify-center h-8 px-2 bg-white text-magenta text-xs rounded-lg box-shadow-5">
             {!isCurrentlyBread && !isEmptyIngredient && (
@@ -117,12 +119,17 @@ const SandwichBuildButtons = () => {
             )}
             <button
                 className={`btn-wrapper px-2 ${
-                    ingredientPlace.isPresent || (isEmptyIngredient && !isTypeInSandwich)
+                    ingredientPlace.isPresent ||
+                    (isEmptyIngredient && !isTypeInSandwich(currentType, sandwich))
                         ? "text-cyan2"
                         : "fill-magenta"
                 } ${isSandwichEmpty ? "flex items-center justify-center" : ""}`}
                 disabled={isMaxIngredientsReached && !ingredientPlace.isPresent}
-                style={ingredientPlace.isPresent ? { cursor: "not-allowed" } : {}}
+                style={
+                    ingredientPlace.isPresent || (hasToBeKosher && !isStillKosher)
+                        ? { cursor: "not-allowed" }
+                        : {}
+                }
                 title="Confirm ingredient"
                 onClick={!isEmptyIngredient ? confirmHandler : clearOfCurrentTypeHandler}
             >

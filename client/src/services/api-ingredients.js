@@ -53,7 +53,7 @@ const fetchIngredients = async ({ dietaryPreferences, type, sortBy }) => {
 
 // =================
 
-export const getAllIngredients = async () => {
+export const getAllIngredients = async ({ dietaryPreferences }) => {
     let ingredients;
 
     ingredients = readIngredientsFromCache();
@@ -64,17 +64,23 @@ export const getAllIngredients = async () => {
             INGREDIENTS_CACHE_TIME_OUT_MINS,
             "minutes."
         );
-        return { data: ingredients };
+    } else {
+        const res = await fetchIngredients({});
+        logResponse("📝 Fetch ingredients", res);
+
+        if (res.data) {
+            ingredients = res.data;
+
+            localStorage.setItem("ingredients", JSON.stringify(ingredients));
+            localStorage.setItem("ingredients-cashedAt", JSON.stringify(Date.now()));
+        }
     }
 
-    const res = await fetchIngredients({});
-    logResponse("📝 Fetch ingredients", res);
-
-    if (res.data) {
-        ingredients = res.data;
-
-        localStorage.setItem("ingredients", JSON.stringify(ingredients));
-        localStorage.setItem("ingredients-cashedAt", JSON.stringify(Date.now()));
+    if (dietaryPreferences.length) {
+        ingredients = filterIngredientsByDietaryPreferences(
+            ingredients,
+            dietaryPreferences
+        );
     }
 
     return { data: ingredients };
@@ -94,4 +100,16 @@ function readIngredientsFromCache() {
     if (cacheExpired) return null;
 
     return ingredients;
+}
+
+function filterIngredientsByDietaryPreferences(ingredients, dietaryPreferences) {
+    if (dietaryPreferences.length === 0) {
+        return ingredients;
+    }
+
+    return ingredients.filter((ingredient) =>
+        dietaryPreferences.every((preference) =>
+            ingredient.dietaryPreferences.includes(preference)
+        )
+    );
 }

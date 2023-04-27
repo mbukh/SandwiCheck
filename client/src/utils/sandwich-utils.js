@@ -1,3 +1,5 @@
+import { PRODUCTS } from "../constants/ingredients-constants";
+
 export const hydrateSandwichIngredientsData = (sandwich, ingredientsRawList) => {
     const newSandwich = { ...sandwich };
 
@@ -52,6 +54,28 @@ export const getIngredientPlaceInSandwich = (ingredient, sandwich) => {
     };
 };
 
-export const checkSandwichHasType = (ingredientType, sandwich) => {
+export const isTypeInSandwich = (ingredientType, sandwich) => {
     return sandwich.ingredients.some((ingredient) => ingredient.type === ingredientType);
+};
+
+export const doesStayKosherWithIngredient = (newIngredient, sandwich) => {
+    if (sandwich.ingredients.length < 2 || !newIngredient.dietaryPreferences) {
+        return true;
+    }
+
+    const hasMeat = sandwich.ingredients.some((ingredient) =>
+        ingredient.dietaryPreferences.includes(PRODUCTS.meat)
+    );
+    const hasDiary = sandwich.ingredients.some((ingredient) =>
+        ingredient.dietaryPreferences.includes(PRODUCTS.diary)
+    );
+
+    if (
+        (hasMeat && newIngredient.dietaryPreferences.includes(PRODUCTS.diary)) ||
+        (hasDiary && newIngredient.dietaryPreferences.includes(PRODUCTS.meat))
+    ) {
+        return false;
+    }
+
+    return true;
 };

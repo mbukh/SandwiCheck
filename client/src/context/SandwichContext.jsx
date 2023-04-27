@@ -2,7 +2,7 @@ import { createContext, useContext, useRef, useState, useEffect } from "react";
 
 import { log, logResponse } from "../utils/log";
 
-import { TYPES } from "../constants/ingredients-constants";
+import { DIETARY_PREFERENCES, TYPES } from "../constants/ingredients-constants";
 import { EMPTY_SANDWICH } from "../constants/sandwich-constants";
 
 import {
@@ -22,7 +22,8 @@ const SandwichContext = createContext();
 const SandwichContextProvider = ({ children }) => {
     const [currentIngredient, setCurrentIngredient] = useState({});
     const swiperContainerRef = useRef(null);
-    const { ingredients, areIngredientsReady } = useIngredientsGlobalContext();
+    const { ingredients, areIngredientsReady, forceFetchIngredients } =
+        useIngredientsGlobalContext();
     const { currentUser, isCurrentUserReady } = useAuthGlobalContext();
     const {
         currentType,
@@ -38,6 +39,9 @@ const SandwichContextProvider = ({ children }) => {
 
     const defaultName = currentUser.firstName + "'s Sandwich";
     const isSandwichReady = sandwich.ingredients.length > 1;
+    const hasToBeKosher =
+        currentUser.dietaryPreferences &&
+        currentUser.dietaryPreferences.includes(DIETARY_PREFERENCES.kosher);
 
     const canGoNextType =
         Object.keys(ingredients).indexOf(currentType) <
@@ -52,13 +56,15 @@ const SandwichContextProvider = ({ children }) => {
     };
 
     useEffect(() => {
+        forceFetchIngredients();
+
         const sandwichFromCache = readSandwichFromCache();
         log("Sandwich retrieved from cache", sandwichFromCache);
 
         if (sandwichFromCache) {
             sandwichDispatch({ type: "UPDATE_SANDWICH", payload: sandwichFromCache });
         }
-    }, [isSavingSandwich, sandwichDispatch]);
+    }, [forceFetchIngredients, isSavingSandwich, sandwichDispatch]);
 
     useEffect(() => {
         updateSandwichInCache(sandwich);
@@ -112,6 +118,7 @@ const SandwichContextProvider = ({ children }) => {
                 goToNextType,
                 defaultName,
                 isSandwichReady,
+                hasToBeKosher,
             }}
         >
             {children}
