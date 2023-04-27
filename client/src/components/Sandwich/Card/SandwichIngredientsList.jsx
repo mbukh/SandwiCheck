@@ -17,9 +17,26 @@ const SandwichIngredientsList = ({ sandwich, ingredientsRawList }) => {
                         </li>
                     ))}
                 </ul>
-                <div className="my-5"></div>
-                <h5 className="ml-4 mb-4 text-sm sm:text-base uppercase">Comment:</h5>
-                <div className="ml-1">{sandwich.comment}</div>
+                {sandwich.comment && (
+                    <div className="my-5">
+                        <h5 className="ml-4 mb-4 text-sm sm:text-base uppercase">
+                            Comment:
+                        </h5>
+                        <div className="ml-1">{sandwich.comment}</div>
+                    </div>
+                )}
+                {sandwich.dietaryPreferences.length && (
+                    <div className="my-5">
+                        <h5 className="ml-4 mb-4 text-sm sm:text-base uppercase">
+                            Dietary preferences:
+                        </h5>
+                        <ul className="text-sm sm:text-base">
+                            {sandwich.dietaryPreferences.map((value) => (
+                                <li key={value}>{capitalizeFirst(value)}</li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
             </div>
         </div>
     );

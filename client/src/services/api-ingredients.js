@@ -56,21 +56,19 @@ const fetchIngredients = async ({ dietaryPreferences, type, sortBy }) => {
 export const getAllIngredients = async () => {
     let ingredients;
 
-    ingredients = readAllIngredientsFromCache();
+    ingredients = readIngredientsFromCache();
     if (ingredients) {
         log("📝 💾 Read ingredients from cache", ingredients);
-
         log(
             "📝 ⏰ Ingredients cache timeout is set to",
             INGREDIENTS_CACHE_TIME_OUT_MINS,
             "minutes."
         );
-
         return { data: ingredients };
     }
 
     const res = await fetchIngredients({});
-    logResponse("📝 Fetch all ingredients", res);
+    logResponse("📝 Fetch ingredients", res);
 
     if (res.data) {
         ingredients = res.data;
@@ -84,7 +82,7 @@ export const getAllIngredients = async () => {
 
 // UTILS //
 
-function readAllIngredientsFromCache() {
+function readIngredientsFromCache() {
     const ingredients = JSON.parse(localStorage.getItem("ingredients"));
     const cachedAt = JSON.parse(localStorage.getItem("ingredients-cashedAt"));
 
