@@ -10,42 +10,35 @@ const useUser = () => {
 
     const logIn = async ({ email, password, parentId }) => {
         setIsCurrentUserReady(false);
-
         const res = await apiAuth.login({ email, password, parentId });
         logResponse("🚪 Logging in", res);
-        if (!res.success) {
+        if (res.error) {
             return res;
-        } else {
-            setCurrentUser(res.data);
-            localStorage.setItem("loggedIn", JSON.stringify(Date.now()));
         }
+        setCurrentUser(res.data);
+        localStorage.setItem("loggedIn", JSON.stringify(Date.now()));
         setIsCurrentUserReady(true);
     };
 
     const signUp = async ({ email, password, name, role, parentId }) => {
         setIsCurrentUserReady(false);
-
         const res = await apiAuth.signup({ email, password, name, role, parentId });
         logResponse("🎊 Signing up", res);
         if (res.error) {
             return res;
-        } else {
-            setCurrentUser(res.data);
-            localStorage.setItem("loggedIn", JSON.stringify(Date.now()));
         }
+        setCurrentUser(res.data);
+        localStorage.setItem("loggedIn", JSON.stringify(Date.now()));
         setIsCurrentUserReady(true);
     };
 
     const logOut = async () => {
         setIsCurrentUserReady(false);
-
         const res = await apiAuth.logout();
         logResponse("🔓 Logout", res);
-
         setCurrentUser({});
         localStorage.removeItem("loggedIn");
         setIsCurrentUserReady(true);
-
         return res;
     };
 
