@@ -5,8 +5,8 @@ import { useIngredientsGlobalContext } from "../../context/IngredientsContext";
 
 import useSandwich from "../../hooks/use-sandwich";
 
-import SandwichCard from "../Sandwich/SandwichCard";
-import Modal from "../Helper/Modal";
+import SandwichCard from "../Sandwich/Card/SandwichCard";
+import Modal from "../Modal/Modal";
 
 const SandwichModal = ({ closeLink = "" }) => {
     const [isModalLoading, setIsModalLoading] = useState(true);

@@ -1,5 +1,5 @@
-import { hydrateSandwichIngredientsData } from "../../utils/sandwich-utils";
-import { capitalizeFirst } from "../../utils/utils";
+import { hydrateSandwichIngredientsData } from "../../../utils/sandwich-utils";
+import { capitalizeFirst } from "../../../utils/utils";
 
 const SandwichIngredientsList = ({ sandwich, ingredientsRawList }) => {
     const hydratedSandwich = hydrateSandwichIngredientsData(sandwich, ingredientsRawList);

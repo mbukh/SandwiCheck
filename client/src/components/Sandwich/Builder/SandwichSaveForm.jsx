@@ -8,30 +8,32 @@ import {
 import validateForm from "../../../utils/validate-utils";
 
 import { useAuthGlobalContext } from "../../../context/AuthContext";
+import { useSandwichContext } from "../../../context/SandwichContext";
+
 import useToast from "../../../hooks/use-toast";
 
 import Loading from "../../Loading";
-import SignupModal from "../../SignupModal";
+import SignupModal from "../../Signup/SignupModal";
 
-const SandwichSaveForm = ({
-    sandwich,
-    isSavingSandwich,
-    saveSandwich,
-    sandwichDispatch,
-    canGoNextType,
-    goToNextIngredientsType,
-    clearSandwich,
-}) => {
+const SandwichSaveForm = () => {
     const [isCommentOpen, setIsCommentOpen] = useState(false);
     const [isOpenLoginModal, setIsOpenLoginModal] = useState(false);
     const navigate = useNavigate();
     const { currentUser } = useAuthGlobalContext();
+    const {
+        sandwich,
+        isSavingSandwich,
+        saveSandwich,
+        sandwichDispatch,
+        canGoNextType,
+        goToNextType,
+        clearSandwich,
+        defaultName,
+        isSandwichReady,
+    } = useSandwichContext();
     const { showToast, toastComponents } = useToast();
 
-    const defaultName = currentUser.firstName + "'s Sandwich";
-    const isSandwichReady = sandwich.ingredients.length > 1;
-
-    const submitSandwichHandler = async (e) => {
+    const onSubmitSandwich = async (e) => {
         e.preventDefault();
 
         const errorMessages = validateForm({
@@ -55,28 +57,28 @@ const SandwichSaveForm = ({
         }
     };
 
-    const guestUserSubmitHandler = async (e) => {
+    const onGuestUserSubmit = async (e) => {
         e.preventDefault();
         setIsOpenLoginModal(true);
     };
 
-    const changeSandwichNameHandler = (e) => {
+    const onChangeSandwichName = (e) => {
         sandwichDispatch({ type: "SET_NAME", payload: e.target.value });
     };
 
-    const changeSandwichCommentHandler = (e) => {
+    const onChangeSandwichComment = (e) => {
         sandwichDispatch({ type: "SET_COMMENT", payload: e.target.value });
     };
 
     if (!sandwich.ingredients.length && !sandwich.name && !sandwich.comment) {
-        return;
+        return <></>;
     }
 
     return (
         <>
             <div className="flex justify-center my-4">
                 {sandwich.ingredients.length > 0 && canGoNextType && (
-                    <button className="text-cyan2" onClick={goToNextIngredientsType}>
+                    <button className="text-cyan2" onClick={goToNextType}>
                         next
                     </button>
                 )}
@@ -93,11 +95,7 @@ const SandwichSaveForm = ({
             ) : (
                 <div className="save-sandwich-section flex justify-center text-center">
                     <form
-                        onSubmit={
-                            currentUser.id
-                                ? submitSandwichHandler
-                                : guestUserSubmitHandler
-                        }
+                        onSubmit={currentUser.id ? onSubmitSandwich : onGuestUserSubmit}
                         className="flex flex-col"
                     >
                         <input
@@ -105,7 +103,7 @@ const SandwichSaveForm = ({
                             name="name"
                             placeholder={currentUser.id ? defaultName : "Sandwich name"}
                             maxLength={MAX_NAME_LENGTH}
-                            onChange={changeSandwichNameHandler}
+                            onChange={onChangeSandwichName}
                             value={sandwich.name}
                             className="my-4"
                         />
@@ -117,7 +115,7 @@ const SandwichSaveForm = ({
                                     name="comment"
                                     placeholder="Comment"
                                     maxLength={MAX_COMMENT_LENGTH}
-                                    onChange={changeSandwichCommentHandler}
+                                    onChange={onChangeSandwichComment}
                                     value={sandwich.comment}
                                 ></textarea>
                             ) : (

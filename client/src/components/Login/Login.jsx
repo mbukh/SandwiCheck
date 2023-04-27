@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
-import useForm from "../hooks/use-form";
-import useToast from "../hooks/use-toast";
+import useForm from "../../hooks/use-form";
+import useToast from "../../hooks/use-toast";
 
 const Login = () => {
     const { showToast, toastComponents } = useToast();

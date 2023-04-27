@@ -1,8 +1,8 @@
 import { isBreadType, TYPES } from "../../constants/ingredients-constants";
-import { checkIngredientTypeInSandwich } from "../../utils/sandwich-utils";
+import { checkSandwichHasType } from "../../utils/sandwich-utils";
 
 const SwiperSlideElementNone = ({ currentType, isActive, sandwich }) => {
-    const isTypeInSandwich = checkIngredientTypeInSandwich(currentType, sandwich);
+    const isTypeInSandwich = checkSandwichHasType(currentType, sandwich);
     return (
         <div
             className={`swiper-slide-container relative aspect-ration-4/3 ${

@@ -5,6 +5,8 @@ import "./styles/blueprint.css";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
+import SandwichContextProvider from "./context/SandwichContext";
+
 import Family from "./pages/Family";
 import Layout from "./pages/Layout";
 import Error404 from "./pages/Error404";
@@ -13,8 +15,8 @@ import Cart from "./pages/Cart";
 import SandwichBuilder from "./components/Sandwich/Builder/SandwichBuilder";
 import SandwichModal from "./components/Sandwich/SandwichModal";
 import SandwichGallery from "./components/Sandwich/SandwichGallery";
-import LoginModal from "./components/LoginModal";
-import SignupModal from "./components/SignupModal";
+import LoginModal from "./components/Login/LoginModal";
+import SignupModal from "./components/Signup/SignupModal";
 
 const router = createBrowserRouter([
     {
@@ -47,11 +49,11 @@ const router = createBrowserRouter([
         children: [
             {
                 path: "/",
-                element: <SandwichGallery galleryType="latest" />, // <SandwichGallery galleryType="best" />
+                element: <SandwichGallery galleryType="latest" />,
             },
             {
-                path: "/latest",
-                element: <SandwichGallery galleryType="latest" />,
+                path: "/best",
+                element: <SandwichGallery galleryType="best" />,
             },
             {
                 path: "/latest/:sandwichId",
@@ -63,7 +65,11 @@ const router = createBrowserRouter([
             },
             {
                 path: "/create",
-                element: <SandwichBuilder />,
+                element: (
+                    <SandwichContextProvider>
+                        <SandwichBuilder />
+                    </SandwichContextProvider>
+                ),
             },
             {
                 path: "/menu",

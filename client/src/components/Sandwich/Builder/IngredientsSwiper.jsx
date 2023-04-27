@@ -7,6 +7,7 @@ import "swiper/css";
 import "../../../styles/Swiper.css";
 
 import { useIngredientsGlobalContext } from "../../../context/IngredientsContext";
+import { useSandwichContext } from "../../../context/SandwichContext";
 
 import { isBreadType } from "../../../constants/ingredients-constants";
 import { breakpoints } from "../../../constants/swiper-constants";
@@ -16,15 +17,12 @@ import SwiperSlideElementNone from "../SwiperSlideElementNone";
 import SwiperNavigationButton from "../SwiperNavigationButton";
 import SwipeSlideElement from "./SwipeSlideElement";
 
-const IngredientsSwiper = ({
-    sandwich,
-    currentType,
-    currentIngredient,
-    setCurrentIngredient,
-}) => {
+const IngredientsSwiper = () => {
     const [navigation, setNavigation] = useState({ prev: false, next: true });
     const swiperRef = useRef();
     const { ingredients } = useIngredientsGlobalContext();
+    const { sandwich, currentType, currentIngredient, setCurrentIngredient } =
+        useSandwichContext();
 
     const ingredientsOfType = ingredients[currentType];
 

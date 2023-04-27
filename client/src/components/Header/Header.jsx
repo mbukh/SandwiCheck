@@ -3,8 +3,8 @@ import { Link, NavLink, useParams } from "react-router-dom";
 
 import { useAuthGlobalContext } from "../../context/AuthContext";
 
-import LoginModal from "../LoginModal";
-import SignupModal from "../SignupModal";
+import LoginModal from "../Login/LoginModal";
+import SignupModal from "../Signup/SignupModal";
 
 import HamburgerMenu from "./HamburgerMenu";
 import MobileMenu from "./MobileMenu";

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import Portal from "../Helper/Portal";
+import Portal from "../Portal/Portal";
 import Loading from "../Loading";
 
 const Modal = ({

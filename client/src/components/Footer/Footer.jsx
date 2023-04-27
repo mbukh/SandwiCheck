@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-import github from "../assets/images/icons/github.svg";
+import github from "../../assets/images/icons/github.svg";
 
 const Footer = () => {
     return (

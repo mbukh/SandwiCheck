@@ -1,13 +1,12 @@
 import { isBreadType } from "../../../constants/ingredients-constants";
-import { checkIngredientTypeInSandwich } from "../../../utils/sandwich-utils";
+import { checkSandwichHasType } from "../../../utils/sandwich-utils";
 
-const IngredientsTypesSelector = ({
-    ingredients,
-    currentType,
-    sandwich,
-    setCurrentType,
-    swiperContainerRef,
-}) => {
+import { useSandwichContext } from "../../../context/SandwichContext";
+
+const IngredientsTypesSelector = () => {
+    const { ingredients, currentType, sandwich, setCurrentType, swiperContainerRef } =
+        useSandwichContext();
+
     const retainSwiperHeight = () => {
         if (!swiperContainerRef.current) return;
         swiperContainerRef.current.style.height =
@@ -18,9 +17,7 @@ const IngredientsTypesSelector = ({
         const classes = "my-2 md:my-4  text-xs md:text-sm md:text-base fit-content";
         const activeClass = type === currentType ? " active" : "";
 
-        const presetType = checkIngredientTypeInSandwich(type, sandwich)
-            ? " text-cyan2"
-            : "";
+        const presetType = checkSandwichHasType(type, sandwich) ? " text-cyan2" : "";
 
         return classes + activeClass + presetType;
     };

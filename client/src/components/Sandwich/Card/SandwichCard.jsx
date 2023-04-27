@@ -2,16 +2,16 @@ import { useState } from "react";
 
 import { Link, useNavigate } from "react-router-dom";
 
-import { hasUserVotedUserForSandwich, voteForSandwich } from "../../services/votes";
+import { hasUserVotedUserForSandwich, voteForSandwich } from "../../../services/votes";
 
-import { hydrateSandwichIngredientsData } from "../../utils/sandwich-utils";
+import { hydrateSandwichIngredientsData } from "../../../utils/sandwich-utils";
 
-import { updateSandwichInCache } from "../../services/api-sandwiches";
+import { updateSandwichInCache } from "../../../services/api-sandwiches";
 
-import { useAuthGlobalContext } from "../../context/AuthContext";
-import { useIngredientsGlobalContext } from "../../context/IngredientsContext";
+import { useAuthGlobalContext } from "../../../context/AuthContext";
+import { useIngredientsGlobalContext } from "../../../context/IngredientsContext";
 
-import SandwichImage from "./SandwichImage";
+import SandwichImage from "../SandwichImage";
 import SandwichIngredientsList from "./SandwichIngredientsList";
 
 const SandwichCard = ({ index, sandwich, closeBasePath = "", isModal }) => {

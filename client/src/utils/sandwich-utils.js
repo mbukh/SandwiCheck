@@ -52,6 +52,6 @@ export const getIngredientPlaceInSandwich = (ingredient, sandwich) => {
     };
 };
 
-export const checkIngredientTypeInSandwich = (ingredientType, sandwich) => {
+export const checkSandwichHasType = (ingredientType, sandwich) => {
     return sandwich.ingredients.some((ingredient) => ingredient.type === ingredientType);
 };

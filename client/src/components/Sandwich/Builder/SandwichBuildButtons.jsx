@@ -12,22 +12,21 @@ import {
 import { MAX_INGREDIENTS_COUNT } from "../../../constants/sandwich-constants";
 
 import {
-    checkIngredientTypeInSandwich,
+    checkSandwichHasType,
     getIngredientPlaceInSandwich,
 } from "../../../utils/sandwich-utils";
 
+import { useSandwichContext } from "../../../context/SandwichContext";
+
 import useToast from "../../../hooks/use-toast";
 
-const SandwichBuildButtons = ({
-    sandwich,
-    sandwichDispatch,
-    currentIngredient,
-    currentType,
-}) => {
+const SandwichBuildButtons = () => {
+    const { sandwich, sandwichDispatch, currentIngredient, currentType } =
+        useSandwichContext();
     const { showToast, toastComponents } = useToast();
 
     const isSandwichEmpty = !sandwich.ingredients.length;
-    const isTypeInSandwich = checkIngredientTypeInSandwich(currentType, sandwich);
+    const isTypeInSandwich = checkSandwichHasType(currentType, sandwich);
     const isEmptyIngredient = !currentIngredient.id;
     const isCurrentlyBread = isBreadType(currentIngredient.type);
     const isMaxIngredientsReached =

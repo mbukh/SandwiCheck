@@ -1,6 +1,10 @@
+import { useSandwichContext } from "../../../context/SandwichContext";
+
 import { generateIngredientImageSrc } from "../../../utils/ingredients-utils";
 
-const SandwichBuilderImage = ({ sandwich }) => {
+const SandwichBuilderImage = () => {
+    const { sandwich } = useSandwichContext();
+
     return (
         <div className="sandwich-images">
             {sandwich.ingredients.map((ingredient, index) => (

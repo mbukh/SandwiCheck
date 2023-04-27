@@ -7,7 +7,7 @@ import { useAuthGlobalContext } from "../../context/AuthContext";
 import { useIngredientsGlobalContext } from "../../context/IngredientsContext";
 
 import Loading from "../Loading";
-import SandwichCard from "../Sandwich/SandwichCard";
+import SandwichCard from "../Sandwich/Card/SandwichCard";
 
 import useGallery from "../../hooks/use-gallery";
 
