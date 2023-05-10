@@ -34,13 +34,26 @@ export const generateIngredientImageSrc = ({
 };
 
 export const groupIngredientsByTypes = (ingredients) => {
-    const groupedIngredients = ingredients.reduce((acc, ingredient) => {
-        if (!acc[ingredient.type]) {
-            acc[ingredient.type] = [];
-        }
-        acc[ingredient.type].push(ingredient);
-        return acc;
-    }, {});
+    const groupedByTypes = {};
 
-    return groupedIngredients;
+    // Create arrays for each type in TYPES order
+    for (const key in TYPES) {
+        groupedByTypes[TYPES[key]] = [];
+    }
+
+    // Add each ingredient to the corresponding type array
+    ingredients.forEach((ingredient) => {
+        if (groupedByTypes.hasOwnProperty(ingredient.type)) {
+            groupedByTypes[ingredient.type].push(ingredient);
+        }
+    });
+
+    // Add any missing types to the end
+    ingredients.forEach((ingredient) => {
+        if (!groupedByTypes.hasOwnProperty(ingredient.type)) {
+            groupedByTypes[ingredient.type] = [ingredient];
+        }
+    });
+
+    return groupedByTypes;
 };

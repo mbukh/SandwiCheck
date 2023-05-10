@@ -39,6 +39,8 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
             return;
         }
 
+        const dietaryPreferences = currentUser.dietaryPreferences || [];
+
         (async () => {
             if (childId) {
                 const childInfo = currentUser.children.find(
@@ -49,9 +51,9 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
                     setChild(childInfo);
                 }
             } else if (galleryType === "latest") {
-                await fetchSandwiches({});
+                await fetchSandwiches({ dietaryPreferences });
             } else if (galleryType === "best") {
-                await fetchSandwiches({ sortBy: "votesCount" });
+                await fetchSandwiches({ dietaryPreferences, sortBy: "votesCount" });
             } else if (currentUser.id) {
                 setGallerySandwiches(currentUser.sandwiches);
             }
@@ -59,9 +61,7 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
     }, [
         areIngredientsReady,
         childId,
-        currentUser.children,
-        currentUser.id,
-        currentUser.sandwiches,
+        currentUser,
         fetchSandwiches,
         fetchUserSandwiches,
         galleryType,
@@ -119,7 +119,7 @@ const SandwichGallery = ({ children, galleryType = "" }) => {
                         <EmptyGallery galleryType childId />
                     )}
                 </div>
-            </div>
+            </div>   
 
             {children}
         </>
