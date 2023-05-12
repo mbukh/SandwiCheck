@@ -1,15 +1,16 @@
 import path from "path";
-import { CONFIG_DIR, CLIENT_DIR, UPLOADS_DIR } from "./config/dir.js";
+import { CONFIG_DIR, CLIENT_DIR, UPLOADS_DIR } from "./config/dir.ts";
 
 import dotenv from "dotenv";
 dotenv.config({ path: path.join(CONFIG_DIR, "config.env") });
 
-import connectDB from "./config/db.js";
+import connectDB from "./config/db.ts";
 
 import express from "express";
 import cookieParser from "cookie-parser";
 
 import cors from "cors";
+// @ts-ignore
 import xss from "xss-clean";
 import hpp from "hpp";
 import rateLimit from "express-rate-limit";
@@ -19,10 +20,10 @@ import colors from "colors";
 
 import errorHandler from "./middleware/errorHandler.js";
 
-import ingredientsRoutes from "./routes/ingredientsRoutes.js";
-import sandwichesRoutes from "./routes/sandwichesRoutes.js";
-import authRoutes from "./routes/authRoutes.js";
-import usersRoutes from "./routes/usersRoutes.js";
+import ingredientsRoutes from "./routes/ingredientsRoutes.ts";
+import sandwichesRoutes from "./routes/sandwichesRoutes.ts";
+import authRoutes from "./routes/authRoutes.ts";
+import usersRoutes from "./routes/usersRoutes.ts";
 
 connectDB();
 
@@ -82,14 +83,15 @@ const PORT = process.env.PORT || 5000;
 
 const server = app.listen(
     PORT,
+    // @ts-ignore
     console.log(
-        `Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`.brightYellow
-            .underline
+        `Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`
+            .yellow.underline
     )
 );
 
 // Handle unhandled promise rejections
-process.on("unhandledRejection", (err, promise) => {
+process.on("unhandledRejection", (err: Error, promise: Promise<any>) => {
     console.log(`Error: ${err.message}`.red);
     server.close(() => process.exit(1));
 });

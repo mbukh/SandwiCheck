@@ -1,9 +1,9 @@
 import expressAsyncHandler from "express-async-handler";
 import createHttpError from "http-errors";
 
-import { PROFILE_PICTURES_DIR } from "../config/dir.js";
+import { PROFILE_PICTURES_DIR } from "../config/dir.ts";
 
-import { ROLES } from "../constants/usersConstants.js";
+import { ROLES } from "../constants/usersConstants.ts";
 import { NO_USER_SANDWICH_USERNAME } from "../constants/sandwichConstants.js";
 
 import { saveBufferToFile, removeFile } from "../utils/fileUtils.js";

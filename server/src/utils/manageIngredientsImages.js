@@ -2,7 +2,7 @@ import createHttpError from "http-errors";
 
 import sharp from "sharp";
 
-import { INGREDIENTS_DIR } from "../config/dir.js";
+import { INGREDIENTS_DIR } from "../config/dir.ts";
 
 import { ALL_IMAGE_FIELDS, imageFieldsByType } from "../constants/ingredientsConstants.js";
 

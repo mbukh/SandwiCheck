@@ -6,7 +6,7 @@ import {
     MAX_SANDWICHES_PER_DAY,
     MAX_TETHERED_CHILDREN,
     MAX_USER_NAME_LENGTH,
-} from "../constants/usersConstants.js";
+} from "../constants/usersConstants.ts";
 import { DAYS_OF_WEEK } from "../constants/daysOfWeek.js";
 
 const { Schema } = mongoose;

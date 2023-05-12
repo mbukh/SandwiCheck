@@ -1,6 +1,6 @@
 import express from "express";
 
-import { ROLES } from "../constants/usersConstants.js";
+import { ROLES } from "../constants/usersConstants.ts";
 
 import { protect, authorize } from "../middleware/authMiddleware.js";
 import upload from "../middleware/uploadMiddleware.js";

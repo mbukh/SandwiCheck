@@ -2,7 +2,7 @@ import sharp from "sharp";
 import fs from "fs/promises";
 import path from "path";
 
-import { INGREDIENTS_DIR, SANDWICHES_DIR } from "../config/dir.js";
+import { INGREDIENTS_DIR, SANDWICHES_DIR } from "../config/dir.ts";
 import { isBreadType } from "../constants/ingredientsConstants.js";
 
 import Ingredient from "../models/IngredientModel.js";

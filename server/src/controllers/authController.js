@@ -3,7 +3,7 @@ import expressAsyncHandler from "express-async-handler";
 
 import bcrypt from "bcryptjs";
 
-import { ROLES } from "../constants/usersConstants.js";
+import { ROLES } from "../constants/usersConstants.ts";
 import { generateHtmlMessage, generateTextMessage } from "../constants/mailing.js";
 
 import { createUserParentsConnections } from "../utils/manageUserConnections.js";

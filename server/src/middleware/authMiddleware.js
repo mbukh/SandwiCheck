@@ -3,7 +3,7 @@ import createHttpError from "http-errors";
 
 import jwt from "jsonwebtoken";
 
-import { ROLES } from "../constants/usersConstants.js";
+import { ROLES } from "../constants/usersConstants.ts";
 import EXCLUDED_FIELDS from "../constants/excludeFields.js";
 
 import User from "../models/UserModel.js";

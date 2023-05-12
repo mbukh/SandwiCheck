@@ -1,4 +1,4 @@
-import { ROLES } from "../constants/usersConstants.js";
+import { ROLES } from "../constants/usersConstants.ts";
 
 import User from "../models/UserModel.js";
 

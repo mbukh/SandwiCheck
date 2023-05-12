@@ -4,7 +4,7 @@ import path from "path";
 import dotenv from "dotenv";
 dotenv.config({ path: "./config/config.env" });
 
-import connectDB from "./config/db.js";
+import connectDB from "./config/dir.ts";
 
 import colors from "colors";
 

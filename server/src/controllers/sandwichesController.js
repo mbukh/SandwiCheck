@@ -3,7 +3,7 @@ import expressAsyncHandler from "express-async-handler";
 import createHttpError from "http-errors";
 
 import { NO_USER_SANDWICH_USERNAME } from "../constants/sandwichConstants.js";
-import { SANDWICHES_DIR } from "../config/dir.js";
+import { SANDWICHES_DIR } from "../config/dir.ts";
 
 import { removeFile } from "../utils/fileUtils.js";
 import { generateSandwichImage } from "../utils/manageSandwichesImages.js";
