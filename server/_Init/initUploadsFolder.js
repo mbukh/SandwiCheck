@@ -6,7 +6,7 @@ import {
     PROFILE_PICTURES_DIR,
     INGREDIENTS_DIR,
     SANDWICHES_DIR,
-} from "./config/dir.js";
+} from "../config/dir.js";
 
 const folders = [UPLOADS_DIR, PROFILE_PICTURES_DIR, INGREDIENTS_DIR, SANDWICHES_DIR];
 

@@ -29,7 +29,8 @@ connectDB();
 const app = express();
 
 // ==== Logging ==== //
-app.use(morgan("dev"));
+const morganFormat = process.env.NODE_ENV === 'development' ? "dev" : 'combined';
+app.use(morgan(morganFormat));
 
 // CORS cross-domain access
 app.use(
@@ -54,7 +55,7 @@ app.use(hpp());
 // Rate limiter
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // limit each IP to 100 requests per windowMs
+    max: 500, // limit each IP to 500 requests per windowMs
     message: "Too many requests, please try again later",
 });
 app.use("/api/", limiter);

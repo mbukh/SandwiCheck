@@ -2,15 +2,15 @@ import fs from "fs/promises";
 import path from "path";
 
 import dotenv from "dotenv";
-dotenv.config({ path: "./config/config.env" });
+dotenv.config({ path: "../config/config.env" });
 
-import connectDB from "./config/db.js";
+import connectDB from "../config/db.js";
 
 import colors from "colors";
 
 import mongoose from "mongoose";
 
-import Ingredient from "./models/IngredientModel.js";
+import Ingredient from "../models/IngredientModel.js";
 
 import {
     breadData,
@@ -18,7 +18,7 @@ import {
     cheeseData,
     toppingData,
     condimentData,
-} from "./service/initialData/ingredientsData.js";
+} from "../service/initialData/ingredientsData.js";
 
 const waitForConnection = () => {
     return new Promise((resolve) => {
