@@ -85,8 +85,6 @@ const IngredientsSwiper = () => {
     updateNavigationButtons(swiper.activeIndex);
   };
 
-  console.log("ingredientsOfType", ingredientsOfType);
-
   return (
     <Swiper
       spaceBetween={0}
