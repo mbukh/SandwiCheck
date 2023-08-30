@@ -24,7 +24,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "test:ci": "npm run test -- --ci --testResultsProcessor=\"jest-junit\" --watchAll=false",
+    "test:ci": "npm run test  -- --coverage --ci --testResultsProcessor=\"jest-junit\" --watchAll=false",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -56,5 +56,10 @@
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "jest-junit": "^16.0.0"
+  },
+  "jest-junit": {
+    "outputDirectory": ".",
+    "outputName": "junit-test.xml",
+    "uniqueOutputName": "false"
   }
 }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="2" failures="0" errors="0" time="4.72">
+  <testsuite name="Check server API response" errors="0" failures="0" skipped="0" timestamp="2023-08-30T22:29:15" time="1.983" tests="1">
+    <testcase classname="Check server API response reads ingredients from API" name="Check server API response reads ingredients from API" time="0.246">
+    </testcase>
+  </testsuite>
+  <testsuite name="Render the App" errors="0" failures="0" skipped="0" timestamp="2023-08-30T22:29:15" time="2.229" tests="1">
+    <testcase classname="Render the App renders the app" name="Render the App renders the app" time="0.067">
+    </testcase>
+  </testsuite>
+</testsuites>
