@@ -1,1 +1,1 @@
-export const debug = true;
+export const debug = process.env.REACT_ENV === 'development';

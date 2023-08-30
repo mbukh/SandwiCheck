@@ -7,6 +7,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      REACT_ENV: "production"
       REACT_APP_HOST: "https://sandwicheck.github.io"
       REACT_APP_API_SERVER: "http://172.105.76.227:5000"
 
