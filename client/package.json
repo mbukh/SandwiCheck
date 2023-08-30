@@ -60,6 +60,7 @@
   "jest-junit": {
     "outputDirectory": ".",
     "outputName": "junit-test.xml",
-    "uniqueOutputName": "false"
+    "uniqueOutputName": "false",
+    "allowEmptyResults": "true"
   }
 }
