@@ -4,8 +4,9 @@ on: [push, pull_request]
 
 permissions:
   id-token: write
-  contents: read
   checks: write
+  pages: write
+  contents: read
 
 jobs:
   build-test:
@@ -13,7 +14,7 @@ jobs:
 
     env:
       REACT_ENV: "production"
-      REACT_APP_HOST: "https://sandwicheck.github.io"
+      REACT_APP_HOST: "https://mbukh.github.io/SandwiCheck"
       REACT_APP_API_SERVER: "http://172.105.76.227:5000"
 
     defaults:
@@ -43,15 +44,36 @@ jobs:
 
       - run: npm run build --if-present
 
-      - name: Fix permissions
-        run: |
-          chmod -c -R +rX "./client/build/" | while read line; do
-            echo "::warning title=Invalid file permissions automatically fixed::$line"
-          done
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v2
-        with:
-          name: Upload Build Artifact
-          # Path of the directory containing the static assets.
-          path: ./client/build
-          retention-days: 90
+      # - name: Fix permissions
+      #   run: |
+      #     chmod -c -R +rX "./client/build/" | while read line; do
+      #       echo "::warning title=Invalid file permissions automatically fixed::$line"
+      #     done
+      # - name: Upload Pages artifact
+      #   uses: actions/upload-pages-artifact@v2
+      #   with:
+      #     name: Upload Build Artifact
+      #     # Path of the directory containing the static assets.
+      #     path: ./client/build
+      #     retention-days: 90
+
+  deploy:
+    # Add a dependency to the build job
+    needs: build-test
+
+    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+    permissions:
+      pages: write # to deploy to Pages
+      id-token: write # to verify the deployment originates from an appropriate source
+
+    # Deploy to the github-pages environment
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    # Specify runner + deployment step
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2 # or the latest "vX.X.X" version tag for this action
