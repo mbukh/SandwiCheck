@@ -1,0 +1,42 @@
+name: Node.js CI
+
+on: [push,pull_request]
+
+jobs:
+  build-test:
+
+    runs-on: ubuntu-latest
+
+    env:
+      REACT_APP_HOST: "https://sandwicheck.github.io"
+      REACT_APP_API_SERVER: "http://172.105.76.227:5000"
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+          
+      - run: npm ci
+      - run: npm test
+
+      - name: Test Report
+        uses: dorny/test-reporter@v1.6.0
+        if: success() || failure()    # run this step even if previous step failed
+        with:
+          name: JEST Tests            # Name of the check run which will be created
+          path: reports/jest-*.xml    # Path to test results
+          reporter: jest-junit        # Format of test results
+          
+      - run: npm run build --if-present
+      
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v2.0.0
+        with:
+          name: gh-pages
+          # Path of the directory containing the static assets.
+          path: build/
+          retention-days: 90
