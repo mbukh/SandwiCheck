@@ -33,7 +33,7 @@ jobs:
         if: success() || failure() # run this step even if previous step failed
         with:
           name: JEST Tests # Name of the check run which will be created
-          path: ./client/junit-test.xml # Path to test results
+          path: ./client/reports/jest-*.xml # Path to test results
           reporter: jest-junit # Format of test results
 
       - run: npm run build --if-present
