@@ -29,15 +29,24 @@ connectDB();
 const app = express();
 
 // ==== Logging ==== //
-const morganFormat = process.env.NODE_ENV === 'development' ? "dev" : 'combined';
+const morganFormat = process.env.NODE_ENV === "development" ? "dev" : "combined";
 app.use(morgan(morganFormat));
 
 // CORS cross-domain access
+const whitelist = [
+  "http://localhost:3000",
+  "https://sandwicheck.app",
+  "https://mbukh.github.io",
+  process.env.CLIENT_URL,
+];
 app.use(
-    cors({
-        origin: process.env.CLIENT_URL,
-        credentials: true,
-    })
+  cors({
+    origin: function (origin, callback) {
+      var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
+      callback(null, originIsWhitelisted);
+    },
+    credentials: true,
+  })
 );
 
 // Body parser middleware
@@ -54,9 +63,9 @@ app.use(xss());
 app.use(hpp());
 // Rate limiter
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 500, // limit each IP to 500 requests per windowMs
-    message: "Too many requests, please try again later",
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 500, // limit each IP to 500 requests per windowMs
+  message: "Too many requests, please try again later",
 });
 app.use("/api/", limiter);
 
@@ -82,15 +91,15 @@ if (process.env.NODE_ENV !== "production") app.use(morgan("dev"));
 const PORT = process.env.PORT || 5000;
 
 const server = app.listen(
-    PORT,
-    console.log(
-        `Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`.brightYellow
-            .underline
-    )
+  PORT,
+  console.log(
+    `Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`.brightYellow
+      .underline
+  )
 );
 
 // Handle unhandled promise rejections
 process.on("unhandledRejection", (err, promise) => {
-    console.log(`Error: ${err.message}`.red);
-    server.close(() => process.exit(1));
+  console.log(`Error: ${err.message}`.red);
+  server.close(() => process.exit(1));
 });
