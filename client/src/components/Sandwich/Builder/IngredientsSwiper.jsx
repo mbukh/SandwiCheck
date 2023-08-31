@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { A11y, Keyboard } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 
-import "swiper/swiper.min.css";
+import "swiper/swiper.css";
 import "../../../styles/Swiper.css";
 
 import { useIngredientsGlobalContext } from "../../../context/IngredientsGlobalContext";
