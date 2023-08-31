@@ -32,3 +32,5 @@ logs
 
 # Configuration
 .prettierrc
+
+/data/

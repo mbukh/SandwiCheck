@@ -1,6 +1,19 @@
 version: "3"
 
 services:
+  # Mongodb service
+  mongo_db:
+    container_name: mongo
+    image: mongo:latest
+    restart: always
+    volumes:
+      - ./data:/data/db
+    ports:
+      - "27018:27017"
+    # environment:
+      # API_SERVER: http://localhost:5000
+
+  # Node api service
   sandwicheck-app:
     build:
       context: .
@@ -8,3 +21,10 @@ services:
     ports:
       - 5000:5000
       # - "80:5000"
+    depends_on:
+      - mongo_db
+    # environment:
+      # PORT: 3000
+
+volumes:
+  mongo_data: {}

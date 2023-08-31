@@ -4,6 +4,7 @@ WORKDIR /app
 COPY ./client/package*.json ./
 RUN npm install
 COPY ./client .
+RUN mv -f .env.example .env
 RUN npm run build
 
 FROM node:18.4.0-bullseye-slim AS production-stage
@@ -12,6 +13,8 @@ COPY ./package*.json .
 RUN npm install
 COPY --from=build-stage /app/build ./client/build
 COPY ./server/ ./server/
+RUN mv -f ./server/config/config.env.example ./server/config/config.env
+RUN node ./server/service/initUploadsFolder.js
 EXPOSE 5000
 CMD ["npm", "run", "server"]
 

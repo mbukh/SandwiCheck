@@ -1,5 +1,10 @@
+import path from "path";
+import { CONFIG_DIR, CLIENT_DIR, UPLOADS_DIR } from "../config/dir.js";
+
 import dotenv from "dotenv";
-dotenv.config({ path: "../config/config.env" });
+dotenv.config({ path: path.join(CONFIG_DIR, "config.env") });
+
+import colors from "colors";
 
 import connectDB from "../config/db.js";
 
