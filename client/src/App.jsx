@@ -3,7 +3,7 @@ import "reset-css";
 import "./styles/App.css";
 import "./styles/blueprint.css";
 
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createHashRouter, createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import SandwichContextProvider from "./context/SandwichContext";
 
@@ -18,7 +18,7 @@ import SandwichGallery from "./components/Sandwich/SandwichGallery";
 import LoginModal from "./components/Login/LoginModal";
 import SignupModal from "./components/Signup/SignupModal";
 
-const router = createBrowserRouter(
+const router = createHashRouter(
   [
     {
       path: "/sandwich/:sandwichId",
