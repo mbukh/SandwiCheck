@@ -35,6 +35,7 @@ app.use(morgan(morganFormat));
 // CORS cross-domain access
 const whitelist = [
   "http://localhost:3000",
+  "http://localhost:5000",
   "https://sandwicheck.app",
   "https://mbukh.github.io",
   process.env.CLIENT_URL,

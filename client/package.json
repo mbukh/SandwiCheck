@@ -5,7 +5,7 @@
   "author": "Moshe Bukhman",
   "license": "CC BY-NC-ND 4.0",
   "main": "./src/index.jsx",
-  "homepage": "http://mbukh.github.io/SandwiCheck",
+  "homepage": "https://mbukh.github.io/SandwiCheck",
   "dependencies": {
     "@testing-library/jest-dom": "^6.1.2",
     "@testing-library/react": "^14.0.0",
