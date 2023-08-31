@@ -15,7 +15,7 @@ jobs:
       REACT_ENV: "production"
       REACT_APP_HOST: "https://mbukh.github.io/SandwiCheck"
       REACT_APP_PATH: "/SandwiCheck"
-      REACT_APP_API_SERVER: "http://172.105.76.227:5000"
+      REACT_APP_API_SERVER: "https://sandwicheck.app"
 
     defaults:
       run:
