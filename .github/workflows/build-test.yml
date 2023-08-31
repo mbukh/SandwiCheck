@@ -60,4 +60,4 @@ jobs:
           pwd
           ls -a
           docker build . --file ./Dockerfile -t sandwicheck-app-image
-        working-directory: ../
+        working-directory: ./
