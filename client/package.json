@@ -28,7 +28,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "test:ci": "npm run test  -- --ci --reporters=default --reporters=\"jest-junit\"",
+    "test:ci": "npm run test  -- --ci --reporters=default --reporters=\"jest-junit\" --env=jsdom --testURL=http://localhost/SandwiCheck",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

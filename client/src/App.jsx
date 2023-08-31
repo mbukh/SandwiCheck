@@ -3,19 +3,19 @@ import "reset-css";
 import "./styles/App.css";
 import "./styles/blueprint.css";
 
-import { createHashRouter, createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createHashRouter, RouterProvider } from "react-router-dom";
 
 import SandwichContextProvider from "./context/SandwichContext";
 
+import Cart from "./pages/Cart";
+import Error404 from "./pages/Error404";
 import Family from "./pages/Family";
 import Layout from "./pages/Layout";
-import Error404 from "./pages/Error404";
-import Cart from "./pages/Cart";
 
-import SandwichBuilder from "./components/Sandwich/Builder/SandwichBuilder";
-import SandwichModal from "./components/Sandwich/SandwichModal";
-import SandwichGallery from "./components/Sandwich/SandwichGallery";
 import LoginModal from "./components/Login/LoginModal";
+import SandwichBuilder from "./components/Sandwich/Builder/SandwichBuilder";
+import SandwichGallery from "./components/Sandwich/SandwichGallery";
+import SandwichModal from "./components/Sandwich/SandwichModal";
 import SignupModal from "./components/Signup/SignupModal";
 
 const router = createHashRouter(
