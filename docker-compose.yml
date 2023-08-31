@@ -1,17 +1,18 @@
 version: "3"
 
 services:
-  # Mongodb service
-  mongo_db:
-    container_name: mongo
-    image: mongo:latest
-    restart: always
-    volumes:
-      - ./data:/data/db
-    ports:
-      - "27018:27017"
-    # environment:
-      # API_SERVER: http://localhost:5000
+  # # Mongodb service
+  # mongo_db:
+  #   container_name: mongo
+  #   image: mongo
+  #   restart: always
+  #   volumes:
+  #     - ./data:/data/db
+  #   hostname: mongo_db
+  #   ports:
+  #     - "27018:27017"
+  #   # environment:
+  #     # API_SERVER: http://localhost:5000
 
   # Node api service
   sandwicheck-app:
@@ -19,12 +20,19 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - 5000:5000
+      - 3000:80
+      # - 5000:5000
       # - "80:5000"
-    depends_on:
-      - mongo_db
-    # environment:
+    # depends_on:
+    #   - mongo_db
+    environment:
+      # WAIT_HOSTS: mongo_db:27017
+      # WAIT_TIMEOUT: 90
+      # WAIT_AFTER: 20
       # PORT: 3000
-
-volumes:
-  mongo_data: {}
+      REACT_ENV: production
+      REACT_APP_HOST: http://localhost:3000
+      REACT_APP_PATH: ""
+      REACT_APP_API_SERVER: https://sandwicheck.app/
+# volumes:
+#   mongo_data: {}

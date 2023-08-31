@@ -54,3 +54,7 @@ jobs:
         with:
           name: build-artifact
           path: ./client/build/
+
+      - name: Build Docker Image
+        run: docker build . --file Dockerfile -t sandwicheck-app-image
+        working-directory: /
