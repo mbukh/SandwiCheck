@@ -1,3 +1,5 @@
+[![Deploy Build to Pages](https://github.com/mbukh/SandwiCheck/actions/workflows/deploy-to-pages.yml/badge.svg)](https://github.com/mbukh/SandwiCheck/actions/workflows/deploy-to-pages.yml)
+
 # SandwiCheck Deployment Guide
 
 SandwiCheck is a full-stack MERN family meal planner with features such as:
