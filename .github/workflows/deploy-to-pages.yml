@@ -47,16 +47,19 @@ jobs:
       - name: What's going on
         run: |
           pwd
+          cd ./client
+          pwd
           ls -a
+          cd ..
+          pwd
 
       - name: Setup Pages
         uses: actions/configure-pages@v3
 
-      - name: Upload artifact
+      - name: Upload Artifact to Pages
         uses: actions/upload-pages-artifact@v2
         with:
-          # Upload entire repository
-          path: ./client/build
+          path: ./client/build/
 
       - name: Deploy to GitHub Pages
         id: deployment
