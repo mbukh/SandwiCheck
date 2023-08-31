@@ -43,6 +43,11 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: build-artifact
+        
+      - name: What's going on
+        run: |
+          pwd
+          ls -a
 
       - name: Setup Pages
         uses: actions/configure-pages@v3
