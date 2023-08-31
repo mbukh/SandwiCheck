@@ -43,15 +43,13 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: build-artifact
+          path: ./artifact/
         
       - name: What's going on
         run: |
           pwd
-          cd ./client
-          pwd
           ls -a
-          cd ..
-          pwd
+        working-directory: ./artifact/
 
       - name: Setup Pages
         uses: actions/configure-pages@v3
@@ -59,7 +57,7 @@ jobs:
       - name: Upload Artifact to Pages
         uses: actions/upload-pages-artifact@v2
         with:
-          path: ./client/build/
+          path: ./artifact/build/
 
       - name: Deploy to GitHub Pages
         id: deployment
