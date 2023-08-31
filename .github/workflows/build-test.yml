@@ -3,9 +3,8 @@ name: Build and Test
 on: [pull_request, workflow_call]
 
 permissions:
-  id-token: write
+  # id-token: write
   checks: write
-  pages: write
   contents: read
 
 jobs:
