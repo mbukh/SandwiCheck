@@ -42,6 +42,6 @@ SandwiCheck is a full-stack MERN family meal planner with features such as:
    Execute the following command: `docker compose up`
 
 4. **Access the Application**  
-   Once everything is up and running, navigate to [http://localhost:5000](http://localhost:5000) in a browser.
+   Once everything is up and running, navigate to [http://localhost:5001](http://localhost:5001) in a browser.
 
 Happy meal planning!

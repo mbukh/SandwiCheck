@@ -35,7 +35,7 @@ app.use(morgan(morganFormat));
 // CORS cross-domain access
 const whitelist = [
   'http://localhost:3000',
-  'http://localhost:5000',
+  'http://localhost:5001',
   'https://sandwicheck.app',
   'https://mbukh.github.io',
   process.env.CLIENT_URL,
@@ -89,7 +89,7 @@ app.use('/uploads', express.static(UPLOADS_DIR));
 if (process.env.NODE_ENV !== 'production') app.use(morgan('dev'));
 
 // Start server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 const server = app.listen(
   PORT,

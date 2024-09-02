@@ -12,7 +12,7 @@ services:
   #   ports:
   #     - "27018:27017"
   #   # environment:
-  #     # API_SERVER: http://localhost:5000
+  #     # API_SERVER: http://localhost:5001
 
   # Node api service
   sandwicheck-app:
@@ -21,8 +21,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - 3000:80
-      # - 5000:5000
-      # - "80:5000"
+      # - 5001:5001
+      # - "80:5001"
     # depends_on:
     #   - mongo_db
     environment:
