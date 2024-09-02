@@ -53,9 +53,7 @@ export const protect = expressAsyncHandler(async (req, res, next) => {
         if (parentToken && req.user.roles.includes(ROLES.child)) {
             const parentDecoded = jwt.verify(parentToken, process.env.JWT_SECRET);
 
-            req.parentUser = await User.findById(parentDecoded.id).select(
-                EXCLUDED_FIELDS
-            );
+            req.parentUser = await User.findById(parentDecoded.id).select(EXCLUDED_FIELDS);
 
             if (!req.parentUser) {
                 throw new Error();
@@ -80,9 +78,7 @@ export const authorize = (...roles) => {
 
         // Check if user has a valid role
         if (roles.length && !roles.some((role) => user.roles.includes(role))) {
-            return next(
-                createHttpError.Forbidden("Not authorized to access this resource")
-            );
+            return next(createHttpError.Forbidden("Not authorized to access this resource"));
         }
 
         if (userId) {
@@ -90,8 +86,7 @@ export const authorize = (...roles) => {
             if (
                 roles.includes(ROLES.parent) &&
                 user.roles.includes(ROLES.parent) &&
-                (user._id.equals(userId) ||
-                    (user.children && user.children.includes(userId)))
+                (user._id.equals(userId) || (user.children && user.children.includes(userId)))
             ) {
                 return next();
             }

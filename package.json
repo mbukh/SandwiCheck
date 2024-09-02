@@ -1,52 +1,54 @@
 {
-    "name": "sandwicheck-fullstack",
-    "version": "1.0.0",
-    "description": "a sandwich maker app for the whole family",
-    "main": "./server/server.js",
-    "type": "module",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "node ./server/server.js",
-        "server": "nodemon ./server/server.js",
-        "client": "npm start --prefix client",
-        "dev": "concurrently \"npm run server\" \"npm run client\""
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/mbukh/Appleseeds-SandwiCheck.git"
-    },
-    "keywords": [
-        "sandwich",
-        "family"
-    ],
-    "author": "Moshe Bukhman",
-    "license": "CC BY-NC-ND 4.0",
-    "bugs": {
-        "url": "https://github.com/mbukh/Appleseeds-SandwiCheck/issues"
-    },
-    "homepage": "https://github.com/mbukh/Appleseeds-SandwiCheck#readme",
-    "devDependencies": {
-        "concurrently": "^8.2.1",
-        "nodemon": "^3.0.1"
-    },
-    "dependencies": {
-        "bcryptjs": "^2.4.3",
-        "colors": "^1.4.0",
-        "cookie-parser": "^1.4.6",
-        "cors": "^2.8.5",
-        "crypto": "^1.0.1",
-        "dotenv": "^16.3.1",
-        "express": "^4.18.2",
-        "express-async-handler": "^1.2.0",
-        "express-rate-limit": "^6.9.0",
-        "hpp": "^0.2.3",
-        "http-errors": "^2.0.0",
-        "jsonwebtoken": "^9.0.2",
-        "mongoose": "^7.5.0",
-        "morgan": "^1.10.0",
-        "multer": "^1.4.5-lts.1",
-        "nodemailer": "^6.9.4",
-        "sharp": "^0.32.5",
-        "xss-clean": "^0.1.1"
-    }
+  "name": "sandwicheck-fullstack",
+  "version": "1.0.0",
+  "description": "a sandwich maker app for the whole family",
+  "main": "./server/server.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./server/server.js",
+    "server": "node --env-file ./server/config/.env --watch ./server/server.js",
+    "client": "npm start --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mbukh/Appleseeds-SandwiCheck.git"
+  },
+  "keywords": [
+    "sandwich",
+    "family"
+  ],
+  "author": "Moshe Bukhman",
+  "license": "CC BY-NC-ND 4.0",
+  "bugs": {
+    "url": "https://github.com/mbukh/Appleseeds-SandwiCheck/issues"
+  },
+  "homepage": "https://github.com/mbukh/Appleseeds-SandwiCheck#readme",
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.1.4",
+    "npm-check-updates": "^17.1.1",
+    "prettier": "^3.3.3"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "colors": "^1.4.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-async-handler": "^1.2.0",
+    "express-rate-limit": "^7.4.0",
+    "hpp": "^0.2.3",
+    "http-errors": "^2.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.6.0",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.14",
+    "sharp": "^0.33.5",
+    "xss-clean": "^0.1.4"
+  }
 }
