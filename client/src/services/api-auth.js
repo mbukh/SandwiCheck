@@ -1,15 +1,15 @@
-import axios from "axios";
+import axios from 'axios';
 
-import { handleResponse } from "../utils/api-utils";
+import { handleResponse } from '../utils/api-utils';
 
 const api = axios.create({
-    baseURL: `${process.env.REACT_APP_API_SERVER}/api/v1/auth/`,
-    headers: {
-        "Access-Control-Allow-Origin": process.env.REACT_APP_HOST,
-        "Content-Type": "application/json",
-    },
-    withCredentials: true,
-    credentials: "include",
+  baseURL: `${process.env.REACT_APP_API_SERVER}/api/v1/auth/`,
+  headers: {
+    'Access-Control-Allow-Origin': process.env.REACT_APP_HOST,
+    'Content-Type': 'application/json',
+  },
+  withCredentials: true,
+  credentials: 'include',
 });
 
 /*
@@ -57,19 +57,19 @@ const api = axios.create({
 */
 
 export const signup = async ({ email, password, name, role, parentId }) => {
-    return await handleResponse(async () => {
-        return api.post("/signup", { email, password, name, role, parentId });
-    });
+  return await handleResponse(async () => {
+    return api.post('/signup', { email, password, name, role, parentId });
+  });
 };
 
 export const login = async ({ email, password, parentId }) => {
-    return await handleResponse(async () => {
-        return api.post("/login", { email, password, parentId });
-    });
+  return await handleResponse(async () => {
+    return api.post('/login', { email, password, parentId });
+  });
 };
 
 export const logout = async () => {
-    return await handleResponse(async () => {
-        return api.post("/logout");
-    });
+  return await handleResponse(async () => {
+    return api.post('/logout');
+  });
 };

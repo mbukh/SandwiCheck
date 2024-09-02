@@ -1,36 +1,31 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from 'react';
 
-import { A11y, Keyboard } from "swiper";
-import { Swiper, SwiperSlide } from "swiper/react";
+import { A11y, Keyboard } from 'swiper';
+import { Swiper, SwiperSlide } from 'swiper/react';
 
-import "swiper/swiper.css";
-import "../../../styles/Swiper.css";
+import 'swiper/swiper.css';
+import '../../../styles/Swiper.css';
 
-import { useIngredientsGlobalContext } from "../../../context/IngredientsGlobalContext";
-import { useSandwichContext } from "../../../context/SandwichContext";
+import { useIngredientsGlobalContext } from '../../../context/IngredientsGlobalContext';
+import { useSandwichContext } from '../../../context/SandwichContext';
 
-import { isBreadType } from "../../../constants/ingredients-constants";
-import { breakpoints } from "../../../constants/swiper-constants";
-import { getTopIngredientOfCurrentType } from "../../../utils/sandwich-utils";
+import { isBreadType } from '../../../constants/ingredients-constants';
+import { breakpoints } from '../../../constants/swiper-constants';
+import { getTopIngredientOfCurrentType } from '../../../utils/sandwich-utils';
 
-import SwiperNavigationButton from "../SwiperNavigationButton";
-import SwiperSlideElementNone from "../SwiperSlideElementNone";
-import SwipeSlideElement from "./SwipeSlideElement";
+import SwiperNavigationButton from '../SwiperNavigationButton';
+import SwiperSlideElementNone from '../SwiperSlideElementNone';
+import SwipeSlideElement from './SwipeSlideElement';
 
 const IngredientsSwiper = () => {
   const [navigation, setNavigation] = useState({ prev: false, next: true });
   const swiperRef = useRef();
   const { ingredients } = useIngredientsGlobalContext();
-  const { sandwich, currentType, currentIngredient, setCurrentIngredient } =
-    useSandwichContext();
+  const { sandwich, currentType, currentIngredient, setCurrentIngredient } = useSandwichContext();
 
   const ingredientsOfType = ingredients[currentType] || [];
 
-  const topIngredientOfCurrentType = getTopIngredientOfCurrentType(
-    sandwich,
-    ingredientsOfType,
-    currentType
-  );
+  const topIngredientOfCurrentType = getTopIngredientOfCurrentType(sandwich, ingredientsOfType, currentType);
 
   const currentSwipeIndex = ingredientsOfType.indexOf(topIngredientOfCurrentType) + 1;
 
@@ -105,13 +100,7 @@ const IngredientsSwiper = () => {
       modules={[A11y, Keyboard]}
     >
       <SwiperSlide className="choice-null no-select">
-        {({ isActive }) => (
-          <SwiperSlideElementNone
-            currentType={currentType}
-            isActive={isActive}
-            sandwich={sandwich}
-          />
-        )}
+        {({ isActive }) => <SwiperSlideElementNone currentType={currentType} isActive={isActive} sandwich={sandwich} />}
       </SwiperSlide>
 
       {ingredientsOfType.map((ingredient) => (
@@ -127,17 +116,9 @@ const IngredientsSwiper = () => {
         </SwiperSlide>
       ))}
 
-      <SwiperNavigationButton
-        navigation={navigation}
-        swiperRef={swiperRef}
-        direction="previous"
-      />
+      <SwiperNavigationButton navigation={navigation} swiperRef={swiperRef} direction="previous" />
 
-      <SwiperNavigationButton
-        navigation={navigation}
-        swiperRef={swiperRef}
-        direction="next"
-      />
+      <SwiperNavigationButton navigation={navigation} swiperRef={swiperRef} direction="next" />
     </Swiper>
   );
 };

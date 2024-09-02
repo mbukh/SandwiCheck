@@ -1,21 +1,21 @@
-import axios from "axios";
+import axios from 'axios';
 
-import { log, logResponse } from "../utils/log";
+import { log, logResponse } from '../utils/log';
 
-import { INGREDIENTS_CACHE_TIME_OUT_MINS } from "../constants/ingredients-constants";
+import { INGREDIENTS_CACHE_TIME_OUT_MINS } from '../constants/ingredients-constants';
 
-import { handleResponse } from "../utils/api-utils";
+import { handleResponse } from '../utils/api-utils';
 
-import { timeDifference } from "../utils/utils";
+import { timeDifference } from '../utils/utils';
 
 const api = axios.create({
-    baseURL: `${process.env.REACT_APP_API_SERVER}/api/v1/ingredients`,
-    headers: {
-        "Access-Control-Allow-Origin": process.env.REACT_APP_HOST,
-        "Content-Type": "application/json",
-    },
-    withCredentials: true,
-    credentials: "include",
+  baseURL: `${process.env.REACT_APP_API_SERVER}/api/v1/ingredients`,
+  headers: {
+    'Access-Control-Allow-Origin': process.env.REACT_APP_HOST,
+    'Content-Type': 'application/json',
+  },
+  withCredentials: true,
+  credentials: 'include',
 });
 
 /*
@@ -45,71 +45,59 @@ const api = axios.create({
 */
 
 const fetchIngredients = async ({ dietaryPreferences, type, sortBy }) => {
-    // sortBy:(def)"displayPriority"|"name"
-    return await handleResponse(async () =>
-        api.get("/", { params: { dietaryPreferences, type, sortBy } })
-    );
+  // sortBy:(def)"displayPriority"|"name"
+  return await handleResponse(async () => api.get('/', { params: { dietaryPreferences, type, sortBy } }));
 };
 
 // =================
 
 export const getAllIngredients = async ({ dietaryPreferences }) => {
-    let ingredients;
+  let ingredients;
 
-    ingredients = readIngredientsFromCache();
-    if (ingredients) {
-        log("📝 💾 Read ingredients from cache", ingredients);
-        log(
-            "📝 ⏰ Ingredients cache timeout is set to",
-            INGREDIENTS_CACHE_TIME_OUT_MINS,
-            "minutes."
-        );
-    } else {
-        const res = await fetchIngredients({});
-        logResponse("📝 Fetch ingredients", res);
+  ingredients = readIngredientsFromCache();
+  if (ingredients) {
+    log('📝 💾 Read ingredients from cache', ingredients);
+    log('📝 ⏰ Ingredients cache timeout is set to', INGREDIENTS_CACHE_TIME_OUT_MINS, 'minutes.');
+  } else {
+    const res = await fetchIngredients({});
+    logResponse('📝 Fetch ingredients', res);
 
-        if (res.data) {
-            ingredients = res.data;
+    if (res.data) {
+      ingredients = res.data;
 
-            localStorage.setItem("ingredients", JSON.stringify(ingredients));
-            localStorage.setItem("ingredients-cashedAt", JSON.stringify(Date.now()));
-        }
+      localStorage.setItem('ingredients', JSON.stringify(ingredients));
+      localStorage.setItem('ingredients-cashedAt', JSON.stringify(Date.now()));
     }
+  }
 
-    if (dietaryPreferences.length) {
-        ingredients = filterIngredientsByDietaryPreferences(
-            ingredients,
-            dietaryPreferences
-        );
-    }
+  if (dietaryPreferences.length) {
+    ingredients = filterIngredientsByDietaryPreferences(ingredients, dietaryPreferences);
+  }
 
-    return { data: ingredients };
+  return { data: ingredients };
 };
 
 // UTILS //
 
 function readIngredientsFromCache() {
-    const ingredients = JSON.parse(localStorage.getItem("ingredients"));
-    const cachedAt = JSON.parse(localStorage.getItem("ingredients-cashedAt"));
+  const ingredients = JSON.parse(localStorage.getItem('ingredients'));
+  const cachedAt = JSON.parse(localStorage.getItem('ingredients-cashedAt'));
 
-    if (!ingredients) return null;
+  if (!ingredients) return null;
 
-    const cacheExpired =
-        timeDifference(cachedAt, Date.now()).minutes > INGREDIENTS_CACHE_TIME_OUT_MINS;
+  const cacheExpired = timeDifference(cachedAt, Date.now()).minutes > INGREDIENTS_CACHE_TIME_OUT_MINS;
 
-    if (cacheExpired) return null;
+  if (cacheExpired) return null;
 
-    return ingredients;
+  return ingredients;
 }
 
 function filterIngredientsByDietaryPreferences(ingredients, dietaryPreferences) {
-    if (dietaryPreferences.length === 0) {
-        return ingredients;
-    }
+  if (dietaryPreferences.length === 0) {
+    return ingredients;
+  }
 
-    return ingredients.filter((ingredient) =>
-        dietaryPreferences.every((preference) =>
-            ingredient.dietaryPreferences.includes(preference)
-        )
-    );
+  return ingredients.filter((ingredient) =>
+    dietaryPreferences.every((preference) => ingredient.dietaryPreferences.includes(preference)),
+  );
 }

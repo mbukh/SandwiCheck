@@ -1,8 +1,8 @@
 export const ROLES = {
-    user: "user",
-    child: "child",
-    parent: "parent",
-    admin: "admin",
+  user: 'user',
+  child: 'child',
+  parent: 'parent',
+  admin: 'admin',
 };
 
 export const MAX_SANDWICHES_PER_DAY = 10;

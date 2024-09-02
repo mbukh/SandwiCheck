@@ -1,34 +1,30 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback } from 'react';
 
-import Portal from "../components/Portal/Portal";
+import Portal from '../components/Portal/Portal';
 
-import Toast from "../components/Toast/Toast";
+import Toast from '../components/Toast/Toast';
 
 const useToast = () => {
-    const [toasts, setToasts] = useState([]);
+  const [toasts, setToasts] = useState([]);
 
-    const showToast = useCallback((message) => {
-        const key = message + Date.now();
-        setToasts((prevToasts) => [...prevToasts, { key, message }]);
-    }, []);
+  const showToast = useCallback((message) => {
+    const key = message + Date.now();
+    setToasts((prevToasts) => [...prevToasts, { key, message }]);
+  }, []);
 
-    const hideToast = useCallback((key) => {
-        setToasts((prevToasts) => prevToasts.filter((toast) => toast.key !== key));
-    }, []);
+  const hideToast = useCallback((key) => {
+    setToasts((prevToasts) => prevToasts.filter((toast) => toast.key !== key));
+  }, []);
 
-    const toastComponents = (
-        <Portal className="toast-portal">
-            {toasts.map((toast) => (
-                <Toast
-                    key={toast.key}
-                    message={toast.message}
-                    onHide={() => hideToast(toast.key)}
-                />
-            ))}
-        </Portal>
-    );
+  const toastComponents = (
+    <Portal className="toast-portal">
+      {toasts.map((toast) => (
+        <Toast key={toast.key} message={toast.message} onHide={() => hideToast(toast.key)} />
+      ))}
+    </Portal>
+  );
 
-    return { showToast, toastComponents };
+  return { showToast, toastComponents };
 };
 
 export default useToast;

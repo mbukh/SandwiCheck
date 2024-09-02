@@ -1,20 +1,20 @@
 .spinner {
-    margin: 1em auto;
-    width: 3em;
-    aspect-ratio: 1/1;
-    border: 1px solid var(--card-bg-3);
-    border-radius: 50%;
-    border-top-color: var(--card-bg-2);
-    animation: spin 1s ease-in-out infinite;
+  margin: 1em auto;
+  width: 3em;
+  aspect-ratio: 1/1;
+  border: 1px solid var(--card-bg-3);
+  border-radius: 50%;
+  border-top-color: var(--card-bg-2);
+  animation: spin 1s ease-in-out infinite;
 }
 
 @keyframes spin {
-    to {
-        -webkit-transform: rotate(360deg);
-    }
+  to {
+    -webkit-transform: rotate(360deg);
+  }
 }
 @-webkit-keyframes spin {
-    to {
-        -webkit-transform: rotate(360deg);
-    }
+  to {
+    -webkit-transform: rotate(360deg);
+  }
 }

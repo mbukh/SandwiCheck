@@ -1,28 +1,22 @@
-import path from "path";
-import { CONFIG_DIR, CLIENT_DIR, UPLOADS_DIR } from "../config/dir.js";
+import path from 'path';
+import { CONFIG_DIR, CLIENT_DIR, UPLOADS_DIR } from '../config/dir.js';
 
-import dotenv from "dotenv";
-dotenv.config({ path: path.join(CONFIG_DIR, "config.env") });
+import dotenv from 'dotenv';
+dotenv.config({ path: path.join(CONFIG_DIR, 'config.env') });
 
-import colors from "colors";
+import colors from 'colors';
 
-import connectDB from "../config/db.js";
+import connectDB from '../config/db.js';
 
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
-import Ingredient from "../models/IngredientModel.js";
+import Ingredient from '../models/IngredientModel.js';
 
-import {
-  breadData,
-  cheeseData,
-  condimentData,
-  proteinData,
-  toppingData,
-} from "./initialData/ingredientsData.js";
+import { breadData, cheeseData, condimentData, proteinData, toppingData } from './initialData/ingredientsData.js';
 
 const waitForConnection = () => {
   return new Promise((resolve) => {
-    mongoose.connection.once("connected", () => {
+    mongoose.connection.once('connected', () => {
       resolve();
     });
   });
@@ -53,11 +47,9 @@ const main = async () => {
       [condimentData, Ingredient],
     ];
 
-    await Promise.all(
-      tuplesDataModelToProcess.map(([data, Model]) => addData({ data, Model }))
-    );
+    await Promise.all(tuplesDataModelToProcess.map(([data, Model]) => addData({ data, Model })));
 
-    console.log("All data added to database");
+    console.log('All data added to database');
   } catch (error) {
     console.log(error);
   } finally {

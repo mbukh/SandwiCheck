@@ -1,4 +1,4 @@
-version: "3"
+version: '3'
 
 services:
   # # Mongodb service
@@ -32,7 +32,7 @@ services:
       # PORT: 3000
       REACT_ENV: production
       REACT_APP_HOST: http://localhost:3000
-      REACT_APP_PATH: ""
+      REACT_APP_PATH: ''
       REACT_APP_API_SERVER: https://sandwicheck.app/
 # volumes:
 #   mongo_data: {}
