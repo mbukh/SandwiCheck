@@ -7,7 +7,14 @@ import eslintConfigPrettier from 'eslint-config-prettier';
 export default [
   { files: ['**/*.{js,mjs,cjs,jsx}'] },
   { languageOptions: { globals: globals.browser } },
+  { parserOptions: { ecmaVersion: 'ES2021' } },
   pluginJs.configs.recommended,
   pluginReact.configs.flat.recommended,
+  {
+    rules: {
+      'react/react-in-jsx-scope': 'off',
+      'react/jsx-filename-extension': [1, { extensions: ['.jsx', '.tsx'] }],
+    },
+  },
   eslintConfigPrettier,
 ];

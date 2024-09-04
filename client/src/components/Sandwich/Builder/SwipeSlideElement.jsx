@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { generateIngredientImageSrc } from '../../../utils/ingredients-utils';
 
 const SwipeSlideElement = ({ ingredient, sandwich, isActive }) => {
@@ -16,6 +17,12 @@ const SwipeSlideElement = ({ ingredient, sandwich, isActive }) => {
       </div>
     </div>
   );
+};
+
+SwipeSlideElement.propTypes = {
+  ingredient: PropTypes.object.isRequired,
+  sandwich: PropTypes.object.isRequired,
+  isActive: PropTypes.bool,
 };
 
 SwipeSlideElement.displayName = 'SwiperSlide';
