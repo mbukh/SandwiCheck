@@ -1,12 +1,15 @@
+import { useSwiper } from 'swiper/react';
 import nextImg from '../../assets/images/icons/arrow-next.svg';
 import prevImg from '../../assets/images/icons/arrow-previous.svg';
 
-const SwiperNavigationButton = ({ navigation, swiperRef, direction }) => {
+const SwiperNavigationButton = ({ navigation, direction }) => {
+  const swiper = useSwiper();
+
   const isNext = direction === 'next';
 
   const srcImage = isNext ? nextImg : prevImg;
 
-  const clickHandler = isNext ? () => swiperRef.current.slideNext() : () => swiperRef.current.slidePrev();
+  const clickHandler = isNext ? () => swiper.slideNext() : () => swiper.slidePrev();
 
   const directionName = isNext ? 'next' : 'previous';
 

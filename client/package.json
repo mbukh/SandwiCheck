@@ -60,7 +60,12 @@
       "node_modules/(?!@ngrx|(?!deck.gl)|ng-dynamic)"
     ],
     "moduleNameMapper": {
-      "axios": "axios/dist/node/axios.cjs"
+      "axios": "axios/dist/node/axios.cjs",
+      "\\.(css|less|sass|scss)$": "<rootDir>/__mocks__/styleMock.js",
+      "\\.(gif|ttf|eot|svg)$": "<rootDir>/__mocks__/fileMock.js",
+      "swiper/react": "<rootDir>/__mocks__/swiper.js",
+      "swiper/css": "<rootDir>/__mocks__/styleMock.js",
+      "swiper/css/(.*)": "<rootDir>/__mocks__/styleMock.js"
     }
   },
   "jest-junit": {

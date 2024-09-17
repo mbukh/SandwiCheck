@@ -1,7 +1,7 @@
 import sharp from 'sharp';
 import createHttpError from 'http-errors';
 
-const width = parseInt(process.env.USER_IMAGE_WIDT, 10);
+const width = parseInt(process.env.USER_IMAGE_WIDTH, 10);
 const height = parseInt(process.env.USER_IMAGE_HEIGH, 10);
 
 const resizeImage = async (req, res, next) => {

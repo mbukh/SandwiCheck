@@ -1,7 +1,11 @@
 import PropTypes from 'prop-types';
 import { generateIngredientImageSrc } from '../../../utils/ingredients-utils';
+import { useSwiperSlide } from 'swiper/react';
 
-const SwipeSlideElement = ({ ingredient, sandwich, isActive }) => {
+const SwipeSlideElement = ({ ingredient, sandwich }) => {
+  const swiperSlide = useSwiperSlide();
+  const { isActive } = swiperSlide;
+
   return (
     <div className={`swiper-slide-container relative aspect-ration-4/3 ${isActive ? 'active' : ''}`}>
       <img

@@ -1,19 +1,23 @@
 import { DIETARY_PREFERENCES } from '../constants/ingredients-constants';
 import { getAllIngredients } from '../services/api-ingredients';
-import { fakeLocalStorage } from './fakeLocalStorage.mock';
+
+jest.mock('../services/api-ingredients', () => ({
+  getAllIngredients: jest.fn(),
+}));
 
 describe('Check server API response', () => {
-  beforeAll(() => {
-    Object.defineProperty(window, 'localStorage', {
-      value: fakeLocalStorage,
-    });
-  });
-
   beforeEach(() => {
-    window.localStorage.clear();
+    jest.clearAllMocks();
   });
 
   it('reads ingredients from API', async () => {
+    const mockIngredientsData = [
+      { id: 1, name: 'Ingredient 1', dietaryPreferences: [DIETARY_PREFERENCES.kosher] },
+      { id: 2, name: 'Ingredient 2', dietaryPreferences: [DIETARY_PREFERENCES.kosher] },
+    ];
+
+    getAllIngredients.mockResolvedValue({ data: mockIngredientsData });
+
     const response = await getAllIngredients({
       dietaryPreferences: [DIETARY_PREFERENCES.kosher],
     });
@@ -21,7 +25,10 @@ describe('Check server API response', () => {
     expect(Array.isArray(response.data)).toBe(true);
     expect(response.data.length).not.toBe(0);
 
-    expect(typeof window.localStorage.getItem('ingredients')).toBe('string');
-    expect(window.localStorage.getItem('ingredients').length).not.toBe(0);
+    expect(getAllIngredients).toHaveBeenCalledWith({
+      dietaryPreferences: [DIETARY_PREFERENCES.kosher],
+    });
+
+    expect(response.data).toEqual(mockIngredientsData);
   });
 });
