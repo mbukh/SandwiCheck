@@ -14,7 +14,7 @@ RUN npm run build
 # RUN npm install
 # COPY --from=build-stage /app/build ./client/build
 # COPY ./server/ ./server/
-# RUN mv -f ./server/config/config.env.example ./server/config/config.env
+# RUN mv -f ./server/config/.env.example ./server/config/.env
 # ## Add the wait script to the image
 # COPY --from=ghcr.io/ufoscout/docker-compose-wait:latest /wait /wait
 # EXPOSE 5001
