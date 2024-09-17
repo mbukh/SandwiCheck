@@ -10,9 +10,10 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 
 import cors from 'cors';
-import xss from 'xss-clean';
+import { xss } from 'express-xss-sanitizer';
 import hpp from 'hpp';
 import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
 
 import morgan from 'morgan';
 import colors from 'colors';
@@ -28,47 +29,44 @@ connectDB();
 
 const app = express();
 
-// ==== Logging ==== //
-const morganFormat = process.env.NODE_ENV === 'development' ? 'dev' : 'combined';
-app.use(morgan(morganFormat));
-
+// Rate limiter
+app.use(
+  '/api/',
+  rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 500, // limit each IP to 500 requests per windowMs
+    message: 'Too many requests, please try again later',
+  }),
+);
 // CORS cross-domain access
-const whitelist = [
-  'http://localhost:3000',
-  'http://localhost:5001',
-  'https://sandwicheck.app',
-  'https://mbukh.github.io',
-  process.env.CLIENT_URL,
-];
 app.use(
   cors({
-    origin: function (origin, callback) {
-      var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
-      callback(null, originIsWhitelisted);
+    origin: (origin, callback) => {
+      const isOriginAllowed = process.env.CLIENT_URL === origin || !origin;
+      callback(null, isOriginAllowed);
     },
     credentials: true,
   }),
 );
 
+// ==== Logging ==== //
+const morganFormat = process.env.NODE_ENV === 'development' ? 'dev' : 'combined';
+app.use(morgan(morganFormat));
+
 // Body parser middleware
-app.use(express.json());
+app.use(express.json({ limit: '5kb' }));
 // Cookies parser
 app.use(cookieParser());
 
 // ==== Security ==== //
 // parse URL-encoded data received from the client
 app.use(express.urlencoded({ extended: true }));
+// helmet: A middleware for securing Express apps by setting various HTTP headers
+app.use(helmet({ crossOriginResourcePolicy: false }));
 // xss-clean: A middleware for sanitizing user input (req.body, req.query, and req.params) to prevent XSS attacks
 app.use(xss());
 // hpp: A middleware for preventing HTTP Parameter Pollution attacks.
 app.use(hpp());
-// Rate limiter
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 500, // limit each IP to 500 requests per windowMs
-  message: 'Too many requests, please try again later',
-});
-app.use('/api/', limiter);
 
 // === Main routes === //
 app.use('/api/v1/ingredients', ingredientsRoutes);

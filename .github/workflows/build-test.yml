@@ -3,61 +3,61 @@ name: Build and Test
 on: [pull_request, workflow_call]
 
 permissions:
-    id-token: write
-    checks: write
-    contents: read
+  id-token: write
+  checks: write
+  contents: read
 
 jobs:
-    build-test:
-        runs-on: ubuntu-latest
+  build-test:
+    runs-on: ubuntu-latest
 
-        env:
-            REACT_ENV: "production"
-            REACT_APP_HOST: "https://mbukh.github.io/SandwiCheck"
-            REACT_APP_PATH: "/SandwiCheck"
-            REACT_APP_API_SERVER: "https://sandwicheck.app"
+    env:
+      REACT_ENV: 'production'
+      REACT_APP_HOST: 'https://mbukh.github.io/SandwiCheck'
+      REACT_APP_PATH: '/SandwiCheck'
+      REACT_APP_API_SERVER: 'https://sandwicheck.app'
 
-        defaults:
-            run:
-                working-directory: ./client
+    defaults:
+      run:
+        working-directory: ./client
 
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
 
-            - name: Configure Node.js
-              uses: actions/setup-node@v3
-              with:
-                  node-version: "18.x"
-                  cache: "npm"
+      - name: Configure Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+          cache: 'npm'
 
-            - name: Install
-              run: npm ci
+      - name: Install
+        run: npm ci
 
-            - name: Test
-              run: npm run test:ci
+      - name: Test
+        run: npm run test:ci
 
-            - name: Test Report
-              uses: dorny/test-reporter@v1.6.0
-              if: success() || failure() # run this step even if previous step failed
-              with:
-                  name: JEST Tests # Name of the check run which will be created
-                  path: ./client/reports/jest-*.xml # Path to test results
-                  reporter: jest-junit # Format of test results
+      - name: Test Report
+        uses: dorny/test-reporter@v1.6.0
+        if: success() || failure() # run this step even if previous step failed
+        with:
+          name: JEST Tests # Name of the check run which will be created
+          path: ./client/reports/jest-*.xml # Path to test results
+          reporter: jest-junit # Format of test results
 
-            - name: Build
-              run: |
-                  npm run build --if-present
+      - name: Build
+        run: |
+          npm run build --if-present
 
-            - name: Upload Build Artifact
-              uses: actions/upload-artifact@v3
-              with:
-                  name: build-artifact
-                  path: ./client/build/
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifact
+          path: ./client/build/
 
-            - name: Build Docker Image
-              run: |
-                  pwd
-                  ls -a
-                  docker build . --file ./Dockerfile -t sandwicheck-app-image
-              working-directory: ./
+      - name: Build Docker Image
+        run: |
+          pwd
+          ls -a
+          docker build . --file ./Dockerfile -t sandwicheck-app-image
+        working-directory: ./
