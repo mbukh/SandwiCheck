@@ -3,7 +3,7 @@ node_modules
 
 # Build/Production
 /client/build
-# server/uploads/sandwiches
+server/uploads/sandwiches
 
 # Environment variables
 *.env*
