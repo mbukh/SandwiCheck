@@ -12,7 +12,6 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      REACT_ENV: 'production'
       REACT_APP_HOST: 'https://mbukh.github.io/SandwiCheck'
       # REACT_APP_PATH: '/SandwiCheck'
       REACT_APP_API_SERVER: 'https://api.sandwicheck.app'
