@@ -10,4 +10,4 @@ COPY ./server/ ./server/
 # COPY --from=ghcr.io/ufoscout/docker-compose-wait:latest /wait /wait
 
 EXPOSE 5001
-CMD ["npm", "run", "server"]
+CMD ["npm", "run", "start"]
