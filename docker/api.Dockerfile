@@ -1,11 +1,11 @@
-FROM node:20.17.0-alpine AS production-stage
+FROM node:20.17.0-alpine
 
 WORKDIR /app
 
-COPY ./package*.json .
-RUN npm install
+COPY package*.json ./
+RUN npm ci
 
-RUN npm install --os=linux --libc=musl --cpu=x64 sharp
+RUN npm install sharp
 
 COPY ./server/ ./server/
 
