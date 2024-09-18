@@ -18,7 +18,7 @@ services:
   sandwicheck-app:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: docker/ui.Dockerfile
     ports:
       - 3000:80
       # - 5001:5001
