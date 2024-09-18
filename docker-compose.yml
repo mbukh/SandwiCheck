@@ -23,7 +23,7 @@ services:
       dockerfile: docker/ui.Dockerfile
     ports:
       - 3000:80
-    env_file: client/.env
+    env_file: client/.env.example
 
   api:
     build:
