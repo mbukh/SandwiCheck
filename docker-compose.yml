@@ -14,7 +14,7 @@ services:
   #   # environment:
   #     # API_SERVER: http://localhost:5001
 
-# volumes:
+  # volumes:
   # mongo_data: {}
 
   ui:
@@ -34,3 +34,4 @@ services:
     # depends_on:
     #   - mongo_db
     env_file: server/config/.env
+    command: [npm, run, start]
