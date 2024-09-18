@@ -25,7 +25,6 @@ FROM nginx:alpine AS production-stage
 WORKDIR /app
 COPY --from=build-stage /app/build /usr/share/nginx/html
 
-# Copy a custom nginx configuration file if you need to set runtime variables
 COPY ./client/nginx/default.conf /etc/nginx/conf.d/
 
 EXPOSE 80
