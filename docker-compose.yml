@@ -31,4 +31,6 @@ services:
       - 5001:5001
     # depends_on:
     #   - mongo_db
+    volumes:
+      - ./server/uploads:/app/server/uploads
     env_file: server/config/.env
