@@ -7,22 +7,29 @@
   "main": "./src/index.jsx",
   "homepage": ".",
   "dependencies": {
-    "@testing-library/jest-dom": "^6.1.2",
-    "@testing-library/react": "^14.0.0",
-    "@testing-library/user-event": "^14.4.3",
-    "axios": "^1.5.0",
-    "dotenv": "^16.3.1",
+    "@testing-library/jest-dom": "^6.5.0",
+    "@testing-library/react": "^16.0.1",
+    "@testing-library/user-event": "^14.5.2",
+    "axios": "^1.7.7",
+    "dotenv": "^16.4.5",
+    "eslint-config-react-app": "^7.0.1",
     "normalize.css": "^8.0.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.15.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.2",
     "react-scripts": "5.0.1",
     "reset-css": "^5.0.2",
-    "swiper": "^9.1.0"
+    "swiper": "^11.1.14"
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "jest-junit": "^16.0.0"
+    "@eslint/js": "^9.10.0",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-react": "^7.36.1",
+    "globals": "^15.9.0",
+    "jest-junit": "^16.0.0",
+    "npm-check-updates": "^17.1.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -30,12 +37,6 @@
     "test": "react-scripts test",
     "test:ci": "npm run test  -- --ci --reporters=default --reporters=\"jest-junit\" --env=jsdom --testURL=http://localhost/SandwiCheck",
     "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
   },
   "browserslist": {
     "production": [
@@ -54,7 +55,12 @@
       "node_modules/(?!@ngrx|(?!deck.gl)|ng-dynamic)"
     ],
     "moduleNameMapper": {
-      "axios": "axios/dist/node/axios.cjs"
+      "axios": "axios/dist/node/axios.cjs",
+      "\\.(css|less|sass|scss)$": "<rootDir>/__mocks__/styleMock.js",
+      "\\.(gif|ttf|eot|svg)$": "<rootDir>/__mocks__/fileMock.js",
+      "swiper/react": "<rootDir>/__mocks__/swiper.js",
+      "swiper/css": "<rootDir>/__mocks__/styleMock.js",
+      "swiper/css/(.*)": "<rootDir>/__mocks__/styleMock.js"
     }
   },
   "jest-junit": {

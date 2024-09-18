@@ -12,10 +12,10 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      REACT_ENV: "production"
-      REACT_APP_HOST: "https://mbukh.github.io/SandwiCheck"
-      REACT_APP_PATH: "/SandwiCheck"
-      REACT_APP_API_SERVER: "https://sandwicheck.app"
+      REACT_ENV: 'production'
+      REACT_APP_HOST: 'https://mbukh.github.io/SandwiCheck'
+      # REACT_APP_PATH: '/SandwiCheck'
+      REACT_APP_API_SERVER: 'https://api.sandwicheck.app'
 
     defaults:
       run:
@@ -23,13 +23,13 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Configure Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: "18.x"
-          cache: "npm"
+          node-version: '20.17.0'
+          cache: 'npm'
 
       - name: Install
         run: npm ci
@@ -38,7 +38,7 @@ jobs:
         run: npm run test:ci
 
       - name: Test Report
-        uses: dorny/test-reporter@v1.6.0
+        uses: dorny/test-reporter@v1
         if: success() || failure() # run this step even if previous step failed
         with:
           name: JEST Tests # Name of the check run which will be created
@@ -50,7 +50,7 @@ jobs:
           npm run build --if-present
 
       - name: Upload Build Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-artifact
           path: ./client/build/
@@ -59,5 +59,5 @@ jobs:
         run: |
           pwd
           ls -a
-          docker build . --file ./Dockerfile -t sandwicheck-app-image
+          docker build . --file ./docker/ui.Dockerfile -t sandwicheck-app-image
         working-directory: ./

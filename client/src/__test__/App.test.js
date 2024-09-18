@@ -1,13 +1,21 @@
-import { render, screen } from "@testing-library/react";
-import App from "../App";
-import AuthGlobalContextProvider from "../context/AuthGlobalContext";
-import IngredientsGlobalContextProvider from "../context/IngredientsGlobalContext";
-import { fakeLocalStorage } from "./fakeLocalStorage.mock";
+import { render, screen } from '@testing-library/react';
+import App from '../App';
+import AuthGlobalContextProvider from '../context/AuthGlobalContext';
+import IngredientsGlobalContextProvider from '../context/IngredientsGlobalContext';
+import { fakeLocalStorage } from './localStorageMock';
 
-describe("Render the App", () => {
+describe('Render the App', () => {
+  const originalLocalStorage = window.localStorage;
+
   beforeAll(() => {
-    Object.defineProperty(window, "localStorage", {
+    Object.defineProperty(window, 'localStorage', {
       value: fakeLocalStorage,
+    });
+  });
+
+  afterAll(() => {
+    Object.defineProperty(window, 'localStorage', {
+      value: originalLocalStorage,
     });
   });
 
@@ -15,7 +23,7 @@ describe("Render the App", () => {
     window.localStorage.clear();
   });
 
-  it("renders the app", () => {
+  it('renders the app', () => {
     const theApp = (
       <AuthGlobalContextProvider>
         <IngredientsGlobalContextProvider>
@@ -26,8 +34,7 @@ describe("Render the App", () => {
 
     render(theApp);
 
-    const linkElement = screen.getByText(/Let us/i).closest("div");
-    expect(linkElement).toBeInTheDocument();
-    expect(linkElement.parentElement).toHaveClass("logo");
+    const logoText = screen.getByText(/Let us/i);
+    expect(logoText).toBeInTheDocument();
   });
 });

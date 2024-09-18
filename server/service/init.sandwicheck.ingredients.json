@@ -1,1202 +1,935 @@
-[{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f310"
-  },
-  "name": "Ciabatta",
-  "type": "bread",
-  "shape": "long",
-  "imageBase": "20200620_101006",
-  "dietaryPreferences": [
-    "vegetarian",
-    "vegan",
-    "kosher"
-  ],
-  "displayPriority": 80,
-  "createdAt": {
-    "$date": "2020-06-20T06:10:06.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f311"
-  },
-  "name": "Semolina",
-  "type": "bread",
-  "shape": "long",
-  "imageBase": "20200620_101033",
-  "dietaryPreferences": [
-    "vegetarian",
-    "vegan",
-    "kosher"
-  ],
-  "displayPriority": 60,
-  "createdAt": {
-    "$date": "2020-06-20T06:10:33.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f312"
-  },
-  "name": "Multi-Grain",
-  "type": "bread",
-  "shape": "long",
-  "imageBase": "20200620_101059",
-  "dietaryPreferences": [
-    "vegetarian",
-    "vegan",
-    "kosher",
-    "halal"
-  ],
-  "displayPriority": 85,
-  "createdAt": {
-    "$date": "2020-06-20T06:10:59.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f313"
-  },
-  "name": "Rye",
-  "type": "bread",
-  "shape": "trapezoid",
-  "imageBase": "20200620_101114",
-  "dietaryPreferences": [
-    "vegetarian",
-    "vegan",
-    "kosher"
-  ],
-  "displayPriority": 70,
-  "createdAt": {
-    "$date": "2020-06-20T06:11:14.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f314"
-  },
-  "name": "Croissant",
-  "type": "bread",
-  "shape": "trapezoid",
-  "imageBase": "20200620_101131",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher"
-  ],
-  "displayPriority": 75,
-  "createdAt": {
-    "$date": "2020-06-20T06:11:31.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f315"
-  },
-  "name": "Whole Wheat",
-  "type": "bread",
-  "shape": "round",
-  "imageBase": "20200620_101224",
-  "dietaryPreferences": [
-    "vegetarian",
-    "vegan",
-    "kosher",
-    "halal"
-  ],
-  "displayPriority": 90,
-  "createdAt": {
-    "$date": "2020-06-20T06:12:24.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f316"
-  },
-  "name": "White",
-  "type": "bread",
-  "shape": "round",
-  "imageBase": "20200620_101152",
-  "dietaryPreferences": [
-    "vegetarian",
-    "vegan",
-    "kosher",
-    "halal"
-  ],
-  "displayPriority": 100,
-  "createdAt": {
-    "$date": "2020-06-20T06:11:52.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f317"
-  },
-  "name": "Whole Wheat Wrap",
-  "type": "bread",
-  "shape": "long",
-  "imageBase": "20180222_030637",
-  "dietaryPreferences": [
-    "vegetarian",
-    "vegan",
-    "kosher",
-    "halal"
-  ],
-  "displayPriority": 65,
-  "createdAt": {
-    "$date": "2018-02-21T23:06:37.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f318"
-  },
-  "name": "Lettuce Wrap",
-  "type": "bread",
-  "shape": "long",
-  "imageBase": "20200620_101255",
-  "dietaryPreferences": [
-    "vegetarian",
-    "vegan",
-    "kosher",
-    "halal"
-  ],
-  "displayPriority": 55,
-  "createdAt": {
-    "$date": "2020-06-20T06:12:55.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f319"
-  },
-  "name": "Gluten-Free",
-  "type": "bread",
-  "shape": "trapezoid",
-  "imageBase": "20220202_050837",
-  "dietaryPreferences": [
-    "vegetarian",
-    "vegan",
-    "kosher",
-    "halal"
-  ],
-  "displayPriority": 40,
-  "createdAt": {
-    "$date": "2022-02-02T01:08:37.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f31a"
-  },
-  "name": "Turkey",
-  "type": "protein",
-  "imageBase": "20200621_081721",
-  "dietaryPreferences": [
-    "halal",
-    "kosher",
-    "meat"
-  ],
-  "displayPriority": 100,
-  "createdAt": {
-    "$date": "2020-06-21T04:17:21.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f31b"
-  },
-  "name": "Roast Beef",
-  "type": "protein",
-  "imageBase": "20200621_082049",
-  "dietaryPreferences": [
-    "kosher",
-    "halal",
-    "meat"
-  ],
-  "displayPriority": 90,
-  "createdAt": {
-    "$date": "2020-06-21T04:20:49.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f31c"
-  },
-  "name": "Ham",
-  "type": "protein",
-  "imageBase": "20200621_081904",
-  "dietaryPreferences": [],
-  "displayPriority": 85,
-  "createdAt": {
-    "$date": "2020-06-21T04:19:04.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f31d"
-  },
-  "name": "Prosciutto",
-  "type": "protein",
-  "imageBase": "20200621_082227",
-  "dietaryPreferences": [],
-  "displayPriority": 70,
-  "createdAt": {
-    "$date": "2020-06-21T04:22:27.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f31e"
-  },
-  "name": "Corned Beef",
-  "type": "protein",
-  "imageBase": "20200621_082443",
-  "dietaryPreferences": [
-    "kosher",
-    "halal",
-    "meat"
-  ],
-  "displayPriority": 80,
-  "createdAt": {
-    "$date": "2020-06-21T04:24:43.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f31f"
-  },
-  "name": "Pastrami",
-  "type": "protein",
-  "imageBase": "20200621_082538",
-  "dietaryPreferences": [
-    "kosher",
-    "halal",
-    "meat"
-  ],
-  "displayPriority": 75,
-  "createdAt": {
-    "$date": "2020-06-21T04:25:38.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f320"
-  },
-  "name": "Genoa Salami",
-  "type": "protein",
-  "imageBase": "20200621_082005",
-  "dietaryPreferences": [],
-  "displayPriority": 65,
-  "createdAt": {
-    "$date": "2020-06-21T04:20:05.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f321"
-  },
-  "name": "Soppressata",
-  "type": "protein",
-  "imageBase": "20200813_113834",
-  "dietaryPreferences": [],
-  "displayPriority": 60,
-  "createdAt": {
-    "$date": "2020-08-13T07:38:34.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f322"
-  },
-  "name": "Capocollo",
-  "type": "protein",
-  "imageBase": "20200909_100415",
-  "dietaryPreferences": [],
-  "displayPriority": 55,
-  "createdAt": {
-    "$date": "2020-09-09T06:04:15.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f323"
-  },
-  "name": "Pepperoni",
-  "type": "protein",
-  "imageBase": "20200621_082346",
-  "dietaryPreferences": [],
-  "displayPriority": 50,
-  "createdAt": {
-    "$date": "2020-06-21T04:23:46.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f324"
-  },
-  "name": "Baked Chicken",
-  "type": "protein",
-  "imageBase": "20200621_082626",
-  "dietaryPreferences": [
-    "halal",
-    "kosher",
-    "meat"
-  ],
-  "displayPriority": 95,
-  "createdAt": {
-    "$date": "2020-06-21T04:26:26.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f325"
-  },
-  "name": "Bacon",
-  "type": "protein",
-  "imageBase": "20200621_082719",
-  "dietaryPreferences": [],
-  "displayPriority": 45,
-  "createdAt": {
-    "$date": "2020-06-21T04:27:19.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f326"
-  },
-  "name": "Chicken Salad",
-  "type": "protein",
-  "imageBase": "20200621_082821",
-  "dietaryPreferences": [
-    "halal",
-    "kosher",
-    "meat"
-  ],
-  "displayPriority": 40,
-  "createdAt": {
-    "$date": "2020-06-21T04:28:21.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f327"
-  },
-  "name": "Tuna Salad",
-  "type": "protein",
-  "imageBase": "20200621_082909",
-  "dietaryPreferences": [
-    "kosher",
-    "halal",
-    "fish"
-  ],
-  "displayPriority": 30,
-  "createdAt": {
-    "$date": "2020-06-21T04:29:09.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f328"
-  },
-  "name": "Egg Salad",
-  "type": "protein",
-  "imageBase": "20200621_082959",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "halal"
-  ],
-  "displayPriority": 20,
-  "createdAt": {
-    "$date": "2020-06-21T04:29:59.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f329"
-  },
-  "name": "Swiss",
-  "type": "cheese",
-  "imageBase": "20200621_083351",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "diary"
-  ],
-  "displayPriority": 80,
-  "createdAt": {
-    "$date": "2020-06-21T04:33:51.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f32a"
-  },
-  "name": "Provolone",
-  "type": "cheese",
-  "imageBase": "20200621_083450",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "diary"
-  ],
-  "displayPriority": 70,
-  "createdAt": {
-    "$date": "2020-06-21T04:34:50.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f32b"
-  },
-  "name": "Mozzarella",
-  "type": "cheese",
-  "imageBase": "20200621_083553",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "halal",
-    "diary"
-  ],
-  "displayPriority": 100,
-  "createdAt": {
-    "$date": "2020-06-21T04:35:53.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f32c"
-  },
-  "name": "Cheddar",
-  "type": "cheese",
-  "imageBase": "20200621_083659",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "diary"
-  ],
-  "displayPriority": 90,
-  "createdAt": {
-    "$date": "2020-06-21T04:36:59.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f32d"
-  },
-  "name": "Pepper Jack",
-  "type": "cheese",
-  "imageBase": "20200621_083757",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "diary"
-  ],
-  "displayPriority": 75,
-  "createdAt": {
-    "$date": "2020-06-21T04:37:57.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f32e"
-  },
-  "name": "Muenster",
-  "type": "cheese",
-  "imageBase": "20200621_083858",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "diary"
-  ],
-  "displayPriority": 60,
-  "createdAt": {
-    "$date": "2020-06-21T04:38:58.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f32f"
-  },
-  "name": "American",
-  "type": "cheese",
-  "imageBase": "20200621_083946",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "diary"
-  ],
-  "displayPriority": 95,
-  "createdAt": {
-    "$date": "2020-06-21T04:39:46.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f330"
-  },
-  "name": "Brie",
-  "type": "cheese",
-  "imageBase": "20200621_084108",
-  "dietaryPreferences": [
-    "vegetarian",
-    "diary"
-  ],
-  "displayPriority": 50,
-  "createdAt": {
-    "$date": "2020-06-21T04:41:08.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f331"
-  },
-  "name": "Parmesan",
-  "type": "cheese",
-  "imageBase": "20200621_084307",
-  "dietaryPreferences": [
-    "vegetarian",
-    "diary"
-  ],
-  "displayPriority": 65,
-  "createdAt": {
-    "$date": "2020-06-21T04:43:07.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f332"
-  },
-  "name": "Feta",
-  "type": "cheese",
-  "imageBase": "20200621_092955",
-  "dietaryPreferences": [
-    "vegetarian",
-    "halal",
-    "diary"
-  ],
-  "displayPriority": 55,
-  "createdAt": {
-    "$date": "2020-06-21T05:29:55.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f333"
-  },
-  "name": "Tomatoes",
-  "type": "toppings",
-  "imageBase": "20200621_093051",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "halal",
-    "vegan"
-  ],
-  "displayPriority": 90,
-  "createdAt": {
-    "$date": "2020-06-21T05:30:51.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f334"
-  },
-  "name": "Lettuce",
-  "type": "toppings",
-  "imageBase": "20200621_093526",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "halal",
-    "vegan"
-  ],
-  "displayPriority": 95,
-  "createdAt": {
-    "$date": "2020-06-21T05:35:26.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f335"
-  },
-  "name": "Onions",
-  "type": "toppings",
-  "imageBase": "20200621_095313",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "halal",
-    "vegan"
-  ],
-  "displayPriority": 85,
-  "createdAt": {
-    "$date": "2020-06-21T05:53:13.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f336"
-  },
-  "name": "Arugula",
-  "type": "toppings",
-  "imageBase": "20200621_095441",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "halal",
-    "vegan"
-  ],
-  "displayPriority": 60,
-  "createdAt": {
-    "$date": "2020-06-21T05:54:41.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f337"
-  },
-  "name": "Spinach",
-  "type": "toppings",
-  "imageBase": "20200621_095524",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "halal",
-    "vegan"
-  ],
-  "displayPriority": 75,
-  "createdAt": {
-    "$date": "2020-06-21T05:55:24.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f338"
-  },
-  "name": "Kale",
-  "type": "toppings",
-  "imageBase": "20200621_095607",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "halal",
-    "vegan"
-  ],
-  "displayPriority": 55,
-  "createdAt": {
-    "$date": "2020-06-21T05:56:07.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f339"
-  },
-  "name": "Alfalfa Sprouts",
-  "type": "toppings",
-  "imageBase": "20200621_095722",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "halal",
-    "vegan"
-  ],
-  "displayPriority": 40,
-  "createdAt": {
-    "$date": "2020-06-21T05:57:22.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f33a"
-  },
-  "name": "Cucumbers",
-  "type": "toppings",
-  "imageBase": "20200621_095400",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "halal",
-    "vegan"
-  ],
-  "displayPriority": 70,
-  "createdAt": {
-    "$date": "2020-06-21T05:54:00.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f33b"
-  },
-  "name": "Pickles",
-  "type": "toppings",
-  "imageBase": "20200621_095938",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "halal",
-    "vegan"
-  ],
-  "displayPriority": 80,
-  "createdAt": {
-    "$date": "2020-06-21T05:59:38.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f33c"
-  },
-  "name": "Olives",
-  "type": "toppings",
-  "imageBase": "20200621_100026",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "halal",
-    "vegan"
-  ],
-  "displayPriority": 65,
-  "createdAt": {
-    "$date": "2020-06-21T06:00:26.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f33d"
-  },
-  "name": "Banana Peppers",
-  "type": "toppings",
-  "imageBase": "20200621_100115",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "halal",
-    "vegan"
-  ],
-  "displayPriority": 50,
-  "createdAt": {
-    "$date": "2020-06-21T06:01:15.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f33e"
-  },
-  "name": "Jalapenos",
-  "type": "toppings",
-  "imageBase": "20200621_100218",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "halal",
-    "vegan"
-  ],
-  "displayPriority": 45,
-  "createdAt": {
-    "$date": "2020-06-21T06:02:18.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f33f"
-  },
-  "name": "Roasted Red Peppers",
-  "type": "toppings",
-  "imageBase": "20200621_100648",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "halal",
-    "vegan"
-  ],
-  "displayPriority": 35,
-  "createdAt": {
-    "$date": "2020-06-21T06:06:48.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f340"
-  },
-  "name": "Sliced Apple",
-  "type": "toppings",
-  "imageBase": "20200621_100309",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "halal",
-    "vegan"
-  ],
-  "displayPriority": 25,
-  "createdAt": {
-    "$date": "2020-06-21T06:03:09.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f341"
-  },
-  "name": "Coleslaw",
-  "type": "toppings",
-  "imageBase": "20200621_100450",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "halal",
-    "vegan"
-  ],
-  "displayPriority": 30,
-  "createdAt": {
-    "$date": "2020-06-21T06:04:50.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f342"
-  },
-  "name": "Sauerkraut",
-  "type": "toppings",
-  "imageBase": "20200621_100559",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "halal",
-    "vegan"
-  ],
-  "displayPriority": 20,
-  "createdAt": {
-    "$date": "2020-06-21T06:05:59.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f343"
-  },
-  "name": "Kettle Cooked Chips",
-  "type": "toppings",
-  "imageBase": "20200621_100356",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "halal",
-    "vegan"
-  ],
-  "displayPriority": 15,
-  "createdAt": {
-    "$date": "2020-06-21T06:03:56.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f344"
-  },
-  "name": "Avocado",
-  "type": "toppings",
-  "imageBase": "20200621_100736",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "halal",
-    "vegan"
-  ],
-  "displayPriority": 100,
-  "createdAt": {
-    "$date": "2020-06-21T06:07:36.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f345"
-  },
-  "name": "Mayonnaise",
-  "type": "condiments",
-  "imageBase": "20200621_115703",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher"
-  ],
-  "displayPriority": 100,
-  "createdAt": {
-    "$date": "2020-06-21T07:57:03.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f346"
-  },
-  "name": "Spicy Mayonnaise",
-  "type": "condiments",
-  "imageBase": "20200621_121311",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher"
-  ],
-  "displayPriority": 90,
-  "createdAt": {
-    "$date": "2020-06-21T08:13:11.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f347"
-  },
-  "name": "Spicy Brown Mustard",
-  "type": "condiments",
-  "imageBase": "20200621_121727",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "halal"
-  ],
-  "displayPriority": 60,
-  "createdAt": {
-    "$date": "2020-06-21T08:17:27.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f348"
-  },
-  "name": "Dijon Mustard",
-  "type": "condiments",
-  "imageBase": "20200621_121826",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "halal"
-  ],
-  "displayPriority": 70,
-  "createdAt": {
-    "$date": "2020-06-21T08:18:26.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f349"
-  },
-  "name": "Honey Mustard",
-  "type": "condiments",
-  "imageBase": "20200621_121913",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher"
-  ],
-  "displayPriority": 50,
-  "createdAt": {
-    "$date": "2020-06-21T08:19:13.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f34a"
-  },
-  "name": "Oil & Vinegar",
-  "type": "condiments",
-  "imageBase": "20200621_122357",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "halal",
-    "vegan"
-  ],
-  "displayPriority": 30,
-  "createdAt": {
-    "$date": "2020-06-21T08:23:57.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f34b"
-  },
-  "name": "Pesto",
-  "type": "condiments",
-  "imageBase": "20200621_122152",
-  "dietaryPreferences": [
-    "vegetarian"
-  ],
-  "displayPriority": 20,
-  "createdAt": {
-    "$date": "2020-06-21T08:21:52.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f34c"
-  },
-  "name": "Balsamic Dressing",
-  "type": "condiments",
-  "imageBase": "20200621_122059",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "halal"
-  ],
-  "displayPriority": 10,
-  "createdAt": {
-    "$date": "2020-06-21T08:20:59.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f34d"
-  },
-  "name": "Russian Dressing",
-  "type": "condiments",
-  "imageBase": "20200621_122003",
-  "dietaryPreferences": [
-    "kosher",
-    "diary"
-  ],
-  "displayPriority": 5,
-  "createdAt": {
-    "$date": "2020-06-21T08:20:03.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f34e"
-  },
-  "name": "Horseradish",
-  "type": "condiments",
-  "imageBase": "20200621_122556",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher"
-  ],
-  "displayPriority": 40,
-  "createdAt": {
-    "$date": "2020-06-21T08:25:56.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f34f"
-  },
-  "name": "BBQ Sauce",
-  "type": "condiments",
-  "imageBase": "20200621_122455",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "halal"
-  ],
-  "displayPriority": 80,
-  "createdAt": {
-    "$date": "2020-06-21T08:24:55.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f350"
-  },
-  "name": "Ranch",
-  "type": "condiments",
-  "imageBase": "20200621_123243",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher"
-  ],
-  "displayPriority": 95,
-  "createdAt": {
-    "$date": "2020-06-21T08:32:43.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f351"
-  },
-  "name": "Sriracha",
-  "type": "condiments",
-  "imageBase": "20200621_123445",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "halal"
-  ],
-  "displayPriority": 85,
-  "createdAt": {
-    "$date": "2020-06-21T08:34:45.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f352"
-  },
-  "name": "Thai Peanut",
-  "type": "condiments",
-  "imageBase": "20200621_123357",
-  "dietaryPreferences": [
-    "vegetarian"
-  ],
-  "displayPriority": 15,
-  "createdAt": {
-    "$date": "2020-06-21T08:33:57.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f353"
-  },
-  "name": "Honey",
-  "type": "condiments",
-  "imageBase": "20200723_023043",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher"
-  ],
-  "displayPriority": 25,
-  "createdAt": {
-    "$date": "2020-07-22T22:30:43.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f354"
-  },
-  "name": "Hummus",
-  "type": "condiments",
-  "imageBase": "20200621_102757",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "halal",
-    "vegan"
-  ],
-  "displayPriority": 45,
-  "createdAt": {
-    "$date": "2020-06-21T06:27:57.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f355"
-  },
-  "name": "Peanut Butter",
-  "type": "condiments",
-  "imageBase": "20220904_112536",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "halal"
-  ],
-  "displayPriority": 35,
-  "createdAt": {
-    "$date": "2022-09-04T07:25:36.000Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "643e5e2d70eeb78b0701f356"
-  },
-  "name": "Strawberry Preserves",
-  "type": "condiments",
-  "imageBase": "20220904_112727",
-  "dietaryPreferences": [
-    "vegetarian",
-    "kosher",
-    "halal"
-  ],
-  "displayPriority": 55,
-  "createdAt": {
-    "$date": "2022-09-04T07:27:27.000Z"
-  }
-}]
+[
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f310"
+    },
+    "name": "Ciabatta",
+    "type": "bread",
+    "shape": "long",
+    "imageBase": "20200620_101006",
+    "dietaryPreferences": ["vegetarian", "vegan", "kosher"],
+    "displayPriority": 80,
+    "createdAt": {
+      "$date": "2020-06-20T06:10:06.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f311"
+    },
+    "name": "Semolina",
+    "type": "bread",
+    "shape": "long",
+    "imageBase": "20200620_101033",
+    "dietaryPreferences": ["vegetarian", "vegan", "kosher"],
+    "displayPriority": 60,
+    "createdAt": {
+      "$date": "2020-06-20T06:10:33.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f312"
+    },
+    "name": "Multi-Grain",
+    "type": "bread",
+    "shape": "long",
+    "imageBase": "20200620_101059",
+    "dietaryPreferences": ["vegetarian", "vegan", "kosher", "halal"],
+    "displayPriority": 85,
+    "createdAt": {
+      "$date": "2020-06-20T06:10:59.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f313"
+    },
+    "name": "Rye",
+    "type": "bread",
+    "shape": "trapezoid",
+    "imageBase": "20200620_101114",
+    "dietaryPreferences": ["vegetarian", "vegan", "kosher"],
+    "displayPriority": 70,
+    "createdAt": {
+      "$date": "2020-06-20T06:11:14.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f314"
+    },
+    "name": "Croissant",
+    "type": "bread",
+    "shape": "trapezoid",
+    "imageBase": "20200620_101131",
+    "dietaryPreferences": ["vegetarian", "kosher"],
+    "displayPriority": 75,
+    "createdAt": {
+      "$date": "2020-06-20T06:11:31.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f315"
+    },
+    "name": "Whole Wheat",
+    "type": "bread",
+    "shape": "round",
+    "imageBase": "20200620_101224",
+    "dietaryPreferences": ["vegetarian", "vegan", "kosher", "halal"],
+    "displayPriority": 90,
+    "createdAt": {
+      "$date": "2020-06-20T06:12:24.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f316"
+    },
+    "name": "White",
+    "type": "bread",
+    "shape": "round",
+    "imageBase": "20200620_101152",
+    "dietaryPreferences": ["vegetarian", "vegan", "kosher", "halal"],
+    "displayPriority": 100,
+    "createdAt": {
+      "$date": "2020-06-20T06:11:52.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f317"
+    },
+    "name": "Whole Wheat Wrap",
+    "type": "bread",
+    "shape": "long",
+    "imageBase": "20180222_030637",
+    "dietaryPreferences": ["vegetarian", "vegan", "kosher", "halal"],
+    "displayPriority": 65,
+    "createdAt": {
+      "$date": "2018-02-21T23:06:37.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f318"
+    },
+    "name": "Lettuce Wrap",
+    "type": "bread",
+    "shape": "long",
+    "imageBase": "20200620_101255",
+    "dietaryPreferences": ["vegetarian", "vegan", "kosher", "halal"],
+    "displayPriority": 55,
+    "createdAt": {
+      "$date": "2020-06-20T06:12:55.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f319"
+    },
+    "name": "Gluten-Free",
+    "type": "bread",
+    "shape": "trapezoid",
+    "imageBase": "20220202_050837",
+    "dietaryPreferences": ["vegetarian", "vegan", "kosher", "halal"],
+    "displayPriority": 40,
+    "createdAt": {
+      "$date": "2022-02-02T01:08:37.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f31a"
+    },
+    "name": "Turkey",
+    "type": "protein",
+    "imageBase": "20200621_081721",
+    "dietaryPreferences": ["halal", "kosher", "meat"],
+    "displayPriority": 100,
+    "createdAt": {
+      "$date": "2020-06-21T04:17:21.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f31b"
+    },
+    "name": "Roast Beef",
+    "type": "protein",
+    "imageBase": "20200621_082049",
+    "dietaryPreferences": ["kosher", "halal", "meat"],
+    "displayPriority": 90,
+    "createdAt": {
+      "$date": "2020-06-21T04:20:49.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f31c"
+    },
+    "name": "Ham",
+    "type": "protein",
+    "imageBase": "20200621_081904",
+    "dietaryPreferences": [],
+    "displayPriority": 85,
+    "createdAt": {
+      "$date": "2020-06-21T04:19:04.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f31d"
+    },
+    "name": "Prosciutto",
+    "type": "protein",
+    "imageBase": "20200621_082227",
+    "dietaryPreferences": [],
+    "displayPriority": 70,
+    "createdAt": {
+      "$date": "2020-06-21T04:22:27.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f31e"
+    },
+    "name": "Corned Beef",
+    "type": "protein",
+    "imageBase": "20200621_082443",
+    "dietaryPreferences": ["kosher", "halal", "meat"],
+    "displayPriority": 80,
+    "createdAt": {
+      "$date": "2020-06-21T04:24:43.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f31f"
+    },
+    "name": "Pastrami",
+    "type": "protein",
+    "imageBase": "20200621_082538",
+    "dietaryPreferences": ["kosher", "halal", "meat"],
+    "displayPriority": 75,
+    "createdAt": {
+      "$date": "2020-06-21T04:25:38.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f320"
+    },
+    "name": "Genoa Salami",
+    "type": "protein",
+    "imageBase": "20200621_082005",
+    "dietaryPreferences": [],
+    "displayPriority": 65,
+    "createdAt": {
+      "$date": "2020-06-21T04:20:05.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f321"
+    },
+    "name": "Soppressata",
+    "type": "protein",
+    "imageBase": "20200813_113834",
+    "dietaryPreferences": [],
+    "displayPriority": 60,
+    "createdAt": {
+      "$date": "2020-08-13T07:38:34.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f322"
+    },
+    "name": "Capocollo",
+    "type": "protein",
+    "imageBase": "20200909_100415",
+    "dietaryPreferences": [],
+    "displayPriority": 55,
+    "createdAt": {
+      "$date": "2020-09-09T06:04:15.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f323"
+    },
+    "name": "Pepperoni",
+    "type": "protein",
+    "imageBase": "20200621_082346",
+    "dietaryPreferences": [],
+    "displayPriority": 50,
+    "createdAt": {
+      "$date": "2020-06-21T04:23:46.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f324"
+    },
+    "name": "Baked Chicken",
+    "type": "protein",
+    "imageBase": "20200621_082626",
+    "dietaryPreferences": ["halal", "kosher", "meat"],
+    "displayPriority": 95,
+    "createdAt": {
+      "$date": "2020-06-21T04:26:26.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f325"
+    },
+    "name": "Bacon",
+    "type": "protein",
+    "imageBase": "20200621_082719",
+    "dietaryPreferences": [],
+    "displayPriority": 45,
+    "createdAt": {
+      "$date": "2020-06-21T04:27:19.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f326"
+    },
+    "name": "Chicken Salad",
+    "type": "protein",
+    "imageBase": "20200621_082821",
+    "dietaryPreferences": ["halal", "kosher", "meat"],
+    "displayPriority": 40,
+    "createdAt": {
+      "$date": "2020-06-21T04:28:21.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f327"
+    },
+    "name": "Tuna Salad",
+    "type": "protein",
+    "imageBase": "20200621_082909",
+    "dietaryPreferences": ["kosher", "halal", "fish"],
+    "displayPriority": 30,
+    "createdAt": {
+      "$date": "2020-06-21T04:29:09.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f328"
+    },
+    "name": "Egg Salad",
+    "type": "protein",
+    "imageBase": "20200621_082959",
+    "dietaryPreferences": ["vegetarian", "kosher", "halal"],
+    "displayPriority": 20,
+    "createdAt": {
+      "$date": "2020-06-21T04:29:59.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f329"
+    },
+    "name": "Swiss",
+    "type": "cheese",
+    "imageBase": "20200621_083351",
+    "dietaryPreferences": ["vegetarian", "kosher", "diary"],
+    "displayPriority": 80,
+    "createdAt": {
+      "$date": "2020-06-21T04:33:51.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f32a"
+    },
+    "name": "Provolone",
+    "type": "cheese",
+    "imageBase": "20200621_083450",
+    "dietaryPreferences": ["vegetarian", "kosher", "diary"],
+    "displayPriority": 70,
+    "createdAt": {
+      "$date": "2020-06-21T04:34:50.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f32b"
+    },
+    "name": "Mozzarella",
+    "type": "cheese",
+    "imageBase": "20200621_083553",
+    "dietaryPreferences": ["vegetarian", "kosher", "halal", "diary"],
+    "displayPriority": 100,
+    "createdAt": {
+      "$date": "2020-06-21T04:35:53.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f32c"
+    },
+    "name": "Cheddar",
+    "type": "cheese",
+    "imageBase": "20200621_083659",
+    "dietaryPreferences": ["vegetarian", "kosher", "diary"],
+    "displayPriority": 90,
+    "createdAt": {
+      "$date": "2020-06-21T04:36:59.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f32d"
+    },
+    "name": "Pepper Jack",
+    "type": "cheese",
+    "imageBase": "20200621_083757",
+    "dietaryPreferences": ["vegetarian", "kosher", "diary"],
+    "displayPriority": 75,
+    "createdAt": {
+      "$date": "2020-06-21T04:37:57.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f32e"
+    },
+    "name": "Muenster",
+    "type": "cheese",
+    "imageBase": "20200621_083858",
+    "dietaryPreferences": ["vegetarian", "kosher", "diary"],
+    "displayPriority": 60,
+    "createdAt": {
+      "$date": "2020-06-21T04:38:58.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f32f"
+    },
+    "name": "American",
+    "type": "cheese",
+    "imageBase": "20200621_083946",
+    "dietaryPreferences": ["vegetarian", "kosher", "diary"],
+    "displayPriority": 95,
+    "createdAt": {
+      "$date": "2020-06-21T04:39:46.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f330"
+    },
+    "name": "Brie",
+    "type": "cheese",
+    "imageBase": "20200621_084108",
+    "dietaryPreferences": ["vegetarian", "diary"],
+    "displayPriority": 50,
+    "createdAt": {
+      "$date": "2020-06-21T04:41:08.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f331"
+    },
+    "name": "Parmesan",
+    "type": "cheese",
+    "imageBase": "20200621_084307",
+    "dietaryPreferences": ["vegetarian", "diary"],
+    "displayPriority": 65,
+    "createdAt": {
+      "$date": "2020-06-21T04:43:07.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f332"
+    },
+    "name": "Feta",
+    "type": "cheese",
+    "imageBase": "20200621_092955",
+    "dietaryPreferences": ["vegetarian", "halal", "diary"],
+    "displayPriority": 55,
+    "createdAt": {
+      "$date": "2020-06-21T05:29:55.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f333"
+    },
+    "name": "Tomatoes",
+    "type": "toppings",
+    "imageBase": "20200621_093051",
+    "dietaryPreferences": ["vegetarian", "kosher", "halal", "vegan"],
+    "displayPriority": 90,
+    "createdAt": {
+      "$date": "2020-06-21T05:30:51.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f334"
+    },
+    "name": "Lettuce",
+    "type": "toppings",
+    "imageBase": "20200621_093526",
+    "dietaryPreferences": ["vegetarian", "kosher", "halal", "vegan"],
+    "displayPriority": 95,
+    "createdAt": {
+      "$date": "2020-06-21T05:35:26.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f335"
+    },
+    "name": "Onions",
+    "type": "toppings",
+    "imageBase": "20200621_095313",
+    "dietaryPreferences": ["vegetarian", "kosher", "halal", "vegan"],
+    "displayPriority": 85,
+    "createdAt": {
+      "$date": "2020-06-21T05:53:13.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f336"
+    },
+    "name": "Arugula",
+    "type": "toppings",
+    "imageBase": "20200621_095441",
+    "dietaryPreferences": ["vegetarian", "kosher", "halal", "vegan"],
+    "displayPriority": 60,
+    "createdAt": {
+      "$date": "2020-06-21T05:54:41.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f337"
+    },
+    "name": "Spinach",
+    "type": "toppings",
+    "imageBase": "20200621_095524",
+    "dietaryPreferences": ["vegetarian", "kosher", "halal", "vegan"],
+    "displayPriority": 75,
+    "createdAt": {
+      "$date": "2020-06-21T05:55:24.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f338"
+    },
+    "name": "Kale",
+    "type": "toppings",
+    "imageBase": "20200621_095607",
+    "dietaryPreferences": ["vegetarian", "kosher", "halal", "vegan"],
+    "displayPriority": 55,
+    "createdAt": {
+      "$date": "2020-06-21T05:56:07.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f339"
+    },
+    "name": "Alfalfa Sprouts",
+    "type": "toppings",
+    "imageBase": "20200621_095722",
+    "dietaryPreferences": ["vegetarian", "kosher", "halal", "vegan"],
+    "displayPriority": 40,
+    "createdAt": {
+      "$date": "2020-06-21T05:57:22.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f33a"
+    },
+    "name": "Cucumbers",
+    "type": "toppings",
+    "imageBase": "20200621_095400",
+    "dietaryPreferences": ["vegetarian", "kosher", "halal", "vegan"],
+    "displayPriority": 70,
+    "createdAt": {
+      "$date": "2020-06-21T05:54:00.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f33b"
+    },
+    "name": "Pickles",
+    "type": "toppings",
+    "imageBase": "20200621_095938",
+    "dietaryPreferences": ["vegetarian", "kosher", "halal", "vegan"],
+    "displayPriority": 80,
+    "createdAt": {
+      "$date": "2020-06-21T05:59:38.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f33c"
+    },
+    "name": "Olives",
+    "type": "toppings",
+    "imageBase": "20200621_100026",
+    "dietaryPreferences": ["vegetarian", "kosher", "halal", "vegan"],
+    "displayPriority": 65,
+    "createdAt": {
+      "$date": "2020-06-21T06:00:26.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f33d"
+    },
+    "name": "Banana Peppers",
+    "type": "toppings",
+    "imageBase": "20200621_100115",
+    "dietaryPreferences": ["vegetarian", "kosher", "halal", "vegan"],
+    "displayPriority": 50,
+    "createdAt": {
+      "$date": "2020-06-21T06:01:15.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f33e"
+    },
+    "name": "Jalapenos",
+    "type": "toppings",
+    "imageBase": "20200621_100218",
+    "dietaryPreferences": ["vegetarian", "kosher", "halal", "vegan"],
+    "displayPriority": 45,
+    "createdAt": {
+      "$date": "2020-06-21T06:02:18.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f33f"
+    },
+    "name": "Roasted Red Peppers",
+    "type": "toppings",
+    "imageBase": "20200621_100648",
+    "dietaryPreferences": ["vegetarian", "kosher", "halal", "vegan"],
+    "displayPriority": 35,
+    "createdAt": {
+      "$date": "2020-06-21T06:06:48.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f340"
+    },
+    "name": "Sliced Apple",
+    "type": "toppings",
+    "imageBase": "20200621_100309",
+    "dietaryPreferences": ["vegetarian", "kosher", "halal", "vegan"],
+    "displayPriority": 25,
+    "createdAt": {
+      "$date": "2020-06-21T06:03:09.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f341"
+    },
+    "name": "Coleslaw",
+    "type": "toppings",
+    "imageBase": "20200621_100450",
+    "dietaryPreferences": ["vegetarian", "kosher", "halal", "vegan"],
+    "displayPriority": 30,
+    "createdAt": {
+      "$date": "2020-06-21T06:04:50.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f342"
+    },
+    "name": "Sauerkraut",
+    "type": "toppings",
+    "imageBase": "20200621_100559",
+    "dietaryPreferences": ["vegetarian", "kosher", "halal", "vegan"],
+    "displayPriority": 20,
+    "createdAt": {
+      "$date": "2020-06-21T06:05:59.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f343"
+    },
+    "name": "Kettle Cooked Chips",
+    "type": "toppings",
+    "imageBase": "20200621_100356",
+    "dietaryPreferences": ["vegetarian", "kosher", "halal", "vegan"],
+    "displayPriority": 15,
+    "createdAt": {
+      "$date": "2020-06-21T06:03:56.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f344"
+    },
+    "name": "Avocado",
+    "type": "toppings",
+    "imageBase": "20200621_100736",
+    "dietaryPreferences": ["vegetarian", "kosher", "halal", "vegan"],
+    "displayPriority": 100,
+    "createdAt": {
+      "$date": "2020-06-21T06:07:36.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f345"
+    },
+    "name": "Mayonnaise",
+    "type": "condiments",
+    "imageBase": "20200621_115703",
+    "dietaryPreferences": ["vegetarian", "kosher"],
+    "displayPriority": 100,
+    "createdAt": {
+      "$date": "2020-06-21T07:57:03.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f346"
+    },
+    "name": "Spicy Mayonnaise",
+    "type": "condiments",
+    "imageBase": "20200621_121311",
+    "dietaryPreferences": ["vegetarian", "kosher"],
+    "displayPriority": 90,
+    "createdAt": {
+      "$date": "2020-06-21T08:13:11.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f347"
+    },
+    "name": "Spicy Brown Mustard",
+    "type": "condiments",
+    "imageBase": "20200621_121727",
+    "dietaryPreferences": ["vegetarian", "kosher", "halal"],
+    "displayPriority": 60,
+    "createdAt": {
+      "$date": "2020-06-21T08:17:27.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f348"
+    },
+    "name": "Dijon Mustard",
+    "type": "condiments",
+    "imageBase": "20200621_121826",
+    "dietaryPreferences": ["vegetarian", "kosher", "halal"],
+    "displayPriority": 70,
+    "createdAt": {
+      "$date": "2020-06-21T08:18:26.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f349"
+    },
+    "name": "Honey Mustard",
+    "type": "condiments",
+    "imageBase": "20200621_121913",
+    "dietaryPreferences": ["vegetarian", "kosher"],
+    "displayPriority": 50,
+    "createdAt": {
+      "$date": "2020-06-21T08:19:13.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f34a"
+    },
+    "name": "Oil & Vinegar",
+    "type": "condiments",
+    "imageBase": "20200621_122357",
+    "dietaryPreferences": ["vegetarian", "kosher", "halal", "vegan"],
+    "displayPriority": 30,
+    "createdAt": {
+      "$date": "2020-06-21T08:23:57.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f34b"
+    },
+    "name": "Pesto",
+    "type": "condiments",
+    "imageBase": "20200621_122152",
+    "dietaryPreferences": ["vegetarian"],
+    "displayPriority": 20,
+    "createdAt": {
+      "$date": "2020-06-21T08:21:52.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f34c"
+    },
+    "name": "Balsamic Dressing",
+    "type": "condiments",
+    "imageBase": "20200621_122059",
+    "dietaryPreferences": ["vegetarian", "kosher", "halal"],
+    "displayPriority": 10,
+    "createdAt": {
+      "$date": "2020-06-21T08:20:59.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f34d"
+    },
+    "name": "Russian Dressing",
+    "type": "condiments",
+    "imageBase": "20200621_122003",
+    "dietaryPreferences": ["kosher", "diary"],
+    "displayPriority": 5,
+    "createdAt": {
+      "$date": "2020-06-21T08:20:03.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f34e"
+    },
+    "name": "Horseradish",
+    "type": "condiments",
+    "imageBase": "20200621_122556",
+    "dietaryPreferences": ["vegetarian", "kosher"],
+    "displayPriority": 40,
+    "createdAt": {
+      "$date": "2020-06-21T08:25:56.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f34f"
+    },
+    "name": "BBQ Sauce",
+    "type": "condiments",
+    "imageBase": "20200621_122455",
+    "dietaryPreferences": ["vegetarian", "kosher", "halal"],
+    "displayPriority": 80,
+    "createdAt": {
+      "$date": "2020-06-21T08:24:55.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f350"
+    },
+    "name": "Ranch",
+    "type": "condiments",
+    "imageBase": "20200621_123243",
+    "dietaryPreferences": ["vegetarian", "kosher"],
+    "displayPriority": 95,
+    "createdAt": {
+      "$date": "2020-06-21T08:32:43.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f351"
+    },
+    "name": "Sriracha",
+    "type": "condiments",
+    "imageBase": "20200621_123445",
+    "dietaryPreferences": ["vegetarian", "kosher", "halal"],
+    "displayPriority": 85,
+    "createdAt": {
+      "$date": "2020-06-21T08:34:45.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f352"
+    },
+    "name": "Thai Peanut",
+    "type": "condiments",
+    "imageBase": "20200621_123357",
+    "dietaryPreferences": ["vegetarian"],
+    "displayPriority": 15,
+    "createdAt": {
+      "$date": "2020-06-21T08:33:57.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f353"
+    },
+    "name": "Honey",
+    "type": "condiments",
+    "imageBase": "20200723_023043",
+    "dietaryPreferences": ["vegetarian", "kosher"],
+    "displayPriority": 25,
+    "createdAt": {
+      "$date": "2020-07-22T22:30:43.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f354"
+    },
+    "name": "Hummus",
+    "type": "condiments",
+    "imageBase": "20200621_102757",
+    "dietaryPreferences": ["vegetarian", "kosher", "halal", "vegan"],
+    "displayPriority": 45,
+    "createdAt": {
+      "$date": "2020-06-21T06:27:57.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f355"
+    },
+    "name": "Peanut Butter",
+    "type": "condiments",
+    "imageBase": "20220904_112536",
+    "dietaryPreferences": ["vegetarian", "kosher", "halal"],
+    "displayPriority": 35,
+    "createdAt": {
+      "$date": "2022-09-04T07:25:36.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "643e5e2d70eeb78b0701f356"
+    },
+    "name": "Strawberry Preserves",
+    "type": "condiments",
+    "imageBase": "20220904_112727",
+    "dietaryPreferences": ["vegetarian", "kosher", "halal"],
+    "displayPriority": 55,
+    "createdAt": {
+      "$date": "2022-09-04T07:27:27.000Z"
+    }
+  }
+]

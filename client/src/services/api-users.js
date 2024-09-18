@@ -1,17 +1,17 @@
-import axios from "axios";
+import axios from 'axios';
 
-import { log } from "../utils/log";
+import { log } from '../utils/log';
 
-import { handleResponse } from "../utils/api-utils";
+import { handleResponse } from '../utils/api-utils';
 
 const api = axios.create({
-    baseURL: `${process.env.REACT_APP_API_SERVER}/api/v1/users`,
-    headers: {
-        "Access-Control-Allow-Origin": process.env.REACT_APP_HOST,
-        "Content-Type": "application/json",
-    },
-    withCredentials: true,
-    credentials: "include",
+  baseURL: `${process.env.REACT_APP_API_SERVER}/api/v1/users`,
+  headers: {
+    'Access-Control-Allow-Origin': process.env.REACT_APP_HOST,
+    'Content-Type': 'application/json',
+  },
+  withCredentials: true,
+  credentials: 'include',
 });
 
 /*
@@ -51,63 +51,59 @@ const api = axios.create({
 */
 
 export const fetchCurrentUser = async () => {
-    return await handleResponse(async () => api.get(`/current`));
+  return await handleResponse(async () => api.get(`/current`));
 };
 
 export const fetchUserById = async (userId) => {
-    return await handleResponse(async () => api.get(`/${userId}`));
+  return await handleResponse(async () => api.get(`/${userId}`));
 };
 
 export const updateUserById = async ({
-    name,
-    email,
-    role,
-    dietaryPreferences,
-    unlinkParentId,
-    unlinkChildId,
-    removeProfilePicture,
-    file,
+  name,
+  email,
+  role,
+  dietaryPreferences,
+  unlinkParentId,
+  unlinkChildId,
+  removeProfilePicture,
+  file,
 }) => {
-    const formData = new FormData();
+  const formData = new FormData();
 
-    if (name) formData.append("name", name);
-    if (email) formData.append("email", email);
-    if (role) formData.append("role", role);
-    if (dietaryPreferences) formData.append("dietaryPreferences", dietaryPreferences);
-    if (unlinkParentId) formData.append("unlinkParentId", unlinkParentId);
-    if (unlinkChildId) formData.append("unlinkChildId", unlinkChildId);
-    if (removeProfilePicture)
-        formData.append("removeProfilePicture", removeProfilePicture);
-    if (file && file.imageBuffer)
-        formData.append("file", file.imageBuffer, "profile-picture.png");
+  if (name) formData.append('name', name);
+  if (email) formData.append('email', email);
+  if (role) formData.append('role', role);
+  if (dietaryPreferences) formData.append('dietaryPreferences', dietaryPreferences);
+  if (unlinkParentId) formData.append('unlinkParentId', unlinkParentId);
+  if (unlinkChildId) formData.append('unlinkChildId', unlinkChildId);
+  if (removeProfilePicture) formData.append('removeProfilePicture', removeProfilePicture);
+  if (file && file.imageBuffer) formData.append('file', file.imageBuffer, 'profile-picture.png');
 
-    const config = {
-        headers: {
-            ...api.defaults.headers,
-            "Content-Type": "multipart/form-data",
-        },
-    };
+  const config = {
+    headers: {
+      ...api.defaults.headers,
+      'Content-Type': 'multipart/form-data',
+    },
+  };
 
-    return await handleResponse(async () => api.put(`/update`, formData, config));
+  return await handleResponse(async () => api.put(`/update`, formData, config));
 };
 
 export const addSandwichToFavoritesByUserId = async ({ userId, sandwichId }) => {
-    return await handleResponse(async () =>
-        api.get(`/users/${userId}/favorite-sandwiches/${sandwichId}`)
-    );
+  return await handleResponse(async () => api.get(`/users/${userId}/favorite-sandwiches/${sandwichId}`));
 };
 
 export const addSandwichToFavoritesInLocalStorage = (sandwichId) => {
-    const allVotes = JSON.parse(localStorage.getItem("user_votes")) || [];
-    allVotes.push(sandwichId);
-    localStorage.setItem("user_votes", JSON.stringify([...new Set(allVotes)]));
+  const allVotes = JSON.parse(localStorage.getItem('user_votes')) || [];
+  allVotes.push(sandwichId);
+  localStorage.setItem('user_votes', JSON.stringify([...new Set(allVotes)]));
 };
 
 export const didUserVotedForSandwichByIdUsingLocalStorage = (sandwichId) => {
-    const allVotes = JSON.parse(localStorage.getItem("user_votes"));
-    if (allVotes && allVotes.includes(sandwichId)) {
-        log("User already voted locally");
-        return true;
-    }
-    return false;
+  const allVotes = JSON.parse(localStorage.getItem('user_votes'));
+  if (allVotes && allVotes.includes(sandwichId)) {
+    log('User already voted locally');
+    return true;
+  }
+  return false;
 };

@@ -1,40 +1,32 @@
-import nextImg from "../../assets/images/icons/arrow-next.svg";
-import prevImg from "../../assets/images/icons/arrow-previous.svg";
+import { useSwiper } from 'swiper/react';
+import nextImg from '../../assets/images/icons/arrow-next.svg';
+import prevImg from '../../assets/images/icons/arrow-previous.svg';
 
-const SwiperNavigationButton = ({ navigation, swiperRef, direction }) => {
-    const isNext = direction === "next";
+const SwiperNavigationButton = ({ navigation, direction }) => {
+  const swiper = useSwiper();
 
-    const srcImage = isNext ? nextImg : prevImg;
+  const isNext = direction === 'next';
 
-    const clickHandler = isNext
-        ? () => swiperRef.current.slideNext()
-        : () => swiperRef.current.slidePrev();
+  const srcImage = isNext ? nextImg : prevImg;
 
-    const directionName = isNext ? "next" : "previous";
+  const clickHandler = isNext ? () => swiper.slideNext() : () => swiper.slidePrev();
 
-    const className = isNext ? "swiper-button-next" : "swiper-button-prev";
+  const directionName = isNext ? 'next' : 'previous';
 
-    const nextDisabled = !navigation.next ? "swiper-button-disabled" : "";
-    const prevDisabled = !navigation.prev ? "swiper-button-disabled" : "";
-    const disabledStyle = isNext ? nextDisabled : prevDisabled;
+  const className = isNext ? 'swiper-button-next' : 'swiper-button-prev';
 
-    const swiperNavigationButtonStyle =
-        "btn-wrapper lg:hidden w-10 md:w-15 h-10 md:h-15 -mt-9 md:-mt-11 no-select no-drag";
+  const nextDisabled = !navigation.next ? 'swiper-button-disabled' : '';
+  const prevDisabled = !navigation.prev ? 'swiper-button-disabled' : '';
+  const disabledStyle = isNext ? nextDisabled : prevDisabled;
 
-    return (
-        <button
-            className={`${className} ${swiperNavigationButtonStyle} ${disabledStyle}`}
-            onClick={clickHandler}
-        >
-            <img
-                className="w-full h-full"
-                src={srcImage}
-                alt={`Go to ${directionName} slide`}
-                width="120"
-                height="120"
-            />
-        </button>
-    );
+  const swiperNavigationButtonStyle =
+    'btn-wrapper lg:hidden w-10 md:w-15 h-10 md:h-15 -mt-9 md:-mt-11 no-select no-drag';
+
+  return (
+    <button className={`${className} ${swiperNavigationButtonStyle} ${disabledStyle}`} onClick={clickHandler}>
+      <img className="w-full h-full" src={srcImage} alt={`Go to ${directionName} slide`} width="120" height="120" />
+    </button>
+  );
 };
 
 export default SwiperNavigationButton;
