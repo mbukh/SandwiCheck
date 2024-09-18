@@ -14,24 +14,23 @@ services:
   #   # environment:
   #     # API_SERVER: http://localhost:5001
 
-  # Node api service
-  sandwicheck-app:
+# volumes:
+  # mongo_data: {}
+
+  ui:
     build:
       context: .
       dockerfile: docker/ui.Dockerfile
     ports:
       - 3000:80
-      # - 5001:5001
-      # - "80:5001"
+    env_file: client/.env
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+    ports:
+      - 5001:5001
     # depends_on:
     #   - mongo_db
-    environment:
-      # WAIT_HOSTS: mongo_db:27017
-      # WAIT_TIMEOUT: 90
-      # WAIT_AFTER: 20
-      # PORT: 3000
-      REACT_APP_ENV: production
-      REACT_APP_HOST: http://localhost:3000
-      REACT_APP_API_SERVER: https://sandwicheck.app/
-# volumes:
-#   mongo_data: {}
+    env_file: server/config/.env
