@@ -16,7 +16,6 @@ COPY ./client .
 # Set environment variables for the build process
 ENV REACT_APP_HOST=${REACT_APP_HOST}
 ENV REACT_APP_API_SERVER=${REACT_APP_API_SERVER}
-ENV REACT_APP_PATH=${REACT_APP_PATH}
 ENV REACT_ENV=production
 
 RUN npm run build
