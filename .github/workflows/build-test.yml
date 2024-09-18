@@ -58,5 +58,5 @@ jobs:
         run: |
           pwd
           ls -a
-          docker build . --file ./Dockerfile -t sandwicheck-app-image
+          docker build . --file ./docker/ui.Dockerfile -t sandwicheck-app-image
         working-directory: ./
