@@ -30,7 +30,7 @@ services:
       # WAIT_TIMEOUT: 90
       # WAIT_AFTER: 20
       # PORT: 3000
-      REACT_ENV: production
+      REACT_APP_ENV: production
       REACT_APP_HOST: http://localhost:3000
       REACT_APP_API_SERVER: https://sandwicheck.app/
 # volumes:
