@@ -12,6 +12,7 @@
     "@testing-library/user-event": "^14.5.2",
     "axios": "^1.7.7",
     "dotenv": "^16.4.5",
+    "eslint-config-react-app": "^7.0.1",
     "normalize.css": "^8.0.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -23,7 +24,7 @@
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@eslint/js": "^9.10.0",
-    "eslint": "^9.10.0",
+    "eslint": "^8.57.1",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-react": "^7.36.1",
     "globals": "^15.9.0",
@@ -36,12 +37,6 @@
     "test": "react-scripts test",
     "test:ci": "npm run test  -- --ci --reporters=default --reporters=\"jest-junit\" --env=jsdom --testURL=http://localhost/SandwiCheck",
     "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
   },
   "browserslist": {
     "production": [

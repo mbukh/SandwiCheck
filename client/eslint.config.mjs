@@ -9,7 +9,7 @@ export default [
   { languageOptions: { globals: globals.browser } },
   { parserOptions: { ecmaVersion: 'ES2021' } },
   pluginJs.configs.recommended,
-  pluginReact.configs.flat.recommended,
+  pluginReact.configs.recommended,
   {
     rules: {
       'react/react-in-jsx-scope': 'off',
