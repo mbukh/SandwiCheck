@@ -5,10 +5,10 @@ const errorHandler = (err, req, res, next) => {
 
   // Logging
   if (process.env.NODE_ENV !== 'production') {
-    err.status && console.log(`Error status: ${err.status}`.red);
-    err.name && console.log(`Error name: ${err.name}`.red);
-    err.code && console.log(`Error code: ${err.code}`.red);
-    err.stack && console.log(`Error stack: ${err.stack}`.red);
+    err.status && console.error(`Error status: ${err.status}`);
+    err.name && console.error(`Error name: ${err.name}`);
+    err.code && console.error(`Error code: ${err.code}`);
+    err.stack && console.error(`Error stack: ${err.stack}`);
   }
 
   // Mongoose bad ObjectId

@@ -1,28 +1,17 @@
-import path from 'path';
-import { CONFIG_DIR, CLIENT_DIR, UPLOADS_DIR } from './config/dir.js';
-
-import dotenv from 'dotenv';
-dotenv.config({ path: path.join(CONFIG_DIR, '.env') });
-
-import connectDB from './config/db.js';
-
-import express from 'express';
 import cookieParser from 'cookie-parser';
-
 import cors from 'cors';
-import { xss } from 'express-xss-sanitizer';
-import hpp from 'hpp';
+import express from 'express';
 import rateLimit from 'express-rate-limit';
+import { xss } from 'express-xss-sanitizer';
 import helmet from 'helmet';
-
+import hpp from 'hpp';
 import morgan from 'morgan';
-import colors from 'colors';
-
+import connectDB from './config/db.js';
+import { CLIENT_DIR, UPLOADS_DIR } from './config/dir.js';
 import errorHandler from './middleware/errorHandler.js';
-
+import authRoutes from './routes/authRoutes.js';
 import ingredientsRoutes from './routes/ingredientsRoutes.js';
 import sandwichesRoutes from './routes/sandwichesRoutes.js';
-import authRoutes from './routes/authRoutes.js';
 import usersRoutes from './routes/usersRoutes.js';
 
 connectDB();
@@ -89,13 +78,10 @@ if (process.env.NODE_ENV !== 'production') app.use(morgan('dev'));
 // Start server
 const PORT = process.env.PORT || 5001;
 
-const server = app.listen(
-  PORT,
-  console.log(`Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`.brightYellow.underline),
-);
+const server = app.listen(PORT, console.log(`Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`));
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err, promise) => {
-  console.log(`Error: ${err.message}`.red);
+  console.error(`Error: ${err.message}`);
   server.close(() => process.exit(1));
 });

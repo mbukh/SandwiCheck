@@ -1,6 +1,3 @@
-import dotenv from 'dotenv';
-dotenv.config({ path: './config/.env' });
-
 import multer from 'multer';
 
 import createHttpError from 'http-errors';

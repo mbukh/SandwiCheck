@@ -4,8 +4,6 @@ import { CONFIG_DIR, CLIENT_DIR, UPLOADS_DIR } from '../config/dir.js';
 import dotenv from 'dotenv';
 dotenv.config({ path: path.join(CONFIG_DIR, '.env') });
 
-import colors from 'colors';
-
 import connectDB from '../config/db.js';
 
 import mongoose from 'mongoose';
@@ -29,7 +27,7 @@ const addData = async ({ data, Model }) => {
 
     console.log(`Added to ${type}: ${data.length}`);
   } catch (error) {
-    console.error(`Error adding to ${type}:`.red, error);
+    console.error(`Error adding to ${type}:`, error);
   }
 };
 
