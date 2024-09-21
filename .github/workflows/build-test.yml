@@ -1,6 +1,10 @@
 name: Build and Test
 
-on: [pull_request, workflow_call]
+on:
+  pull_request:
+    branches: ['main']
+    paths: ['client/**', 'server/**', 'docker/**', 'package.json']
+  workflow_call:
 
 permissions:
   id-token: write
