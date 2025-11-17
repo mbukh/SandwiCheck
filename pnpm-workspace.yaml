@@ -1,0 +1,10 @@
+packages:
+  - apps/*
+
+ignoredBuiltDependencies:
+  - core-js
+  - core-js-pure
+  - sharp
+
+onlyBuiltDependencies:
+  - esbuild

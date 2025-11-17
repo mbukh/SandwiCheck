@@ -3,7 +3,7 @@ name: Build and Test
 on:
   pull_request:
     branches: ['main']
-    paths: ['client/**', 'server/**', 'docker/**', 'package.json']
+    paths: ['apps/client/**', 'apps/server/**', 'docker/**', 'package.json', 'pnpm-workspace.yaml']
   workflow_call:
 
 permissions:
@@ -16,50 +16,56 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      REACT_APP_HOST: 'https://mbukh.github.io/SandwiCheck'
-      REACT_APP_API_SERVER: 'https://api.sandwicheck.app'
-
-    defaults:
-      run:
-        working-directory: ./client
+      VITE_HOST: 'https://mbukh.github.io/SandwiCheck'
+      VITE_API_SERVER: 'https://api.sandwicheck.app'
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
       - name: Configure Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20.17.0'
-          cache: 'npm'
-
-      - name: Install
-        run: npm ci
+          node-version: '24.11.0'
+          cache: 'pnpm'
+      
+      - name: Install dependencies
+        run: pnpm install
+        working-directory: ./
 
       - name: Test
-        run: npm run test:ci
+        run: pnpm --filter @sandwicheck/client run test:ci
+        working-directory: ./
 
       - name: Test Report
         uses: dorny/test-reporter@v1
         if: success() || failure() # run this step even if previous step failed
         with:
           name: JEST Tests # Name of the check run which will be created
-          path: ./client/reports/jest-*.xml # Path to test results
+          path: ./apps/client/reports/jest-*.xml # Path to test results
           reporter: jest-junit # Format of test results
 
       - name: Build
         run: |
-          npm run build --if-present
+          pnpm --filter @sandwicheck/client run build
+        working-directory: ./
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: build-artifact
-          path: ./client/build/
+          path: ./apps/client/build/
 
       - name: Build Docker Image
         run: |
           pwd
           ls -a
-          docker build . --file ./docker/ui.Dockerfile -t sandwicheck-app-image
+          docker build . --file ./docker/ui.Dockerfile -t sandwicheck-app-image \
+            --build-arg VITE_HOST=${{ env.VITE_HOST }} \
+            --build-arg VITE_API_SERVER=${{ env.VITE_API_SERVER }}
         working-directory: ./

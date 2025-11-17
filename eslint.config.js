@@ -4,8 +4,22 @@ import eslintConfigPrettier from 'eslint-config-prettier';
 
 /** @type { import("eslint").Linter.Config[] } */
 export default [
-  { files: ['**/*.{js,mjs,cjs,jsx}'], ignores: ['client/**/*.*'] },
-  { languageOptions: { globals: [globals.browser, globals.node], parserOptions: { ecmaVersion: 'ES2021' } } },
-  pluginJs.configs.recommended,
+  {
+    files: ['**/*.{js,mjs,cjs,jsx}'],
+    ignores: ['apps/client/**/*.*'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+      },
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+      },
+    },
+    rules: {
+      ...pluginJs.configs.recommended.rules,
+    },
+  },
   eslintConfigPrettier,
 ];

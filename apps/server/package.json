@@ -1,0 +1,35 @@
+{
+  "name": "@sandwicheck/server",
+  "version": "1.0.0",
+  "description": "SandwiCheck server application",
+  "main": "./server.js",
+  "type": "module",
+  "author": "Moshe Bukhman",
+  "license": "CC BY-NC-ND 4.0",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --env-file ./config/.env --watch server.js",
+    "init-db": "node service/initDatabase.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "colors": "^1.4.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "express-async-handler": "^1.2.0",
+    "express-rate-limit": "^8.2.1",
+    "express-xss-sanitizer": "^2.0.1",
+    "helmet": "^8.1.0",
+    "hpp": "^0.2.3",
+    "http-errors": "^2.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.20.0",
+    "morgan": "^1.10.0",
+    "multer": "^2.0.2",
+    "nodemailer": "^7.0.10",
+    "sharp": "^0.34.5"
+  }
+}
+

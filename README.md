@@ -19,14 +19,14 @@ SandwiCheck is a full-stack MERN family meal planner with features such as:
 2. **Use Existing Ingredients** [*optionally*]
    If you intend to use existing ingredients, follow these steps:
 
-   - **Install Node.js (18.x or higher)**
+   - **Install Node.js (24.x LTS or higher)**
 
      - Detailed installation instructions can be found on the [Node.js website](https://nodejs.org/en/download/package-manager/).
 
    - **Initialize the Database Locally**  
      Navigate to the project directory and run:
      ```bash
-     node ./server/service/initDatabase.js
+     node ./apps/server/service/initDatabase.js
      ```
 
 ## Deployment Steps

@@ -1,0 +1,472 @@
+import path from 'path';
+import { CONFIG_DIR } from '../config/dir.js';
+
+import dotenv from 'dotenv';
+dotenv.config({ path: path.join(CONFIG_DIR, '.env') });
+
+// eslint-disable-next-line no-unused-vars
+import colors from 'colors';
+
+import connectDB from '../config/db.js';
+
+import mongoose from 'mongoose';
+
+import Ingredient from '../models/IngredientModel.js';
+import Sandwich from '../models/SandwichModel.js';
+import User from '../models/UserModel.js';
+
+import { createUserParentsConnections } from '../utils/manageUserConnections.js';
+import { createSandwichService } from './createSandwichService.js';
+import { generateSandwichImage } from '../utils/manageSandwichesImages.js';
+
+import { breadData, cheeseData, condimentData, proteinData, toppingData } from './initialData/ingredientsData.js';
+import { sandwichesData } from './initialData/sandwichesData.js';
+import { usersData } from './initialData/usersData.js';
+import { isBreadType } from '../constants/ingredientsConstants.js';
+
+const waitForConnection = () => {
+  return new Promise((resolve) => {
+    // If already connected, resolve immediately
+    if (mongoose.connection.readyState === 1) {
+      resolve();
+      return;
+    }
+
+    // Otherwise, wait for connection
+    mongoose.connection.once('connected', () => {
+      resolve();
+    });
+
+    // Handle connection errors
+    mongoose.connection.once('error', (error) => {
+      console.error('Database connection error:'.red, error);
+      process.exit(1);
+    });
+  });
+};
+
+const upsertIngredients = async ({ data, Model }) => {
+  if (!data || data.length === 0) {
+    console.warn('No data provided for ingredients'.yellow);
+    return;
+  }
+
+  const type = data[0].type;
+  try {
+    let added = 0;
+    let updated = 0;
+
+    for (const item of data) {
+      const existing = await Model.findOne({ name: item.name, type: item.type });
+
+      if (existing) {
+        existing.set(item);
+        await existing.save();
+        updated++;
+      } else {
+        await Model.create(item);
+        added++;
+      }
+    }
+
+    console.log(`Upserted ${type}: ${added} added, ${updated} updated (total: ${data.length})`.green);
+  } catch (error) {
+    console.error(`Error upserting ${type}:`.red, error);
+    throw error;
+  }
+};
+
+// Helper function to generate a random date within the last year
+const getRandomDateInLastYear = () => {
+  const now = new Date();
+  const oneYearAgo = new Date(now);
+  oneYearAgo.setFullYear(now.getFullYear() - 1);
+
+  const randomTime = oneYearAgo.getTime() + Math.random() * (now.getTime() - oneYearAgo.getTime());
+  return new Date(randomTime);
+};
+
+// Helper function to generate a date after a given date but still within the last year
+const getRandomDateAfter = (afterDate) => {
+  const now = new Date();
+  const oneYearAgo = new Date(now);
+  oneYearAgo.setFullYear(now.getFullYear() - 1);
+
+  // Ensure afterDate is within the last year, otherwise use oneYearAgo
+  const minDate = afterDate > oneYearAgo ? afterDate : oneYearAgo;
+
+  // If minDate is already at or after now, use a date just after minDate (within last year)
+  if (minDate >= now) {
+    const justAfter = new Date(minDate);
+    justAfter.setDate(justAfter.getDate() + 1);
+    return justAfter > now ? now : justAfter;
+  }
+
+  const randomTime = minDate.getTime() + Math.random() * (now.getTime() - minDate.getTime());
+  return new Date(randomTime);
+};
+
+const upsertUsers = async () => {
+  try {
+    // Separate users with emails (parents/adults) from tethered children
+    const usersWithEmail = usersData.filter((user) => user.email);
+    const tetheredChildren = usersData.filter((user) => user.isTetheredChild);
+
+    let added = 0;
+    let updated = 0;
+
+    // First, upsert all users with emails
+    for (const userData of usersWithEmail) {
+      const { email, ...userFields } = userData;
+      const existing = await User.findOne({ email: email.toLowerCase() });
+
+      const randomCreatedAt = getRandomDateInLastYear();
+      const createdAt = randomCreatedAt;
+      const updatedAt = createdAt;
+
+      if (existing) {
+        existing.set({
+          ...userFields,
+          email: email.toLowerCase(),
+          createdAt,
+          updatedAt,
+        });
+        await existing.save();
+        updated++;
+      } else {
+        await User.create({
+          ...userFields,
+          email: email.toLowerCase(),
+          createdAt,
+          updatedAt,
+        });
+        added++;
+      }
+    }
+
+    console.log(
+      `Upserted users with email: ${added} added, ${updated} updated (total: ${usersWithEmail.length})`.green,
+    );
+
+    // Then, handle tethered children
+    added = 0;
+    updated = 0;
+
+    for (const childData of tetheredChildren) {
+      const { _parentEmails, ...childFields } = childData;
+
+      if (!_parentEmails || _parentEmails.length === 0) {
+        console.warn(`Skipping child ${childData.name}: no parent emails specified`.yellow);
+        continue;
+      }
+
+      // Find parent users by email
+      const parents = await User.find({ email: { $in: _parentEmails.map((email) => email.toLowerCase()) } });
+
+      if (parents.length === 0) {
+        console.warn(`Skipping child ${childData.name}: parents not found`.yellow);
+        continue;
+      }
+
+      // Validate that all parent emails were found
+      if (parents.length < _parentEmails.length) {
+        const foundEmails = parents.map((p) => p.email);
+        const missingEmails = _parentEmails.filter((email) => !foundEmails.includes(email.toLowerCase()));
+        console.warn(
+          `Child ${childData.name}: Some parents not found (${missingEmails.join(', ')}). Proceeding with found parents only.`
+            .yellow,
+        );
+      }
+
+      // Find the earliest parent creation date
+      const parentDates = parents.map((p) => p.createdAt || new Date()).sort((a, b) => a - b);
+      const earliestParentDate = parentDates[0];
+
+      // Generate a creation date after the earliest parent, but still within the last year
+      const childCreatedAt = getRandomDateAfter(earliestParentDate);
+      const childUpdatedAt = childCreatedAt;
+
+      // For tethered children, we need to find by name and parent relationship
+      // Since email is not unique for children, we'll use name + parent relationship
+      const existingChild = await User.findOne({
+        name: childData.name,
+        isTetheredChild: true,
+        parents: { $in: parents.map((p) => p._id) },
+      });
+
+      if (existingChild) {
+        // Update existing child
+        existingChild.set({
+          ...childFields,
+          parents: parents.map((p) => p._id),
+          createdAt: childCreatedAt,
+          updatedAt: childUpdatedAt,
+        });
+        await existingChild.save();
+
+        // Ensure parent-child connections and roles are properly set
+        for (const parent of parents) {
+          await createUserParentsConnections(existingChild, parent._id);
+        }
+        updated++;
+      } else {
+        // Create new child
+        const newChild = new User({
+          ...childFields,
+          parents: parents.map((p) => p._id),
+          createdAt: childCreatedAt,
+          updatedAt: childUpdatedAt,
+        });
+        await newChild.save();
+        added++;
+
+        // Use utility function to properly set up parent-child connections and roles
+        for (const parent of parents) {
+          await createUserParentsConnections(newChild, parent._id);
+        }
+      }
+    }
+
+    console.log(
+      `Upserted tethered children: ${added} added, ${updated} updated (total: ${tetheredChildren.length})`.green,
+    );
+  } catch (error) {
+    console.error('Error upserting users:'.red, error);
+    throw error;
+  }
+};
+
+const createSandwiches = async () => {
+  try {
+    // First, build a map of ingredient names to ObjectIds and types
+    const ingredientMap = new Map();
+    const ingredientTypeMap = new Map();
+    const allIngredients = await Ingredient.find({});
+    for (const ingredient of allIngredients) {
+      ingredientMap.set(ingredient.name, ingredient._id);
+      ingredientTypeMap.set(ingredient.name, ingredient.type);
+    }
+
+    // Build a map of user emails to ObjectIds (for adults/parents)
+    const userEmailMap = new Map();
+    const usersWithEmail = await User.find({ email: { $exists: true, $ne: null } });
+    for (const user of usersWithEmail) {
+      userEmailMap.set(user.email.toLowerCase(), { id: user._id, name: user.name });
+    }
+
+    let added = 0;
+    let updated = 0;
+    let skipped = 0;
+    let failed = 0;
+    const MAX_FAILURE_THRESHOLD = Math.ceil(sandwichesData.length * 0.1); // 10% failure threshold
+
+    for (const sandwichData of sandwichesData) {
+      try {
+        // Validate ingredients array
+        if (!sandwichData.ingredients || sandwichData.ingredients.length === 0) {
+          console.warn(`Skipping sandwich "${sandwichData.name}": No ingredients`.yellow);
+          skipped++;
+          continue;
+        }
+
+        // Resolve ingredients to ObjectIds
+        const resolvedIngredients = [];
+        for (const ing of sandwichData.ingredients) {
+          const ingredientId = ingredientMap.get(ing.name);
+          if (!ingredientId) {
+            throw new Error(`Ingredient "${ing.name}" not found`);
+          }
+          const ingredientType = ingredientTypeMap.get(ing.name);
+          // Bread should not have portion key
+          if (isBreadType(ingredientType)) {
+            resolvedIngredients.push({ ingredientId });
+          } else {
+            resolvedIngredients.push({ ingredientId, portion: ing.portion });
+          }
+        }
+
+        // Resolve author to ObjectId and name
+        let authorId;
+        let authorName;
+        let authorUser;
+
+        // Check if it's a tethered child's sandwich (has childName)
+        if (sandwichData.childName) {
+          // Find parent by email
+          const parentInfo = userEmailMap.get(sandwichData.authorEmail.toLowerCase());
+          if (!parentInfo) {
+            console.warn(
+              `Skipping sandwich "${sandwichData.name}": parent email "${sandwichData.authorEmail}" not found`.yellow,
+            );
+            skipped++;
+            continue;
+          }
+
+          // Find the child by name and parent relationship
+          // Using $in to explicitly check if parent is in the parents array (handles multiple parents)
+          // Also verify that ALL parents match to ensure we get the correct child
+          const parentIds = [parentInfo.id];
+          const childUser = await User.findOne({
+            name: sandwichData.childName,
+            isTetheredChild: true,
+            parents: { $in: parentIds },
+          });
+
+          if (!childUser) {
+            console.warn(
+              `Skipping sandwich "${sandwichData.name}": child "${sandwichData.childName}" not found for parent "${sandwichData.authorEmail}"`
+                .yellow,
+            );
+            skipped++;
+            continue;
+          }
+
+          // Additional validation: ensure the child actually has this parent
+          const childHasParent = childUser.parents.some((parentId) =>
+            parentIds.some((pid) => pid.toString() === parentId.toString()),
+          );
+          if (!childHasParent) {
+            console.warn(
+              `Skipping sandwich "${sandwichData.name}": child "${sandwichData.childName}" does not have parent "${sandwichData.authorEmail}"`
+                .yellow,
+            );
+            skipped++;
+            continue;
+          }
+
+          authorId = childUser._id;
+          authorName = childUser.name;
+          authorUser = childUser;
+        } else {
+          // It's a user with email (adult/parent)
+          const userInfo = userEmailMap.get(sandwichData.authorEmail.toLowerCase());
+          if (!userInfo) {
+            console.warn(
+              `Skipping sandwich "${sandwichData.name}": author email "${sandwichData.authorEmail}" not found`.yellow,
+            );
+            skipped++;
+            continue;
+          }
+
+          authorId = userInfo.id;
+          authorName = userInfo.name;
+          // Fetch the full user document to get createdAt
+          authorUser = await User.findById(authorId);
+          if (!authorUser) {
+            console.warn(
+              `Skipping sandwich "${sandwichData.name}": author user not found`.yellow,
+            );
+            skipped++;
+            continue;
+          }
+        }
+
+        // Generate a random creation date after the author's registration date
+        const authorCreatedAt = authorUser.createdAt || new Date();
+        const sandwichCreatedAt = getRandomDateAfter(authorCreatedAt);
+        const sandwichUpdatedAt = sandwichCreatedAt;
+
+        // Check if sandwich already exists (by name and authorId)
+        const existingSandwich = await Sandwich.findOne({ name: sandwichData.name, authorId: authorId });
+
+        if (existingSandwich) {
+          // Update existing sandwich
+          const firstName = authorName && authorName.split(' ')[0];
+
+          // Update sandwich fields
+          existingSandwich.set({
+            ingredients: resolvedIngredients,
+            authorName: firstName,
+            comment: sandwichData.comment || undefined,
+            votesCount: sandwichData.votesCount ?? existingSandwich.votesCount,
+            createdAt: sandwichCreatedAt,
+            updatedAt: sandwichUpdatedAt,
+          });
+
+          // Regenerate image if ingredients changed
+          existingSandwich.image = await generateSandwichImage(resolvedIngredients);
+
+          // Validate and save
+          await existingSandwich.validate();
+          await existingSandwich.save();
+
+          updated++;
+        } else {
+          // Use the service function to create the sandwich (this will generate images)
+          const newSandwich = await createSandwichService({
+            name: sandwichData.name,
+            ingredients: resolvedIngredients,
+            authorId,
+            authorName,
+            comment: sandwichData.comment || undefined,
+            votesCount: sandwichData.votesCount || 0,
+          });
+
+          // Set the creation date after creation (since the service doesn't accept it)
+          newSandwich.createdAt = sandwichCreatedAt;
+          newSandwich.updatedAt = sandwichUpdatedAt;
+          await newSandwich.save();
+
+          added++;
+        }
+      } catch (error) {
+        console.error(`Error creating sandwich "${sandwichData.name}":`.red, error.message);
+        failed++;
+
+        // Check if we've exceeded the failure threshold
+        if (failed > MAX_FAILURE_THRESHOLD) {
+          console.error(
+            `Aborting: Too many sandwich creation failures (${failed} failures, threshold: ${MAX_FAILURE_THRESHOLD})`
+              .red,
+          );
+          throw new Error(
+            `Sandwich creation failed: ${failed} failures exceeded threshold of ${MAX_FAILURE_THRESHOLD}`,
+          );
+        }
+      }
+    }
+
+    console.log(
+      `Upserted sandwiches: ${added} added, ${updated} updated, ${skipped} skipped, ${failed} failed (total: ${sandwichesData.length})`
+        .green,
+    );
+  } catch (error) {
+    console.error('Error creating sandwiches:'.red, error);
+    throw error;
+  }
+};
+
+const main = async () => {
+  try {
+    connectDB();
+
+    await waitForConnection();
+
+    const tuplesDataModelToProcess = [
+      [breadData, Ingredient],
+      [proteinData, Ingredient],
+      [cheeseData, Ingredient],
+      [toppingData, Ingredient],
+      [condimentData, Ingredient],
+    ];
+
+    // Step 1: Upsert ingredients
+    await Promise.all(tuplesDataModelToProcess.map(([data, Model]) => upsertIngredients({ data, Model })));
+
+    // Step 2: Upsert users
+    await upsertUsers();
+
+    // Step 3: Create sandwiches (using API service to generate images)
+    await createSandwiches();
+
+    console.log('All data upserted to database'.green);
+  } catch (error) {
+    console.error('Error in main execution:'.red, error);
+    process.exit(1);
+  } finally {
+    await mongoose.connection.close();
+    console.log('Database connection closed'.gray);
+  }
+};
+
+main();
