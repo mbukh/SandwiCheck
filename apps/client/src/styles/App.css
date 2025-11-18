@@ -259,7 +259,8 @@ button.active {
 .no-hover,
 .no-hover:hover,
 .no-hover:focus,
-.no-hover:active {
+.no-hover:active,
+.no-hover.active {
   border: none;
   outline: none;
   text-decoration: none;
@@ -445,6 +446,11 @@ header a:hover,
 header a.active {
   border-bottom: 2px solid var(--white);
   border-top: 2px solid var(--white);
+}
+
+header a.no-hover.active {
+  border-bottom: 2px solid transparent;
+  border-top: 2px solid transparent;
 }
 
 header .mobile-menu {

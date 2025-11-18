@@ -55,6 +55,11 @@ const errorHandler = (err, req, res, next) => {
     errorResponse.error.cooldownRemainingMs = error.cooldownRemainingMs;
   }
   
+  // Include error code if present (for distinguishing error types)
+  if (error.code !== undefined) {
+    errorResponse.error.code = error.code;
+  }
+  
   res.json(errorResponse);
 };
 

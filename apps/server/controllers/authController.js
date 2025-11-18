@@ -347,6 +347,7 @@ export const resetPassword = expressAsyncHandler(async (req, res, next) => {
 // @desc    Logout
 // @route   POST /api/auth/logout
 // @access  Private
+// eslint-disable-next-line no-unused-vars
 export const logout = expressAsyncHandler(async (req, res, next) => {
   removeCookie('token', res);
   removeCookie('childToken', res);
@@ -362,21 +363,49 @@ export const logout = expressAsyncHandler(async (req, res, next) => {
 // @access  Public
 export const confirmEmail = expressAsyncHandler(async (req, res, next) => {
   const confirmationToken = hashAndTokens.hashToken(req.params.token);
-  const MAX_RESEND_COUNT = 3;
+  const MAX_RESEND_COUNT = 5; // Must match resendConfirmation MAX_RESEND_COUNT
 
-  const user = await User.findOne({
+  // First, try to find user with valid (non-expired) token
+  let user = await User.findOne({
     emailConfirmationToken: confirmationToken,
     emailConfirmationExpire: { $gt: Date.now() },
   });
 
-  // Handle already confirmed (idempotent) - return success
+  // If not found with valid token, check for expired token (token exists but expired)
   if (!user) {
-    // Check if token is expired or invalid - use delay for timing attack prevention
+    user = await User.findOne({
+      emailConfirmationToken: confirmationToken,
+      emailConfirmationExpire: { $exists: true, $lte: Date.now() },
+    });
+
+    // If found with expired token and already confirmed, return success (idempotent)
+    if (user && user.emailConfirmed) {
+      return res.status(200).json({
+        success: true,
+        message: 'Email already confirmed. You can log in now.',
+      });
+    }
+
+    // If found with expired token but not confirmed, return expired error
+    if (user && !user.emailConfirmed) {
+      // Use delay for timing attack prevention
+      await delay(2000 + Math.random() * 2000);
+      const error = createHttpError.Unauthorized(
+        'This confirmation link has expired and is no longer valid. Confirmation links are valid for a limited time. Please request a new confirmation email from the login page.',
+      );
+      error.code = 'TOKEN_EXPIRED';
+      return next(error);
+    }
+
+    // Token not found - invalid token
+    // Use delay for timing attack prevention
     await delay(2000 + Math.random() * 2000);
-    return next(createHttpError.Unauthorized('Invalid or expired confirmation token'));
+    const error = createHttpError.Unauthorized('Invalid confirmation token. Please check your confirmation link.');
+    error.code = 'TOKEN_INVALID';
+    return next(error);
   }
 
-  // If already confirmed, return success (idempotent)
+  // User found with valid token - check if already confirmed (idempotent)
   if (user.emailConfirmed) {
     return res.status(200).json({
       success: true,
@@ -397,20 +426,21 @@ export const confirmEmail = expressAsyncHandler(async (req, res, next) => {
     user.emailConfirmationExpire = undefined;
     await user.save();
 
-    return next(
-      createHttpError.Forbidden(
-        'Maximum number of confirmation email resends reached. Please contact support for assistance.',
-      ),
+    const error = createHttpError.Forbidden(
+      'Maximum number of confirmation email resends reached. Please contact support for assistance.',
     );
+    error.code = 'MAX_RESENDS';
+    return next(error);
   }
 
-  // Confirm email and clear token (single-use)
+  // Confirm email - keep token for idempotent checks (will expire naturally)
+  // This allows us to identify the user if they click the link again
   user.emailConfirmed = true;
-  user.emailConfirmationToken = undefined;
-  user.emailConfirmationExpire = undefined;
   // Reset resend count and cooldown on successful confirmation
   user.emailConfirmationResendCount = 0;
   user.emailConfirmationResendCooldown = undefined;
+  // Note: We keep the token so we can identify the user if they click the link again
+  // The token will expire naturally based on emailConfirmationExpire
 
   await user.save();
 
@@ -456,6 +486,26 @@ export const resendConfirmation = expressAsyncHandler(async (req, res, next) => 
     });
   }
 
+  // Check if max resend count reached - reject before cooldown check
+  const currentResendCount = user.emailConfirmationResendCount || 0;
+  if (currentResendCount >= MAX_RESEND_COUNT) {
+    // Log security event
+    console.error(
+      `[SECURITY] Email confirmation resend limit exceeded for user: ${user._id}, email: ${user.email}, IP: ${req.ip || 'unknown'}`.red,
+    );
+
+    // Invalidate existing token to prevent confirmation
+    user.emailConfirmationToken = undefined;
+    user.emailConfirmationExpire = undefined;
+    await user.save();
+
+    const error = createHttpError.Forbidden(
+      'Maximum number of confirmation email resends reached. Please contact support for assistance.',
+    );
+    error.code = 'MAX_RESENDS';
+    return next(error);
+  }
+
   // Check cooldown period - must wait before resending
   const now = Date.now();
   const lastResendTime = user.emailConfirmationResendCooldown
@@ -492,42 +542,28 @@ export const resendConfirmation = expressAsyncHandler(async (req, res, next) => 
     return next(error);
   }
 
-  // Check if max resend count reached
-  const currentResendCount = user.emailConfirmationResendCount || 0;
-  if (currentResendCount >= MAX_RESEND_COUNT) {
-    // Log security event
-    console.error(
-      `[SECURITY] Email confirmation resend limit exceeded for user: ${user._id}, email: ${user.email}, IP: ${req.ip || 'unknown'}`.red,
-    );
-
-    // Invalidate existing token to prevent confirmation
-    user.emailConfirmationToken = undefined;
-    user.emailConfirmationExpire = undefined;
-    await user.save();
-
-    return next(
-      createHttpError.Forbidden(
-        'Maximum number of confirmation email resends reached. Please contact support for assistance.',
-      ),
-    );
-  }
-
   // Generate token first (before any DB updates)
   const confirmationToken = hashAndTokens.generateResetPasswordToken();
   const hashedToken = hashAndTokens.hashToken(confirmationToken);
   const tokenExpire = Date.now() + parseInt(process.env.EMAIL_CONFIRMATION_EXPIRES_I || '86400000', 10);
 
-  // Check count one more time before attempting to send email
-  const currentResendCountCheck = user.emailConfirmationResendCount || 0;
+  // Refresh user data one more time before attempting to send email to catch race conditions
+  // This ensures we have the latest count before sending email
+  const refreshedUser = await User.findById(user._id).select('emailConfirmationResendCount');
+  if (!refreshedUser) {
+    return next(createHttpError.NotFound('User not found'));
+  }
+
+  const currentResendCountCheck = refreshedUser.emailConfirmationResendCount || 0;
   if (currentResendCountCheck >= MAX_RESEND_COUNT) {
     console.error(
       `[SECURITY] Email confirmation resend limit exceeded (race condition detected) for user: ${user._id}, email: ${user.email}, IP: ${req.ip || 'unknown'}`.red,
     );
-    return next(
-      createHttpError.Forbidden(
-        'Maximum number of confirmation email resends reached. Please contact support for assistance.',
-      ),
+    const error = createHttpError.Forbidden(
+      'Maximum number of confirmation email resends reached. Please contact support for assistance.',
     );
+    error.code = 'MAX_RESENDS';
+    return next(error);
   }
 
   const confirmationURL = `${process.env.CLIENT_URL}/confirm-email/${confirmationToken}`;
@@ -558,12 +594,24 @@ export const resendConfirmation = expressAsyncHandler(async (req, res, next) => 
       { new: true },
     );
 
-    // If update failed (count was already at max), log but don't fail since email was sent
+    // If update failed (count was already at max), this is a race condition
+    // Invalidate the token we just sent to prevent its use, and log security event
     if (!updateResult) {
       console.error(
-        `[WARNING] Email sent but count update failed (race condition) for user: ${user._id}, email: ${user.email}`.yellow,
+        `[SECURITY] Email sent but count update failed (race condition) - invalidating token for user: ${user._id}, email: ${user.email}, IP: ${req.ip || 'unknown'}`.red,
       );
-      // Still return success since email was sent
+      
+      // Invalidate the token we just sent since count was already at max
+      // This prevents the user from using a token sent after limit was reached
+      await User.findByIdAndUpdate(user._id, {
+        $set: {
+          emailConfirmationToken: undefined,
+          emailConfirmationExpire: undefined,
+        },
+      });
+      
+      // Still return success since email was sent, but token is now invalid
+      // This is a rare race condition edge case
     } else {
       // Log successful resend attempt
       console.log(
