@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useMatchRoute, useSearch } from '@tanstack/react-router';
 
+import { ROUTE_PATHS } from '../../routes';
 import { capitalizeFirst } from '../../utils/utils';
 
 import useGallery from '../../hooks/use-gallery';
@@ -11,18 +12,24 @@ import { useIngredientsGlobalContext } from '../../context/IngredientsGlobalCont
 import Loading from '../Loading';
 import EmptyGallery from './EmptyGallery';
 import SandwichCard from '../Sandwich/Card/SandwichCard';
+import SandwichModal from './SandwichModal';
 
 const SandwichGallery = ({ children, galleryType = '' }) => {
   const [child, setChild] = useState({});
   const { currentUser, isCurrentUserReady } = useAuthGlobalContext();
   const { areIngredientsReady } = useIngredientsGlobalContext();
   const { gallerySandwiches, setGallerySandwiches, fetchSandwiches, fetchUserSandwiches } = useGallery();
-  const { childId } = useParams();
+  const matchRoute = useMatchRoute();
+  const familyRouteMatch = matchRoute({ to: '/family/$childId' });
+  const familySandwichRouteMatch = matchRoute({ to: '/family/$childId/sandwich/$sandwichId' });
+  const childId = familyRouteMatch?.childId || familySandwichRouteMatch?.childId;
   const navigate = useNavigate();
+  const search = useSearch({ strict: false });
+  const sandwichIdFromQuery = search?.sandwichId;
 
   useEffect(() => {
     if (isCurrentUserReady && childId && !currentUser?.children?.some((child) => child.id === childId)) {
-      navigate('/login');
+      navigate({ to: '/login' });
       return;
     }
 
@@ -44,7 +51,13 @@ const SandwichGallery = ({ children, galleryType = '' }) => {
       } else if (galleryType === 'best') {
         await fetchSandwiches({ dietaryPreferences, sortBy: 'votesCount' });
       } else if (currentUser.id) {
-        setGallerySandwiches(currentUser.sandwiches);
+        // Sort sandwiches by createdAt (newest first) for personal menu
+        const sortedSandwiches = [...(currentUser.sandwiches || [])].sort((a, b) => {
+          const dateA = new Date(a.createdAt || 0);
+          const dateB = new Date(b.createdAt || 0);
+          return dateB - dateA; // Descending order (newest first)
+        });
+        setGallerySandwiches(sortedSandwiches);
       }
     })();
   }, [
@@ -65,6 +78,22 @@ const SandwichGallery = ({ children, galleryType = '' }) => {
 
   const userGalleryTitle = galleryType === 'personal' ? 'My sandwich menu' : '';
 
+  // Determine current gallery path for modal closeLink and passing to cards
+  const getGalleryPath = () => {
+    if (childId) {
+      return ROUTE_PATHS.FAMILY_CHILD.replace('$childId', childId);
+    } else if (galleryType === 'personal') {
+      return ROUTE_PATHS.MENU;
+    } else if (galleryType === 'best') {
+      return ROUTE_PATHS.BEST;
+    } else if (galleryType === 'latest') {
+      return ROUTE_PATHS.LATEST;
+    }
+    return ROUTE_PATHS.LATEST; // default
+  };
+
+  const galleryPath = getGalleryPath();
+
   if (!areIngredientsReady || !isCurrentUserReady) {
     return <Loading />;
   }
@@ -75,7 +104,7 @@ const SandwichGallery = ({ children, galleryType = '' }) => {
         <h1 className="text-center text-l uppercase text-shadow-10">
           {childId && (
             <Link
-              to="/family"
+              to={ROUTE_PATHS.FAMILY}
               className="button bg-magenta inline-block p-2 mr-4 md:my-4 text-xs md:text-sm md:text-base fit-content"
             >
               Back
@@ -90,15 +119,7 @@ const SandwichGallery = ({ children, galleryType = '' }) => {
                 key={sandwich.id}
                 index={index}
                 sandwich={sandwich}
-                closeBasePath={
-                  childId
-                    ? '/family/' + childId
-                    : galleryType === 'personal'
-                      ? '/menu'
-                      : galleryType === 'best' || galleryType === 'latest'
-                        ? ''
-                        : ''
-                }
+                galleryPath={galleryPath}
                 isModal={false}
               />
             ))
@@ -109,6 +130,7 @@ const SandwichGallery = ({ children, galleryType = '' }) => {
       </div>
 
       {children}
+      {sandwichIdFromQuery && <SandwichModal closeLink={galleryPath} />}
     </>
   );
 };

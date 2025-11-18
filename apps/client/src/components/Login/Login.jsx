@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 
+import { ROUTE_PATHS } from '../../routes';
 import useForm from '../../hooks/use-form';
 import useToast from '../../hooks/use-toast';
 
@@ -88,9 +89,15 @@ const Login = () => {
 
       <div className="w-full mb-4 md:mb-6 flex justify-center items-center">
         Don't have an account?
-        <Link className="mx-2 underline" to={'/signup' + (parentId ? '/parent/' + parentId : '')}>
-          Sign up
-        </Link>
+        {parentId ? (
+          <Link className="mx-2 underline" to={ROUTE_PATHS.SIGNUP_PARENT} params={{ parentId }}>
+            Sign up
+          </Link>
+        ) : (
+          <Link className="mx-2 underline" to={ROUTE_PATHS.SIGNUP}>
+            Sign up
+          </Link>
+        )}
       </div>
       {toastComponents}
     </div>

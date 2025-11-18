@@ -1,12 +1,15 @@
 import { useEffect } from 'react';
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 
 const Error404 = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setTimeout(navigate('/'), 5001);
+    const timer = setTimeout(() => {
+      navigate({ to: '/' });
+    }, 5001);
+    return () => clearTimeout(timer);
   }, [navigate]);
 
   return (

@@ -1,4 +1,6 @@
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
+
+import { ROUTE_PATHS } from '../routes';
 
 const userCard = ({ isModal = false, index, user }) => {
   const bgIndex = (index % 4) + 1;
@@ -27,7 +29,7 @@ const userCard = ({ isModal = false, index, user }) => {
                   : 'thumb__title text-base sm:text-lg lg:text-xl font-bold uppercase text-shadow-5'
               }`}
             >
-              <Link className="p-3" to={`/family/${user.id}`}>
+              <Link className="p-3" to={ROUTE_PATHS.FAMILY_CHILD} params={{ childId: user.id }}>
                 {user.name}
               </Link>
             </h3>

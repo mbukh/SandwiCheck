@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 
 import { MAX_COMMENT_LENGTH, MAX_NAME_LENGTH } from '../../../constants/sandwich-constants';
+import { ROUTE_PATHS } from '../../../routes';
 import validateForm from '../../../utils/validate-utils';
 
 import { useAuthGlobalContext } from '../../../context/AuthGlobalContext';
@@ -16,7 +17,7 @@ const SandwichSaveForm = () => {
   const [isCommentOpen, setIsCommentOpen] = useState(false);
   const [isOpenLoginModal, setIsOpenLoginModal] = useState(false);
   const navigate = useNavigate();
-  const { currentUser } = useAuthGlobalContext();
+  const { currentUser, setCurrentUser } = useAuthGlobalContext();
   const {
     sandwich,
     isSavingSandwich,
@@ -48,7 +49,15 @@ const SandwichSaveForm = () => {
     if (res.error) {
       showToast(res.error.message);
     } else {
-      setTimeout(() => navigate(`/sandwich/${res.data.id}`), 500);
+      // Update currentUser.sandwiches to include the newly created sandwich
+      if (currentUser.id && res.data) {
+        setCurrentUser({
+          ...currentUser,
+          sandwiches: [...(currentUser.sandwiches || []), res.data],
+        });
+      }
+      // Navigate to menu page with the new sandwich opened
+      setTimeout(() => navigate({ to: ROUTE_PATHS.MENU, search: { sandwichId: res.data.id } }), 500);
     }
   };
 

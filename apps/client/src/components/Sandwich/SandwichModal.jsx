@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearch } from '@tanstack/react-router';
 
 import { useIngredientsGlobalContext } from '../../context/IngredientsGlobalContext';
 
@@ -12,9 +12,14 @@ const SandwichModal = ({ closeLink = '' }) => {
   const [isModalLoading, setIsModalLoading] = useState(true);
   const { areIngredientsReady } = useIngredientsGlobalContext();
   const { sandwich, getSandwich } = useSandwich();
-  const { sandwichId } = useParams();
+  // Get sandwichId from route params (for /sandwich/$sandwichId route) or query params (for gallery routes)
+  const params = useParams({ strict: false });
+  const search = useSearch({ strict: false });
+  const sandwichId = params?.sandwichId || search?.sandwichId;
 
   useEffect(() => {
+    if (!sandwichId) return;
+
     (async () => {
       await getSandwich(sandwichId);
 
@@ -22,10 +27,14 @@ const SandwichModal = ({ closeLink = '' }) => {
     })();
   }, [areIngredientsReady, getSandwich, sandwichId]);
 
+  if (!sandwichId) {
+    return null;
+  }
+
   return (
     <Modal isModalLoading={isModalLoading} closeLink={closeLink}>
       <div className="max-w-xs sm:max-w-sm md:max-w-screen-md mx-auto text-white">
-        <SandwichCard index={Math.ceil(Math.random() * 4)} sandwich={sandwich} closeBasePath="" isModal={true} />
+        <SandwichCard index={Math.ceil(Math.random() * 4)} sandwich={sandwich} galleryPath="" isModal={true} />
       </div>
     </Modal>
   );

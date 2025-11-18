@@ -13,25 +13,16 @@ apps/server/uploads/sandwiches
 logs
 *.log
 
-# Editor specific
-.vscode
-.idea
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-
 # Temporary files
 *.sw?
 *.cache
 .DS_Store
+tmp/
 
 # Generated / Auto-generated files
 /dist
 /dist-ssr
 .eslintcache
-
-# Configuration
-.prettierrc
+.tanstack/
 
 /data/

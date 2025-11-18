@@ -1,15 +1,24 @@
-import { Link, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Link, useNavigate } from '@tanstack/react-router';
 
 import { useAuthGlobalContext } from '../context/AuthGlobalContext';
+import { ROUTE_PATHS } from '../routes';
 
 import Loading from '../components/Loading';
 import UserCard from '../components/UserCard';
 
 const Family = () => {
   const { currentUser, isCurrentUserReady } = useAuthGlobalContext();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isCurrentUserReady && !currentUser.id) {
+      navigate({ to: ROUTE_PATHS.LOGIN, replace: true });
+    }
+  }, [isCurrentUserReady, currentUser.id, navigate]);
 
   if (!isCurrentUserReady) return <Loading />;
-  if (isCurrentUserReady && !currentUser.id) return <Navigate to="/login" replace={true} />;
+  if (isCurrentUserReady && !currentUser.id) return null;
 
   return (
     <div className="sandwich-gallery pt-4 pb-12 px-5 md:pt-6 md:pb-16 md:px-12 lg:pb-20 xl:px-20">
@@ -20,7 +29,8 @@ const Family = () => {
             <>
               <Link
                 className="button bg-magenta text-white inline-block p-2 pr-4 mr-4 md:my-4 text-xs md:text-sm md:text-base fit-content text-shadow-10"
-                to={`/signup/parent/${currentUser.id}`}
+                to={ROUTE_PATHS.SIGNUP_PARENT}
+                params={{ parentId: currentUser.id }}
               >
                 <svg
                   className="mx-2"

@@ -1,7 +1,8 @@
 import { useState } from 'react';
 
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from '@tanstack/react-router';
 
+import { ROUTE_PATHS } from '../../../routes';
 import { hasUserVotedUserForSandwich, voteForSandwich } from '../../../services/votes';
 
 import { hydrateSandwichIngredientsData } from '../../../utils/sandwich-utils';
@@ -14,7 +15,7 @@ import { useIngredientsGlobalContext } from '../../../context/IngredientsGlobalC
 import SandwichImage from '../SandwichImage';
 import SandwichIngredientsList from './SandwichIngredientsList';
 
-const SandwichCard = ({ index, sandwich, closeBasePath = '', isModal }) => {
+const SandwichCard = ({ index, sandwich, galleryPath = '', isModal }) => {
   const [isUserVoting, setIsUserVoting] = useState(false);
   const { currentUser } = useAuthGlobalContext();
   const { ingredientsRawList } = useIngredientsGlobalContext();
@@ -30,7 +31,7 @@ const SandwichCard = ({ index, sandwich, closeBasePath = '', isModal }) => {
 
     const hydratedSandwich = hydrateSandwichIngredientsData(sandwich, ingredientsRawList);
     updateSandwichInCache(hydratedSandwich);
-    navigate('/create');
+    navigate({ to: '/create' });
   };
 
   const voteForSandwichHandler = async (e) => {
@@ -75,7 +76,7 @@ const SandwichCard = ({ index, sandwich, closeBasePath = '', isModal }) => {
         </div>
         <div className="card-middle">
           <div className="card-orb w-full mt-auto mx-auto">
-            <SandwichImage sandwich={sandwich} closeBasePath={closeBasePath} isModal={isModal} />
+            <SandwichImage sandwich={sandwich} galleryPath={galleryPath} isModal={isModal} />
           </div>
         </div>
         <div className="card-footer relative flex justify-between items-center">
@@ -101,7 +102,7 @@ const SandwichCard = ({ index, sandwich, closeBasePath = '', isModal }) => {
               )}
               {(isVotedByUser || isUserVoting) && (
                 <Link
-                  to="/create"
+                  to={ROUTE_PATHS.CREATE}
                   onClick={copyThisSandwichHandler}
                   className="fade-in abs flex fl-cc inset-0 h-full w-full"
                   title="Copy this sandwich"

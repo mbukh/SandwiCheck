@@ -1,4 +1,6 @@
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
+
+import { ROUTE_PATHS } from '../../routes';
 
 const EmptyGallery = ({ galleryType, childId }) => {
   return (
@@ -8,7 +10,7 @@ const EmptyGallery = ({ galleryType, childId }) => {
         (galleryType = 'personal' && !childId && (
           <Link
             className="button bg-magenta text-white inline-block p-2 my-2 md:my-4 text-xs md:text-sm md:text-base fit-content"
-            to="/create"
+            to={ROUTE_PATHS.CREATE}
           >
             <svg
               className="mx-2"

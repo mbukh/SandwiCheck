@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useRouter } from '@tanstack/react-router';
 
 import Portal from '../Portal/Portal';
 import Loading from '../Loading';
@@ -7,11 +7,17 @@ import Loading from '../Loading';
 const Modal = ({ children, setIsOpenLoginModal, isModalLoading = true, closeLink = '' }) => {
   const [isModalShow, setIsModalShow] = useState(true);
   const navigate = useNavigate();
+  const router = useRouter();
 
   const closeModalHandler = (e) => {
     e.stopPropagation();
     if (closeLink !== 'stay') {
-      closeLink ? navigate(closeLink) : navigate(-1);
+      if (closeLink) {
+        // Use replace: true to clean up query params when closing modal
+        navigate({ to: closeLink, replace: true });
+      } else {
+        router.history.back();
+      }
     }
     setIsModalShow(false);
     setIsOpenLoginModal && setIsOpenLoginModal(false);

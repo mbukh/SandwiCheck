@@ -46,6 +46,7 @@ const AuthGlobalContextProvider = ({ children }) => {
     <AuthGlobalContext.Provider
       value={{
         currentUser,
+        setCurrentUser,
         isCurrentUserReady,
         logIn,
         signUp,

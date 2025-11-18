@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useMatchRoute } from '@tanstack/react-router';
 
 import { useAuthGlobalContext } from '../context/AuthGlobalContext';
+import { ROUTE_PATHS } from '../routes';
 
 import { readSandwichFromCache } from '../services/api-sandwiches';
 
@@ -19,15 +20,19 @@ const useForm = () => {
 
   const { logIn, signUp, currentUser: user } = useAuthGlobalContext();
 
-  const { parentId } = useParams();
+  const matchLoginParent = useMatchRoute({ to: ROUTE_PATHS.LOGIN_PARENT });
+  const matchSignupParent = useMatchRoute({ to: ROUTE_PATHS.SIGNUP_PARENT });
+  const loginParentParams = matchLoginParent?.({ strict: false });
+  const signupParentParams = matchSignupParent?.({ strict: false });
+  const parentId = loginParentParams?.parentId || signupParentParams?.parentId;
   const navigate = useNavigate();
 
   const redirectUser = () => {
     const unExpiredSavedSandwich = readSandwichFromCache();
     if (unExpiredSavedSandwich) {
-      navigate('/create');
+      navigate({ to: ROUTE_PATHS.CREATE });
     } else {
-      navigate('/menu');
+      navigate({ to: ROUTE_PATHS.MENU });
     }
   };
 
