@@ -30,7 +30,6 @@ export default defineConfig({
       },
     },
     alias: {
-      '^axios$': 'axios/dist/node/axios.cjs',
       '\\.(css|less|sass|scss)$': resolve(__dirname, '__mocks__/styleMock.js'),
       '\\.(gif|ttf|eot|svg)$': resolve(__dirname, '__mocks__/fileMock.js'),
       '^swiper/react$': resolve(__dirname, '__mocks__/swiper.js'),

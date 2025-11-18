@@ -1,17 +1,12 @@
-import axios from 'axios';
+import { createFetchApi } from '../utils/fetch-api';
 
 import { log } from '../utils/log';
 
 import { handleResponse } from '../utils/api-utils';
 
-const api = axios.create({
-  baseURL: `${import.meta.env.VITE_API_SERVER}/api/v1/users`,
-  headers: {
-    'Access-Control-Allow-Origin': import.meta.env.VITE_HOST,
-    'Content-Type': 'application/json',
-  },
-  withCredentials: true,
-  credentials: 'include',
+const api = createFetchApi(`${import.meta.env.VITE_API_SERVER}/api/v1/users`, {
+  'Access-Control-Allow-Origin': import.meta.env.VITE_HOST,
+  'Content-Type': 'application/json',
 });
 
 /*
@@ -79,14 +74,9 @@ export const updateUserById = async ({
   if (removeProfilePicture) formData.append('removeProfilePicture', removeProfilePicture);
   if (file && file.imageBuffer) formData.append('file', file.imageBuffer, 'profile-picture.png');
 
-  const config = {
-    headers: {
-      ...api.defaults.headers,
-      'Content-Type': 'multipart/form-data',
-    },
-  };
-
-  return await handleResponse(async () => api.put(`/update`, formData, config));
+  // Fetch wrapper automatically handles FormData headers (excludes Content-Type to let browser set boundary)
+  // api.defaults.headers is still accessible for compatibility, but not needed here
+  return await handleResponse(async () => api.put(`/update`, formData));
 };
 
 export const addSandwichToFavoritesByUserId = async ({ userId, sandwichId }) => {

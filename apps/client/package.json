@@ -9,7 +9,6 @@
     "@tanstack/react-router": "^1.136.8",
     "@tanstack/react-router-devtools": "^1.136.8",
     "@tanstack/valibot-adapter": "^1.136.8",
-    "axios": "^1.13.2",
     "normalize.css": "^8.0.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
