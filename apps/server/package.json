@@ -30,6 +30,8 @@
     "multer": "^2.0.2",
     "nodemailer": "^7.0.10",
     "sharp": "^0.34.5"
+  },
+  "devDependencies": {
+    "@types/nodemailer": "^7.0.4"
   }
 }
-

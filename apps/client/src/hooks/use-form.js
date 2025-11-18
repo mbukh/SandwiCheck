@@ -7,6 +7,7 @@ import { ROUTE_PATHS } from '../routes';
 import { readSandwichFromCache } from '../services/api-sandwiches';
 
 import validateForm from '../utils/validate-utils';
+import useToast from './use-toast';
 
 const useForm = () => {
   const [name, setName] = useState('');
@@ -17,6 +18,7 @@ const useForm = () => {
   // const [files, setFiles] = useState({});
 
   const [errors, setErrors] = useState([]);
+  const { showToast } = useToast();
 
   const { logIn, signUp, currentUser: user } = useAuthGlobalContext();
 
@@ -47,6 +49,10 @@ const useForm = () => {
 
     const res = await logIn({ email, password, parentId });
     if (res.error) {
+      // Check for email confirmation error
+      if (res.error.message && res.error.message.includes('confirm your email')) {
+        return setErrors([res.error.message]);
+      }
       return setErrors(['Login failed, try signup instead']);
     }
 
@@ -67,7 +73,16 @@ const useForm = () => {
       return setErrors([res.error.message]);
     }
 
+    // Check if email confirmation is required
+    // Handle both successful email send and failed email send cases
+    if (res.message && (res.message.includes('check your email') || res.message.includes('confirmation email could not be sent'))) {
+      // Don't redirect - return success state to show confirmation message
+      setErrors([]); // Clear errors
+      return { success: true, needsEmailConfirmation: true, email, message: res.message };
+    }
+
     redirectUser();
+    return { success: true, needsEmailConfirmation: false };
   };
 
   const handleFileChange = (event) => {

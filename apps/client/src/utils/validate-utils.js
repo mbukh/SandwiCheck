@@ -14,27 +14,46 @@ const validateForm = ({
 }) => {
   const errorMessages = [];
 
-  email != null &&
-    email.length < 5 &&
-    !email.includes('@') &&
-    !email.includes('.') &&
-    errorMessages.push('Email is invalid');
+  if (email != null) {
+    if (email.length < 5 || !email.includes('@') || !email.includes('.')) {
+      errorMessages.push('Email is invalid');
+    }
+  }
 
-  name != null && name.length < 3 && errorMessages.push('Please provide a valid full name');
-  name != null && name.length > MAX_USER_NAME_LENGTH && errorMessages.push('Full name is too long');
+  if (name != null) {
+    if (name.length < 3) {
+      errorMessages.push('Please provide a valid full name');
+    }
+    if (name.length > MAX_USER_NAME_LENGTH) {
+      errorMessages.push('Full name is too long');
+    }
+  }
 
-  lastName != null && firstName.length < 3 && errorMessages.push('Please provide a valid first name');
+  if (lastName != null && firstName != null) {
+    if (firstName.length < 3) {
+      errorMessages.push('Please provide a valid first name');
+    }
+    if (lastName.length < 3) {
+      errorMessages.push('Please provide a valid last name');
+    }
+  }
 
-  lastName != null && lastName.length < 3 && errorMessages.push('Please provide a valid last name');
+  if (password != null) {
+    if (password.length < 5) {
+      errorMessages.push('The password is too brief (minimum 5 characters)');
+    }
+    if (password.length > 30) {
+      errorMessages.push('The password is too long (maximum 30 characters)');
+    }
+  }
 
-  password != null && password.length < 5 && errorMessages.push('The password is too brief');
+  if (confirmPassword != null && password != null && confirmPassword !== password) {
+    errorMessages.push('The passwords do not match');
+  }
 
-  confirmPassword != null && confirmPassword !== password && errorMessages.push('The passwords do not match');
-
-  role != null &&
-    role !== 'parent' &&
-    role !== 'child' &&
+  if (role != null && role !== 'parent' && role !== 'child') {
     errorMessages.push('Please select a valid role: either parent or child');
+  }
 
   sandwichName != null &&
     sandwichName.length > 0 &&

@@ -18,6 +18,7 @@ export { CreateRoute } from './create';
 export { FamilyRoute } from './family';
 export { LoginRoute } from './login';
 export { SignupRoute } from './signup';
+export { ConfirmEmailRoute } from './confirm-email.$token';
 export { MenuRoute } from './menu';
 export { LatestRoute } from './latest';
 export { SandwichRoute } from './sandwich.$sandwichId';
@@ -38,6 +39,7 @@ export const ROUTE_PATHS = {
   FAMILY: '/family',
   LOGIN: '/login',
   SIGNUP: '/signup',
+  CONFIRM_EMAIL: '/confirm-email/$token',
   MENU: '/menu',
   LATEST: '/latest',
   SANDWICH: '/sandwich/$sandwichId',

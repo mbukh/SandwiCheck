@@ -73,3 +73,15 @@ export const logout = async () => {
     return api.post('/logout');
   });
 };
+
+export const confirmEmail = async (token) => {
+  return await handleResponse(async () => {
+    return api.get(`/confirm-email/${token}`);
+  });
+};
+
+export const resendConfirmation = async (email) => {
+  return await handleResponse(async () => {
+    return api.post('/resend-confirmation', { email });
+  });
+};

@@ -42,13 +42,20 @@ const errorHandler = (err, req, res, next) => {
   }
 
   res.status(error.status || 500);
-  res.json({
+  const errorResponse = {
     success: false,
     error: {
       status: error.status,
       message: error.message || 'Server Error',
     },
-  });
+  };
+  
+  // Include cooldown time if present (for email resend cooldown)
+  if (error.cooldownRemainingMs !== undefined) {
+    errorResponse.error.cooldownRemainingMs = error.cooldownRemainingMs;
+  }
+  
+  res.json(errorResponse);
 };
 
 export default errorHandler;

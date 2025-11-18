@@ -5,9 +5,12 @@ import { PROFILE_PICTURES_DIR } from '../config/dir.js';
 
 import { ROLE } from '../constants/usersConstants.js';
 import { NO_USER_SANDWICH_USERNAME } from '../constants/sandwichConstants.js';
+import { generateEmailConfirmationHtml, generateEmailConfirmationText } from '../constants/mailing.js';
 
 import { saveBufferToFile, removeFile } from '../utils/fileUtils.js';
 import { removeUserConnections } from '../utils/manageUserConnections.js';
+import * as hashAndTokens from '../utils/hashAndTokens.js';
+import sendEmail from '../utils/mailer.js';
 
 import User from '../models/UserModel.js';
 import Sandwich from '../models/SandwichModel.js';
@@ -56,8 +59,31 @@ export const updateUser = expressAsyncHandler(async (req, res, next) => {
     user.name = name;
   }
 
-  if (email) {
+  if (email && email !== user.email) {
     user.email = email;
+    // Email changed - require re-confirmation
+    user.emailConfirmed = false;
+    // Reset resend count and cooldown when email changes
+    user.emailConfirmationResendCount = 0;
+    user.emailConfirmationResendCooldown = undefined;
+    
+    // Generate new confirmation token and send email
+    const confirmationToken = hashAndTokens.generateResetPasswordToken();
+    user.emailConfirmationToken = hashAndTokens.hashToken(confirmationToken);
+    user.emailConfirmationExpire = Date.now() + parseInt(process.env.EMAIL_CONFIRMATION_EXPIRES_I || '86400000', 10);
+    
+    const confirmationURL = `${process.env.CLIENT_URL}/confirm-email/${confirmationToken}`;
+    
+    // Send confirmation email (don't await to avoid blocking the response)
+    sendEmail({
+      to: user.email,
+      subject: 'Email Confirmation',
+      html: generateEmailConfirmationHtml({ user, confirmationURL }),
+      text: generateEmailConfirmationText({ user, confirmationURL }),
+    }).catch((err) => {
+      // Log error but don't fail the request
+      console.error('Failed to send email confirmation:', err);
+    });
   }
 
   if (role) {

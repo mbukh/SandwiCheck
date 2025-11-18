@@ -1,16 +1,54 @@
 import express from 'express';
+import rateLimit from 'express-rate-limit';
+// eslint-disable-next-line no-unused-vars
+import colors from 'colors';
 
 import { ROLE } from '../constants/usersConstants.js';
 
 import { protect, authorize } from '../middleware/authMiddleware.js';
 
 import { createChildUser, switchToParent, loginChildUser } from '../controllers/authChildController.js';
-import { signup, login, changePassword, forgotPassword, resetPassword, logout } from '../controllers/authController.js';
+import {
+  signup,
+  login,
+  changePassword,
+  forgotPassword,
+  resetPassword,
+  logout,
+  confirmEmail,
+  resendConfirmation,
+} from '../controllers/authController.js';
 
 const router = express.Router();
 
+// Rate limiter for resend confirmation (stricter than general API rate limit)
+const resendConfirmationRateLimit = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 3, // limit each IP to 3 requests per hour
+  message: 'Too many confirmation email requests, please try again later',
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res) => {
+    // Log rate limit violation
+    console.error(
+      `[SECURITY] Rate limit exceeded for resend confirmation - IP: ${req.ip || 'unknown'}, email: ${req.body?.email || 'unknown'}`.red,
+    );
+
+    res.status(429).json({
+      success: false,
+      error: {
+        status: 429,
+        message: 'Too many confirmation email requests, please try again later',
+      },
+    });
+  },
+});
+
 router.post('/signup', signup);
 router.post('/login', login);
+
+router.get('/confirm-email/:token', confirmEmail);
+router.post('/resend-confirmation', resendConfirmationRateLimit, resendConfirmation);
 
 router.post('/create-child', protect, authorize(ROLE.parent), createChildUser);
 router.post('/login-child', protect, authorize(ROLE.parent), loginChildUser);

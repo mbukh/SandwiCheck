@@ -25,10 +25,19 @@ const useUser = () => {
     const res = await apiAuth.signup({ email, password, name, role, parentId });
     logResponse('🎊 Signing up', res);
     if (res.error) {
+      setIsCurrentUserReady(true);
       return res;
     }
-    setCurrentUser(res.data);
-    localStorage.setItem('loggedIn', JSON.stringify(Date.now()));
+    // Only set currentUser and loggedIn if email confirmation is not required
+    // Check if response has message about checking email
+    const needsEmailConfirmation = res.message && res.message.includes('check your email');
+    if (!needsEmailConfirmation) {
+      setCurrentUser(res.data);
+      localStorage.setItem('loggedIn', JSON.stringify(Date.now()));
+    } else {
+      // Don't set currentUser - user is not authenticated until email is confirmed
+      setCurrentUser({});
+    }
     setIsCurrentUserReady(true);
   };
 

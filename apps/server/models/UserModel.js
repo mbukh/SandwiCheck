@@ -109,6 +109,25 @@ const userSchema = new Schema(
     ],
     resetPasswordToken: String,
     resetPasswordExpire: Date,
+    emailConfirmed: {
+      type: Boolean,
+      default: false,
+    },
+    emailConfirmationToken: {
+      type: String,
+      index: true,
+      sparse: true, // Only index documents that have this field
+    },
+    emailConfirmationExpire: Date,
+    emailConfirmationResendCount: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    emailConfirmationResendCooldown: {
+      type: Date,
+      default: undefined,
+    },
   },
   {
     timestamps: true,
@@ -122,6 +141,8 @@ const userSchema = new Schema(
         delete ret.password;
         delete ret.resetPasswordToken;
         delete ret.resetPasswordExpire;
+        delete ret.emailConfirmationToken;
+        delete ret.emailConfirmationExpire;
       },
     },
     toObject: {

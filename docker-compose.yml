@@ -43,6 +43,8 @@ services:
   #   depends_on:
   #     mongo_db:
   #       condition: service_healthy
+  #     mailpit:
+  #       condition: service_started
 
   # MongoDB service (uncomment when needed)
   mongo_db:
@@ -61,6 +63,21 @@ services:
       timeout: 5s
       retries: 5
       start_period: 40s
+    networks:
+      - sandwicheck-network
+
+  # Mailpit - Local SMTP server for development
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: sandwicheck-mailpit
+    restart: unless-stopped
+    ports:
+      - "1025:1025" # SMTP port
+      - "8025:8025" # Web UI port
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
     networks:
       - sandwicheck-network
 

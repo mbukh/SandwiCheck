@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from '@tanstack/react-router';
 
 import { MAX_USER_NAME_LENGTH, ROLE } from '../../constants/user-constants';
@@ -9,6 +9,10 @@ import useToast from '../../hooks/use-toast';
 
 const Signup = () => {
   const { showToast, toastComponents } = useToast();
+  const [needsEmailConfirmation, setNeedsEmailConfirmation] = useState(false);
+  const [confirmationEmail, setConfirmationEmail] = useState('');
+  const [confirmationMessage, setConfirmationMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const {
     name,
     setName,
@@ -29,6 +33,75 @@ const Signup = () => {
     errors.forEach((error) => showToast(error));
   }, [errors, showToast]);
 
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      const result = await signUpHandler(e);
+      if (result && result.needsEmailConfirmation) {
+        setNeedsEmailConfirmation(true);
+        setConfirmationEmail(result.email || email);
+        setConfirmationMessage(result.message || '');
+        // Reset form fields
+        setName('');
+        setEmail('');
+        setPassword('');
+        setConfirmPassword('');
+        setRole('');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Show email confirmation message if needed
+  if (needsEmailConfirmation) {
+    return (
+      <div className="login max-w-screen-md text-white text-center mx-auto">
+        <h1 className="text-magenta font-bold text-2xl md:text-4xl xl:text-5xl uppercase mb-3 md:mb-5">
+          Check Your Email!
+        </h1>
+        <div className="text-base md:text-xl xl:text-3xl mb-6 md:mb-8">
+          {confirmationMessage && confirmationMessage.includes('confirmation email could not be sent') ? (
+            <>
+              <p className="mb-4">
+                Your account has been created for <strong className="text-yellow">{confirmationEmail}</strong>
+              </p>
+              <p className="mb-4 text-yellow">
+                However, the confirmation email could not be sent. Please use the resend confirmation option on the login page.
+              </p>
+              <p className="text-sm md:text-base xl:text-lg">
+                Once you've confirmed your email, you'll be able to log in and start creating delicious sandwiches!
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="mb-4">
+                We've sent a confirmation email to <strong className="text-yellow">{confirmationEmail}</strong>
+              </p>
+              <p className="mb-4">Please check your inbox and click the confirmation link to activate your account.</p>
+              <p className="text-sm md:text-base xl:text-lg">
+                Once you've confirmed your email, you'll be able to log in and start creating delicious sandwiches!
+              </p>
+            </>
+          )}
+        </div>
+        <div className="w-full mb-4 md:mb-6 flex justify-center items-center">
+          {parentId ? (
+            <Link className="mx-2 underline" to={ROUTE_PATHS.LOGIN_PARENT} params={{ parentId }}>
+              Back to Log In
+            </Link>
+          ) : (
+            <Link className="mx-2 underline" to={ROUTE_PATHS.LOGIN}>
+              Back to Log In
+            </Link>
+          )}
+        </div>
+        {toastComponents}
+      </div>
+    );
+  }
+
   return (
     <div className="login max-w-screen-md text-white text-center mx-auto">
       <h1 className="text-magenta font-bold text-2xl md:text-4xl xl:text-5xl uppercase mb-3 md:mb-5">
@@ -45,7 +118,7 @@ const Signup = () => {
         </>
       )}
 
-      <form className="needs-validation text-left text-sm mt-15 md:mt-20 xl:mt-24 md:px-5" onSubmit={signUpHandler}>
+      <form className="needs-validation text-left text-sm mt-15 md:mt-20 xl:mt-24 md:px-5" onSubmit={handleSignUp}>
         <div className="mb-4 md:mb-6">
           <input
             className="w-full appearance-none focus:outline-none rounded-lg box-shadow-10 bg-white text-magenta text-base xl:text-xl py-2 px-4 md:px-6 xl:py-3 xl:px-8 xl:box-shadow-20"
@@ -143,9 +216,10 @@ const Signup = () => {
 
         <button
           type="submit"
-          className="w-full inline-flex justify-center items-center appearance-none focus:outline-none rounded-lg box-shadow-10 font-bold uppercase bg-magenta text-white h-8 md:h-12 xl:h-14 text-sm md:text-base xl:text-xl py-2 px-5 md:py-3 md:px-6 xl:px-8 xl:box-shadow-20"
+          disabled={isSubmitting}
+          className="w-full inline-flex justify-center items-center appearance-none focus:outline-none rounded-lg box-shadow-10 font-bold uppercase bg-magenta text-white h-8 md:h-12 xl:h-14 text-sm md:text-base xl:text-xl py-2 px-5 md:py-3 md:px-6 xl:px-8 xl:box-shadow-20 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <span>Create an account</span>
+          <span>{isSubmitting ? 'Creating account...' : 'Create an account'}</span>
         </button>
       </form>
 

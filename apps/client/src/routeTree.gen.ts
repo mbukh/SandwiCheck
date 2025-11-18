@@ -21,6 +21,7 @@ import { Route as SplatRouteImport } from './routes/$'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SandwichSandwichIdRouteImport } from './routes/sandwich.$sandwichId'
 import { Route as FamilyChildIdRouteImport } from './routes/family.$childId'
+import { Route as ConfirmEmailTokenRouteImport } from './routes/confirm-email.$token'
 import { Route as SignupParentParentIdRouteImport } from './routes/signup.parent.$parentId'
 import { Route as LoginParentParentIdRouteImport } from './routes/login.parent.$parentId'
 
@@ -84,6 +85,11 @@ const FamilyChildIdRoute = FamilyChildIdRouteImport.update({
   path: '/$childId',
   getParentRoute: () => FamilyRoute,
 } as any)
+const ConfirmEmailTokenRoute = ConfirmEmailTokenRouteImport.update({
+  id: '/confirm-email/$token',
+  path: '/confirm-email/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignupParentParentIdRoute = SignupParentParentIdRouteImport.update({
   id: '/parent/$parentId',
   path: '/parent/$parentId',
@@ -106,6 +112,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRouteWithChildren
   '/menu': typeof MenuRoute
   '/signup': typeof SignupRouteWithChildren
+  '/confirm-email/$token': typeof ConfirmEmailTokenRoute
   '/family/$childId': typeof FamilyChildIdRoute
   '/sandwich/$sandwichId': typeof SandwichSandwichIdRoute
   '/login/parent/$parentId': typeof LoginParentParentIdRoute
@@ -122,6 +129,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRouteWithChildren
   '/menu': typeof MenuRoute
   '/signup': typeof SignupRouteWithChildren
+  '/confirm-email/$token': typeof ConfirmEmailTokenRoute
   '/family/$childId': typeof FamilyChildIdRoute
   '/sandwich/$sandwichId': typeof SandwichSandwichIdRoute
   '/login/parent/$parentId': typeof LoginParentParentIdRoute
@@ -139,6 +147,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRouteWithChildren
   '/menu': typeof MenuRoute
   '/signup': typeof SignupRouteWithChildren
+  '/confirm-email/$token': typeof ConfirmEmailTokenRoute
   '/family/$childId': typeof FamilyChildIdRoute
   '/sandwich/$sandwichId': typeof SandwichSandwichIdRoute
   '/login/parent/$parentId': typeof LoginParentParentIdRoute
@@ -157,6 +166,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/menu'
     | '/signup'
+    | '/confirm-email/$token'
     | '/family/$childId'
     | '/sandwich/$sandwichId'
     | '/login/parent/$parentId'
@@ -173,6 +183,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/menu'
     | '/signup'
+    | '/confirm-email/$token'
     | '/family/$childId'
     | '/sandwich/$sandwichId'
     | '/login/parent/$parentId'
@@ -189,6 +200,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/menu'
     | '/signup'
+    | '/confirm-email/$token'
     | '/family/$childId'
     | '/sandwich/$sandwichId'
     | '/login/parent/$parentId'
@@ -206,6 +218,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRouteWithChildren
   MenuRoute: typeof MenuRoute
   SignupRoute: typeof SignupRouteWithChildren
+  ConfirmEmailTokenRoute: typeof ConfirmEmailTokenRoute
   SandwichSandwichIdRoute: typeof SandwichSandwichIdRoute
 }
 
@@ -295,6 +308,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FamilyChildIdRouteImport
       parentRoute: typeof FamilyRoute
     }
+    '/confirm-email/$token': {
+      id: '/confirm-email/$token'
+      path: '/confirm-email/$token'
+      fullPath: '/confirm-email/$token'
+      preLoaderRoute: typeof ConfirmEmailTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/signup/parent/$parentId': {
       id: '/signup/parent/$parentId'
       path: '/parent/$parentId'
@@ -355,6 +375,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRouteWithChildren,
   MenuRoute: MenuRoute,
   SignupRoute: SignupRouteWithChildren,
+  ConfirmEmailTokenRoute: ConfirmEmailTokenRoute,
   SandwichSandwichIdRoute: SandwichSandwichIdRoute,
 }
 export const routeTree = rootRouteImport
