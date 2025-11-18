@@ -1,5 +1,6 @@
 import winston from 'winston';
 import crypto from 'crypto';
+import util from 'util';
 
 // Get log level from environment variable, default to 'info'
 const getLogLevel = () => {
@@ -15,8 +16,8 @@ const getLogLevel = () => {
 
 // Determine format based on environment
 // Supports: 'local', 'development', 'production'
-// 'local' = local development (colored, verbose) - default if NODE_ENV not set
-// 'development' = dev/staging server (colored, less verbose)
+// 'local' = local development (colored, human-readable) - default if NODE_ENV not set
+// 'development' = dev/staging server (JSON format)
 // 'production' = production server (JSON format)
 const nodeEnv = process.env.NODE_ENV || 'local';
 const isLocal = nodeEnv === 'local';
@@ -151,9 +152,9 @@ const sanitizeStack = (stack) => {
   });
 };
 
-// Development format: human-readable with enhanced colors and formatting
-const developmentFormat = winston.format.combine(
-  winston.format.timestamp({ format: isLocal ? 'HH:mm:ss' : 'YYYY-MM-DD HH:mm:ss' }),
+// Local format: human-readable with enhanced colors and formatting
+const localFormat = winston.format.combine(
+  winston.format.timestamp({ format: 'HH:mm:ss' }),
   winston.format.errors({ stack: true }),
   winston.format.splat(),
   winston.format.colorize(),
@@ -184,17 +185,21 @@ const developmentFormat = winston.format.combine(
     
     // Handle different message types
     if (stack) {
-      // Error with stack trace - sanitize in production
-      const sanitizedStack = isProduction ? sanitizeStack(stack) : stack;
-      const sanitizedMessage = isProduction ? maskPII(String(message)) : message;
-      output += `${sanitizedMessage}\n${sanitizedStack}`;
+      // Error with stack trace - no sanitization needed for local
+      output += `${message}\n${stack}`;
     } else if (typeof message === 'object' && message !== null) {
-      // Object message - sanitize and pretty print
-      const sanitized = isProduction ? sanitizeData(message) : message;
-      output += '\n' + JSON.stringify(sanitized, null, 2);
+      // Object message - pretty print with colors
+      output += '\n' + util.inspect(message, {
+        colors: true,
+        depth: null,
+        maxArrayLength: null,
+        maxStringLength: null,
+        compact: false,
+        sorted: false,
+      });
     } else {
-      // String message - mask PII in production
-      output += isProduction ? maskPII(String(message)) : message;
+      // String message
+      output += message;
     }
     
     // Add any additional metadata fields (excluding standard Winston fields)
@@ -209,17 +214,24 @@ const developmentFormat = winston.format.combine(
     if (metaFields.length > 0) {
       const meta = {};
       for (const key of metaFields) {
-        meta[key] = isProduction ? sanitizeData(rest[key]) : rest[key];
+        meta[key] = rest[key];
       }
-      output += '\n' + JSON.stringify(meta, null, 2);
+      output += '\n' + util.inspect(meta, {
+        colors: true,
+        depth: null,
+        maxArrayLength: null,
+        maxStringLength: null,
+        compact: false,
+        sorted: false,
+      });
     }
     
     return output;
   }),
 );
 
-// Production format: JSON for log aggregation
-const productionFormat = winston.format.combine(
+// Development/Production format: JSON for log aggregation
+const jsonFormat = winston.format.combine(
   winston.format.timestamp(),
   winston.format.errors({ stack: true }),
   winston.format.splat(),
@@ -266,7 +278,7 @@ const productionFormat = winston.format.combine(
 // Create logger instance
 const logger = winston.createLogger({
   level: getLogLevel(),
-  format: isProduction ? productionFormat : developmentFormat,
+  format: isLocal ? localFormat : jsonFormat,
   transports: [
     new winston.transports.Console({
       handleExceptions: true,
