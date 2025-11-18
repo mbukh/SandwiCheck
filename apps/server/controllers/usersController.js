@@ -1,6 +1,7 @@
 import expressAsyncHandler from 'express-async-handler';
 import createHttpError from 'http-errors';
 
+import logger from '../utils/logger.js';
 import { PROFILE_PICTURES_DIR } from '../config/dir.js';
 
 import { ROLE } from '../constants/usersConstants.js';
@@ -82,7 +83,7 @@ export const updateUser = expressAsyncHandler(async (req, res, next) => {
       text: generateEmailConfirmationText({ user, confirmationURL }),
     }).catch((err) => {
       // Log error but don't fail the request
-      console.error('Failed to send email confirmation:', err);
+      logger.error('Failed to send email confirmation:', err);
     });
   }
 

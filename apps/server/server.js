@@ -16,10 +16,10 @@ import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 
 import morgan from 'morgan';
-// eslint-disable-next-line no-unused-vars
-import colors from 'colors';
 
+import logger, { morganStream, getLoggerLevel } from './utils/logger.js';
 import errorHandler from './middleware/errorHandler.js';
+import requestIdMiddleware from './middleware/requestIdMiddleware.js';
 
 import ingredientsRoutes from './routes/ingredientsRoutes.js';
 import sandwichesRoutes from './routes/sandwichesRoutes.js';
@@ -50,14 +50,57 @@ app.use(
   }),
 );
 
-// ==== Logging ==== //
-const morganFormat = process.env.NODE_ENV === 'development' ? 'dev' : 'combined';
-app.use(morgan(morganFormat));
-
 // Body parser middleware
 app.use(express.json({ limit: '5kb' }));
 // Cookies parser
 app.use(cookieParser());
+
+// ==== Request ID Middleware (for request tracing) ==== //
+app.use(requestIdMiddleware);
+
+// ==== HTTP Request Logging (debug level only) ==== //
+// Only log HTTP requests when LOG_LEVEL is 'debug'
+// SECURITY: Custom format to sanitize sensitive headers and URLs
+if (getLoggerLevel() === 'debug') {
+  const nodeEnv = process.env.NODE_ENV || 'local';
+  
+  // Custom morgan format that sanitizes sensitive data
+  const sanitizedFormat = (tokens, req, res) => {
+    const method = tokens.method(req, res);
+    const url = tokens.url(req, res);
+    const status = tokens.status(req, res);
+    const responseTime = tokens['response-time'](req, res);
+    const remoteAddr = tokens['remote-addr'](req, res);
+    const userAgent = tokens['user-agent'](req, res);
+    
+    // Sanitize URL - remove tokens from query params and paths
+    let sanitizedUrl = url;
+    // Remove tokens from URL path (e.g., /confirm-email/TOKEN)
+    sanitizedUrl = sanitizedUrl.replace(/\/(confirm-email|reset-password|reset-password\/)[^\/\s]+/gi, (match) => {
+      const parts = match.split('/');
+      if (parts.length > 0) {
+        const lastPart = parts[parts.length - 1];
+        // If it looks like a token (long alphanumeric), mask it
+        if (lastPart.length > 20 && /^[a-zA-Z0-9_-]+$/.test(lastPart)) {
+          return `${parts.slice(0, -1).join('/')}/${lastPart.substring(0, 4)}***${lastPart.substring(lastPart.length - 4)}`;
+        }
+      }
+      return match;
+    });
+    // Remove tokens from query params
+    sanitizedUrl = sanitizedUrl.replace(/([?&])(token|resetToken|confirmationToken)=[^&\s]+/gi, '$1$2=***');
+    
+    if (nodeEnv === 'production') {
+      // Production: minimal format (no user agent, sanitized)
+      return `${remoteAddr} - ${method} ${sanitizedUrl} ${status} ${responseTime}ms`;
+    } else {
+      // Development: more details but still sanitized
+      return `${method} ${sanitizedUrl} ${status} ${responseTime}ms - ${remoteAddr}`;
+    }
+  };
+  
+  app.use(morgan(sanitizedFormat, { stream: morganStream }));
+}
 
 // ==== Security ==== //
 // parse URL-encoded data received from the client
@@ -84,19 +127,39 @@ app.use('/', express.static(CLIENT_DIR));
 // Uploads folder
 app.use('/uploads', express.static(UPLOADS_DIR));
 
-// Logging
-if (process.env.NODE_ENV !== 'production') app.use(morgan('dev'));
-
 // Start server
 const PORT = process.env.PORT || 5001;
 
-const server = app.listen(
-  PORT,
-  console.log(`Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`.brightYellow.underline),
-);
+const server = app.listen(PORT, () => {
+  const nodeEnv = process.env.NODE_ENV || 'local';
+  logger.info('Server started', {
+    environment: nodeEnv,
+    port: PORT,
+  });
+});
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (err) => {
+  logger.error('Uncaught Exception - shutting down:', {
+    message: err.message,
+    stack: err.stack,
+    name: err.name,
+  });
+  // Give logger time to flush before exiting
+  setTimeout(() => {
+    server.close(() => process.exit(1));
+  }, 1000);
+});
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err, promise) => {
-  console.log(`Error: ${err.message}`.red);
-  server.close(() => process.exit(1));
+  logger.error('Unhandled Rejection - shutting down:', {
+    message: err?.message || String(err),
+    stack: err?.stack,
+    name: err?.name,
+  });
+  // Give logger time to flush before exiting
+  setTimeout(() => {
+    server.close(() => process.exit(1));
+  }, 1000);
 });

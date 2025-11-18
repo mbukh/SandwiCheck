@@ -4,9 +4,7 @@ import { CONFIG_DIR } from '../config/dir.js';
 import dotenv from 'dotenv';
 dotenv.config({ path: path.join(CONFIG_DIR, '.env') });
 
-// eslint-disable-next-line no-unused-vars
-import colors from 'colors';
-
+import logger from '../utils/logger.js';
 import connectDB from '../config/db.js';
 
 import mongoose from 'mongoose';
@@ -39,7 +37,7 @@ const waitForConnection = () => {
 
     // Handle connection errors
     mongoose.connection.once('error', (error) => {
-      console.error('Database connection error:'.red, error);
+      logger.error('Database connection error:', error);
       process.exit(1);
     });
   });
@@ -47,7 +45,7 @@ const waitForConnection = () => {
 
 const upsertIngredients = async ({ data, Model }) => {
   if (!data || data.length === 0) {
-    console.warn('No data provided for ingredients'.yellow);
+    logger.warn('No data provided for ingredients');
     return;
   }
 
@@ -69,9 +67,9 @@ const upsertIngredients = async ({ data, Model }) => {
       }
     }
 
-    console.log(`Upserted ${type}: ${added} added, ${updated} updated (total: ${data.length})`.green);
+    logger.info(`Upserted ${type}: ${added} added, ${updated} updated (total: ${data.length})`);
   } catch (error) {
-    console.error(`Error upserting ${type}:`.red, error);
+    logger.error(`Error upserting ${type}:`, error);
     throw error;
   }
 };
@@ -144,8 +142,8 @@ const upsertUsers = async () => {
       }
     }
 
-    console.log(
-      `Upserted users with email: ${added} added, ${updated} updated (total: ${usersWithEmail.length})`.green,
+    logger.info(
+      `Upserted users with email: ${added} added, ${updated} updated (total: ${usersWithEmail.length})`,
     );
 
     // Then, handle tethered children
@@ -156,7 +154,7 @@ const upsertUsers = async () => {
       const { _parentEmails, ...childFields } = childData;
 
       if (!_parentEmails || _parentEmails.length === 0) {
-        console.warn(`Skipping child ${childData.name}: no parent emails specified`.yellow);
+        logger.warn(`Skipping child ${childData.name}: no parent emails specified`);
         continue;
       }
 
@@ -164,7 +162,7 @@ const upsertUsers = async () => {
       const parents = await User.find({ email: { $in: _parentEmails.map((email) => email.toLowerCase()) } });
 
       if (parents.length === 0) {
-        console.warn(`Skipping child ${childData.name}: parents not found`.yellow);
+        logger.warn(`Skipping child ${childData.name}: parents not found`);
         continue;
       }
 
@@ -172,9 +170,8 @@ const upsertUsers = async () => {
       if (parents.length < _parentEmails.length) {
         const foundEmails = parents.map((p) => p.email);
         const missingEmails = _parentEmails.filter((email) => !foundEmails.includes(email.toLowerCase()));
-        console.warn(
-          `Child ${childData.name}: Some parents not found (${missingEmails.join(', ')}). Proceeding with found parents only.`
-            .yellow,
+        logger.warn(
+          `Child ${childData.name}: Some parents not found (${missingEmails.join(', ')}). Proceeding with found parents only.`,
         );
       }
 
@@ -227,11 +224,11 @@ const upsertUsers = async () => {
       }
     }
 
-    console.log(
-      `Upserted tethered children: ${added} added, ${updated} updated (total: ${tetheredChildren.length})`.green,
+    logger.info(
+      `Upserted tethered children: ${added} added, ${updated} updated (total: ${tetheredChildren.length})`,
     );
   } catch (error) {
-    console.error('Error upserting users:'.red, error);
+    logger.error('Error upserting users:', error);
     throw error;
   }
 };
@@ -264,7 +261,7 @@ const createSandwiches = async () => {
       try {
         // Validate ingredients array
         if (!sandwichData.ingredients || sandwichData.ingredients.length === 0) {
-          console.warn(`Skipping sandwich "${sandwichData.name}": No ingredients`.yellow);
+          logger.warn(`Skipping sandwich "${sandwichData.name}": No ingredients`);
           skipped++;
           continue;
         }
@@ -295,8 +292,8 @@ const createSandwiches = async () => {
           // Find parent by email
           const parentInfo = userEmailMap.get(sandwichData.authorEmail.toLowerCase());
           if (!parentInfo) {
-            console.warn(
-              `Skipping sandwich "${sandwichData.name}": parent email "${sandwichData.authorEmail}" not found`.yellow,
+            logger.warn(
+              `Skipping sandwich "${sandwichData.name}": parent email "${sandwichData.authorEmail}" not found`,
             );
             skipped++;
             continue;
@@ -313,9 +310,8 @@ const createSandwiches = async () => {
           });
 
           if (!childUser) {
-            console.warn(
-              `Skipping sandwich "${sandwichData.name}": child "${sandwichData.childName}" not found for parent "${sandwichData.authorEmail}"`
-                .yellow,
+            logger.warn(
+              `Skipping sandwich "${sandwichData.name}": child "${sandwichData.childName}" not found for parent "${sandwichData.authorEmail}"`,
             );
             skipped++;
             continue;
@@ -326,9 +322,8 @@ const createSandwiches = async () => {
             parentIds.some((pid) => pid.toString() === parentId.toString()),
           );
           if (!childHasParent) {
-            console.warn(
-              `Skipping sandwich "${sandwichData.name}": child "${sandwichData.childName}" does not have parent "${sandwichData.authorEmail}"`
-                .yellow,
+            logger.warn(
+              `Skipping sandwich "${sandwichData.name}": child "${sandwichData.childName}" does not have parent "${sandwichData.authorEmail}"`,
             );
             skipped++;
             continue;
@@ -341,8 +336,8 @@ const createSandwiches = async () => {
           // It's a user with email (adult/parent)
           const userInfo = userEmailMap.get(sandwichData.authorEmail.toLowerCase());
           if (!userInfo) {
-            console.warn(
-              `Skipping sandwich "${sandwichData.name}": author email "${sandwichData.authorEmail}" not found`.yellow,
+            logger.warn(
+              `Skipping sandwich "${sandwichData.name}": author email "${sandwichData.authorEmail}" not found`,
             );
             skipped++;
             continue;
@@ -353,8 +348,8 @@ const createSandwiches = async () => {
           // Fetch the full user document to get createdAt
           authorUser = await User.findById(authorId);
           if (!authorUser) {
-            console.warn(
-              `Skipping sandwich "${sandwichData.name}": author user not found`.yellow,
+            logger.warn(
+              `Skipping sandwich "${sandwichData.name}": author user not found`,
             );
             skipped++;
             continue;
@@ -410,14 +405,13 @@ const createSandwiches = async () => {
           added++;
         }
       } catch (error) {
-        console.error(`Error creating sandwich "${sandwichData.name}":`.red, error.message);
+        logger.error(`Error creating sandwich "${sandwichData.name}":`, error.message);
         failed++;
 
         // Check if we've exceeded the failure threshold
         if (failed > MAX_FAILURE_THRESHOLD) {
-          console.error(
-            `Aborting: Too many sandwich creation failures (${failed} failures, threshold: ${MAX_FAILURE_THRESHOLD})`
-              .red,
+          logger.error(
+            `Aborting: Too many sandwich creation failures (${failed} failures, threshold: ${MAX_FAILURE_THRESHOLD})`,
           );
           throw new Error(
             `Sandwich creation failed: ${failed} failures exceeded threshold of ${MAX_FAILURE_THRESHOLD}`,
@@ -426,12 +420,11 @@ const createSandwiches = async () => {
       }
     }
 
-    console.log(
-      `Upserted sandwiches: ${added} added, ${updated} updated, ${skipped} skipped, ${failed} failed (total: ${sandwichesData.length})`
-        .green,
+    logger.info(
+      `Upserted sandwiches: ${added} added, ${updated} updated, ${skipped} skipped, ${failed} failed (total: ${sandwichesData.length})`,
     );
   } catch (error) {
-    console.error('Error creating sandwiches:'.red, error);
+    logger.error('Error creating sandwiches:', error);
     throw error;
   }
 };
@@ -459,13 +452,13 @@ const main = async () => {
     // Step 3: Create sandwiches (using API service to generate images)
     await createSandwiches();
 
-    console.log('All data upserted to database'.green);
+    logger.info('All data upserted to database');
   } catch (error) {
-    console.error('Error in main execution:'.red, error);
+    logger.error('Error in main execution:', error);
     process.exit(1);
   } finally {
     await mongoose.connection.close();
-    console.log('Database connection closed'.gray);
+    logger.info('Database connection closed');
   }
 };
 

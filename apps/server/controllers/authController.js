@@ -1,9 +1,8 @@
 import createHttpError from 'http-errors';
 import expressAsyncHandler from 'express-async-handler';
-// eslint-disable-next-line no-unused-vars
-import colors from 'colors';
 
 import bcrypt from 'bcryptjs';
+import logger from '../utils/logger.js';
 
 import { ROLE } from '../constants/usersConstants.js';
 import {
@@ -84,11 +83,12 @@ export const signup = expressAsyncHandler(async (req, res, next) => {
         data: userExists,
       });
     } catch (emailError) {
-      // Log email sending error
-      console.error(
-        `[ERROR] Failed to send confirmation email during signup for user: ${userExists._id}, email: ${userExists.email}`.red,
-        emailError,
-      );
+    // Log email sending error (PII will be automatically masked)
+    logger.error('Failed to send confirmation email during signup', {
+      requestId: req.requestId,
+      userId: userExists._id.toString(),
+      error: emailError,
+    });
 
       // Don't fail the signup - user is created, they can request resend
       return res.status(200).json({
@@ -165,11 +165,12 @@ export const signup = expressAsyncHandler(async (req, res, next) => {
       data: user,
     });
   } catch (emailError) {
-    // Log email sending error
-    console.error(
-      `[ERROR] Failed to send confirmation email during signup for user: ${user._id}, email: ${user.email}`.red,
-      emailError,
-    );
+    // Log email sending error (PII will be automatically masked)
+    logger.error('Failed to send confirmation email during signup', {
+      requestId: req.requestId,
+      userId: user._id.toString(),
+      error: emailError,
+    });
 
     // Don't fail the signup - user is created, they can request resend
     res.status(200).json({
@@ -416,10 +417,12 @@ export const confirmEmail = expressAsyncHandler(async (req, res, next) => {
   // Check if max resend count reached - prevent confirmation even with valid token
   const resendCount = user.emailConfirmationResendCount || 0;
   if (resendCount >= MAX_RESEND_COUNT) {
-    // Log security event
-    console.error(
-      `[SECURITY] Email confirmation attempted after max resends for user: ${user._id}, email: ${user.email}, IP: ${req.ip || 'unknown'}`.red,
-    );
+    // Log security event (PII will be automatically masked)
+    logger.warn('Email confirmation attempted after max resends', {
+      requestId: req.requestId,
+      userId: user._id.toString(),
+      ip: req.ip || 'unknown',
+    });
 
     // Invalidate token
     user.emailConfirmationToken = undefined;
@@ -444,8 +447,11 @@ export const confirmEmail = expressAsyncHandler(async (req, res, next) => {
 
   await user.save();
 
-  // Log successful confirmation
-  console.log(`[INFO] Email confirmed successfully for user: ${user._id}, email: ${user.email}`.green);
+  // Log successful confirmation (PII will be automatically masked in production)
+  logger.info('Email confirmed successfully', {
+    requestId: req.requestId,
+    userId: user._id.toString(),
+  });
 
   res.status(200).json({
     success: true,
@@ -489,10 +495,12 @@ export const resendConfirmation = expressAsyncHandler(async (req, res, next) => 
   // Check if max resend count reached - reject before cooldown check
   const currentResendCount = user.emailConfirmationResendCount || 0;
   if (currentResendCount >= MAX_RESEND_COUNT) {
-    // Log security event
-    console.error(
-      `[SECURITY] Email confirmation resend limit exceeded for user: ${user._id}, email: ${user.email}, IP: ${req.ip || 'unknown'}`.red,
-    );
+    // Log security event (PII will be automatically masked)
+    logger.warn('Email confirmation resend limit exceeded', {
+      requestId: req.requestId,
+      userId: user._id.toString(),
+      ip: req.ip || 'unknown',
+    });
 
     // Invalidate existing token to prevent confirmation
     user.emailConfirmationToken = undefined;
@@ -519,10 +527,13 @@ export const resendConfirmation = expressAsyncHandler(async (req, res, next) => 
     const remainingMinutes = Math.floor(remainingCooldownSeconds / 60);
     const remainingSeconds = remainingCooldownSeconds % 60;
 
-    // Log cooldown violation
-    console.error(
-      `[SECURITY] Email confirmation resend cooldown violation for user: ${user._id}, email: ${user.email}, IP: ${req.ip || 'unknown'}, remaining: ${remainingCooldownSeconds} seconds`.red,
-    );
+    // Log cooldown violation (PII will be automatically masked)
+    logger.warn('Email confirmation resend cooldown violation', {
+      requestId: req.requestId,
+      userId: user._id.toString(),
+      ip: req.ip || 'unknown',
+      remainingSeconds: remainingCooldownSeconds,
+    });
 
     // Show precise time remaining
     let timeMessage;
@@ -556,9 +567,11 @@ export const resendConfirmation = expressAsyncHandler(async (req, res, next) => 
 
   const currentResendCountCheck = refreshedUser.emailConfirmationResendCount || 0;
   if (currentResendCountCheck >= MAX_RESEND_COUNT) {
-    console.error(
-      `[SECURITY] Email confirmation resend limit exceeded (race condition detected) for user: ${user._id}, email: ${user.email}, IP: ${req.ip || 'unknown'}`.red,
-    );
+      logger.warn('Email confirmation resend limit exceeded (race condition)', {
+        requestId: req.requestId,
+        userId: user._id.toString(),
+        ip: req.ip || 'unknown',
+      });
     const error = createHttpError.Forbidden(
       'Maximum number of confirmation email resends reached. Please contact support for assistance.',
     );
@@ -597,9 +610,11 @@ export const resendConfirmation = expressAsyncHandler(async (req, res, next) => 
     // If update failed (count was already at max), this is a race condition
     // Invalidate the token we just sent to prevent its use, and log security event
     if (!updateResult) {
-      console.error(
-        `[SECURITY] Email sent but count update failed (race condition) - invalidating token for user: ${user._id}, email: ${user.email}, IP: ${req.ip || 'unknown'}`.red,
-      );
+      logger.warn('Email sent but count update failed (race condition)', {
+        requestId: req.requestId,
+        userId: user._id.toString(),
+        ip: req.ip || 'unknown',
+      });
       
       // Invalidate the token we just sent since count was already at max
       // This prevents the user from using a token sent after limit was reached
@@ -613,10 +628,12 @@ export const resendConfirmation = expressAsyncHandler(async (req, res, next) => 
       // Still return success since email was sent, but token is now invalid
       // This is a rare race condition edge case
     } else {
-      // Log successful resend attempt
-      console.log(
-        `[INFO] Email confirmation resent for user: ${user._id}, email: ${user.email}, resend count: ${updateResult.emailConfirmationResendCount}`.yellow,
-      );
+      // Log successful resend attempt (PII will be automatically masked)
+      logger.info('Email confirmation resent', {
+        requestId: req.requestId,
+        userId: user._id.toString(),
+        resendCount: updateResult.emailConfirmationResendCount,
+      });
     }
 
     res.status(200).json({
@@ -624,11 +641,12 @@ export const resendConfirmation = expressAsyncHandler(async (req, res, next) => 
       message: 'Confirmation email sent. Please check your inbox.',
     });
   } catch (emailError) {
-    // Log email sending error
-    console.error(
-      `[ERROR] Failed to send confirmation email for user: ${user._id}, email: ${user.email}`.red,
-      emailError,
-    );
+    // Log email sending error (PII will be automatically masked)
+    logger.error('Failed to send confirmation email', {
+      requestId: req.requestId,
+      userId: user._id.toString(),
+      error: emailError,
+    });
 
     // Email failed - do NOT increment count or set cooldown
     // User can retry immediately without penalty

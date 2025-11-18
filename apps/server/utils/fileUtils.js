@@ -1,5 +1,6 @@
 import path from 'path';
 import fs from 'fs/promises';
+import logger from './logger.js';
 
 export const saveBufferToFile = async (buffer, folder, fileName) => {
   if (!folder || !fileName || !buffer) return;
@@ -10,7 +11,11 @@ export const saveBufferToFile = async (buffer, folder, fileName) => {
     await fs.writeFile(destinationPath, buffer);
     return fileName;
   } catch (e) {
-    console.error('Error saving file:', e);
+    logger.error('Error saving file', {
+      error: e,
+      fileName,
+      folder,
+    });
     return;
   }
 };

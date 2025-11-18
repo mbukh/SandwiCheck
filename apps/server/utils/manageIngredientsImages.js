@@ -1,6 +1,7 @@
 import createHttpError from 'http-errors';
 
 import sharp from 'sharp';
+import logger from './logger.js';
 
 import { INGREDIENTS_DIR } from '../config/dir.js';
 
@@ -29,7 +30,7 @@ export const saveIngredientImages = async ({ reqFiles, type, areAllFieldsRequire
     if (error instanceof createHttpError.HttpError) {
       next(error);
     } else {
-      console.error('Error saving file on server:', error);
+      logger.error('Error saving file on server:', error);
 
       await removeAllIngredientImagesByImageBase(filenameBase);
 
@@ -68,7 +69,7 @@ async function hasTransparency(pngFileBuffer) {
     const metadata = await sharp(pngFileBuffer).metadata();
     return metadata.channels === 4;
   } catch (error) {
-    console.error('Error checking transparency:', error);
+    logger.error('Error checking transparency:', error);
     return false;
   }
 }

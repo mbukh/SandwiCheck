@@ -1,8 +1,7 @@
 import express from 'express';
 import rateLimit from 'express-rate-limit';
-// eslint-disable-next-line no-unused-vars
-import colors from 'colors';
 
+import logger from '../utils/logger.js';
 import { ROLE } from '../constants/usersConstants.js';
 
 import { protect, authorize } from '../middleware/authMiddleware.js';
@@ -29,10 +28,11 @@ const resendConfirmationRateLimit = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req, res) => {
-    // Log rate limit violation
-    console.error(
-      `[SECURITY] Rate limit exceeded for resend confirmation - IP: ${req.ip || 'unknown'}, email: ${req.body?.email || 'unknown'}`.red,
-    );
+    // Log rate limit violation (PII will be automatically masked)
+    logger.warn('Rate limit exceeded for resend confirmation', {
+      requestId: req.requestId,
+      ip: req.ip || 'unknown',
+    });
 
     res.status(429).json({
       success: false,

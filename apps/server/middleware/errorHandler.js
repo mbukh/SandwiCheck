@@ -1,15 +1,27 @@
 import createHttpError from 'http-errors';
+import logger from '../utils/logger.js';
 
 const errorHandler = (err, req, res, next) => {
   let error = { ...err, message: err.message, status: err.status };
 
-  // Logging
-  if (process.env.NODE_ENV !== 'production') {
-    err.status && console.log(`Error status: ${err.status}`.red);
-    err.name && console.log(`Error name: ${err.name}`.red);
-    err.code && console.log(`Error code: ${err.code}`.red);
-    err.stack && console.log(`Error stack: ${err.stack}`.red);
-  }
+  // Extract user ID if available (from auth middleware)
+  const userId = req.user?._id?.toString() || req.user?.id?.toString();
+
+  // Logging - log error with context (requestId, userId, request details)
+  // Error object will be automatically sanitized by logger
+  logger.error('Request error', {
+    requestId: req.requestId,
+    userId,
+    path: req.path,
+    method: req.method,
+    status: err.status || 500,
+    error: {
+      name: err.name,
+      message: err.message,
+      code: err.code,
+      stack: err.stack,
+    },
+  });
 
   // Mongoose bad ObjectId
   if (err.name === 'CastError') {
@@ -18,7 +30,8 @@ const errorHandler = (err, req, res, next) => {
   }
   // Mongoose duplicate key
   if (err.code === 11000) {
-    const field_value = error.message.match(/\{(.*)\}/g)[0].replaceAll('"', '');
+    const match = error.message.match(/\{(.*)\}/g);
+    const field_value = match ? match[0].replaceAll('"', '') : 'unknown field';
     const message = `Duplicate data ${field_value}`;
     error = createHttpError.BadRequest(message);
   }

@@ -39,20 +39,17 @@ import { CONFIG_DIR } from '../config/dir.js';
 import dotenv from 'dotenv';
 dotenv.config({ path: path.join(CONFIG_DIR, '.env') });
 
+import logger from '../utils/logger.js';
 import connectDB from '../config/db.js';
 import User from '../models/UserModel.js';
-
-// eslint-disable-next-line no-unused-vars
-import colors from 'colors';
 
 const migrateEmailConfirmationFields = async () => {
   try {
     await connectDB();
 
-    console.log('Starting email confirmation fields migration...'.yellow);
-    console.log('Adding missing default field values to all users...'.yellow);
-    console.log('Setting all users to unconfirmed (emailConfirmed: false)'.yellow);
-    console.log('');
+    logger.info('Starting email confirmation fields migration...');
+    logger.info('Adding missing default field values to all users...');
+    logger.info('Setting all users to unconfirmed (emailConfirmed: false)');
 
     // First, set emailConfirmed to false for all users (ensuring they stay unconfirmed)
     const emailConfirmedResult = await User.updateMany(
@@ -88,11 +85,8 @@ const migrateEmailConfirmationFields = async () => {
       },
     );
 
-    console.log(
-      `Migration completed successfully:`.green,
-      `\n  - Set emailConfirmed: false for ${emailConfirmedResult.modifiedCount} users`,
-      `\n  - Added emailConfirmationResendCount: 0 for ${resendCountResult.modifiedCount} users`,
-      `\n  - Added roles: ['user'] for ${rolesResult.modifiedCount} users`,
+    logger.info(
+      `Migration completed successfully:\n  - Set emailConfirmed: false for ${emailConfirmedResult.modifiedCount} users\n  - Added emailConfirmationResendCount: 0 for ${resendCountResult.modifiedCount} users\n  - Added roles: ['user'] for ${rolesResult.modifiedCount} users`,
     );
 
     // Verify the migration
@@ -100,20 +94,17 @@ const migrateEmailConfirmationFields = async () => {
     const unconfirmedUsers = await User.countDocuments({ emailConfirmed: false });
     const usersWithResendCount = await User.countDocuments({ emailConfirmationResendCount: { $exists: true } });
 
-    console.log(`\nVerification:`.cyan);
-    console.log(`  - Total users: ${totalUsers}`);
-    console.log(`  - Unconfirmed users: ${unconfirmedUsers}`);
-    console.log(`  - Users with resend count field: ${usersWithResendCount}`);
+    logger.info(`Verification:\n  - Total users: ${totalUsers}\n  - Unconfirmed users: ${unconfirmedUsers}\n  - Users with resend count field: ${usersWithResendCount}`);
 
     if (unconfirmedUsers === totalUsers) {
-      console.log(`\n✓ All users are unconfirmed as required.`.green);
+      logger.info('✓ All users are unconfirmed as required.');
     } else {
-      console.log(`\n⚠ Warning: Some users may still be confirmed.`.yellow);
+      logger.warn('⚠ Warning: Some users may still be confirmed.');
     }
 
     process.exit(0);
   } catch (error) {
-    console.error('Migration failed:'.red, error);
+    logger.error('Migration failed:', error);
     process.exit(1);
   }
 };

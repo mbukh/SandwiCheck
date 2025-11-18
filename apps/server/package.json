@@ -7,8 +7,9 @@
   "author": "Moshe Bukhman",
   "license": "CC BY-NC-ND 4.0",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node --env-file ./config/.env --watch server.js",
+    "start": "NODE_ENV=production node server.js",
+    "dev": "NODE_ENV=local node --env-file ./config/.env --watch server.js",
+    "dev:staging": "NODE_ENV=development node --env-file ./config/.env --watch server.js",
     "init-db": "node service/initDatabase.js"
   },
   "dependencies": {
@@ -28,6 +29,7 @@
     "mongoose": "^8.20.0",
     "morgan": "^1.10.0",
     "multer": "^2.0.2",
+    "winston": "^3.15.0",
     "nodemailer": "^7.0.10",
     "sharp": "^0.34.5"
   },
