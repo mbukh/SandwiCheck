@@ -1,11 +1,5 @@
-import path from 'path';
-import { CONFIG_DIR } from '../config/dir.js';
-
-import dotenv from 'dotenv';
-dotenv.config({ path: path.join(CONFIG_DIR, '.env') });
-
-import logger from '../utils/logger.js';
 import connectDB from '../config/db.js';
+import logger from '../utils/logger.js';
 
 import mongoose from 'mongoose';
 
@@ -13,14 +7,14 @@ import Ingredient from '../models/IngredientModel.js';
 import Sandwich from '../models/SandwichModel.js';
 import User from '../models/UserModel.js';
 
+import { generateSandwichImage } from '../utils/manageSandwichesImages.js';
 import { createUserParentsConnections } from '../utils/manageUserConnections.js';
 import { createSandwichService } from './createSandwichService.js';
-import { generateSandwichImage } from '../utils/manageSandwichesImages.js';
 
+import { isBreadType } from '../constants/ingredientsConstants.js';
 import { breadData, cheeseData, condimentData, proteinData, toppingData } from './initialData/ingredientsData.js';
 import { sandwichesData } from './initialData/sandwichesData.js';
 import { usersData } from './initialData/usersData.js';
-import { isBreadType } from '../constants/ingredientsConstants.js';
 
 const waitForConnection = () => {
   return new Promise((resolve) => {
@@ -123,28 +117,16 @@ const upsertUsers = async () => {
       const updatedAt = createdAt;
 
       if (existing) {
-        existing.set({
-          ...userFields,
-          email: email.toLowerCase(),
-          createdAt,
-          updatedAt,
-        });
+        existing.set({ ...userFields, email: email.toLowerCase(), createdAt, updatedAt });
         await existing.save();
         updated++;
       } else {
-        await User.create({
-          ...userFields,
-          email: email.toLowerCase(),
-          createdAt,
-          updatedAt,
-        });
+        await User.create({ ...userFields, email: email.toLowerCase(), createdAt, updatedAt });
         added++;
       }
     }
 
-    logger.info(
-      `Upserted users with email: ${added} added, ${updated} updated (total: ${usersWithEmail.length})`,
-    );
+    logger.info(`Upserted users with email: ${added} added, ${updated} updated (total: ${usersWithEmail.length})`);
 
     // Then, handle tethered children
     added = 0;
@@ -224,9 +206,7 @@ const upsertUsers = async () => {
       }
     }
 
-    logger.info(
-      `Upserted tethered children: ${added} added, ${updated} updated (total: ${tetheredChildren.length})`,
-    );
+    logger.info(`Upserted tethered children: ${added} added, ${updated} updated (total: ${tetheredChildren.length})`);
   } catch (error) {
     logger.error('Error upserting users:', error);
     throw error;
@@ -348,9 +328,7 @@ const createSandwiches = async () => {
           // Fetch the full user document to get createdAt
           authorUser = await User.findById(authorId);
           if (!authorUser) {
-            logger.warn(
-              `Skipping sandwich "${sandwichData.name}": author user not found`,
-            );
+            logger.warn(`Skipping sandwich "${sandwichData.name}": author user not found`);
             skipped++;
             continue;
           }

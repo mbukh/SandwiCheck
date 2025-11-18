@@ -10,13 +10,12 @@
     "start": "NODE_ENV=production node server.js",
     "dev": "NODE_ENV=local node --env-file ./config/.env --watch server.js",
     "dev:staging": "NODE_ENV=development node --env-file ./config/.env --watch server.js",
-    "init-db": "node service/initDatabase.js"
+    "init-db": "node --env-file ./config/.env service/initDatabase.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
-    "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "express-async-handler": "^1.2.0",
     "express-rate-limit": "^8.2.1",

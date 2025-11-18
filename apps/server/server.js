@@ -1,9 +1,6 @@
 import path from 'path';
 import { CONFIG_DIR, CLIENT_DIR, UPLOADS_DIR } from './config/dir.js';
 
-import dotenv from 'dotenv';
-dotenv.config({ path: path.join(CONFIG_DIR, '.env') });
-
 import connectDB from './config/db.js';
 
 import express from 'express';
