@@ -10,7 +10,6 @@
 
   // ESLint configuration
   "eslint.enable": true,
-  "eslint.validate": ["javascript", "javascriptreact", "json", "jsonc", "markdown", "yaml"],
 
   // Prettier configuration
   "prettier.requireConfig": true,
