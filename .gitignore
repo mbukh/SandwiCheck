@@ -5,6 +5,7 @@ node_modules
 build
 dist
 uploads
+/data
 
 # Environment variables
 *.env*
@@ -26,4 +27,6 @@ tmp/
 .eslintcache
 .tanstack/
 
-/data/
+# testing
+coverage
+reports
