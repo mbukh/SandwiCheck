@@ -224,4 +224,11 @@ export const duboisFamily = [
 ];
 
 // Combine all users into a single export
-export const usersData = [...papadopoulosFamily, ...alRashidFamily, ...johnsonFamily, ...cohenFamily, ...duboisFamily, ...singleAdults];
+export const usersData = [
+  ...papadopoulosFamily,
+  ...alRashidFamily,
+  ...johnsonFamily,
+  ...cohenFamily,
+  ...duboisFamily,
+  ...singleAdults,
+];

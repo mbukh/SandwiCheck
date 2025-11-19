@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 
-const mailPort = Number(process.env.MAIL_PORT) || 587;
+const mailPort = Number(process.env.MAIL_PORT) || 1025;
 const mailHost = process.env.MAIL_HOST || 'localhost';
 const isSecure = mailPort === 465;
 const isTLS = mailPort === 587;

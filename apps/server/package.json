@@ -10,7 +10,11 @@
     "start": "NODE_ENV=production node server.js",
     "dev": "NODE_ENV=local node --env-file ./config/.env --watch server.js",
     "dev:staging": "NODE_ENV=development node --env-file ./config/.env --watch server.js",
-    "init-db": "node --env-file ./config/.env service/initDatabase.js"
+    "init-db": "node --env-file ./config/.env service/initDatabase.js",
+    "lint": "eslint . --config ./eslint.config.js",
+    "lint:fix": "eslint . --config ./eslint.config.js --fix",
+    "init-uploads": "node --env-file ./config/.env service/initUploadsFolder.js",
+    "migrate-email-confirmation-fields": "node --env-file ./config/.env service/migrateEmailConfirmationFields.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
@@ -32,6 +36,7 @@
     "sharp": "^0.34.5"
   },
   "devDependencies": {
-    "@types/nodemailer": "^7.0.4"
+    "@types/nodemailer": "^7.0.4",
+    "globals": "^16.5.0"
   }
 }

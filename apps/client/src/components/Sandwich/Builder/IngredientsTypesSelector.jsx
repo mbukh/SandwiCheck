@@ -4,7 +4,8 @@ import { isTypeInSandwich } from '../../../utils/sandwich-utils';
 import { useSandwichContext } from '../../../context/SandwichContext';
 
 const IngredientsTypesSelector = () => {
-  const { ingredients, currentType, sandwich, setCurrentType, swiperContainerRef, randomizeSandwich } = useSandwichContext();
+  const { ingredients, currentType, sandwich, setCurrentType, swiperContainerRef, randomizeSandwich } =
+    useSandwichContext();
 
   const retainSwiperHeight = () => {
     if (!swiperContainerRef.current) return;

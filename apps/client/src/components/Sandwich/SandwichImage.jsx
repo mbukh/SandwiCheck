@@ -40,11 +40,7 @@ const SandwichImage = ({ sandwich, galleryPath, isModal }) => {
   return isModal ? (
     <TheSandwichImage />
   ) : (
-    <Link
-      to={ROUTE_PATHS.SANDWICH}
-      params={{ sandwichId: sandwich.id }}
-      onClick={handleClick}
-    >
+    <Link to={ROUTE_PATHS.SANDWICH} params={{ sandwichId: sandwich.id }} onClick={handleClick}>
       <TheSandwichImage />
     </Link>
   );

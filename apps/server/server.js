@@ -60,7 +60,7 @@ app.use(requestIdMiddleware);
 // SECURITY: Custom format to sanitize sensitive headers and URLs
 if (getLoggerLevel() === 'debug') {
   const nodeEnv = process.env.NODE_ENV || 'local';
-  
+
   // Custom morgan format that sanitizes sensitive data
   const sanitizedFormat = (tokens, req, res) => {
     const method = tokens.method(req, res);
@@ -69,7 +69,7 @@ if (getLoggerLevel() === 'debug') {
     const responseTime = tokens['response-time'](req, res);
     const remoteAddr = tokens['remote-addr'](req, res);
     const userAgent = tokens['user-agent'](req, res);
-    
+
     // Sanitize URL - remove tokens from query params and paths
     let sanitizedUrl = url;
     // Remove tokens from URL path (e.g., /confirm-email/TOKEN)
@@ -86,7 +86,7 @@ if (getLoggerLevel() === 'debug') {
     });
     // Remove tokens from query params
     sanitizedUrl = sanitizedUrl.replace(/([?&])(token|resetToken|confirmationToken)=[^&\s]+/gi, '$1$2=***');
-    
+
     if (nodeEnv === 'production') {
       // Production: minimal format (no user agent, sanitized)
       return `${remoteAddr} - ${method} ${sanitizedUrl} ${status} ${responseTime}ms`;
@@ -95,7 +95,7 @@ if (getLoggerLevel() === 'debug') {
       return `${method} ${sanitizedUrl} ${status} ${responseTime}ms - ${remoteAddr}`;
     }
   };
-  
+
   app.use(morgan(sanitizedFormat, { stream: morganStream }));
 }
 

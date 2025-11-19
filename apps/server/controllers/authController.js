@@ -41,9 +41,7 @@ export const signup = expressAsyncHandler(async (req, res, next) => {
   }
 
   if (password.length < 5 || password.length > 30) {
-    return next(
-      createHttpError.BadRequest('A password must contain between 5 and 30 characters'),
-    );
+    return next(createHttpError.BadRequest('A password must contain between 5 and 30 characters'));
   }
 
   const userExists = await User.findOne({ email });
@@ -83,17 +81,18 @@ export const signup = expressAsyncHandler(async (req, res, next) => {
         data: userExists,
       });
     } catch (emailError) {
-    // Log email sending error (PII will be automatically masked)
-    logger.error('Failed to send confirmation email during signup', {
-      requestId: req.requestId,
-      userId: userExists._id.toString(),
-      error: emailError,
-    });
+      // Log email sending error (PII will be automatically masked)
+      logger.error('Failed to send confirmation email during signup', {
+        requestId: req.requestId,
+        userId: userExists._id.toString(),
+        error: emailError,
+      });
 
       // Don't fail the signup - user is created, they can request resend
       return res.status(200).json({
         success: true,
-        message: 'Account created, but confirmation email could not be sent. Please use the resend confirmation option.',
+        message:
+          'Account created, but confirmation email could not be sent. Please use the resend confirmation option.',
         data: userExists,
       });
     }
@@ -248,9 +247,7 @@ export const changePassword = expressAsyncHandler(async (req, res, next) => {
   }
 
   if (newPassword.length < 5 || newPassword.length > 30) {
-    return next(
-      createHttpError.BadRequest('A password must contain between 5 and 30 characters'),
-    );
+    return next(createHttpError.BadRequest('A password must contain between 5 and 30 characters'));
   }
 
   const isPasswordMatch = await bcrypt.compare(oldPassword, user.password);
@@ -538,9 +535,10 @@ export const resendConfirmation = expressAsyncHandler(async (req, res, next) => 
     // Show precise time remaining
     let timeMessage;
     if (remainingMinutes > 0) {
-      timeMessage = remainingSeconds > 0
-        ? `${remainingMinutes} minute${remainingMinutes !== 1 ? 's' : ''} and ${remainingSeconds} second${remainingSeconds !== 1 ? 's' : ''}`
-        : `${remainingMinutes} minute${remainingMinutes !== 1 ? 's' : ''}`;
+      timeMessage =
+        remainingSeconds > 0
+          ? `${remainingMinutes} minute${remainingMinutes !== 1 ? 's' : ''} and ${remainingSeconds} second${remainingSeconds !== 1 ? 's' : ''}`
+          : `${remainingMinutes} minute${remainingMinutes !== 1 ? 's' : ''}`;
     } else {
       timeMessage = `${remainingSeconds} second${remainingSeconds !== 1 ? 's' : ''}`;
     }
@@ -567,11 +565,11 @@ export const resendConfirmation = expressAsyncHandler(async (req, res, next) => 
 
   const currentResendCountCheck = refreshedUser.emailConfirmationResendCount || 0;
   if (currentResendCountCheck >= MAX_RESEND_COUNT) {
-      logger.warn('Email confirmation resend limit exceeded (race condition)', {
-        requestId: req.requestId,
-        userId: user._id.toString(),
-        ip: req.ip || 'unknown',
-      });
+    logger.warn('Email confirmation resend limit exceeded (race condition)', {
+      requestId: req.requestId,
+      userId: user._id.toString(),
+      ip: req.ip || 'unknown',
+    });
     const error = createHttpError.Forbidden(
       'Maximum number of confirmation email resends reached. Please contact support for assistance.',
     );
@@ -615,7 +613,7 @@ export const resendConfirmation = expressAsyncHandler(async (req, res, next) => 
         userId: user._id.toString(),
         ip: req.ip || 'unknown',
       });
-      
+
       // Invalidate the token we just sent since count was already at max
       // This prevents the user from using a token sent after limit was reached
       await User.findByIdAndUpdate(user._id, {
@@ -624,7 +622,7 @@ export const resendConfirmation = expressAsyncHandler(async (req, res, next) => 
           emailConfirmationExpire: undefined,
         },
       });
-      
+
       // Still return success since email was sent, but token is now invalid
       // This is a rare race condition edge case
     } else {

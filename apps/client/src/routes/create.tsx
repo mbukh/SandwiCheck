@@ -12,4 +12,3 @@ export const Route = createFileRoute('/create')({
 });
 
 export const CreateRoute = Route;
-

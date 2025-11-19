@@ -1,36 +1,22 @@
 import globals from 'globals';
-import pluginJs from '@eslint/js';
 import pluginReact from 'eslint-plugin-react';
-import eslintConfigPrettier from 'eslint-config-prettier';
+import appsBaseConfig from '../../eslint.apps.base.js';
 
-/** @type { import("eslint").Linter.Config[] } */
+/**
+ * Client app ESLint configuration
+ * Extends apps base config and adds React-specific rules and browser globals
+ */
 export default [
-  pluginJs.configs.recommended,
+  ...appsBaseConfig,
   {
     files: ['**/*.{js,mjs,cjs,jsx}'],
-    plugins: {
-      react: pluginReact,
-    },
-    languageOptions: {
-      globals: globals.browser,
-      parserOptions: {
-        ecmaVersion: 'latest',
-        sourceType: 'module',
-        ecmaFeatures: {
-          jsx: true,
-        },
-      },
-    },
-    settings: {
-      react: {
-        version: 'detect',
-      },
-    },
+    plugins: { react: pluginReact },
+    languageOptions: { globals: globals.browser, parserOptions: { ecmaFeatures: { jsx: true } } },
+    settings: { react: { version: 'detect' } },
     rules: {
       ...pluginReact.configs.recommended.rules,
       'react/react-in-jsx-scope': 'off',
       'react/jsx-filename-extension': [1, { extensions: ['.jsx', '.tsx'] }],
     },
   },
-  eslintConfigPrettier,
 ];

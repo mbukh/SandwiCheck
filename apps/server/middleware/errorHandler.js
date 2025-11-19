@@ -62,17 +62,17 @@ const errorHandler = (err, req, res, next) => {
       message: error.message || 'Server Error',
     },
   };
-  
+
   // Include cooldown time if present (for email resend cooldown)
   if (error.cooldownRemainingMs !== undefined) {
     errorResponse.error.cooldownRemainingMs = error.cooldownRemainingMs;
   }
-  
+
   // Include error code if present (for distinguishing error types)
   if (error.code !== undefined) {
     errorResponse.error.code = error.code;
   }
-  
+
   res.json(errorResponse);
 };
 

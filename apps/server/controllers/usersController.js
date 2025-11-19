@@ -67,14 +67,14 @@ export const updateUser = expressAsyncHandler(async (req, res, next) => {
     // Reset resend count and cooldown when email changes
     user.emailConfirmationResendCount = 0;
     user.emailConfirmationResendCooldown = undefined;
-    
+
     // Generate new confirmation token and send email
     const confirmationToken = hashAndTokens.generateResetPasswordToken();
     user.emailConfirmationToken = hashAndTokens.hashToken(confirmationToken);
     user.emailConfirmationExpire = Date.now() + parseInt(process.env.EMAIL_CONFIRMATION_EXPIRES_I || '86400000', 10);
-    
+
     const confirmationURL = `${process.env.CLIENT_URL}/confirm-email/${confirmationToken}`;
-    
+
     // Send confirmation email (don't await to avoid blocking the response)
     sendEmail({
       to: user.email,

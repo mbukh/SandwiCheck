@@ -75,7 +75,10 @@ const useForm = () => {
 
     // Check if email confirmation is required
     // Handle both successful email send and failed email send cases
-    if (res.message && (res.message.includes('check your email') || res.message.includes('confirmation email could not be sent'))) {
+    if (
+      res.message &&
+      (res.message.includes('check your email') || res.message.includes('confirmation email could not be sent'))
+    ) {
       // Don't redirect - return success state to show confirmation message
       setErrors([]); // Clear errors
       return { success: true, needsEmailConfirmation: true, email, message: res.message };

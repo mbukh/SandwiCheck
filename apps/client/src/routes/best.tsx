@@ -7,4 +7,3 @@ export const Route = createFileRoute('/best')({
 });
 
 export const BestRoute = Route;
-

@@ -7,4 +7,3 @@ export const Route = createFileRoute('/cart')({
 });
 
 export const CartRoute = Route;
-

@@ -10,4 +10,3 @@ export const Route = createFileRoute('/signup/parent/$parentId')({
 });
 
 export const SignupParentRoute = Route;
-

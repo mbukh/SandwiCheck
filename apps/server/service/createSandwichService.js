@@ -14,7 +14,14 @@ import { generateSandwichImage } from '../utils/manageSandwichesImages.js';
  * @param {number} [params.votesCount] - Optional initial vote count (default: 0)
  * @returns {Promise<Sandwich>} The created sandwich
  */
-export const createSandwichService = async ({ name, ingredients, authorId, authorName, comment = null, votesCount = 0 }) => {
+export const createSandwichService = async ({
+  name,
+  ingredients,
+  authorId,
+  authorName,
+  comment = null,
+  votesCount = 0,
+}) => {
   // Extract first name to match API behavior (controller uses req.user.firstName)
   const firstName = authorName && authorName.split(' ')[0];
   // Convert ingredients to the format expected by the model
@@ -57,4 +64,3 @@ export const createSandwichService = async ({ name, ingredients, authorId, autho
 
   return newSandwich;
 };
-

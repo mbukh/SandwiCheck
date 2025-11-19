@@ -7,4 +7,3 @@ export const Route = createFileRoute('/$')({
 });
 
 export const NotFoundRoute = Route;
-

@@ -87,7 +87,7 @@ export function createFetchApi(baseURL, defaultHeaders = {}) {
    */
   async function parseResponseBody(response) {
     const contentType = response.headers.get('content-type');
-    
+
     // Handle empty responses (e.g., 204 No Content)
     if (response.status === 204 || !contentType) {
       return null;
@@ -170,7 +170,7 @@ export function createFetchApi(baseURL, defaultHeaders = {}) {
             },
           };
         }
-        
+
         const error = {
           response: {
             data: errorData,
@@ -217,4 +217,3 @@ export function createFetchApi(baseURL, defaultHeaders = {}) {
 
   return api;
 }
-

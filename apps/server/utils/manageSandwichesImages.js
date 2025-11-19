@@ -9,15 +9,15 @@ import Ingredient from '../models/IngredientModel.js';
 
 export const generateSandwichImage = async (ingredientsWithPortions) => {
   const ingredients = await fillIngredientsData(ingredientsWithPortions);
-  
+
   if (!ingredients || ingredients.length === 0) {
     throw new Error('No ingredients provided for sandwich image generation');
   }
-  
+
   if (!ingredients[0] || !ingredients[0].shape) {
     throw new Error('First ingredient (bread) must have a shape property');
   }
-  
+
   const shape = ingredients[0].shape;
 
   const fileName =

@@ -1,9 +1,9 @@
 /**
  * Centralized route exports
- * 
+ *
  * This file re-exports all route objects and provides route path constants
  * derived from the generated route tree for type-safe navigation.
- * 
+ *
  * Route paths are inherited from TanStack Router's generated route tree
  * to ensure consistency and maintainability.
  */
@@ -49,5 +49,4 @@ export const ROUTE_PATHS = {
 } as const;
 
 // Type for route path values (for better type safety in JS projects)
-export type RoutePath = typeof ROUTE_PATHS[keyof typeof ROUTE_PATHS];
-
+export type RoutePath = (typeof ROUTE_PATHS)[keyof typeof ROUTE_PATHS];

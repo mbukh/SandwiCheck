@@ -133,9 +133,7 @@ const SandwichContextProvider = ({ children }) => {
       // Filter compatible ingredients for kosher rules (meat/dairy mixing)
       // Note: Ingredients are already filtered by dietary preferences, but we still need to check
       // kosher meat/dairy mixing rules since individual kosher ingredients can still conflict when combined
-      const compatibleIngredients = hasToBeKosher
-        ? typeIngredients.filter(isKosherCompatible)
-        : typeIngredients;
+      const compatibleIngredients = hasToBeKosher ? typeIngredients.filter(isKosherCompatible) : typeIngredients;
 
       // If no compatible ingredients, skip this type
       if (compatibleIngredients.length === 0) continue;

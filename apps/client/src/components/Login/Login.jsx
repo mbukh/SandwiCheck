@@ -72,7 +72,7 @@ const Login = () => {
     const totalSeconds = Math.ceil(ms / 1000);
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
-    
+
     if (minutes > 0) {
       return seconds > 0
         ? `${minutes} minute${minutes !== 1 ? 's' : ''} and ${seconds} second${seconds !== 1 ? 's' : ''}`
@@ -104,7 +104,7 @@ const Login = () => {
         const errorStatus = res?.error?.status;
         const errorMessage = res?.error?.message || res?.message || 'Failed to send confirmation email';
         const cooldownMs = res?.error?.cooldownRemainingMs;
-        
+
         // Check for rate limit (429) with cooldown
         if (errorStatus === 429 || errorMessage.includes('Too many') || errorMessage.includes('wait')) {
           if (cooldownMs !== undefined && cooldownMs > 0) {
@@ -113,7 +113,11 @@ const Login = () => {
           showToast(errorMessage);
         }
         // Check for max resend count reached (403)
-        else if (errorStatus === 403 || errorMessage.includes('Maximum number') || errorMessage.includes('max resends')) {
+        else if (
+          errorStatus === 403 ||
+          errorMessage.includes('Maximum number') ||
+          errorMessage.includes('max resends')
+        ) {
           showToast('Maximum number of confirmation email resends reached. Please contact support for assistance.');
           setShowResendConfirmation(false);
           setCooldownRemainingMs(null);
@@ -127,9 +131,10 @@ const Login = () => {
       // Handle unexpected errors (network errors, etc.)
       const errorStatus = err.response?.status;
       const errorData = err.response?.data;
-      const errorMessage = errorData?.error?.message || errorData?.message || 'Failed to send confirmation email. Please try again.';
+      const errorMessage =
+        errorData?.error?.message || errorData?.message || 'Failed to send confirmation email. Please try again.';
       const cooldownMs = errorData?.error?.cooldownRemainingMs;
-      
+
       // Check for rate limit (429) with cooldown
       if (errorStatus === 429 || errorMessage.includes('Too many') || errorMessage.includes('wait')) {
         if (cooldownMs !== undefined && cooldownMs > 0) {

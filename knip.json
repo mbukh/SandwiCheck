@@ -1,0 +1,16 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "ignoreExportsUsedInFile": { "interface": true, "type": true },
+  "ignore": ["**/routeTree.gen.ts", "**/{build,dist}/**", "**/node_modules/**", "**/data/**"],
+  "workspaces": {
+    ".": { "entry": ["scripts/*.sh"], "project": ["**/*.{js,mjs,cjs,json,yaml,yml,md}"] },
+    "apps/client": {
+      "vite": { "config": ["vite.config.{js,mjs,ts,cjs,mts,cts}"] },
+      "ignore": [".tanstack/**"],
+      "entry": ["index.html"],
+      "project": ["**/*.{js,mjs,cjs,jsx,ts,tsx}"]
+    },
+    "apps/server": { "project": ["**/*.{js,mjs,cjs,ts}"] }
+  },
+  "eslint": { "config": ["**/eslint.*.{js,cjs,mjs,ts,cts,mts}", "**/package.json"] }
+}

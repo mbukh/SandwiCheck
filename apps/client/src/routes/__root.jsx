@@ -21,4 +21,3 @@ export const Route = createRootRoute({
 });
 
 export const RootRoute = Route;
-

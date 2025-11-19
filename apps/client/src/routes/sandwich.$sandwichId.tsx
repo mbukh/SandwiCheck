@@ -11,4 +11,3 @@ export const Route = createFileRoute('/sandwich/$sandwichId')({
 });
 
 export const SandwichRoute = Route;
-

@@ -6,11 +6,11 @@ import util from 'util';
 const getLogLevel = () => {
   const envLevel = process.env.LOG_LEVEL?.toLowerCase();
   const validLevels = ['error', 'warn', 'info', 'debug'];
-  
+
   if (envLevel && validLevels.includes(envLevel)) {
     return envLevel;
   }
-  
+
   return 'info';
 };
 
@@ -27,22 +27,22 @@ const isProduction = nodeEnv === 'production';
 const sanitizeData = (data, depth = 0, maxDepth = 5) => {
   if (depth > maxDepth) return '[Max Depth Reached]';
   if (data === null || data === undefined) return data;
-  
+
   // Handle primitives
   if (typeof data !== 'object') return data;
-  
+
   // Handle arrays
   if (Array.isArray(data)) {
-    return data.map(item => sanitizeData(item, depth + 1, maxDepth));
+    return data.map((item) => sanitizeData(item, depth + 1, maxDepth));
   }
-  
+
   // Handle Error objects
   if (data instanceof Error) {
     const sanitized = {
       name: data.name,
       message: data.message,
     };
-    
+
     // Only include stack in non-production or if explicitly enabled
     if (!isProduction || process.env.LOG_STACK_TRACES === 'true') {
       // Limit stack trace depth in production
@@ -53,27 +53,46 @@ const sanitizeData = (data, depth = 0, maxDepth = 5) => {
         sanitized.stack = data.stack;
       }
     }
-    
+
     // Include error code if present
     if (data.code) sanitized.code = data.code;
     if (data.status) sanitized.status = data.status;
-    
+
     return sanitized;
   }
-  
+
   // Handle plain objects
   const sanitized = {};
-  
+
   // Pre-compute sensitive key patterns for efficiency (created once, reused)
   // Use Set for O(1) lookup instead of array.some() which is O(n)
   const sensitiveKeyPatterns = new Set([
-    'password', 'passwordhash', 'token', 'secret', 'apikey',
-    'authorization', 'cookie', 'session', 'jwt', 'accesstoken', 'refreshtoken',
-    'emailconfirmationtoken', 'resetpasswordtoken', 'email', 'emailaddress',
-    'mongouri', 'mongo_uri', 'database', 'connectionstring', 'connection_string',
-    'mailpassword', 'mail_password', 'jwtsecret', 'jwt_secret',
+    'password',
+    'passwordhash',
+    'token',
+    'secret',
+    'apikey',
+    'authorization',
+    'cookie',
+    'session',
+    'jwt',
+    'accesstoken',
+    'refreshtoken',
+    'emailconfirmationtoken',
+    'resetpasswordtoken',
+    'email',
+    'emailaddress',
+    'mongouri',
+    'mongo_uri',
+    'database',
+    'connectionstring',
+    'connection_string',
+    'mailpassword',
+    'mail_password',
+    'jwtsecret',
+    'jwt_secret',
   ]);
-  
+
   // Check if key contains any sensitive pattern (optimized)
   const isSensitiveKey = (key) => {
     const lowerKey = key.toLowerCase();
@@ -82,7 +101,7 @@ const sanitizeData = (data, depth = 0, maxDepth = 5) => {
     }
     return false;
   };
-  
+
   for (const [key, value] of Object.entries(data)) {
     // Mask sensitive fields
     if (isSensitiveKey(key)) {
@@ -94,9 +113,7 @@ const sanitizeData = (data, depth = 0, maxDepth = 5) => {
           sanitized[key] = `${value.substring(0, Math.min(2, atIndex))}***@${value.substring(atIndex + 1)}`;
         } else {
           // Mask other sensitive values (show first 2 and last 2 chars)
-          sanitized[key] = value.length > 4 
-            ? `${value.substring(0, 2)}***${value.substring(value.length - 2)}`
-            : '***';
+          sanitized[key] = value.length > 4 ? `${value.substring(0, 2)}***${value.substring(value.length - 2)}` : '***';
         }
       } else {
         sanitized[key] = '[REDACTED]';
@@ -106,7 +123,7 @@ const sanitizeData = (data, depth = 0, maxDepth = 5) => {
       sanitized[key] = sanitizeData(value, depth + 1, maxDepth);
     }
   }
-  
+
   return sanitized;
 };
 
@@ -117,17 +134,17 @@ const TOKEN_REGEX = /([a-zA-Z0-9_-]{20,})/g;
 
 const maskPII = (text) => {
   if (typeof text !== 'string' || text.length === 0) return text;
-  
+
   // Early exit if no @ symbol (likely no email)
   if (!text.includes('@') && text.length < 20) return text;
-  
+
   // Mask email addresses (only if @ present)
   if (text.includes('@')) {
     text = text.replace(EMAIL_REGEX, (match, local, domain) => {
       return `${local.substring(0, Math.min(2, local.length))}***@${domain}`;
     });
   }
-  
+
   // Mask long tokens (JWT-like strings) - only if string is long enough
   if (text.length >= 20) {
     text = text.replace(TOKEN_REGEX, (match) => {
@@ -137,14 +154,14 @@ const maskPII = (text) => {
       return match;
     });
   }
-  
+
   return text;
 };
 
 // Sanitize file paths in stack traces (remove absolute paths in production)
 const sanitizeStack = (stack) => {
   if (!stack || !isProduction) return stack;
-  
+
   // Remove absolute paths, keep only filename and line number
   return stack.replace(/\/[^\s]+/g, (match) => {
     const parts = match.split('/');
@@ -160,11 +177,11 @@ const localFormat = winston.format.combine(
   winston.format.colorize(),
   winston.format.printf((info) => {
     const { timestamp, level, message, stack, requestId, userId, ...rest } = info;
-    
+
     // Extract level name from colorized level string (remove ANSI codes and get base level)
     const levelMatch = typeof level === 'string' ? level.match(/[a-z]+/i) : null;
     const levelName = levelMatch ? levelMatch[0].toLowerCase() : 'info';
-    
+
     // Color-coded level indicators with emojis
     const levelSymbols = {
       error: '❌',
@@ -173,38 +190,49 @@ const localFormat = winston.format.combine(
       debug: '🔍',
     };
     const symbol = levelSymbols[levelName] || '•';
-    
+
     // Build context prefix (requestId, userId)
     const contextParts = [];
     if (requestId) contextParts.push(`[req:${requestId.substring(0, 8)}]`);
     if (userId) contextParts.push(`[user:${userId}]`);
     const contextPrefix = contextParts.length > 0 ? contextParts.join(' ') + ' ' : '';
-    
+
     // Format message with better structure
     let output = `${timestamp} ${symbol} ${level}: ${contextPrefix}`;
-    
+
     // Handle different message types
     if (stack) {
       // Error with stack trace - no sanitization needed for local
       output += `${message}\n${stack}`;
     } else if (typeof message === 'object' && message !== null) {
       // Object message - pretty print with colors
-      output += '\n' + util.inspect(message, {
-        colors: true,
-        depth: null,
-        maxArrayLength: null,
-        maxStringLength: null,
-        compact: false,
-        sorted: false,
-      });
+      output +=
+        '\n' +
+        util.inspect(message, {
+          colors: true,
+          depth: null,
+          maxArrayLength: null,
+          maxStringLength: null,
+          compact: false,
+          sorted: false,
+        });
     } else {
       // String message
       output += message;
     }
-    
+
     // Add any additional metadata fields (excluding standard Winston fields)
     // OPTIMIZATION: Use Set for O(1) lookup instead of array.includes()
-    const standardFields = new Set(['timestamp', 'level', 'message', 'stack', 'splat', 'symbol', 'requestId', 'userId']);
+    const standardFields = new Set([
+      'timestamp',
+      'level',
+      'message',
+      'stack',
+      'splat',
+      'symbol',
+      'requestId',
+      'userId',
+    ]);
     const metaFields = [];
     for (const key in rest) {
       if (!standardFields.has(key) && rest[key] !== undefined) {
@@ -216,16 +244,18 @@ const localFormat = winston.format.combine(
       for (const key of metaFields) {
         meta[key] = rest[key];
       }
-      output += '\n' + util.inspect(meta, {
-        colors: true,
-        depth: null,
-        maxArrayLength: null,
-        maxStringLength: null,
-        compact: false,
-        sorted: false,
-      });
+      output +=
+        '\n' +
+        util.inspect(meta, {
+          colors: true,
+          depth: null,
+          maxArrayLength: null,
+          maxStringLength: null,
+          compact: false,
+          sorted: false,
+        });
     }
-    
+
     return output;
   }),
 );
@@ -238,7 +268,7 @@ const jsonFormat = winston.format.combine(
   winston.format((info) => {
     // Sanitize all data in production
     const sanitized = { ...info };
-    
+
     // Sanitize message
     if (sanitized.message) {
       if (typeof sanitized.message === 'string') {
@@ -247,7 +277,7 @@ const jsonFormat = winston.format.combine(
         sanitized.message = sanitizeData(sanitized.message);
       }
     }
-    
+
     // Sanitize stack trace
     if (sanitized.stack) {
       sanitized.stack = sanitizeStack(sanitized.stack);
@@ -257,7 +287,7 @@ const jsonFormat = winston.format.combine(
         sanitized.stack = lines.slice(0, 10).join('\n');
       }
     }
-    
+
     // Sanitize all other fields (optimized: use Set for O(1) lookup)
     const protectedFields = new Set(['timestamp', 'level', 'message', 'stack', 'requestId', 'userId']);
     for (const key in sanitized) {
@@ -265,11 +295,11 @@ const jsonFormat = winston.format.combine(
         sanitized[key] = sanitizeData(sanitized[key]);
       }
     }
-    
+
     // Add standard metadata
     sanitized.service = 'sandwicheck-server';
     sanitized.environment = nodeEnv;
-    
+
     return sanitized;
   })(),
   winston.format.json(),
@@ -296,15 +326,15 @@ const processLogArgs = (args, defaultContext = {}) => {
   if (args.length === 0) {
     return { message: '', context: defaultContext, error: null, meta: {} };
   }
-  
+
   let message = '';
   let error = null;
   let meta = {};
   const context = { ...defaultContext };
-  
+
   const arg0 = args[0];
   const arg1 = args[1];
-  
+
   // Pattern 1: logger.info('message', { meta }) or logger.info('message', Error)
   if (typeof arg0 === 'string') {
     message = arg0;
@@ -332,13 +362,13 @@ const processLogArgs = (args, defaultContext = {}) => {
       const { message: msg, requestId, userId, ...rest } = arg0;
       message = msg || '';
       meta = rest;
-      
+
       // Extract context fields directly (avoid delete)
       if (requestId) context.requestId = requestId;
       if (userId) context.userId = userId;
     }
   }
-  
+
   // Extract context from meta if not already extracted (avoid delete operations)
   if (meta.requestId && !context.requestId) {
     context.requestId = meta.requestId;
@@ -352,7 +382,7 @@ const processLogArgs = (args, defaultContext = {}) => {
     const { userId, ...rest } = meta;
     meta = rest;
   }
-  
+
   return { message, context, error, meta };
 };
 
@@ -365,7 +395,7 @@ const safeLogger = {
         ...context,
         ...meta,
       };
-      
+
       if (error) {
         logData.error = error;
         if (message) {
@@ -393,7 +423,7 @@ const safeLogger = {
         ...context,
         ...meta,
       };
-      
+
       if (error) {
         logData.error = error;
         if (message) {
@@ -420,7 +450,7 @@ const safeLogger = {
         ...context,
         ...meta,
       };
-      
+
       if (error) {
         logData.error = error;
         if (message) {
@@ -447,7 +477,7 @@ const safeLogger = {
         ...context,
         ...meta,
       };
-      
+
       if (error) {
         logData.error = error;
         if (message) {
@@ -476,13 +506,13 @@ export const morganStream = {
     try {
       // Remove trailing newline from morgan output
       let trimmedMessage = message.trim();
-      
+
       // Additional sanitization: mask any remaining tokens/secrets in the log line
       // This is a safety net in case morgan format missed something
       if (trimmedMessage) {
         // Mask JWT-like tokens (long base64-like strings)
         trimmedMessage = maskPII(trimmedMessage);
-        
+
         safeLogger.debug(trimmedMessage);
       }
     } catch (err) {
@@ -505,4 +535,3 @@ export const generateRequestId = () => crypto.randomBytes(8).toString('hex');
 export { sanitizeData, maskPII };
 
 export default safeLogger;
-

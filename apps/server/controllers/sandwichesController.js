@@ -196,11 +196,7 @@ export const updateSandwichVotesCount = async (req, res, next) => {
 
   const updateOperation = method === 'POST' ? { $inc: { votesCount: 1 } } : { $inc: { votesCount: -1 } };
 
-  const sandwich = await Sandwich.findByIdAndUpdate(
-    sandwichId,
-    updateOperation,
-    { new: true },
-  );
+  const sandwich = await Sandwich.findByIdAndUpdate(sandwichId, updateOperation, { new: true });
 
   if (!sandwich) {
     return next(createHttpError.NotFound('Sandwich not found'));

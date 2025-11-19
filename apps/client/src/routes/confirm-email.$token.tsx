@@ -37,9 +37,7 @@ function ConfirmEmail() {
       } catch (err) {
         const errorData = err.response?.data?.error || {};
         const errorMessage =
-          errorData.message ||
-          err.response?.data?.message ||
-          'Failed to confirm email. Please try again.';
+          errorData.message || err.response?.data?.message || 'Failed to confirm email. Please try again.';
         const errorCode = errorData.code;
         setError(errorMessage);
         setErrorType(errorCode);
@@ -54,9 +52,7 @@ function ConfirmEmail() {
 
   return (
     <div className="login max-w-screen-md text-white text-center mx-auto pb-12 md:pb-16 lg:pb-20">
-      <h1 className="text-center text-l uppercase text-shadow-10 mb-3 md:mb-5">
-        Email Confirmation
-      </h1>
+      <h1 className="text-center text-l uppercase text-shadow-10 mb-3 md:mb-5">Email Confirmation</h1>
       <h4 className="text-base md:text-xl xl:text-2xl mb-8 md:mb-10">Confirm your email to activate your account</h4>
 
       {loading && (
@@ -77,17 +73,14 @@ function ConfirmEmail() {
                 viewBox="0 0 24 24"
                 strokeWidth={2.5}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <h2 className="text-magenta font-bold text-xl md:text-2xl xl:text-3xl uppercase mb-3 md:mb-4">
                 Email Confirmed Successfully!
               </h2>
               <p className="text-white text-base md:text-lg xl:text-xl font-normal max-w-md mx-auto leading-relaxed">
-                Your email has been verified. You can now log in to your account and start creating delicious sandwiches!
+                Your email has been verified. You can now log in to your account and start creating delicious
+                sandwiches!
               </p>
             </div>
             <Link
@@ -146,11 +139,7 @@ function ConfirmEmail() {
                   viewBox="0 0 24 24"
                   strokeWidth={2.5}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <h2 className="text-yellow font-bold text-xl md:text-2xl xl:text-3xl uppercase mb-3 md:mb-4">
                   Confirmation Link Expired
@@ -159,7 +148,8 @@ function ConfirmEmail() {
                   {error || 'This confirmation link has expired and is no longer valid.'}
                 </p>
                 <p className="text-white text-sm md:text-base xl:text-lg font-normal max-w-md mx-auto leading-relaxed opacity-90">
-                  Confirmation links are valid for a limited time. Please request a new confirmation email to verify your account.
+                  Confirmation links are valid for a limited time. Please request a new confirmation email to verify
+                  your account.
                 </p>
               </div>
               <div className="flex flex-col items-center gap-4">
@@ -184,11 +174,7 @@ function ConfirmEmail() {
                   viewBox="0 0 24 24"
                   strokeWidth={2.5}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
                 <h2 className="text-magenta font-bold text-xl md:text-2xl xl:text-3xl uppercase mb-3 md:mb-4">
                   Invalid Confirmation Link
@@ -250,4 +236,3 @@ function ConfirmEmail() {
     </div>
   );
 }
-

@@ -561,7 +561,8 @@ header .mobile-menu.open {
   align-items: center;
   background: rgba(0, 0, 0, 0.9);
   bottom: 0;
-  cursor: url("data:image/svg+xml;charset=utf-8,%3Csvg width='19' height='19' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='m15.514.535-6.42 6.42L2.677.536a1.517 1.517 0 0 0-2.14 0 1.517 1.517 0 0 0 0 2.14l6.42 6.419-6.42 6.419a1.517 1.517 0 0 0 0 2.14 1.517 1.517 0 0 0 2.14 0l6.419-6.42 6.419 6.42a1.517 1.517 0 0 0 2.14 0 1.517 1.517 0 0 0 0-2.14l-6.42-6.42 6.42-6.418a1.517 1.517 0 0 0 0-2.14 1.516 1.516 0 0 0-2.14 0z' fill='%23FFF'/%3E%3C/svg%3E"),
+  cursor:
+    url("data:image/svg+xml;charset=utf-8,%3Csvg width='19' height='19' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='m15.514.535-6.42 6.42L2.677.536a1.517 1.517 0 0 0-2.14 0 1.517 1.517 0 0 0 0 2.14l6.42 6.419-6.42 6.419a1.517 1.517 0 0 0 0 2.14 1.517 1.517 0 0 0 2.14 0l6.419-6.42 6.419 6.42a1.517 1.517 0 0 0 2.14 0 1.517 1.517 0 0 0 0-2.14l-6.42-6.42 6.42-6.418a1.517 1.517 0 0 0 0-2.14 1.516 1.516 0 0 0-2.14 0z' fill='%23FFF'/%3E%3C/svg%3E"),
     auto;
   flex-direction: column;
   left: 0;

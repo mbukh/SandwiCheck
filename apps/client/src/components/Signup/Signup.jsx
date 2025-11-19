@@ -68,7 +68,8 @@ const Signup = () => {
                 Your account has been created for <strong className="text-yellow">{confirmationEmail}</strong>
               </p>
               <p className="mb-4 text-yellow">
-                However, the confirmation email could not be sent. Please use the resend confirmation option on the login page.
+                However, the confirmation email could not be sent. Please use the resend confirmation option on the
+                login page.
               </p>
               <p className="text-sm md:text-base xl:text-lg">
                 Once you've confirmed your email, you'll be able to log in and start creating delicious sandwiches!

@@ -9,9 +9,8 @@ node_modules
 **/out
 
 # Environment files
-.env
-.env.*
-!.env.example
+*.env*
+!*.env.example
 
 # Git
 .git

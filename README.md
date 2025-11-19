@@ -13,15 +13,13 @@ SandwiCheck is a full-stack MERN family meal planner with features such as:
 ## Pre-Deployment Steps
 
 1. **Install MongoDB**
+   - For detailed installation instructions, visit the
+     [MongoDB Getting Started Guide](https://docs.mongodb.com/manual/installation/).
 
-   - For detailed installation instructions, visit the [MongoDB Getting Started Guide](https://docs.mongodb.com/manual/installation/).
-
-2. **Use Existing Ingredients** [*optionally*]
-   If you intend to use existing ingredients, follow these steps:
-
+2. **Use Existing Ingredients** [*optionally*] If you intend to use existing ingredients, follow these steps:
    - **Install Node.js (24.x LTS or higher)**
-
-     - Detailed installation instructions can be found on the [Node.js website](https://nodejs.org/en/download/package-manager/).
+     - Detailed installation instructions can be found on the
+       [Node.js website](https://nodejs.org/en/download/package-manager/).
 
    - **Initialize the Database Locally**  
      Navigate to the project directory and run:
@@ -32,7 +30,6 @@ SandwiCheck is a full-stack MERN family meal planner with features such as:
 ## Deployment Steps
 
 1. **Install Docker**
-
    - For detailed installation instructions, visit the [Docker website](https://www.docker.com/get-started).
 
 2. **Set Environment Parameters**  

@@ -93,11 +93,23 @@ const Header = () => {
                 </>
               ) : (
                 <>
-                  <Link id="login" onClick={authHandler} to={ROUTE_PATHS.LOGIN} className="mr-6" activeProps={{ className: 'active' }}>
+                  <Link
+                    id="login"
+                    onClick={authHandler}
+                    to={ROUTE_PATHS.LOGIN}
+                    className="mr-6"
+                    activeProps={{ className: 'active' }}
+                  >
                     Log in
                     {isOpenLoginModal && <LoginModal setIsOpenLoginModal={setIsOpenLoginModal} closeLink="stay" />}
                   </Link>
-                  <Link id="signup" onClick={authHandler} to={ROUTE_PATHS.SIGNUP} className="font-bold" activeProps={{ className: 'active' }}>
+                  <Link
+                    id="signup"
+                    onClick={authHandler}
+                    to={ROUTE_PATHS.SIGNUP}
+                    className="font-bold"
+                    activeProps={{ className: 'active' }}
+                  >
                     Signup
                     {isOpenSignupModal && <SignupModal setIsOpenLoginModal={setIsOpenSignupModal} closeLink="stay" />}
                   </Link>

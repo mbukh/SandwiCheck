@@ -592,7 +592,7 @@ export const duboisSandwiches = [
       { name: 'Tomatoes', portion: PORTION.full },
       { name: 'Lettuce', portion: PORTION.full },
     ],
-    'C\'est délicieux! 🥐',
+    "C'est délicieux! 🥐",
     4, // Child sandwich, some votes
     'Sophie Dubois', // Child name
   ),
