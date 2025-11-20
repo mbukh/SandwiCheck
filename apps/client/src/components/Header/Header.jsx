@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, useParams } from '@tanstack/react-router';
+import { useState, useEffect } from 'react';
+import { Link, useParams, useLocation } from '@tanstack/react-router';
 
 import { useAuthGlobalContext } from '../../context/AuthGlobalContext';
 import { ROUTE_PATHS } from '../../routes';
@@ -16,7 +16,19 @@ const Header = () => {
   const [isOpenSignupModal, setIsOpenSignupModal] = useState(false);
   const { logOut, currentUser: user } = useAuthGlobalContext();
   const params = useParams({ strict: false });
+  const location = useLocation();
   const sandwichId = params.sandwichId;
+
+  // Don't render Header modals when on auth routes (they have their own modals)
+  const isOnAuthRoute = ['/login', '/signup', '/forgot-password'].includes(location.pathname);
+
+  // Reset modal states when navigating to auth routes
+  useEffect(() => {
+    if (isOnAuthRoute) {
+      setIsOpenLoginModal(false);
+      setIsOpenSignupModal(false);
+    }
+  }, [isOnAuthRoute]);
 
   const toggleMobileMenuHandler = () => {
     setIsMobileMenuOpen((state) => !state);
@@ -101,7 +113,7 @@ const Header = () => {
                     activeProps={{ className: 'active' }}
                   >
                     Log in
-                    {isOpenLoginModal && <LoginModal setIsOpenLoginModal={setIsOpenLoginModal} closeLink="stay" />}
+                    {isOpenLoginModal && !isOnAuthRoute && <LoginModal setIsOpenLoginModal={setIsOpenLoginModal} closeLink="stay" />}
                   </Link>
                   <Link
                     id="signup"
@@ -111,7 +123,7 @@ const Header = () => {
                     activeProps={{ className: 'active' }}
                   >
                     Signup
-                    {isOpenSignupModal && <SignupModal setIsOpenLoginModal={setIsOpenSignupModal} closeLink="stay" />}
+                    {isOpenSignupModal && !isOnAuthRoute && <SignupModal setIsOpenLoginModal={setIsOpenSignupModal} closeLink="stay" />}
                   </Link>
                 </>
               )}

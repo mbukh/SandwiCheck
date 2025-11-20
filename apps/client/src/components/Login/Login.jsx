@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { Link } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 
 import { ROUTE_PATHS } from '../../routes';
 import useForm from '../../hooks/use-form';
@@ -8,16 +8,17 @@ import * as apiAuth from '../../services/api-auth';
 
 const Login = () => {
   const { showToast, toastComponents } = useToast();
+  const navigate = useNavigate();
   const { email, setEmail, password, setPassword, LoginHandler, parentId, errors } = useForm();
   const [showResendConfirmation, setShowResendConfirmation] = useState(false);
   const [resending, setResending] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [emailSentSuccessfully, setEmailSentSuccessfully] = useState(false);
   const [cooldownRemainingMs, setCooldownRemainingMs] = useState(null);
-  const cooldownIntervalRef = useRef(null);
+  const cooldownIntervalReference = useRef(null);
 
   useEffect(() => {
-    errors.forEach((error) => {
+    for (const error of errors) {
       showToast(error);
       // Check if error is about email confirmation
       if (error && error.includes('confirm your email')) {
@@ -26,32 +27,32 @@ const Login = () => {
       } else {
         setShowResendConfirmation(false);
       }
-    });
+    }
   }, [errors, showToast]);
 
   // Countdown timer for cooldown
   useEffect(() => {
     if (cooldownRemainingMs !== null && cooldownRemainingMs > 0) {
-      cooldownIntervalRef.current = setInterval(() => {
-        setCooldownRemainingMs((prev) => {
-          if (prev === null || prev <= 0) {
+      cooldownIntervalReference.current = setInterval(() => {
+        setCooldownRemainingMs((previous) => {
+          if (previous === null || previous <= 0) {
             return null;
           }
-          const newValue = prev - 1000;
+          const newValue = previous - 1000;
           return newValue <= 0 ? null : newValue;
         });
       }, 1000);
 
       return () => {
-        if (cooldownIntervalRef.current) {
-          clearInterval(cooldownIntervalRef.current);
-          cooldownIntervalRef.current = null;
+        if (cooldownIntervalReference.current) {
+          clearInterval(cooldownIntervalReference.current);
+          cooldownIntervalReference.current = null;
         }
       };
     } else {
-      if (cooldownIntervalRef.current) {
-        clearInterval(cooldownIntervalRef.current);
-        cooldownIntervalRef.current = null;
+      if (cooldownIntervalReference.current) {
+        clearInterval(cooldownIntervalReference.current);
+        cooldownIntervalReference.current = null;
       }
     }
   }, [cooldownRemainingMs]);
@@ -59,9 +60,9 @@ const Login = () => {
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (cooldownIntervalRef.current) {
-        clearInterval(cooldownIntervalRef.current);
-        cooldownIntervalRef.current = null;
+      if (cooldownIntervalReference.current) {
+        clearInterval(cooldownIntervalReference.current);
+        cooldownIntervalReference.current = null;
       }
     };
   }, []);
@@ -75,10 +76,10 @@ const Login = () => {
 
     if (minutes > 0) {
       return seconds > 0
-        ? `${minutes} minute${minutes !== 1 ? 's' : ''} and ${seconds} second${seconds !== 1 ? 's' : ''}`
-        : `${minutes} minute${minutes !== 1 ? 's' : ''}`;
+        ? `${minutes} minute${minutes === 1 ? '' : 's'} and ${seconds} second${seconds === 1 ? '' : 's'}`
+        : `${minutes} minute${minutes === 1 ? '' : 's'}`;
     }
-    return `${seconds} second${seconds !== 1 ? 's' : ''}`;
+    return `${seconds} second${seconds === 1 ? '' : 's'}`;
   };
 
   const handleResendConfirmation = async () => {
@@ -127,10 +128,10 @@ const Login = () => {
           showToast(errorMessage);
         }
       }
-    } catch (err) {
+    } catch (error) {
       // Handle unexpected errors (network errors, etc.)
-      const errorStatus = err.response?.status;
-      const errorData = err.response?.data;
+      const errorStatus = error.response?.status;
+      const errorData = error.response?.data;
       const errorMessage =
         errorData?.error?.message || errorData?.message || 'Failed to send confirmation email. Please try again.';
       const cooldownMs = errorData?.error?.cooldownRemainingMs;
@@ -209,6 +210,12 @@ const Login = () => {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+        </div>
+
+        <div className="mb-2 md:mb-4 text-right">
+          <Link to={ROUTE_PATHS.FORGOT_PASSWORD} className="underline text-sm md:text-base">
+            Forgot Password?
+          </Link>
         </div>
 
         {parentId ? (

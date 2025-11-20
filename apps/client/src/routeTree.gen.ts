@@ -13,6 +13,7 @@ import { Route as SignupRouteImport } from './routes/signup'
 import { Route as MenuRouteImport } from './routes/menu'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LatestRouteImport } from './routes/latest'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as FamilyRouteImport } from './routes/family'
 import { Route as CreateRouteImport } from './routes/create'
 import { Route as CartRouteImport } from './routes/cart'
@@ -20,6 +21,7 @@ import { Route as BestRouteImport } from './routes/best'
 import { Route as SplatRouteImport } from './routes/$'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SandwichSandwichIdRouteImport } from './routes/sandwich.$sandwichId'
+import { Route as ResetPasswordTokenRouteImport } from './routes/reset-password.$token'
 import { Route as FamilyChildIdRouteImport } from './routes/family.$childId'
 import { Route as ConfirmEmailTokenRouteImport } from './routes/confirm-email.$token'
 import { Route as SignupParentParentIdRouteImport } from './routes/signup.parent.$parentId'
@@ -43,6 +45,11 @@ const LoginRoute = LoginRouteImport.update({
 const LatestRoute = LatestRouteImport.update({
   id: '/latest',
   path: '/latest',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FamilyRoute = FamilyRouteImport.update({
@@ -80,6 +87,11 @@ const SandwichSandwichIdRoute = SandwichSandwichIdRouteImport.update({
   path: '/sandwich/$sandwichId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResetPasswordTokenRoute = ResetPasswordTokenRouteImport.update({
+  id: '/reset-password/$token',
+  path: '/reset-password/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FamilyChildIdRoute = FamilyChildIdRouteImport.update({
   id: '/$childId',
   path: '/$childId',
@@ -108,12 +120,14 @@ export interface FileRoutesByFullPath {
   '/cart': typeof CartRoute
   '/create': typeof CreateRoute
   '/family': typeof FamilyRouteWithChildren
+  '/forgot-password': typeof ForgotPasswordRoute
   '/latest': typeof LatestRoute
   '/login': typeof LoginRouteWithChildren
   '/menu': typeof MenuRoute
   '/signup': typeof SignupRouteWithChildren
   '/confirm-email/$token': typeof ConfirmEmailTokenRoute
   '/family/$childId': typeof FamilyChildIdRoute
+  '/reset-password/$token': typeof ResetPasswordTokenRoute
   '/sandwich/$sandwichId': typeof SandwichSandwichIdRoute
   '/login/parent/$parentId': typeof LoginParentParentIdRoute
   '/signup/parent/$parentId': typeof SignupParentParentIdRoute
@@ -125,12 +139,14 @@ export interface FileRoutesByTo {
   '/cart': typeof CartRoute
   '/create': typeof CreateRoute
   '/family': typeof FamilyRouteWithChildren
+  '/forgot-password': typeof ForgotPasswordRoute
   '/latest': typeof LatestRoute
   '/login': typeof LoginRouteWithChildren
   '/menu': typeof MenuRoute
   '/signup': typeof SignupRouteWithChildren
   '/confirm-email/$token': typeof ConfirmEmailTokenRoute
   '/family/$childId': typeof FamilyChildIdRoute
+  '/reset-password/$token': typeof ResetPasswordTokenRoute
   '/sandwich/$sandwichId': typeof SandwichSandwichIdRoute
   '/login/parent/$parentId': typeof LoginParentParentIdRoute
   '/signup/parent/$parentId': typeof SignupParentParentIdRoute
@@ -143,12 +159,14 @@ export interface FileRoutesById {
   '/cart': typeof CartRoute
   '/create': typeof CreateRoute
   '/family': typeof FamilyRouteWithChildren
+  '/forgot-password': typeof ForgotPasswordRoute
   '/latest': typeof LatestRoute
   '/login': typeof LoginRouteWithChildren
   '/menu': typeof MenuRoute
   '/signup': typeof SignupRouteWithChildren
   '/confirm-email/$token': typeof ConfirmEmailTokenRoute
   '/family/$childId': typeof FamilyChildIdRoute
+  '/reset-password/$token': typeof ResetPasswordTokenRoute
   '/sandwich/$sandwichId': typeof SandwichSandwichIdRoute
   '/login/parent/$parentId': typeof LoginParentParentIdRoute
   '/signup/parent/$parentId': typeof SignupParentParentIdRoute
@@ -162,12 +180,14 @@ export interface FileRouteTypes {
     | '/cart'
     | '/create'
     | '/family'
+    | '/forgot-password'
     | '/latest'
     | '/login'
     | '/menu'
     | '/signup'
     | '/confirm-email/$token'
     | '/family/$childId'
+    | '/reset-password/$token'
     | '/sandwich/$sandwichId'
     | '/login/parent/$parentId'
     | '/signup/parent/$parentId'
@@ -179,12 +199,14 @@ export interface FileRouteTypes {
     | '/cart'
     | '/create'
     | '/family'
+    | '/forgot-password'
     | '/latest'
     | '/login'
     | '/menu'
     | '/signup'
     | '/confirm-email/$token'
     | '/family/$childId'
+    | '/reset-password/$token'
     | '/sandwich/$sandwichId'
     | '/login/parent/$parentId'
     | '/signup/parent/$parentId'
@@ -196,12 +218,14 @@ export interface FileRouteTypes {
     | '/cart'
     | '/create'
     | '/family'
+    | '/forgot-password'
     | '/latest'
     | '/login'
     | '/menu'
     | '/signup'
     | '/confirm-email/$token'
     | '/family/$childId'
+    | '/reset-password/$token'
     | '/sandwich/$sandwichId'
     | '/login/parent/$parentId'
     | '/signup/parent/$parentId'
@@ -214,11 +238,13 @@ export interface RootRouteChildren {
   CartRoute: typeof CartRoute
   CreateRoute: typeof CreateRoute
   FamilyRoute: typeof FamilyRouteWithChildren
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
   LatestRoute: typeof LatestRoute
   LoginRoute: typeof LoginRouteWithChildren
   MenuRoute: typeof MenuRoute
   SignupRoute: typeof SignupRouteWithChildren
   ConfirmEmailTokenRoute: typeof ConfirmEmailTokenRoute
+  ResetPasswordTokenRoute: typeof ResetPasswordTokenRoute
   SandwichSandwichIdRoute: typeof SandwichSandwichIdRoute
 }
 
@@ -250,6 +276,13 @@ declare module '@tanstack/react-router' {
       path: '/latest'
       fullPath: '/latest'
       preLoaderRoute: typeof LatestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/family': {
@@ -299,6 +332,13 @@ declare module '@tanstack/react-router' {
       path: '/sandwich/$sandwichId'
       fullPath: '/sandwich/$sandwichId'
       preLoaderRoute: typeof SandwichSandwichIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password/$token': {
+      id: '/reset-password/$token'
+      path: '/reset-password/$token'
+      fullPath: '/reset-password/$token'
+      preLoaderRoute: typeof ResetPasswordTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/family/$childId': {
@@ -371,11 +411,13 @@ const rootRouteChildren: RootRouteChildren = {
   CartRoute: CartRoute,
   CreateRoute: CreateRoute,
   FamilyRoute: FamilyRouteWithChildren,
+  ForgotPasswordRoute: ForgotPasswordRoute,
   LatestRoute: LatestRoute,
   LoginRoute: LoginRouteWithChildren,
   MenuRoute: MenuRoute,
   SignupRoute: SignupRouteWithChildren,
   ConfirmEmailTokenRoute: ConfirmEmailTokenRoute,
+  ResetPasswordTokenRoute: ResetPasswordTokenRoute,
   SandwichSandwichIdRoute: SandwichSandwichIdRoute,
 }
 export const routeTree = rootRouteImport

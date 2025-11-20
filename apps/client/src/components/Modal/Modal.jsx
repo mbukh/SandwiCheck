@@ -1,27 +1,54 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useRouter } from '@tanstack/react-router';
 
+import { useModalContext } from '../../context/ModalContext';
 import Portal from '../Portal/Portal';
 import Loading from '../Loading';
 
-const Modal = ({ children, setIsOpenLoginModal, isModalLoading = true, closeLink = '' }) => {
+const Modal = ({ children, setIsOpenLoginModal, isModalLoading = true, closeLink = '', modalId }) => {
   const [isModalShow, setIsModalShow] = useState(true);
   const navigate = useNavigate();
   const router = useRouter();
+  const { registerModal, unregisterModal } = useModalContext();
 
-  const closeModalHandler = (e) => {
-    e.stopPropagation();
-    if (closeLink !== 'stay') {
-      if (closeLink) {
-        // Use replace: true to clean up query params when closing modal
-        navigate({ to: closeLink, replace: true });
-      } else {
-        router.history.back();
+  const closeModalHandler = useCallback(
+    (e, programmaticClose = false) => {
+      e?.stopPropagation();
+      // Only navigate if this is a user-initiated close, not a programmatic close by context
+      if (!programmaticClose && closeLink !== 'stay') {
+        if (closeLink) {
+          // Use replace: true to clean up query params when closing modal
+          navigate({ to: closeLink, replace: true });
+        } else {
+          // Check if there's browser history to go back to
+          if (globalThis.history.length > 1) {
+            router.history.back();
+          } else {
+            // No history, navigate to root page
+            navigate({ to: '/', replace: true });
+          }
+        }
       }
+      setIsModalShow(false);
+      setIsOpenLoginModal && setIsOpenLoginModal(false);
+    },
+    [closeLink, navigate, router, setIsOpenLoginModal],
+  );
+
+  useEffect(() => {
+    if (modalId) {
+      /*
+       * Register this modal with the context
+       * The close callback closes this modal the same way as clicking close button
+       */
+      registerModal(modalId, closeModalHandler);
+
+      return () => {
+        // Unregister when component unmounts
+        unregisterModal(modalId);
+      };
     }
-    setIsModalShow(false);
-    setIsOpenLoginModal && setIsOpenLoginModal(false);
-  };
+  }, [modalId, registerModal, unregisterModal, closeModalHandler]);
 
   return (
     isModalShow && (

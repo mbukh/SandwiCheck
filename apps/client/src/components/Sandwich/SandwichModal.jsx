@@ -32,7 +32,7 @@ const SandwichModal = ({ closeLink = '' }) => {
   }
 
   return (
-    <Modal isModalLoading={isModalLoading} closeLink={closeLink}>
+    <Modal modalId="sandwich" isModalLoading={isModalLoading} closeLink={closeLink}>
       <div className="max-w-xs sm:max-w-sm md:max-w-screen-md mx-auto text-white">
         <SandwichCard index={Math.ceil(Math.random() * 4)} sandwich={sandwich} galleryPath="" isModal={true} />
       </div>
