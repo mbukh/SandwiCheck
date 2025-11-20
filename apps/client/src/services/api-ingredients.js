@@ -13,40 +13,31 @@ const api = createFetchApi(`${import.meta.env.VITE_API_SERVER}/api/v1/ingredient
   'Content-Type': 'application/json',
 });
 
-/*
-1.  GET /api/ingredients
-    Access: Public
-    Parameters:
-        query, body: { dietaryPreferences, type, sortBy }
-        sortBy:(def)"displayPriority"|"name"
-
-2.  GET /api/ingredients/:ingredientId
-    Access: Public
-
-3.  POST /api/ingredients
-    Access: Private/Admin
-    Parameters:
-        body: { name, type, dietaryPreferences, shape, displayPriority }
-        files: { reqFiles }
-
-4.  PUT /api/ingredients/:ingredientId
-    Access: Private/Admin
-    Parameters:
-        body: { name, type, dietaryPreferences, shape, displayPriority }
-        files: { reqFiles }
-
-5.  DELETE /api/ingredients/:ingredientId
-    Access: Private/Admin
-*/
+/**
+ * Ingredients API Service
+ *
+ * Implements all ingredient management endpoints from the server API.
+ * Handles ingredient CRUD operations with image upload support.
+ * Includes caching utilities for improved performance.
+ *
+ * Base URL: /api/v1/ingredients
+ */
 
 const fetchIngredients = async ({ dietaryPreferences, type, sortBy }) => {
-  // sortBy:(def)"displayPriority"|"name"
   return await handleResponse(async () => api.get('/', { params: { dietaryPreferences, type, sortBy } }));
 };
 
 // =================
 
-export const getAllIngredients = async ({ dietaryPreferences }) => {
+/**
+ * Get all ingredients with filtering and caching
+ * GET /
+ * Access: Public
+ * @param {Object} params - Filter parameters
+ * @param {string[]} params.dietaryPreferences - Dietary preferences filter
+ * @returns {Promise<Object>} { data: [ingredients] }
+ */
+export const getAllIngredients = async ({ dietaryPreferences = [] } = {}) => {
   let ingredients;
 
   ingredients = readIngredientsFromCache();
@@ -61,11 +52,15 @@ export const getAllIngredients = async ({ dietaryPreferences }) => {
       ingredients = res.data;
 
       localStorage.setItem('ingredients', JSON.stringify(ingredients));
-      localStorage.setItem('ingredients-cashedAt', JSON.stringify(Date.now()));
+      localStorage.setItem('ingredients-cachedAt', JSON.stringify(Date.now()));
     }
   }
 
-  if (dietaryPreferences.length) {
+  if (!ingredients) {
+    return { data: [] };
+  }
+
+  if (dietaryPreferences && dietaryPreferences.length > 0) {
     ingredients = filterIngredientsByDietaryPreferences(ingredients, dietaryPreferences);
   }
 
@@ -75,8 +70,13 @@ export const getAllIngredients = async ({ dietaryPreferences }) => {
 // UTILS //
 
 function readIngredientsFromCache() {
-  const ingredients = JSON.parse(localStorage.getItem('ingredients'));
-  const cachedAt = JSON.parse(localStorage.getItem('ingredients-cashedAt'));
+  const ingredientsString = localStorage.getItem('ingredients');
+  const cachedAtString = localStorage.getItem('ingredients-cachedAt');
+
+  if (!ingredientsString || !cachedAtString) return null;
+
+  const ingredients = JSON.parse(ingredientsString);
+  const cachedAt = JSON.parse(cachedAtString);
 
   if (!ingredients) return null;
 
@@ -96,3 +96,96 @@ function filterIngredientsByDietaryPreferences(ingredients, dietaryPreferences) 
     dietaryPreferences.every((preference) => ingredient.dietaryPreferences.includes(preference)),
   );
 }
+
+/**
+ * Get ingredient by ID
+ * GET /:ingredientId
+ * Access: Public
+ * @param {string} ingredientId - Ingredient ID
+ * @returns {Promise<Object>} { success: boolean, data: ingredient }
+ */
+export const fetchIngredientById = async (ingredientId) => {
+  return await handleResponse(async () => api.get(`/${ingredientId}`));
+};
+
+/**
+ * Create new ingredient (admin only)
+ * POST /
+ * Access: Private/Admin
+ * @param {Object} ingredientData - Ingredient creation parameters
+ * @param {string} ingredientData.name - Ingredient name
+ * @param {string} ingredientData.type - Ingredient type
+ * @param {string} ingredientData.dietaryPreferences - Dietary preferences
+ * @param {string} ingredientData.shape - Ingredient shape
+ * @param {number} ingredientData.displayPriority - Display priority
+ * @param {Object} [ingredientData.files] - Image files
+ * @returns {Promise<Object>} { success: boolean, data: ingredient }
+ */
+export const createIngredient = async (ingredientData) => {
+  const formData = new FormData();
+
+  // Add basic fields
+  if (ingredientData.name) formData.append('name', ingredientData.name);
+  if (ingredientData.type) formData.append('type', ingredientData.type);
+  if (ingredientData.dietaryPreferences) formData.append('dietaryPreferences', ingredientData.dietaryPreferences);
+  if (ingredientData.shape) formData.append('shape', ingredientData.shape);
+  if (ingredientData.displayPriority) formData.append('displayPriority', ingredientData.displayPriority);
+
+  // Add image files if provided
+  if (ingredientData.files) {
+    for (const fieldName of Object.keys(ingredientData.files)) {
+      if (ingredientData.files[fieldName]) {
+        formData.append(fieldName, ingredientData.files[fieldName]);
+      }
+    }
+  }
+
+  return await handleResponse(async () => api.post('/', formData));
+};
+
+/**
+ * Update ingredient (admin only)
+ * PUT /:ingredientId
+ * Access: Private/Admin
+ * @param {string} ingredientId - Ingredient ID
+ * @param {Object} ingredientData - Ingredient update parameters
+ * @param {string} [ingredientData.name] - Ingredient name
+ * @param {string} [ingredientData.type] - Ingredient type
+ * @param {string} [ingredientData.dietaryPreferences] - Dietary preferences
+ * @param {string} [ingredientData.shape] - Ingredient shape
+ * @param {number} [ingredientData.displayPriority] - Display priority
+ * @param {Object} [ingredientData.files] - Image files
+ * @returns {Promise<Object>} { success: boolean, data: updatedIngredient }
+ */
+export const updateIngredient = async (ingredientId, ingredientData) => {
+  const formData = new FormData();
+
+  // Add basic fields
+  if (ingredientData.name) formData.append('name', ingredientData.name);
+  if (ingredientData.type) formData.append('type', ingredientData.type);
+  if (ingredientData.dietaryPreferences) formData.append('dietaryPreferences', ingredientData.dietaryPreferences);
+  if (ingredientData.shape) formData.append('shape', ingredientData.shape);
+  if (ingredientData.displayPriority) formData.append('displayPriority', ingredientData.displayPriority);
+
+  // Add image files if provided
+  if (ingredientData.files) {
+    for (const fieldName of Object.keys(ingredientData.files)) {
+      if (ingredientData.files[fieldName]) {
+        formData.append(fieldName, ingredientData.files[fieldName]);
+      }
+    }
+  }
+
+  return await handleResponse(async () => api.put(`/${ingredientId}`, formData));
+};
+
+/**
+ * Delete ingredient (admin only)
+ * DELETE /:ingredientId
+ * Access: Private/Admin
+ * @param {string} ingredientId - Ingredient ID
+ * @returns {Promise<Object>} { success: boolean, message: string }
+ */
+export const deleteIngredient = async (ingredientId) => {
+  return await handleResponse(async () => api.delete(`/${ingredientId}`));
+};

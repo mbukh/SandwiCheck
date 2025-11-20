@@ -13,61 +13,121 @@ const api = createFetchApi(`${import.meta.env.VITE_API_SERVER}/api/v1/sandwiches
   'Content-Type': 'application/json',
 });
 
-/*
-1. GET /api/sandwiches
-   Access: Public
-   Parameters:
-    query, body: { dietaryPreferences, ingredients, sortBy, page, limit }
+/**
+ * Sandwiches API Service
+ *
+ * Implements all sandwich management endpoints from the server API.
+ * Handles sandwich creation, retrieval, updates, deletion, and voting.
+ * Includes caching utilities for improved performance.
+ *
+ * Base URL: /api/v1/sandwiches
+ */
 
-2. POST /api/sandwiches
-   Access: Private
-   Parameters:
-    body: { name, ingredients, comment }
-
-3. GET /api/sandwiches/:sandwichId
-   Access: Public
-
-4. PUT /api/sandwiches/:sandwichId
-   Access: Private
-   Parameters:
-    body: { name, ingredients, comment }
-
-5. DELETE /api/sandwiches/:sandwichId
-   Access: Private
-
-6. POST /api/sandwiches/:sandwichId/vote
-   DELETE /api/sandwiches/:sandwichId/vote
-   Access: Private
-*/
-
+/**
+ * Get sandwiches with filtering and pagination
+ * GET /
+ * Access: Public
+ * @param {Object} query - Query parameters
+ * @param {string[]} [query.dietaryPreferences] - Dietary preferences filter
+ * @param {string[]} [query.ingredients] - Ingredients filter
+ * @param {string} [query.sortBy] - Sort by field (createdAt, votesCount)
+ * @param {number} [query.page] - Page number
+ * @param {number} [query.limit] - Items per page
+ * @returns {Promise<Object>} { success: boolean, data: [sandwiches], pagination: {...} }
+ */
 export const fetchSandwiches = async (query) => {
-  // dietaryPreferences:[], ingredients:[], sortBy:(def)"createdAt"|"votesCount"
-  // page:1, limit:48
   return await handleResponse(async () => api.get('/', { params: query }));
 };
 
+/**
+ * Get sandwich by ID
+ * GET /:sandwichId
+ * Access: Public
+ * @param {string} sandwichId - Sandwich ID
+ * @returns {Promise<Object>} { success: boolean, data: sandwich }
+ */
 export const fetchSandwichById = async (sandwichId) => {
   return await handleResponse(async () => api.get(`/${sandwichId}`));
 };
 
-export const createSandwich = async (query) => {
-  //name, ingredients, comment
-  return await handleResponse(async () => api.post('/', query));
+/**
+ * Create new sandwich
+ * POST /
+ * Access: Private
+ * @param {Object} params - Sandwich creation parameters
+ * @param {string} params.name - Sandwich name
+ * @param {string[]} params.ingredients - Ingredient IDs
+ * @param {string} [params.comment] - Optional comment
+ * @returns {Promise<Object>} { success: boolean, data: sandwich }
+ */
+export const createSandwich = async (parameters) => {
+  return await handleResponse(async () => api.post('/', parameters));
 };
 
+/**
+ * Add vote to sandwich
+ * POST /:sandwichId/vote
+ * Access: Private
+ * @param {string} sandwichId - Sandwich ID
+ * @returns {Promise<Object>} { success: boolean, message: string }
+ */
 export const addVoteToSandwich = async (sandwichId) => {
   return await handleResponse(async () => api.post(`/${sandwichId}/vote`));
 };
 
+/**
+ * Remove vote from sandwich
+ * DELETE /:sandwichId/vote
+ * Access: Private
+ * @param {string} sandwichId - Sandwich ID
+ * @returns {Promise<Object>} { success: boolean, message: string }
+ */
 export const removeVoteFromSandwich = async (sandwichId) => {
   return await handleResponse(async () => api.delete(`/${sandwichId}/vote`));
 };
 
+/**
+ * Update sandwich
+ * PUT /:sandwichId
+ * Access: Private
+ * @param {string} sandwichId - Sandwich ID
+ * @param {Object} updateData - Update parameters
+ * @param {string} [updateData.name] - Sandwich name
+ * @param {string[]} [updateData.ingredients] - Ingredient IDs
+ * @param {string} [updateData.comment] - Comment
+ * @returns {Promise<Object>} { success: boolean, data: updatedSandwich }
+ */
+export const updateSandwich = async (sandwichId, updateData) => {
+  return await handleResponse(async () => api.put(`/${sandwichId}`, updateData));
+};
+
+/**
+ * Delete sandwich
+ * DELETE /:sandwichId
+ * Access: Private
+ * @param {string} sandwichId - Sandwich ID
+ * @returns {Promise<Object>} { success: boolean, message: string }
+ */
+export const deleteSandwich = async (sandwichId) => {
+  return await handleResponse(async () => api.delete(`/${sandwichId}`));
+};
+
+/**
+ * Read sandwich from cache (utility function)
+ * @returns {Object|null} Cached sandwich or null if expired/not found
+ */
 export const readSandwichFromCache = () => {
   log('🥪 💾 Reading sandwich from cache');
 
-  const sandwich = JSON.parse(localStorage.getItem('sandwich'));
-  const cachedAt = JSON.parse(localStorage.getItem('sandwich-cachedAt'));
+  const sandwichString = localStorage.getItem('sandwich');
+  const cachedAtString = localStorage.getItem('sandwich-cachedAt');
+
+  if (!sandwichString || !cachedAtString) {
+    return null;
+  }
+
+  const sandwich = JSON.parse(sandwichString);
+  const cachedAt = JSON.parse(cachedAtString);
 
   const cacheExpired = timeDifference(cachedAt, Date.now()).days > SANDWICH_CACHE_TIME_OUT_DAYS;
 
@@ -80,6 +140,10 @@ export const readSandwichFromCache = () => {
   return sandwich;
 };
 
+/**
+ * Update sandwich in cache (utility function)
+ * @param {Object} sandwich - Sandwich data to cache
+ */
 export const updateSandwichInCache = (sandwich) => {
   log('Writing sandwich to cache');
 
@@ -87,6 +151,9 @@ export const updateSandwichInCache = (sandwich) => {
   localStorage.setItem('sandwich-cachedAt', JSON.stringify(Date.now()));
 };
 
+/**
+ * Delete sandwich from cache (utility function)
+ */
 export const deleteSandwichFromCache = () => {
   log('Removing sandwich from cache');
 

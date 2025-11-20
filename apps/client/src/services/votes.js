@@ -1,9 +1,9 @@
 import { addVoteToSandwich } from '../services/api-sandwiches';
 
-import { didUserVotedForSandwichByIdUsingLocalStorage, addSandwichToFavoritesByUserId } from '../services/api-users';
+import { hasUserVotedForSandwichByIdUsingLocalStorage, addSandwichToFavoritesByUserId } from '../services/api-users';
 
-export const hasUserVotedUserForSandwich = (sandwich, user) => {
-  if (!user.id) return didUserVotedForSandwichByIdUsingLocalStorage(sandwich.id);
+export const hasUserVotedForSandwich = (sandwich, user) => {
+  if (!user.id) return hasUserVotedForSandwichByIdUsingLocalStorage(sandwich.id);
 
   return user.favoriteSandwiches.includes(sandwich.id);
 };

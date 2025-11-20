@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
 
 import { ROUTE_PATHS } from '../../../routes';
-import { hasUserVotedUserForSandwich, voteForSandwich } from '../../../services/votes';
+import { hasUserVotedForSandwich, voteForSandwich } from '../../../services/votes';
 
 import { hydrateSandwichIngredientsData } from '../../../utils/sandwich-utils';
 
@@ -22,7 +22,7 @@ const SandwichCard = ({ index, sandwich, galleryPath = '', isModal }) => {
 
   const navigate = useNavigate();
 
-  const isVotedByUser = hasUserVotedUserForSandwich(sandwich, currentUser);
+  const isVotedByUser = hasUserVotedForSandwich(sandwich, currentUser);
 
   const bgIndex = (index % 4) + 1;
 
