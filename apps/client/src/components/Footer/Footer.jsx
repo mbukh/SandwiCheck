@@ -19,7 +19,7 @@ const Footer = () => {
       </div>
 
       <div className="footer__triangle absolute bottom-0 right-0 pointer-events-none">
-        <Link className="pointer-events-auto" to="https://github.com/mbukh/Appleseeds-SandwiCheck" target="_blank">
+        <Link className="pointer-events-auto" to="https://github.com/mbukh/SandwiCheck" target="_blank">
           <img
             className="footer__logo block md:w-16 absolute bottom-0 right-0 mb-4 md:mb-5 mr-5 md:mr-12 xl:mr-20"
             src={github}
