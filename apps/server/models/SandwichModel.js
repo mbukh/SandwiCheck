@@ -17,7 +17,7 @@ const ingredientWithPortionSchema = new Schema(
     },
     portion: {
       type: String,
-      enum: [...Object.values(PORTION)],
+      enum: Object.values(PORTION),
       default: PORTION.full,
       required: true,
     },
@@ -81,18 +81,18 @@ const sandwichSchema = new Schema(
     timestamps: true,
     toJSON: {
       virtuals: true,
-      transform: function (_, ret) {
-        ret.id = ret._id;
-        delete ret._id;
-        delete ret.__v;
-        delete ret.__t;
+      transform: function (_, returnValue) {
+        returnValue.id = returnValue._id;
+        delete returnValue._id;
+        delete returnValue.__v;
+        delete returnValue.__t;
       },
     },
     toObject: {
       virtuals: true,
-      transform: function (_, ret) {
-        delete ret.__v;
-        delete ret.__t;
+      transform: function (_, returnValue) {
+        delete returnValue.__v;
+        delete returnValue.__t;
       },
     },
   },
@@ -149,21 +149,49 @@ async function ingredientsValidator(ingredientsWithPortions) {
   return true;
 }
 
+/**
+ * Expands dietary preferences to include implied relationships.
+ * Currently: vegan implies vegetarian.
+ * @param {string[]} preferences - Array of dietary preference strings
+ * @returns {string[]} Expanded preferences array
+ */
+function expandDietaryPreferences(preferences) {
+  const expanded = [...preferences];
+  // Vegan always implies vegetarian
+  if (preferences.includes(DIETARY_PREFERENCE.vegan)) {
+    expanded.push(DIETARY_PREFERENCE.vegetarian);
+  }
+  return [...new Set(expanded)]; // Remove duplicates
+}
+
+/**
+ * Calculates the dietary preferences for a sandwich based on its ingredients.
+ * The result is the intersection of all ingredient preferences, with special handling:
+ * - Vegan ingredients are treated as vegetarian (vegan implies vegetarian)
+ * - Kosher is removed if both meat and dairy are present
+ * @param {Array} ingredients - Array of ingredient objects with dietaryPreferences property
+ * @returns {string[]} Array of dietary preference strings
+ */
 function setDietaryPreferences(ingredients) {
   if (ingredients.length === 0) {
     return [];
   }
 
-  // Create an array to store the intersection of all dietary preferences
-  let intersection = ingredients[0].dietaryPreferences.slice();
+  // Expand preferences for each ingredient (vegan → vegetarian)
+  const expandedPreferences = ingredients.map((ingredient) =>
+    expandDietaryPreferences(ingredient.dietaryPreferences || []),
+  );
 
-  ingredients.slice(1).forEach((ingredient) => {
-    intersection = intersection.filter((preference) => ingredient.dietaryPreferences.includes(preference));
-  });
+  // Calculate intersection of all expanded preferences
+  let intersection = [...expandedPreferences[0]];
 
-  // Kosher not mixing meat and dairy
-  const hasDairy = ingredients.some((ingredient) => ingredient.dietaryPreferences.includes(PRODUCT.dairy));
-  const hasMeat = ingredients.some((ingredient) => ingredient.dietaryPreferences.includes(PRODUCT.meat));
+  for (const preferences of expandedPreferences.slice(1)) {
+    intersection = intersection.filter((preference) => preferences.includes(preference));
+  }
+
+  // Kosher rule: remove kosher if both meat and dairy are present
+  const hasDairy = ingredients.some((ingredient) => ingredient.dietaryPreferences?.includes(PRODUCT.dairy));
+  const hasMeat = ingredients.some((ingredient) => ingredient.dietaryPreferences?.includes(PRODUCT.meat));
   if (hasDairy && hasMeat) {
     intersection = intersection.filter((preference) => preference !== DIETARY_PREFERENCE.kosher);
   }
