@@ -7,6 +7,11 @@ const SandwichImage = ({ sandwich, galleryPath, isModal }) => {
   const path = `${import.meta.env.VITE_API_SERVER}/${SANDWICH_IMAGES_PATH}`;
   const navigate = useNavigate();
 
+  // Safety check: don't render if image is missing
+  if (!sandwich?.image) {
+    return null;
+  }
+
   const TheSandwichImage = () => (
     <div className="relative aspect-ratio-square">
       <div className="sandwich-images">

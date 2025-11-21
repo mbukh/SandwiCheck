@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useRouter } from '@tanstack/react-router';
+import { useNavigate, useRouter, useLocation } from '@tanstack/react-router';
 
 import { useModalContext } from '../../context/ModalContext';
+import { isAuthRoute } from '../../utils/auth-utils';
+import { ROUTE_PATHS } from '../../routes';
 import Portal from '../Portal/Portal';
 import Loading from '../Loading';
 
@@ -9,6 +11,7 @@ const Modal = ({ children, setIsOpenLoginModal, isModalLoading = true, closeLink
   const [isModalShow, setIsModalShow] = useState(true);
   const navigate = useNavigate();
   const router = useRouter();
+  const location = useLocation();
   const { registerModal, unregisterModal } = useModalContext();
 
   const closeModalHandler = useCallback(
@@ -20,8 +23,14 @@ const Modal = ({ children, setIsOpenLoginModal, isModalLoading = true, closeLink
           // Use replace: true to clean up query params when closing modal
           navigate({ to: closeLink, replace: true });
         } else {
-          // Check if there's browser history to go back to
-          if (globalThis.history.length > 1) {
+          /*
+           * If we're on an auth route, navigate to a safe public route instead of going back
+           * This prevents redirect loops when closing login modal after being redirected from protected routes
+           */
+          if (isAuthRoute(location.pathname)) {
+            navigate({ to: ROUTE_PATHS.LATEST, replace: true });
+          } else if (globalThis.history.length > 1) {
+            // Check if there's browser history to go back to
             router.history.back();
           } else {
             // No history, navigate to root page
@@ -32,7 +41,7 @@ const Modal = ({ children, setIsOpenLoginModal, isModalLoading = true, closeLink
       setIsModalShow(false);
       setIsOpenLoginModal && setIsOpenLoginModal(false);
     },
-    [closeLink, navigate, router, setIsOpenLoginModal],
+    [closeLink, navigate, router, location, setIsOpenLoginModal],
   );
 
   useEffect(() => {

@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Link } from '@tanstack/react-router';
+import { Link, useSearch, useLocation } from '@tanstack/react-router';
 
 import { MAX_USER_NAME_LENGTH, ROLE } from '../../constants/user-constants';
 import { ROUTE_PATHS } from '../../routes';
 
 import useForm from '../../hooks/use-form';
 import useToast from '../../hooks/use-toast';
+import { isAuthRoute } from '../../utils/auth-utils';
 
 const Signup = () => {
   const { showToast, toastComponents } = useToast();
@@ -13,6 +14,8 @@ const Signup = () => {
   const [confirmationEmail, setConfirmationEmail] = useState('');
   const [confirmationMessage, setConfirmationMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const search = useSearch({ strict: false });
+  const location = useLocation();
   const {
     name,
     setName,
@@ -29,6 +32,9 @@ const Signup = () => {
     errors,
   } = useForm();
 
+  // Determine returnTo value (same logic as Login component)
+  const returnTo = search?.returnTo || (!isAuthRoute(location.pathname) ? location.pathname : null);
+
   useEffect(() => {
     errors.forEach((error) => showToast(error));
   }, [errors, showToast]);
@@ -37,7 +43,7 @@ const Signup = () => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const result = await signUpHandler(e);
+      const result = await signUpHandler(e, returnTo);
       if (result && result.needsEmailConfirmation) {
         setNeedsEmailConfirmation(true);
         setConfirmationEmail(result.email || email);
@@ -89,11 +95,20 @@ const Signup = () => {
         </div>
         <div className="w-full mb-4 md:mb-6 flex justify-center items-center">
           {parentId ? (
-            <Link className="mx-2 underline" to={ROUTE_PATHS.LOGIN_PARENT} params={{ parentId }}>
+            <Link
+              className="mx-2 underline"
+              to={ROUTE_PATHS.LOGIN_PARENT}
+              params={{ parentId }}
+              search={returnTo ? { returnTo } : {}}
+            >
               Back to Log In
             </Link>
           ) : (
-            <Link className="mx-2 underline" to={ROUTE_PATHS.LOGIN}>
+            <Link
+              className="mx-2 underline"
+              to={ROUTE_PATHS.LOGIN}
+              search={returnTo ? { returnTo } : {}}
+            >
               Back to Log In
             </Link>
           )}
@@ -119,56 +134,90 @@ const Signup = () => {
         </>
       )}
 
-      <form className="needs-validation text-left text-sm mt-15 md:mt-20 xl:mt-24 md:px-5" onSubmit={handleSignUp}>
+      <form className="needs-validation text-left text-sm mt-15 md:mt-20 xl:mt-24 md:px-5" noValidate onSubmit={handleSignUp}>
         <div className="mb-4 md:mb-6">
+          <label htmlFor="signup-name" className="sr-only">
+            Full name
+          </label>
           <input
+            id="signup-name"
             className="w-full appearance-none focus:outline-none rounded-lg box-shadow-10 bg-white text-magenta text-base xl:text-xl py-2 px-4 md:px-6 xl:py-3 xl:px-8 xl:box-shadow-20"
             name="name"
-            type="name"
+            type="text"
+            autoComplete="name"
+            autoCorrect="off"
+            autoCapitalize="words"
+            spellCheck="false"
             placeholder="Full name"
             value={name}
             maxLength={MAX_USER_NAME_LENGTH}
             onChange={(e) => setName(e.target.value)}
             required
+            aria-required="true"
           />
         </div>
 
         <div className="mb-4 md:mb-6">
+          <label htmlFor="signup-email" className="sr-only">
+            Email address
+          </label>
           <input
+            id="signup-email"
             className="w-full appearance-none focus:outline-none rounded-lg box-shadow-10 bg-white text-magenta text-base xl:text-xl py-2 px-4 md:px-6 xl:py-3 xl:px-8 xl:box-shadow-20"
             name="email"
             type="email"
             autoComplete="email"
+            inputMode="email"
+            autoCorrect="off"
+            autoCapitalize="none"
+            spellCheck="false"
             placeholder="E-mail address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            aria-required="true"
           />
         </div>
 
         <div className="mb-4 md:mb-6">
+          <label htmlFor="signup-password" className="sr-only">
+            Password
+          </label>
           <input
+            id="signup-password"
             className="w-full appearance-none focus:outline-none rounded-lg box-shadow-10 bg-white text-magenta text-base xl:text-xl py-2 px-4 md:px-6 xl:py-3 xl:px-8 xl:box-shadow-20"
             name="password"
             type="password"
             autoComplete="new-password"
+            autoCorrect="off"
+            autoCapitalize="none"
+            spellCheck="false"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            aria-required="true"
           />
         </div>
 
         <div className="mb-4 md:mb-6">
+          <label htmlFor="signup-confirm-password" className="sr-only">
+            Confirm password
+          </label>
           <input
+            id="signup-confirm-password"
             className="w-full appearance-none focus:outline-none rounded-lg box-shadow-10 bg-white text-magenta text-base xl:text-xl py-2 px-4 md:px-6 xl:py-3 xl:px-8 xl:box-shadow-20"
-            name="password"
+            name="confirmPassword"
             type="password"
             autoComplete="new-password"
+            autoCorrect="off"
+            autoCapitalize="none"
+            spellCheck="false"
             placeholder="Confirm password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
+            aria-required="true"
           />
         </div>
 

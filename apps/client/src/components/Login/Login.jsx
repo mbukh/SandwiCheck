@@ -1,21 +1,51 @@
 import { useEffect, useState, useRef } from 'react';
-import { Link, useNavigate } from '@tanstack/react-router';
+import { Link, useNavigate, useSearch, useLocation } from '@tanstack/react-router';
 
 import { ROUTE_PATHS } from '../../routes';
 import useForm from '../../hooks/use-form';
 import useToast from '../../hooks/use-toast';
 import * as apiAuth from '../../services/api-auth';
+import { isAuthRoute } from '../../utils/auth-utils';
+import { useAuthGlobalContext } from '../../context/AuthGlobalContext';
+import { readSandwichFromCache } from '../../services/api-sandwiches';
 
 const Login = () => {
   const { showToast, toastComponents } = useToast();
   const navigate = useNavigate();
+  const search = useSearch({ strict: false });
+  const location = useLocation();
   const { email, setEmail, password, setPassword, LoginHandler, parentId, errors } = useForm();
+  const { currentUser, isCurrentUserReady } = useAuthGlobalContext();
+
+  /*
+   * Determine returnTo value:
+   * If returnTo exists in search → use it
+   * Else if current pathname is NOT an auth route → use location.pathname
+   * Else → use null (will redirect to /menu)
+   */
+  const returnTo = search?.returnTo || (isAuthRoute(location.pathname) ? null : location.pathname);
   const [showResendConfirmation, setShowResendConfirmation] = useState(false);
   const [resending, setResending] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [emailSentSuccessfully, setEmailSentSuccessfully] = useState(false);
   const [cooldownRemainingMs, setCooldownRemainingMs] = useState(null);
   const cooldownIntervalReference = useRef(null);
+
+  // Redirect authenticated users away from login page
+  useEffect(() => {
+    if (isCurrentUserReady && currentUser && Object.keys(currentUser).length > 0) {
+      // User is authenticated, redirect them
+      const returnTo = search?.returnTo;
+      let destination;
+      if (returnTo && returnTo.trim() && !isAuthRoute(returnTo)) {
+        destination = returnTo;
+      } else {
+        const unExpiredSavedSandwich = readSandwichFromCache();
+        destination = unExpiredSavedSandwich ? ROUTE_PATHS.CREATE : ROUTE_PATHS.MENU;
+      }
+      navigate({ to: destination, replace: true });
+    }
+  }, [currentUser, isCurrentUserReady, navigate, search]);
 
   useEffect(() => {
     for (const error of errors) {
@@ -176,44 +206,66 @@ const Login = () => {
 
       <form
         className="needs-validation text-left text-sm mt-15 md:mt-20 xl:mt-24 md:px-5"
+        noValidate
         onSubmit={async (e) => {
           e.preventDefault();
           setIsLoggingIn(true);
           try {
-            await LoginHandler(e);
+            await LoginHandler(e, returnTo);
           } finally {
             setIsLoggingIn(false);
           }
         }}
       >
         <div className="mb-4 md:mb-6">
+          <label htmlFor="login-email" className="sr-only">
+            Email address
+          </label>
           <input
+            id="login-email"
             className="w-full appearance-none focus:outline-none rounded-lg box-shadow-10 bg-white text-magenta text-base xl:text-xl py-2 px-4 md:px-6 xl:py-3 xl:px-8 xl:box-shadow-20"
             name="email"
             type="email"
             autoComplete="email"
+            inputMode="email"
+            autoCorrect="off"
+            autoCapitalize="none"
+            spellCheck="false"
             placeholder="E-mail address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            aria-required="true"
           />
         </div>
 
         <div className="mb-4 md:mb-6">
+          <label htmlFor="login-password" className="sr-only">
+            Password
+          </label>
           <input
+            id="login-password"
             className="w-full appearance-none focus:outline-none rounded-lg box-shadow-10 bg-white text-magenta text-base xl:text-xl py-2 px-4 md:px-6 xl:py-3 xl:px-8 xl:box-shadow-20"
             name="password"
             type="password"
             autoComplete="current-password"
+            autoCorrect="off"
+            autoCapitalize="none"
+            spellCheck="false"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            aria-required="true"
           />
         </div>
 
         <div className="mb-2 md:mb-4 text-right">
-          <Link to={ROUTE_PATHS.FORGOT_PASSWORD} className="underline text-sm md:text-base">
+          <Link
+            to={ROUTE_PATHS.FORGOT_PASSWORD}
+            search={returnTo ? { returnTo } : {}}
+            className="underline text-sm md:text-base"
+          >
             Forgot Password?
           </Link>
         </div>
@@ -280,11 +332,16 @@ const Login = () => {
       <div className="w-full mb-4 md:mb-6 flex justify-center items-center">
         Don't have an account?
         {parentId ? (
-          <Link className="mx-2 underline" to={ROUTE_PATHS.SIGNUP_PARENT} params={{ parentId }}>
+          <Link
+            className="mx-2 underline"
+            to={ROUTE_PATHS.SIGNUP_PARENT}
+            params={{ parentId }}
+            search={returnTo ? { returnTo } : {}}
+          >
             Sign up
           </Link>
         ) : (
-          <Link className="mx-2 underline" to={ROUTE_PATHS.SIGNUP}>
+          <Link className="mx-2 underline" to={ROUTE_PATHS.SIGNUP} search={returnTo ? { returnTo } : {}}>
             Sign up
           </Link>
         )}

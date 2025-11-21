@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useLayoutEffect } from 'react';
 import { Link, useNavigate, useMatchRoute, useSearch } from '@tanstack/react-router';
 
 import { ROUTE_PATHS } from '../../routes';
@@ -27,13 +27,37 @@ const SandwichGallery = ({ children, galleryType = '' }) => {
   const search = useSearch({ strict: false });
   const sandwichIdFromQuery = search?.sandwichId;
 
-  useEffect(() => {
+  // Redirect checks - use useLayoutEffect to prevent content flash
+  useLayoutEffect(() => {
+    // Redirect to login if user is not authenticated and trying to access personal menu
+    if (isCurrentUserReady && galleryType === 'personal' && !currentUser?.id) {
+      navigate({
+        to: ROUTE_PATHS.LOGIN,
+        search: { returnTo: '/menu' },
+      });
+      return;
+    }
+
+    // Redirect if childId doesn't match user's children
     if (isCurrentUserReady && childId && !currentUser?.children?.some((child) => child.id === childId)) {
       navigate({ to: '/login' });
       return;
     }
+  }, [isCurrentUserReady, galleryType, currentUser, childId, navigate]);
 
+  // Data fetching - use useEffect for async operations
+  useEffect(() => {
     if (!areIngredientsReady || !isCurrentUserReady) {
+      return;
+    }
+
+    // Don't fetch data if we're redirecting (unauthenticated personal menu)
+    if (galleryType === 'personal' && !currentUser?.id) {
+      return;
+    }
+
+    // Don't fetch data if childId doesn't match
+    if (childId && !currentUser?.children?.some((child) => child.id === childId)) {
       return;
     }
 
@@ -51,13 +75,12 @@ const SandwichGallery = ({ children, galleryType = '' }) => {
       } else if (galleryType === 'best') {
         await fetchSandwiches({ dietaryPreferences, sortBy: 'votesCount' });
       } else if (currentUser.id) {
-        // Sort sandwiches by createdAt (newest first) for personal menu
-        const sortedSandwiches = [...(currentUser.sandwiches || [])].sort((a, b) => {
-          const dateA = new Date(a.createdAt || 0);
-          const dateB = new Date(b.createdAt || 0);
-          return dateB - dateA; // Descending order (newest first)
-        });
-        setGallerySandwiches(sortedSandwiches);
+        /*
+         * For personal menu, fetch user sandwiches to ensure all fields (including images) are properly populated
+         * This prevents race conditions where currentUser.sandwiches might not have all fields after login
+         * Sort by createdAt (newest first) for personal menu
+         */
+        await fetchUserSandwiches(currentUser.id, true);
       }
     })();
   }, [
@@ -68,9 +91,15 @@ const SandwichGallery = ({ children, galleryType = '' }) => {
     fetchUserSandwiches,
     galleryType,
     isCurrentUserReady,
-    navigate,
     setGallerySandwiches,
   ]);
+
+  // Clear gallery when user logs out (for personal menu)
+  useEffect(() => {
+    if (galleryType === 'personal' && isCurrentUserReady && !currentUser?.id) {
+      setGallerySandwiches([]);
+    }
+  }, [currentUser, galleryType, isCurrentUserReady, setGallerySandwiches]);
 
   const childGalleryTitle = child?.name ? child.name + "'s sandwich menu" : '';
 
@@ -82,13 +111,19 @@ const SandwichGallery = ({ children, galleryType = '' }) => {
   const getGalleryPath = () => {
     if (childId) {
       return ROUTE_PATHS.FAMILY_CHILD.replace('$childId', childId);
-    } else if (galleryType === 'personal') {
-      return ROUTE_PATHS.MENU;
-    } else if (galleryType === 'best') {
-      return ROUTE_PATHS.BEST;
-    } else if (galleryType === 'latest') {
-      return ROUTE_PATHS.LATEST;
-    }
+    } else
+      switch (galleryType) {
+        case 'personal': {
+          return ROUTE_PATHS.MENU;
+        }
+        case 'best': {
+          return ROUTE_PATHS.BEST;
+        }
+        case 'latest': {
+          return ROUTE_PATHS.LATEST;
+        }
+        // No default
+      }
     return ROUTE_PATHS.LATEST; // default
   };
 
@@ -96,6 +131,12 @@ const SandwichGallery = ({ children, galleryType = '' }) => {
 
   if (!areIngredientsReady || !isCurrentUserReady) {
     return <Loading />;
+  }
+
+  // For personal menu, require authentication
+  if (galleryType === 'personal' && !currentUser?.id) {
+    // Don't render anything - the useLayoutEffect will handle the redirect
+    return null;
   }
 
   return (

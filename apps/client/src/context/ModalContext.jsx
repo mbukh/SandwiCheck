@@ -30,6 +30,19 @@ const ModalProvider = ({ children }) => {
     }
   }, []);
 
+  const closeActiveModal = useCallback(() => {
+    const activeModalId = activeModalReference.current;
+    if (activeModalId) {
+      const closeCallback = closeCallbacksReference.current.get(activeModalId);
+      if (closeCallback) {
+        // Pass true to indicate this is a programmatic close (don't navigate)
+        closeCallback(null, true);
+        return true;
+      }
+    }
+    return false;
+  }, []);
+
   const getActiveModal = useCallback(() => activeModalReference.current, []);
 
   const contextValue = useMemo(
@@ -37,8 +50,9 @@ const ModalProvider = ({ children }) => {
       registerModal,
       unregisterModal,
       getActiveModal,
+      closeActiveModal,
     }),
-    [registerModal, unregisterModal, getActiveModal],
+    [registerModal, unregisterModal, getActiveModal, closeActiveModal],
   );
 
   return <ModalContext.Provider value={contextValue}>{children}</ModalContext.Provider>;

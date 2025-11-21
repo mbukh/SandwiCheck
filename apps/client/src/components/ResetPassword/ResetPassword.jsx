@@ -1,16 +1,19 @@
 import { useState } from 'react';
-import { useParams, Link } from '@tanstack/react-router';
+import { useParams, Link, useNavigate, useLocation } from '@tanstack/react-router';
 
 import { ROUTE_PATHS } from '../../routes/routes-config';
 import * as apiAuth from '../../services/api-auth';
 import useToast from '../../hooks/use-toast';
 import Loading from '../Loading';
 import validateForm from '../../utils/validate-utils';
+import { isAuthRoute } from '../../utils/auth-utils';
 
 function ResetPassword() {
   const parameters = useParams({ strict: false });
   const token = parameters?.token;
   const { showToast, toastComponents } = useToast();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -54,7 +57,7 @@ function ResetPassword() {
   };
 
   return (
-    <div className="login max-w-screen-md text-white text-center mx-auto pb-12 md:pb-16 lg:pb-20">
+    <div className="login max-w-screen-md text-white text-center mx-auto">
       <h1 className="text-magenta font-bold text-2xl md:text-4xl xl:text-5xl uppercase mb-3 md:mb-5">
         Sandwich creativity with SandwiCheck!
       </h1>
@@ -87,12 +90,21 @@ function ResetPassword() {
                 Your password has been updated. You can now log in with your new password.
               </p>
             </div>
-            <Link
-              to={ROUTE_PATHS.LOGIN}
+            <button
+              onClick={() => {
+                // Don't set returnTo if current path is an auth route
+                // User should be redirected to /menu after login from auth pages
+                const currentPath = location.pathname;
+                const searchParams = isAuthRoute(currentPath) ? {} : { returnTo: currentPath };
+                navigate({
+                  to: ROUTE_PATHS.LOGIN,
+                  search: searchParams
+                });
+              }}
               className="inline-flex justify-center items-center appearance-none focus:outline-none rounded-lg box-shadow-10 font-bold uppercase bg-magenta text-white h-8 md:h-12 xl:h-14 text-sm md:text-base xl:text-xl py-2 px-5 md:py-3 md:px-6 xl:px-8 xl:box-shadow-20 transition-opacity hover:opacity-90"
             >
               Log In
-            </Link>
+            </button>
           </div>
         </div>
       )}
@@ -131,30 +143,46 @@ function ResetPassword() {
       )}
 
       {!loading && !success && !error && (
-        <form className="needs-validation text-left text-sm mt-15 md:mt-20 xl:mt-24 md:px-5" onSubmit={handleSubmit}>
+        <form className="needs-validation text-left text-sm mt-15 md:mt-20 xl:mt-24 md:px-5" noValidate onSubmit={handleSubmit}>
           <div className="mb-4 md:mb-6">
+            <label htmlFor="reset-password-new" className="sr-only">
+              New password
+            </label>
             <input
+              id="reset-password-new"
               className="w-full appearance-none focus:outline-none rounded-lg box-shadow-10 bg-white text-magenta text-base xl:text-xl py-2 px-4 md:px-6 xl:py-3 xl:px-8 xl:box-shadow-20"
               name="newPassword"
               type="password"
               autoComplete="new-password"
+              autoCorrect="off"
+              autoCapitalize="none"
+              spellCheck="false"
               placeholder="New password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               required
+              aria-required="true"
             />
           </div>
 
           <div className="mb-4 md:mb-6">
+            <label htmlFor="reset-password-confirm" className="sr-only">
+              Confirm new password
+            </label>
             <input
+              id="reset-password-confirm"
               className="w-full appearance-none focus:outline-none rounded-lg box-shadow-10 bg-white text-magenta text-base xl:text-xl py-2 px-4 md:px-6 xl:py-3 xl:px-8 xl:box-shadow-20"
               name="confirmPassword"
               type="password"
               autoComplete="new-password"
+              autoCorrect="off"
+              autoCapitalize="none"
+              spellCheck="false"
               placeholder="Confirm new password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
+              aria-required="true"
             />
           </div>
 

@@ -1,9 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router';
 
-import ResetPassword from '../components/ResetPassword/ResetPassword';
+import ResetPasswordModal from '../components/ResetPassword/ResetPasswordModal';
 
 export const Route = createFileRoute('/reset-password/$token')({
-  component: ResetPassword,
+  component: ResetPasswordModal,
 });
 
 export const ResetPasswordRoute = Route;

@@ -1,16 +1,22 @@
 import { useState } from 'react';
-import { Link } from '@tanstack/react-router';
+import { Link, useSearch, useLocation } from '@tanstack/react-router';
 
 import { ROUTE_PATHS } from '../../routes';
 import * as apiAuth from '../../services/api-auth';
 import useToast from '../../hooks/use-toast';
 import validateForm from '../../utils/validate-utils';
+import { isAuthRoute } from '../../utils/auth-utils';
 
 function ForgotPassword() {
   const { showToast, toastComponents } = useToast();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const search = useSearch({ strict: false });
+  const location = useLocation();
+
+  // Determine returnTo value (same logic as Login/Signup components)
+  const returnTo = search?.returnTo || (!isAuthRoute(location.pathname) ? location.pathname : null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -72,6 +78,7 @@ function ForgotPassword() {
             </div>
             <Link
               to={ROUTE_PATHS.LOGIN}
+              search={returnTo ? { returnTo } : {}}
               className="inline-flex justify-center items-center appearance-none focus:outline-none rounded-lg box-shadow-10 font-bold uppercase bg-magenta text-white h-8 md:h-12 xl:h-14 text-sm md:text-base xl:text-xl py-2 px-5 md:py-3 md:px-6 xl:px-8 xl:box-shadow-20"
             >
               Back to Login
@@ -86,18 +93,28 @@ function ForgotPassword() {
 
           <form
             className="needs-validation text-left text-sm mt-15 md:mt-20 xl:mt-24 md:px-5"
+            noValidate
             onSubmit={handleSubmit}
           >
             <div className="mb-4 md:mb-6">
+              <label htmlFor="forgot-password-email" className="sr-only">
+                Email address
+              </label>
               <input
+                id="forgot-password-email"
                 className="w-full appearance-none focus:outline-none rounded-lg box-shadow-10 bg-white text-magenta text-base xl:text-xl py-2 px-4 md:px-6 xl:py-3 xl:px-8 xl:box-shadow-20"
                 name="email"
                 type="email"
                 autoComplete="email"
+                inputMode="email"
+                autoCorrect="off"
+                autoCapitalize="none"
+                spellCheck="false"
                 placeholder="E-mail address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                aria-required="true"
               />
             </div>
 
@@ -114,7 +131,11 @@ function ForgotPassword() {
 
           <div className="w-full mb-4 md:mb-6 flex justify-center items-center">
             Remember your password?
-            <Link className="mx-2 underline" to={ROUTE_PATHS.LOGIN}>
+            <Link
+              className="mx-2 underline"
+              to={ROUTE_PATHS.LOGIN}
+              search={returnTo ? { returnTo } : {}}
+            >
               Log in
             </Link>
           </div>

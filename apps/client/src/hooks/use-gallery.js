@@ -30,12 +30,21 @@ const useGallery = () => {
     [],
   );
 
-  const fetchUserSandwiches = useCallback(async (id) => {
+  const fetchUserSandwiches = useCallback(async (id, sortByCreatedAt = false) => {
     const res = await apiUsers.fetchUserById(id);
     logResponse('🍔👽 Fetch user with sandwiches', res);
 
-    if (res.data) {
-      setGallerySandwiches(res.data.sandwiches);
+    if (res.data && res.data.sandwiches) {
+      let sandwiches = res.data.sandwiches;
+      // Sort by createdAt (newest first) if requested (for personal menu)
+      if (sortByCreatedAt) {
+        sandwiches = [...sandwiches].sort((a, b) => {
+          const dateA = new Date(a.createdAt || 0);
+          const dateB = new Date(b.createdAt || 0);
+          return dateB - dateA; // Descending order (newest first)
+        });
+      }
+      setGallerySandwiches(sandwiches);
     }
   }, []);
 

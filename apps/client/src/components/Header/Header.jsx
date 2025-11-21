@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Link, useParams, useLocation } from '@tanstack/react-router';
+import { Link, useParams, useLocation, useNavigate } from '@tanstack/react-router';
 
 import { useAuthGlobalContext } from '../../context/AuthGlobalContext';
 import { ROUTE_PATHS } from '../../routes';
+import { isAuthRoute } from '../../utils/auth-utils';
 
 import LoginModal from '../Login/LoginModal';
 import SignupModal from '../Signup/SignupModal';
@@ -17,6 +18,7 @@ const Header = () => {
   const { logOut, currentUser: user } = useAuthGlobalContext();
   const params = useParams({ strict: false });
   const location = useLocation();
+  const navigate = useNavigate();
   const sandwichId = params.sandwichId;
 
   // Don't render Header modals when on auth routes (they have their own modals)
@@ -36,9 +38,31 @@ const Header = () => {
 
   const authHandler = (e) => {
     e.preventDefault();
-    e.target.id === 'logout' && logOut();
-    e.target.id === 'login' && setIsOpenLoginModal(true);
-    e.target.id === 'signup' && setIsOpenSignupModal(true);
+
+    if (e.target.id === 'logout') {
+      logOut();
+      return;
+    }
+
+    // Get current pathname and check if it's an auth route
+    const currentPath = location.pathname;
+    const isCurrentPathAuth = isAuthRoute(currentPath);
+
+    // Determine returnTo: use current path if not auth route
+    const returnTo = isCurrentPathAuth ? null : currentPath;
+    const searchParams = returnTo ? { returnTo } : {};
+
+    if (e.target.id === 'login') {
+      navigate({
+        to: ROUTE_PATHS.LOGIN,
+        search: searchParams
+      });
+    } else if (e.target.id === 'signup') {
+      navigate({
+        to: ROUTE_PATHS.SIGNUP,
+        search: searchParams
+      });
+    }
   };
 
   return (
