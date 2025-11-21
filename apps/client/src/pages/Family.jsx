@@ -52,7 +52,7 @@ const Family = () => {
               or
               <Link
                 className="button bg-magenta text-white inline-block p-2 pr-4 my-2 ml-4 md:my-4 relative text-xs md:text-sm md:text-base fit-content no-wrap text-shadow-10"
-                to={`https://wa.me/?text=Hey%20kids%2C%20join%20me%20at%20SandwiCheck%20and%20be%20a%20part%20of%20my%20sandwich%20squad%21+${window.location.protocol}%2F%2F${window.location.hostname}%2Fsignup%2Fparent%2F${currentUser.id}`}
+                to={`https://wa.me/?text=Hey%20kids%2C%20join%20me%20at%20SandwiCheck%20and%20be%20a%20part%20of%20my%20sandwich%20squad%21+${globalThis.location.protocol}%2F%2F${globalThis.location.hostname}%2Fsignup%2Fparent%2F${currentUser.id}`}
                 target="_blank"
               >
                 Send a link &nbsp; &nbsp; &nbsp; <i className="icon icon-whatsapp abs top-0 bottom-0 right-0"></i>
