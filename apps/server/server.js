@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 import { CONFIG_DIR, CLIENT_DIR, UPLOADS_DIR } from './config/dir.js';
 
 import connectDB from './config/db.js';
@@ -22,8 +22,6 @@ import ingredientsRoutes from './routes/ingredientsRoutes.js';
 import sandwichesRoutes from './routes/sandwichesRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import usersRoutes from './routes/usersRoutes.js';
-
-connectDB();
 
 const app = express();
 
@@ -55,39 +53,41 @@ app.use(cookieParser());
 // ==== Request ID Middleware (for request tracing) ==== //
 app.use(requestIdMiddleware);
 
-// ==== HTTP Request Logging (debug level only) ==== //
-// Only log HTTP requests when LOG_LEVEL is 'debug'
-// SECURITY: Custom format to sanitize sensitive headers and URLs
+/*
+ * ==== HTTP Request Logging (debug level only) ==== //
+ * Only log HTTP requests when LOG_LEVEL is 'debug'
+ * SECURITY: Custom format to sanitize sensitive headers and URLs
+ */
 if (getLoggerLevel() === 'debug') {
-  const nodeEnv = process.env.NODE_ENV || 'local';
+  const nodeEnvironment = process.env.NODE_ENV || 'local';
 
   // Custom morgan format that sanitizes sensitive data
-  const sanitizedFormat = (tokens, req, res) => {
-    const method = tokens.method(req, res);
-    const url = tokens.url(req, res);
-    const status = tokens.status(req, res);
-    const responseTime = tokens['response-time'](req, res);
-    const remoteAddr = tokens['remote-addr'](req, res);
-    const userAgent = tokens['user-agent'](req, res);
+  const sanitizedFormat = (tokens, request, res) => {
+    const method = tokens.method(request, res);
+    const url = tokens.url(request, res);
+    const status = tokens.status(request, res);
+    const responseTime = tokens['response-time'](request, res);
+    const remoteAddr = tokens['remote-addr'](request, res);
+    const userAgent = tokens['user-agent'](request, res);
 
     // Sanitize URL - remove tokens from query params and paths
     let sanitizedUrl = url;
     // Remove tokens from URL path (e.g., /confirm-email/TOKEN)
-    sanitizedUrl = sanitizedUrl.replace(/\/(confirm-email|reset-password|reset-password\/)[^\/\s]+/gi, (match) => {
+    sanitizedUrl = sanitizedUrl.replaceAll(/\/(confirm-email|reset-password|reset-password\/)[^\/\s]+/gi, (match) => {
       const parts = match.split('/');
       if (parts.length > 0) {
-        const lastPart = parts[parts.length - 1];
+        const lastPart = parts.at(-1);
         // If it looks like a token (long alphanumeric), mask it
         if (lastPart.length > 20 && /^[a-zA-Z0-9_-]+$/.test(lastPart)) {
-          return `${parts.slice(0, -1).join('/')}/${lastPart.substring(0, 4)}***${lastPart.substring(lastPart.length - 4)}`;
+          return `${parts.slice(0, -1).join('/')}/${lastPart.slice(0, 4)}***${lastPart.slice(Math.max(0, lastPart.length - 4))}`;
         }
       }
       return match;
     });
     // Remove tokens from query params
-    sanitizedUrl = sanitizedUrl.replace(/([?&])(token|resetToken|confirmationToken)=[^&\s]+/gi, '$1$2=***');
+    sanitizedUrl = sanitizedUrl.replaceAll(/([?&])(token|resetToken|confirmationToken)=[^&\s]+/gi, '$1$2=***');
 
-    if (nodeEnv === 'production') {
+    if (nodeEnvironment === 'production') {
       // Production: minimal format (no user agent, sanitized)
       return `${remoteAddr} - ${method} ${sanitizedUrl} ${status} ${responseTime}ms`;
     } else {
@@ -99,8 +99,10 @@ if (getLoggerLevel() === 'debug') {
   app.use(morgan(sanitizedFormat, { stream: morganStream }));
 }
 
-// ==== Security ==== //
-// parse URL-encoded data received from the client
+/*
+ * ==== Security ==== //
+ * parse URL-encoded data received from the client
+ */
 app.use(express.urlencoded({ extended: true }));
 // helmet: A middleware for securing Express apps by setting various HTTP headers
 app.use(helmet({ crossOriginResourcePolicy: false }));
@@ -118,8 +120,10 @@ app.use('/api/v1/users', usersRoutes);
 // === Middleware === //
 app.use(errorHandler);
 
-// === Forward static content === //
-// Front-End
+/*
+ * === Forward static content === //
+ * Front-End
+ */
 app.use('/', express.static(CLIENT_DIR));
 // Uploads folder
 app.use('/uploads', express.static(UPLOADS_DIR));
@@ -127,36 +131,57 @@ app.use('/uploads', express.static(UPLOADS_DIR));
 // Start server
 const PORT = process.env.PORT || 5001;
 
-const server = app.listen(PORT, () => {
-  const nodeEnv = process.env.NODE_ENV || 'local';
-  logger.info('Server started', {
-    environment: nodeEnv,
-    port: PORT,
+// Initialize database connection before starting server
+let server;
+try {
+  await connectDB();
+  server = app.listen(PORT, () => {
+    const nodeEnvironment = process.env.NODE_ENV || 'local';
+    logger.info('Server started', {
+      environment: nodeEnvironment,
+      port: PORT,
+    });
   });
-});
+} catch (error) {
+  logger.error('Failed to start server - MongoDB connection required', {
+    error: {
+      name: error.name,
+      message: error.message,
+    },
+  });
+  process.exit(1);
+}
 
 // Handle uncaught exceptions
-process.on('uncaughtException', (err) => {
+process.on('uncaughtException', (error) => {
   logger.error('Uncaught Exception - shutting down:', {
-    message: err.message,
-    stack: err.stack,
-    name: err.name,
+    message: error.message,
+    stack: error.stack,
+    name: error.name,
   });
   // Give logger time to flush before exiting
   setTimeout(() => {
-    server.close(() => process.exit(1));
+    if (server) {
+      server.close(() => process.exit(1));
+    } else {
+      process.exit(1);
+    }
   }, 1000);
 });
 
 // Handle unhandled promise rejections
-process.on('unhandledRejection', (err, promise) => {
+process.on('unhandledRejection', (error, promise) => {
   logger.error('Unhandled Rejection - shutting down:', {
-    message: err?.message || String(err),
-    stack: err?.stack,
-    name: err?.name,
+    message: error?.message || String(error),
+    stack: error?.stack,
+    name: error?.name,
   });
   // Give logger time to flush before exiting
   setTimeout(() => {
-    server.close(() => process.exit(1));
+    if (server) {
+      server.close(() => process.exit(1));
+    } else {
+      process.exit(1);
+    }
   }, 1000);
 });
