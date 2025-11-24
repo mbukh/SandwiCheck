@@ -6,7 +6,7 @@ export const breadData = [
     type: TYPE.bread,
     imageBase: '20200620_101006',
     shape: SHAPE.long,
-    dietaryPreferences: [D_P.vegetarian, D_P.vegan, D_P.kosher],
+    dietaryPreferences: [D_P.vegetarian, D_P.vegan, D_P.kosher, D_P.halal],
     displayPriority: 80,
     createdAt: new Date('2020-06-20T06:10:06.000Z'),
   },
@@ -15,7 +15,7 @@ export const breadData = [
     type: TYPE.bread,
     imageBase: '20200620_101033',
     shape: SHAPE.long,
-    dietaryPreferences: [D_P.vegetarian, D_P.vegan, D_P.kosher],
+    dietaryPreferences: [D_P.vegetarian, D_P.vegan, D_P.kosher, D_P.halal],
     displayPriority: 60,
     createdAt: new Date('2020-06-20T06:10:33.000Z'),
   },
@@ -33,7 +33,7 @@ export const breadData = [
     type: TYPE.bread,
     imageBase: '20200620_101114',
     shape: SHAPE.trapezoid,
-    dietaryPreferences: [D_P.vegetarian, D_P.vegan, D_P.kosher],
+    dietaryPreferences: [D_P.vegetarian, D_P.vegan, D_P.kosher, D_P.halal],
     displayPriority: 70,
     createdAt: new Date('2020-06-20T06:11:14.000Z'),
   },
@@ -42,7 +42,7 @@ export const breadData = [
     type: TYPE.bread,
     imageBase: '20200620_101131',
     shape: SHAPE.trapezoid,
-    dietaryPreferences: [D_P.vegetarian, D_P.dairy],
+    dietaryPreferences: [D_P.vegetarian, D_P.vegan, D_P.kosher, D_P.halal],
     displayPriority: 75,
     createdAt: new Date('2020-06-20T06:11:31.000Z'),
   },
@@ -93,15 +93,17 @@ export const breadData = [
   },
 ];
 
-// =================
-// =================
+/*
+ * =================
+ * =================
+ */
 
 export const proteinData = [
   {
     name: 'Turkey',
     type: TYPE.protein,
     imageBase: '20200621_081721',
-    dietaryPreferences: [D_P.kosher, D_P.halal, D_P.meat],
+    dietaryPreferences: [D_P.halal, D_P.kosher, D_P.meat],
     displayPriority: 100,
     createdAt: new Date('2020-06-21T04:17:21.000Z'),
   },
@@ -181,7 +183,7 @@ export const proteinData = [
     name: 'Baked Chicken',
     type: TYPE.protein,
     imageBase: '20200621_082626',
-    dietaryPreferences: [D_P.kosher, D_P.halal, D_P.meat],
+    dietaryPreferences: [D_P.halal, D_P.kosher, D_P.meat],
     displayPriority: 95,
     createdAt: new Date('2020-06-21T04:26:26.000Z'),
   },
@@ -197,7 +199,7 @@ export const proteinData = [
     name: 'Chicken Salad',
     type: TYPE.protein,
     imageBase: '20200621_082821',
-    dietaryPreferences: [D_P.kosher, D_P.halal, D_P.meat],
+    dietaryPreferences: [D_P.halal, D_P.kosher, D_P.meat],
     displayPriority: 40,
     createdAt: new Date('2020-06-21T04:28:21.000Z'),
   },
@@ -213,14 +215,16 @@ export const proteinData = [
     name: 'Egg Salad',
     type: TYPE.protein,
     imageBase: '20200621_082959',
-    dietaryPreferences: [D_P.vegetarian, D_P.kosher, D_P.halal, D_P.dairy],
+    dietaryPreferences: [D_P.vegetarian, D_P.kosher, D_P.halal],
     displayPriority: 20,
     createdAt: new Date('2020-06-21T04:29:59.000Z'),
   },
 ];
 
-// =================
-// =================
+/*
+ * =================
+ * =================
+ */
 
 export const cheeseData = [
   {
@@ -283,7 +287,7 @@ export const cheeseData = [
     name: 'Brie',
     type: TYPE.cheese,
     imageBase: '20200621_084108',
-    dietaryPreferences: [D_P.vegetarian, D_P.dairy],
+    dietaryPreferences: [D_P.vegetarian, D_P.kosher, D_P.halal, D_P.dairy],
     displayPriority: 50,
     createdAt: new Date('2020-06-21T04:41:08.000Z'),
   },
@@ -305,8 +309,10 @@ export const cheeseData = [
   },
 ];
 
-// =================
-// =================
+/*
+ * =================
+ * =================
+ */
 
 export const condimentData = [
   {
@@ -361,7 +367,7 @@ export const condimentData = [
     name: 'Pesto',
     type: TYPE.condiments,
     imageBase: '20200621_122152',
-    dietaryPreferences: [D_P.vegetarian, D_P.dairy],
+    dietaryPreferences: [D_P.vegetarian, D_P.kosher, D_P.halal, D_P.dairy],
     displayPriority: 20,
     createdAt: new Date('2020-06-21T08:21:52.000Z'),
   },
@@ -369,7 +375,7 @@ export const condimentData = [
     name: 'Balsamic Dressing',
     type: TYPE.condiments,
     imageBase: '20200621_122059',
-    dietaryPreferences: [D_P.vegetarian, D_P.kosher, D_P.halal],
+    dietaryPreferences: [D_P.vegetarian, D_P.kosher, D_P.halal, D_P.vegan],
     displayPriority: 10,
     createdAt: new Date('2020-06-21T08:20:59.000Z'),
   },
@@ -393,7 +399,7 @@ export const condimentData = [
     name: 'BBQ Sauce',
     type: TYPE.condiments,
     imageBase: '20200621_122455',
-    dietaryPreferences: [D_P.vegetarian, D_P.kosher, D_P.halal],
+    dietaryPreferences: [D_P.vegetarian, D_P.kosher, D_P.halal, D_P.vegan],
     displayPriority: 80,
     createdAt: new Date('2020-06-21T08:24:55.000Z'),
   },
@@ -409,7 +415,7 @@ export const condimentData = [
     name: 'Sriracha',
     type: TYPE.condiments,
     imageBase: '20200621_123445',
-    dietaryPreferences: [D_P.vegetarian, D_P.kosher, D_P.halal],
+    dietaryPreferences: [D_P.vegetarian, D_P.kosher, D_P.halal, D_P.vegan],
     displayPriority: 85,
     createdAt: new Date('2020-06-21T08:34:45.000Z'),
   },
@@ -417,7 +423,7 @@ export const condimentData = [
     name: 'Thai Peanut',
     type: TYPE.condiments,
     imageBase: '20200621_123357',
-    dietaryPreferences: [D_P.vegetarian],
+    dietaryPreferences: [D_P.vegetarian, D_P.kosher, D_P.halal, D_P.vegan],
     displayPriority: 15,
     createdAt: new Date('2020-06-21T08:33:57.000Z'),
   },
@@ -425,7 +431,7 @@ export const condimentData = [
     name: 'Honey',
     type: TYPE.condiments,
     imageBase: '20200723_023043',
-    dietaryPreferences: [D_P.vegetarian, D_P.kosher],
+    dietaryPreferences: [D_P.vegetarian, D_P.kosher, D_P.halal],
     displayPriority: 25,
     createdAt: new Date('2020-07-22T22:30:43.000Z'),
   },
@@ -441,7 +447,7 @@ export const condimentData = [
     name: 'Peanut Butter',
     type: TYPE.condiments,
     imageBase: '20220904_112536',
-    dietaryPreferences: [D_P.vegetarian, D_P.kosher, D_P.halal],
+    dietaryPreferences: [D_P.vegetarian, D_P.kosher, D_P.halal, D_P.vegan],
     displayPriority: 35,
     createdAt: new Date('2022-09-04T07:25:36.000Z'),
   },
@@ -449,14 +455,16 @@ export const condimentData = [
     name: 'Strawberry Preserves',
     type: TYPE.condiments,
     imageBase: '20220904_112727',
-    dietaryPreferences: [D_P.vegetarian, D_P.kosher, D_P.halal],
+    dietaryPreferences: [D_P.vegetarian, D_P.kosher, D_P.halal, D_P.vegan],
     displayPriority: 55,
     createdAt: new Date('2022-09-04T07:27:27.000Z'),
   },
 ];
 
-// =================
-// =================
+/*
+ * =================
+ * =================
+ */
 
 export const toppingData = [
   {
@@ -605,5 +613,7 @@ export const toppingData = [
   },
 ];
 
-// =================
-// =================
+/*
+ * =================
+ * =================
+ */
