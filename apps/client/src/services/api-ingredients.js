@@ -21,6 +21,15 @@ const api = createFetchApi(`${import.meta.env.VITE_API_SERVER}/api/v1/ingredient
  * Includes caching utilities for improved performance.
  *
  * Base URL: /api/v1/ingredients
+ *
+ * UI IMPLEMENTATION STATUS: 20% (1/5 endpoints)
+ * ✅ IMPLEMENTED (1):
+ *   - getAllIngredients: IngredientsGlobalContext.jsx - Fetches all ingredients with dietary filtering and caching
+ * ❌ NOT IMPLEMENTED (4):
+ *   - fetchIngredientById: API exists, not used in any UI component (ingredients accessed from context)
+ *   - createIngredient: API exists, admin only, no admin interface/panel
+ *   - updateIngredient: API exists, admin only, no admin interface/panel
+ *   - deleteIngredient: API exists, admin only, no admin interface/panel
  */
 
 const fetchIngredients = async ({ dietaryPreferences, type, sortBy }) => {
@@ -33,6 +42,7 @@ const fetchIngredients = async ({ dietaryPreferences, type, sortBy }) => {
  * Get all ingredients with filtering and caching
  * GET /
  * Access: Public
+ * Status: ✅ UI_IMPLEMENTED - Used in IngredientsGlobalContext.jsx
  * @param {Object} params - Filter parameters
  * @param {string[]} params.dietaryPreferences - Dietary preferences filter
  * @returns {Promise<Object>} { data: [ingredients] }
@@ -101,6 +111,7 @@ function filterIngredientsByDietaryPreferences(ingredients, dietaryPreferences) 
  * Get ingredient by ID
  * GET /:ingredientId
  * Access: Public
+ * Status: ❌ UI_NOT_IMPLEMENTED - API exists but not used in any UI component
  * @param {string} ingredientId - Ingredient ID
  * @returns {Promise<Object>} { success: boolean, data: ingredient }
  */
@@ -112,6 +123,7 @@ export const fetchIngredientById = async (ingredientId) => {
  * Create new ingredient (admin only)
  * POST /
  * Access: Private/Admin
+ * Status: ❌ UI_NOT_IMPLEMENTED - API exists but no admin interface
  * @param {Object} ingredientData - Ingredient creation parameters
  * @param {string} ingredientData.name - Ingredient name
  * @param {string} ingredientData.type - Ingredient type
@@ -147,6 +159,7 @@ export const createIngredient = async (ingredientData) => {
  * Update ingredient (admin only)
  * PUT /:ingredientId
  * Access: Private/Admin
+ * Status: ❌ UI_NOT_IMPLEMENTED - API exists but no admin interface
  * @param {string} ingredientId - Ingredient ID
  * @param {Object} ingredientData - Ingredient update parameters
  * @param {string} [ingredientData.name] - Ingredient name
@@ -183,6 +196,7 @@ export const updateIngredient = async (ingredientId, ingredientData) => {
  * Delete ingredient (admin only)
  * DELETE /:ingredientId
  * Access: Private/Admin
+ * Status: ❌ UI_NOT_IMPLEMENTED - API exists but no admin interface
  * @param {string} ingredientId - Ingredient ID
  * @returns {Promise<Object>} { success: boolean, message: string }
  */

@@ -16,12 +16,26 @@ const api = createFetchApi(`${import.meta.env.VITE_API_SERVER}/api/v1/users`, {
  * Handles user profiles, favorites, week menus, and user relationships.
  *
  * Base URL: /api/v1/users
+ *
+ * UI IMPLEMENTATION STATUS: 22.2% (2/9 endpoints)
+ * ✅ IMPLEMENTED (2):
+ *   - fetchCurrentUser: AuthGlobalContext.jsx - Fetches authenticated user on app load
+ *   - addSandwichToFavoritesByUserId: votes.js (voteForSandwich) - Automatically adds to favorites when voting
+ * ❌ NOT IMPLEMENTED (7):
+ *   - fetchUserById: API exists, used indirectly in use-gallery.js but not as direct UI feature (no user profile view)
+ *   - updateUserById: API exists, no user profile/settings page (name, email, dietary prefs, profile picture)
+ *   - deleteUserById: API exists, no delete account UI/button
+ *   - removeSandwichFromFavoritesByUserId: API exists, favorites managed only via voting (one-way, no unvote)
+ *   - addSandwichToWeekMenu: API exists, Cart.jsx is empty placeholder, no week menu UI
+ *   - removeSandwichFromWeekMenu: API exists, Cart.jsx is empty placeholder, no week menu UI
+ *   - fetchUsers: API exists, admin only, no admin interface/panel
  */
 
 /**
  * Get current authenticated user
  * GET /current
  * Access: Private
+ * Status: ✅ UI_IMPLEMENTED - Used in AuthGlobalContext.jsx
  * @returns {Promise<Object>} { success: boolean, data: user }
  */
 export const fetchCurrentUser = async () => {
@@ -32,6 +46,7 @@ export const fetchCurrentUser = async () => {
  * Get user by ID
  * GET /:userId
  * Access: Private/User, Private/Parent
+ * Status: ❌ UI_NOT_IMPLEMENTED - API exists but not used in any UI component
  * @param {string} userId - User ID
  * @returns {Promise<Object>} { success: boolean, data: user }
  */
@@ -43,6 +58,7 @@ export const fetchUserById = async (userId) => {
  * Update user profile
  * PUT /:userId
  * Access: Private/User, Private/Parent
+ * Status: ❌ UI_NOT_IMPLEMENTED - API exists but no user profile/settings page
  * @param {string} userId - User ID
  * @param {Object} params - Update parameters
  * @param {string} [params.name] - User name
@@ -81,6 +97,7 @@ export const updateUserById = async (
  * Add sandwich to user favorites
  * POST /:userId/favorite-sandwiches/:sandwichId
  * Access: Private/User
+ * Status: ✅ UI_IMPLEMENTED - Used in votes.js (voteForSandwich function)
  * @param {Object} params - Favorite parameters
  * @param {string} params.userId - User ID
  * @param {string} params.sandwichId - Sandwich ID
@@ -94,6 +111,7 @@ export const addSandwichToFavoritesByUserId = async ({ userId, sandwichId }) => 
  * Remove sandwich from user favorites
  * DELETE /:userId/favorite-sandwiches/:sandwichId
  * Access: Private/User
+ * Status: ❌ UI_NOT_IMPLEMENTED - API exists but not used (only add is implemented via voting)
  * @param {Object} params - Favorite parameters
  * @param {string} params.userId - User ID
  * @param {string} params.sandwichId - Sandwich ID
@@ -108,8 +126,8 @@ export const removeSandwichFromFavoritesByUserId = async ({ userId, sandwichId }
  * @param {string} sandwichId - Sandwich ID
  */
 export const addSandwichToFavoritesInLocalStorage = (sandwichId) => {
-  const allVotesStr = localStorage.getItem('user_votes');
-  const allVotes = allVotesStr ? JSON.parse(allVotesStr) : [];
+  const allVotesString = localStorage.getItem('user_votes');
+  const allVotes = allVotesString ? JSON.parse(allVotesString) : [];
   allVotes.push(sandwichId);
   localStorage.setItem('user_votes', JSON.stringify([...new Set(allVotes)]));
 };
@@ -120,10 +138,10 @@ export const addSandwichToFavoritesInLocalStorage = (sandwichId) => {
  * @returns {boolean} Whether user voted
  */
 export const hasUserVotedForSandwichByIdUsingLocalStorage = (sandwichId) => {
-  const allVotesStr = localStorage.getItem('user_votes');
-  if (!allVotesStr) return false;
+  const allVotesString = localStorage.getItem('user_votes');
+  if (!allVotesString) return false;
 
-  const allVotes = JSON.parse(allVotesStr);
+  const allVotes = JSON.parse(allVotesString);
   if (allVotes && allVotes.includes(sandwichId)) {
     log('User already voted locally');
     return true;
@@ -135,6 +153,7 @@ export const hasUserVotedForSandwichByIdUsingLocalStorage = (sandwichId) => {
  * Get all users (admin only)
  * GET /
  * Access: Private/Admin
+ * Status: ❌ UI_NOT_IMPLEMENTED - API exists but no admin interface
  * @returns {Promise<Object>} { success: boolean, data: [users] }
  */
 export const fetchUsers = async () => {
@@ -145,6 +164,7 @@ export const fetchUsers = async () => {
  * Add sandwich to user week menu
  * PUT /:userId/week-menu/:day
  * Access: Private/User, Private/Parent
+ * Status: ❌ UI_NOT_IMPLEMENTED - API exists but Cart page is empty, no week menu UI
  * @param {Object} params - Week menu parameters
  * @param {string} params.userId - User ID
  * @param {string} params.day - Day of week
@@ -159,6 +179,7 @@ export const addSandwichToWeekMenu = async ({ userId, day, sandwichId }) => {
  * Remove sandwich from user week menu
  * DELETE /:userId/week-menu/:day
  * Access: Private/User, Private/Parent
+ * Status: ❌ UI_NOT_IMPLEMENTED - API exists but Cart page is empty, no week menu UI
  * @param {Object} params - Week menu parameters
  * @param {string} params.userId - User ID
  * @param {string} params.day - Day of week
@@ -172,6 +193,7 @@ export const removeSandwichFromWeekMenu = async ({ userId, day }) => {
  * Delete user account
  * DELETE /:userId
  * Access: Private/User
+ * Status: ❌ UI_NOT_IMPLEMENTED - API exists but no delete account UI
  * @param {string} userId - User ID
  * @returns {Promise<Object>} { success: boolean, message: string }
  */

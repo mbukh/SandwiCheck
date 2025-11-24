@@ -21,12 +21,24 @@ const api = createFetchApi(`${import.meta.env.VITE_API_SERVER}/api/v1/sandwiches
  * Includes caching utilities for improved performance.
  *
  * Base URL: /api/v1/sandwiches
+ *
+ * UI IMPLEMENTATION STATUS: 57.1% (4/7 endpoints)
+ * ✅ IMPLEMENTED (4):
+ *   - fetchSandwiches: SandwichGallery.jsx, use-gallery.js - Gallery with filtering (dietary, sort, pagination)
+ *   - fetchSandwichById: useSandwich hook - Fetches single sandwich for detail view
+ *   - createSandwich: SandwichContext.jsx (saveSandwich), SandwichSaveForm.jsx - Full creation flow with builder
+ *   - addVoteToSandwich: votes.js (voteForSandwich), SandwichCard.jsx - Vote button with state management
+ * ❌ NOT IMPLEMENTED (3):
+ *   - updateSandwich: API exists, no edit UI (users can copy sandwich to builder but cannot edit existing)
+ *   - deleteSandwich: API exists, no delete button/action in sandwich cards or detail view
+ *   - removeVoteFromSandwich: API exists, voting is one-way only (no unvote functionality)
  */
 
 /**
  * Get sandwiches with filtering and pagination
  * GET /
  * Access: Public
+ * Status: ✅ UI_IMPLEMENTED - Used in SandwichGallery.jsx
  * @param {Object} query - Query parameters
  * @param {string[]} [query.dietaryPreferences] - Dietary preferences filter
  * @param {string[]} [query.ingredients] - Ingredients filter
@@ -43,6 +55,7 @@ export const fetchSandwiches = async (query) => {
  * Get sandwich by ID
  * GET /:sandwichId
  * Access: Public
+ * Status: ✅ UI_IMPLEMENTED - Used in useSandwich hook
  * @param {string} sandwichId - Sandwich ID
  * @returns {Promise<Object>} { success: boolean, data: sandwich }
  */
@@ -54,6 +67,7 @@ export const fetchSandwichById = async (sandwichId) => {
  * Create new sandwich
  * POST /
  * Access: Private
+ * Status: ✅ UI_IMPLEMENTED - Used in SandwichContext.jsx (saveSandwich), SandwichSaveForm.jsx
  * @param {Object} params - Sandwich creation parameters
  * @param {string} params.name - Sandwich name
  * @param {string[]} params.ingredients - Ingredient IDs
@@ -68,6 +82,7 @@ export const createSandwich = async (parameters) => {
  * Add vote to sandwich
  * POST /:sandwichId/vote
  * Access: Private
+ * Status: ✅ UI_IMPLEMENTED - Used in votes.js (voteForSandwich), SandwichCard.jsx
  * @param {string} sandwichId - Sandwich ID
  * @returns {Promise<Object>} { success: boolean, message: string }
  */
@@ -79,6 +94,7 @@ export const addVoteToSandwich = async (sandwichId) => {
  * Remove vote from sandwich
  * DELETE /:sandwichId/vote
  * Access: Private
+ * Status: ❌ UI_NOT_IMPLEMENTED - API exists but not used (only add is implemented)
  * @param {string} sandwichId - Sandwich ID
  * @returns {Promise<Object>} { success: boolean, message: string }
  */
@@ -90,6 +106,7 @@ export const removeVoteFromSandwich = async (sandwichId) => {
  * Update sandwich
  * PUT /:sandwichId
  * Access: Private
+ * Status: ❌ UI_NOT_IMPLEMENTED - API exists but no edit UI
  * @param {string} sandwichId - Sandwich ID
  * @param {Object} updateData - Update parameters
  * @param {string} [updateData.name] - Sandwich name
@@ -105,6 +122,7 @@ export const updateSandwich = async (sandwichId, updateData) => {
  * Delete sandwich
  * DELETE /:sandwichId
  * Access: Private
+ * Status: ❌ UI_NOT_IMPLEMENTED - API exists but no delete UI
  * @param {string} sandwichId - Sandwich ID
  * @returns {Promise<Object>} { success: boolean, message: string }
  */
