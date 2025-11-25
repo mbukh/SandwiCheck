@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams, Link, useNavigate, useLocation } from '@tanstack/react-router';
 
-import { ROUTE_PATHS } from '../../routes/routes-config';
+import { ROUTE_PATHS } from '../../routes';
 import * as apiAuth from '../../services/api-auth';
 import useToast from '../../hooks/use-toast';
 import Loading from '../Loading';

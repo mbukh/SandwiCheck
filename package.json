@@ -4,7 +4,6 @@
   "description": "a sandwich maker app for the whole family",
   "type": "module",
   "private": true,
-  "packageManager": "pnpm@10.22.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mbukh/Appleseeds-SandwiCheck.git"
@@ -48,5 +47,11 @@
     "knip": "^5.70.1",
     "prettier": "^3.6.2",
     "typescript": "^5.9.3"
-  }
+  },
+  "pnpm": {
+    "overrides": {
+      "vite": "npm:rolldown-vite@7.2.5"
+    }
+  },
+  "packageManager": "pnpm@10.22.0"
 }

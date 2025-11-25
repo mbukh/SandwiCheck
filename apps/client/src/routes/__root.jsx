@@ -1,6 +1,7 @@
 import { createRootRoute, Outlet } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 
+import Error404 from '../pages/Error404';
 import Footer from '../components/Footer/Footer';
 import Header from '../components/Header/Header';
 
@@ -18,6 +19,5 @@ const RootComponent = () => {
 
 export const Route = createRootRoute({
   component: RootComponent,
+  notFoundComponent: Error404,
 });
-
-export const RootRoute = Route;

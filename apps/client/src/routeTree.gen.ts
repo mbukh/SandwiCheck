@@ -18,7 +18,6 @@ import { Route as FamilyRouteImport } from './routes/family'
 import { Route as CreateRouteImport } from './routes/create'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as BestRouteImport } from './routes/best'
-import { Route as SplatRouteImport } from './routes/$'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SandwichSandwichIdRouteImport } from './routes/sandwich.$sandwichId'
 import { Route as ResetPasswordTokenRouteImport } from './routes/reset-password.$token'
@@ -72,11 +71,6 @@ const BestRoute = BestRouteImport.update({
   path: '/best',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SplatRoute = SplatRouteImport.update({
-  id: '/$',
-  path: '/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -115,7 +109,6 @@ const LoginParentParentIdRoute = LoginParentParentIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/$': typeof SplatRoute
   '/best': typeof BestRoute
   '/cart': typeof CartRoute
   '/create': typeof CreateRoute
@@ -134,7 +127,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/$': typeof SplatRoute
   '/best': typeof BestRoute
   '/cart': typeof CartRoute
   '/create': typeof CreateRoute
@@ -154,7 +146,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/$': typeof SplatRoute
   '/best': typeof BestRoute
   '/cart': typeof CartRoute
   '/create': typeof CreateRoute
@@ -175,7 +166,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/$'
     | '/best'
     | '/cart'
     | '/create'
@@ -194,7 +184,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/$'
     | '/best'
     | '/cart'
     | '/create'
@@ -213,7 +202,6 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/$'
     | '/best'
     | '/cart'
     | '/create'
@@ -233,7 +221,6 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  SplatRoute: typeof SplatRoute
   BestRoute: typeof BestRoute
   CartRoute: typeof CartRoute
   CreateRoute: typeof CreateRoute
@@ -311,13 +298,6 @@ declare module '@tanstack/react-router' {
       path: '/best'
       fullPath: '/best'
       preLoaderRoute: typeof BestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/$': {
-      id: '/$'
-      path: '/$'
-      fullPath: '/$'
-      preLoaderRoute: typeof SplatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -406,7 +386,6 @@ const SignupRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  SplatRoute: SplatRoute,
   BestRoute: BestRoute,
   CartRoute: CartRoute,
   CreateRoute: CreateRoute,

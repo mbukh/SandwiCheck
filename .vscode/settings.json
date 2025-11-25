@@ -26,5 +26,13 @@
 
   // Disable VS Code's built-in JavaScript/TypeScript formatters to prevent conflicts
   "javascript.format.enable": false,
-  "typescript.format.enable": false
+  "typescript.format.enable": false,
+
+  // Ignore TanStack router generated files
+  "files.readonlyInclude": { "**/routeTree.gen.ts": true },
+  "files.watcherExclude": { "**/routeTree.gen.ts": true },
+  "search.exclude": {
+    "**/routeTree.gen.ts": true
+  },
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

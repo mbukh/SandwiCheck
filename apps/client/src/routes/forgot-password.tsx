@@ -5,5 +5,3 @@ import ForgotPasswordModal from '../components/ForgotPassword/ForgotPasswordModa
 export const Route = createFileRoute('/forgot-password')({
   component: ForgotPasswordModal,
 });
-
-export const ForgotPasswordRoute = Route;

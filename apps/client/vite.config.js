@@ -1,40 +1,46 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
-import { fileURLToPath } from 'url';
-import { dirname, resolve } from 'path';
+import react from '@vitejs/plugin-react';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { defineConfig } from 'vite';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __dirname = path.dirname(__filename);
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    // TanStack Router plugin must be before React plugin
+    // Please make sure that '@tanstack/router-plugin' is passed before '@vitejs/plugin-react'
     tanstackRouter({
       target: 'react',
       autoCodeSplitting: true,
     }),
-    react(),
+    react({
+      babel: {
+        plugins: [['babel-plugin-react-compiler']],
+      },
+    }),
   ],
   build: {
     outDir: 'build',
   },
   test: {
     globals: true,
-    environment: 'jsdom',
-    setupFiles: ['./src/setupTests.js'],
-    environmentOptions: {
-      jsdom: {
-        url: 'http://localhost/SandwiCheck',
-      },
-    },
+    /*
+     * environment: 'jsdom',
+     * setupFiles: ['./src/setupTests.js'],
+     * environmentOptions: {
+     *   jsdom: {
+     *     url: 'http://localhost:/SandwiCheck',
+     *   },
+     * },
+     */
     alias: {
-      '\\.(css|less|sass|scss)$': resolve(__dirname, '__mocks__/styleMock.js'),
-      '\\.(gif|ttf|eot|svg)$': resolve(__dirname, '__mocks__/fileMock.js'),
-      '^swiper/react$': resolve(__dirname, '__mocks__/swiper.js'),
-      '^swiper/css$': resolve(__dirname, '__mocks__/styleMock.js'),
-      '^swiper/css/(.*)$': resolve(__dirname, '__mocks__/styleMock.js'),
+      '\\.(css|less|sass|scss)$': path.resolve(__dirname, '__mocks__/styleMock.js'),
+      '\\.(gif|ttf|eot|svg)$': path.resolve(__dirname, '__mocks__/fileMock.js'),
+      '^swiper/react$': path.resolve(__dirname, '__mocks__/swiper.js'),
+      '^swiper/css$': path.resolve(__dirname, '__mocks__/styleMock.js'),
+      '^swiper/css/(.*)$': path.resolve(__dirname, '__mocks__/styleMock.js'),
     },
   },
 });

@@ -5,5 +5,3 @@ import Cart from '../pages/Cart';
 export const Route = createFileRoute('/cart')({
   component: Cart,
 });
-
-export const CartRoute = Route;

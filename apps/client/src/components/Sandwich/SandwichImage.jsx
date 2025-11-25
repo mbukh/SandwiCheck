@@ -1,11 +1,11 @@
 import { Link, useNavigate } from '@tanstack/react-router';
-
 import { SANDWICH_IMAGES_PATH } from '../../constants/sandwich-constants';
 import { ROUTE_PATHS } from '../../routes';
 
 const SandwichImage = ({ sandwich, galleryPath, isModal }) => {
+  const navigate = useNavigate({ strict: false });
+
   const path = `${import.meta.env.VITE_API_SERVER}/${SANDWICH_IMAGES_PATH}`;
-  const navigate = useNavigate();
 
   // Safety check: don't render if image is missing
   if (!sandwich?.image) {

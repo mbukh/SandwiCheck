@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { createFileRoute, Link } from '@tanstack/react-router';
 
-import { ROUTE_PATHS } from './routes-config';
+import { ROUTE_PATHS } from '.';
 import * as apiAuth from '../services/api-auth';
 import useToast from '../hooks/use-toast';
 import Loading from '../components/Loading';
@@ -9,8 +9,6 @@ import Loading from '../components/Loading';
 export const Route = createFileRoute('/confirm-email/$token')({
   component: ConfirmEmail,
 });
-
-export const ConfirmEmailRoute = Route;
 
 function ConfirmEmail() {
   const { token } = Route.useParams();

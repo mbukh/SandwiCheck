@@ -1,24 +1,17 @@
 import pluginJs from '@eslint/js';
 import eslintConfigPrettier from 'eslint-config-prettier/flat';
 import eslintPluginUnicorn from 'eslint-plugin-unicorn';
+import { defineConfig } from 'eslint/config';
 
 /**
  * Base ESLint configuration for all files
  * Includes common rules, Unicorn plugin (flat/recommended), Prettier integration,
  * strict mode, and multiline comment style
  */
-export default [
+export default defineConfig([
   // 1. Global Ignores (Replaces .eslintignore)
   {
-    ignores: [
-      '**/node_modules/',
-      '**/dist/',
-      '**/build/',
-      '**/coverage/',
-      '**/.tanstack/',
-      '**/routeTree.gen.ts', // Ignore TanStack router generated files
-      '**/.pnp.*',
-    ],
+    ignores: ['**/node_modules/', '**/dist/', '**/build/', '**/coverage/', '**/.pnp.*'],
   },
   // Apply recommended configs only to JS files
   { files: ['**/*.{js,mjs,cjs,jsx}'], ...pluginJs.configs.recommended },
@@ -30,4 +23,4 @@ export default [
   },
   // eslint-config-prettier must be last to disable conflicting rules
   eslintConfigPrettier,
-];
+]);

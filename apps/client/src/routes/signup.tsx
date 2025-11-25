@@ -5,5 +5,3 @@ import SignupModal from '../components/Signup/SignupModal';
 export const Route = createFileRoute('/signup')({
   component: SignupModal,
 });
-
-export const SignupRoute = Route;

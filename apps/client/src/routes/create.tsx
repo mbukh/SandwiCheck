@@ -10,5 +10,3 @@ export const Route = createFileRoute('/create')({
     </SandwichContextProvider>
   ),
 });
-
-export const CreateRoute = Route;

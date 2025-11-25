@@ -4,6 +4,7 @@ node_modules
 # Build/Production
 build
 dist
+dist-ssr
 uploads
 /data
 
@@ -14,6 +15,11 @@ uploads
 # Logs
 logs
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
 # Temporary files
 *.sw?

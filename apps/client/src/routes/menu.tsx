@@ -1,13 +1,13 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
 
 import SandwichGallery from '../components/Sandwich/SandwichGallery';
-import { ROUTE_PATHS } from './routes-config';
+import { ROUTE_PATHS } from '.';
 
 export const Route = createFileRoute('/menu')({
   beforeLoad: ({ location }) => {
     // Check if user is logged in via localStorage
     const loggedIn = localStorage.getItem('loggedIn');
-    
+
     if (!loggedIn) {
       // User is not authenticated, redirect to login with returnTo parameter
       throw redirect({
@@ -21,5 +21,3 @@ export const Route = createFileRoute('/menu')({
   },
   component: () => <SandwichGallery galleryType="personal" />,
 });
-
-export const MenuRoute = Route;
