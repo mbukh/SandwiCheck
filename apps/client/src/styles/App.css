@@ -449,6 +449,12 @@ button.active {
   -webkit-animation-delay: 0.5s;
   animation-delay: 0.5s;
 }
+.fade-in-immediate {
+  opacity: 0;
+  scale: 0;
+  -webkit-animation: fade-in 0.2s ease-in forwards;
+  animation: fade-in 0.2s ease-in forwards;
+}
 .bounce {
   -webkit-animation: bounce 0.5s;
   animation: bounce 0.5s;

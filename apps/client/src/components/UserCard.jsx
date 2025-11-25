@@ -41,7 +41,7 @@ const UserCard = ({
       badges.push({ label: 'Pending', variant: 'warning' });
     }
     if (isEmailConfirmed) {
-      badges.push({ label: 'Active', variant: 'success' });
+      badges.push({ label: 'Independent', variant: 'success' });
     }
     if (isActive) {
       badges.push({ label: 'Current', variant: 'info' });
@@ -185,8 +185,11 @@ const UserCard = ({
 
         {/* Email Form Overlay */}
         {isEmailFormOpen && (
-          <div className="absolute inset-0 bg-white/98 z-10 flex flex-col items-center justify-center p-4 text-center box-shadow-10 rounded-lg fade-in">
-            <h4 className="text-magenta font-bold uppercase text-sm md:text-base mb-3 text-shadow-5">
+          <div
+            className={`absolute inset-0 z-10 flex flex-col items-center justify-center p-4 text-center box-shadow-10 rounded-lg fade-in-immediate card-bg-${bgIndex}`}
+            style={{ backgroundColor: `var(--card-bg-${bgIndex})` }}
+          >
+            <h4 className="text-white font-bold uppercase text-sm md:text-base mb-3 text-shadow-10">
               {user.email ? 'Change Email Address' : 'Assign Email Address'}
             </h4>
             <p className="text-xs text-magenta/70 mb-3">
