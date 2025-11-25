@@ -576,6 +576,11 @@ header .mobile-menu.open {
   animation: scale 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
 }
 
+.sandwich-card.active-card .card-wrapper {
+  border: 3px solid var(--magenta);
+  box-shadow: 0 0 15px rgba(230, 18, 125, 0.5);
+}
+
 /****** MODAL *******/
 
 .tingle-modal * {

@@ -6,7 +6,14 @@ import { PROFILE_PICTURES_DIR } from '../config/dir.js';
 
 import { ROLE } from '../constants/usersConstants.js';
 import { NO_USER_SANDWICH_USERNAME } from '../constants/sandwichConstants.js';
-import { generateEmailConfirmationHtml, generateEmailConfirmationText } from '../constants/mailing.js';
+import bcrypt from 'bcryptjs';
+
+import {
+  generateEmailConfirmationHtml,
+  generateEmailConfirmationText,
+  generateChildActivationHtml,
+  generateChildActivationText,
+} from '../constants/mailing.js';
 
 import { saveBufferToFile, removeFile } from '../utils/fileUtils.js';
 import { removeUserConnections } from '../utils/manageUserConnections.js';
@@ -55,12 +62,14 @@ export const updateUser = expressAsyncHandler(async (req, res, next) => {
   }
 
   const oldName = user.name;
+  const initialEmail = user.email;
+  const wasTetheredChild = Boolean(user.isTetheredChild && !user.email);
 
   if (name) {
     user.name = name;
   }
 
-  if (email && email !== user.email) {
+  if (email && email !== initialEmail) {
     user.email = email;
     // Email changed - require re-confirmation
     user.emailConfirmed = false;
@@ -75,16 +84,55 @@ export const updateUser = expressAsyncHandler(async (req, res, next) => {
 
     const confirmationURL = `${process.env.CLIENT_URL}/confirm-email/${confirmationToken}`;
 
-    // Send confirmation email (don't await to avoid blocking the response)
-    sendEmail({
-      to: user.email,
-      subject: 'Email Confirmation',
-      html: generateEmailConfirmationHtml({ user, confirmationURL }),
-      text: generateEmailConfirmationText({ user, confirmationURL }),
-    }).catch((err) => {
-      // Log error but don't fail the request
-      logger.error('Failed to send email confirmation:', err);
-    });
+    if (wasTetheredChild) {
+      const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUND || '10', 10);
+      const temporaryPasswordSeed = hashAndTokens.generateResetPasswordToken();
+      user.password = await bcrypt.hash(temporaryPasswordSeed, saltRounds);
+      user.isTetheredChild = undefined;
+
+      const resetToken = hashAndTokens.generateResetPasswordToken();
+      user.resetPasswordToken = hashAndTokens.hashToken(resetToken);
+      user.resetPasswordExpire =
+        Date.now() + parseInt(process.env.RESET_PASSWORD_EXPIRES_I || '3600000', 10);
+
+      let inviterName = null;
+      if (user.parents?.length) {
+        const primaryParent = await User.findById(user.parents[0]).select('name').lean();
+        inviterName = primaryParent?.name || null;
+      } else if (req.parentUser?.name) {
+        inviterName = req.parentUser.name;
+      } else if (req.user?.roles?.includes(ROLE.parent)) {
+        inviterName = req.user.name;
+      }
+
+      const resetURL = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
+      const emailPayload = {
+        childName: user.name,
+        parentName: inviterName,
+        confirmationURL,
+        resetURL,
+      };
+
+      sendEmail({
+        to: user.email,
+        subject: inviterName ? `${inviterName} invited you to SandwiCheck` : 'Activate your SandwiCheck account',
+        html: generateChildActivationHtml(emailPayload),
+        text: generateChildActivationText(emailPayload),
+      }).catch((err) => {
+        logger.error('Failed to send child activation email:', err);
+      });
+    } else {
+      // Send confirmation email (don't await to avoid blocking the response)
+      sendEmail({
+        to: user.email,
+        subject: 'Email Confirmation',
+        html: generateEmailConfirmationHtml({ user, confirmationURL }),
+        text: generateEmailConfirmationText({ user, confirmationURL }),
+      }).catch((err) => {
+        // Log error but don't fail the request
+        logger.error('Failed to send email confirmation:', err);
+      });
+    }
   }
 
   if (role) {

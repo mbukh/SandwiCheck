@@ -1,10 +1,21 @@
 import { Link } from '@tanstack/react-router';
 
+import ActingBanner from './ActingBanner';
 import { ROUTE_PATHS } from '../../routes';
 
-const MobileMenu = ({ isMobileMenuOpen, toggleMobileMenuHandler, authHandler, user }) => {
+const MobileMenu = ({
+  isMobileMenuOpen,
+  toggleMobileMenuHandler,
+  authHandler,
+  user,
+  actingAsChild,
+  parentUser,
+  onSwitchToParent,
+  isSwitchingParent,
+}) => {
   return (
     <div className={`mobile-menu fullscreen on-top fl fl-cc fade ${isMobileMenuOpen ? 'open' : 'close'}`}>
+      <ActingBanner className="absolute top-0 left-0" />
       <nav className="navbar fl fl-col fl-cc uppercase bold text-xl" onClick={toggleMobileMenuHandler}>
         <Link to={ROUTE_PATHS.CREATE} activeProps={{ className: 'active' }}>
           Build a sandwich

@@ -8,6 +8,7 @@ import { isAuthRoute } from '../../utils/auth-utils';
 import LoginModal from '../Login/LoginModal';
 import SignupModal from '../Signup/SignupModal';
 
+import ActingBanner from './ActingBanner';
 import HamburgerMenu from './HamburgerMenu';
 import MobileMenu from './MobileMenu';
 
@@ -15,16 +16,15 @@ const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isOpenLoginModal, setIsOpenLoginModal] = useState(false);
   const [isOpenSignupModal, setIsOpenSignupModal] = useState(false);
-  const { logOut, currentUser: user } = useAuthGlobalContext();
+  const [isSwitchingParent, setIsSwitchingParent] = useState(false);
+  const { logOut, currentUser: user, actingAsChild, parentUser, switchToParent } = useAuthGlobalContext();
   const params = useParams({ strict: false });
   const location = useLocation();
   const navigate = useNavigate();
   const sandwichId = params.sandwichId;
 
-  // Don't render Header modals when on auth routes (they have their own modals)
   const isOnAuthRoute = ['/login', '/signup', '/forgot-password'].includes(location.pathname);
 
-  // Reset modal states when navigating to auth routes
   useEffect(() => {
     if (isOnAuthRoute) {
       setIsOpenLoginModal(false);
@@ -65,13 +65,28 @@ const Header = () => {
     }
   };
 
+  const handleSwitchToParent = async () => {
+    if (isSwitchingParent) return;
+    setIsSwitchingParent(true);
+    const res = await switchToParent();
+    setIsSwitchingParent(false);
+    if (res?.success) {
+      navigate({ to: ROUTE_PATHS.FAMILY });
+    }
+  };
+
   return (
     <header className={sandwichId ? 'hide' : ''}>
+      <ActingBanner />
       <MobileMenu
         isMobileMenuOpen={isMobileMenuOpen}
         toggleMobileMenuHandler={toggleMobileMenuHandler}
         authHandler={authHandler}
         user={user}
+        actingAsChild={actingAsChild}
+        parentUser={parentUser}
+        onSwitchToParent={handleSwitchToParent}
+        isSwitchingParent={isSwitchingParent}
       />
 
       <div className="navbar">

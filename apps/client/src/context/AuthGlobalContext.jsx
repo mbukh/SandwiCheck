@@ -1,8 +1,6 @@
 import { createContext, useContext, useEffect } from 'react';
 
-import * as apiUsers from '../services/api-users';
-
-import useUser from '../hooks//use-user';
+import useUser from '../hooks/use-user';
 
 import { LOGGED_IN_USER_TIME_OUT_DAYS } from '../constants/user-constants';
 
@@ -13,7 +11,21 @@ import { logResponse } from '../utils/log';
 const AuthGlobalContext = createContext();
 
 const AuthGlobalContextProvider = ({ children }) => {
-  const { currentUser, setCurrentUser, isCurrentUserReady, setIsCurrentUserReady, logIn, signUp, logOut } = useUser();
+  const {
+    currentUser,
+    setCurrentUser,
+    parentUser,
+    actingAsChild,
+    isCurrentUserReady,
+    setIsCurrentUserReady,
+    logIn,
+    signUp,
+    logOut,
+    refreshSession,
+    createChild,
+    loginChild,
+    switchToParent,
+  } = useUser();
 
   useEffect(() => {
     // Check wether a user logged in and time out cookies not passed
@@ -30,27 +42,26 @@ const AuthGlobalContextProvider = ({ children }) => {
     }
 
     (async () => {
-      const res = await apiUsers.fetchCurrentUser();
-      logResponse('👽 Current user info', res);
-      if (res.success) {
-        setCurrentUser(res.data);
-      } else {
-        setCurrentUser({});
-      }
-
-      setIsCurrentUserReady(true);
+      const res = await refreshSession();
+      logResponse('👽 Session hydration', res);
     })();
-  }, [setCurrentUser, setIsCurrentUserReady]);
+  }, [refreshSession, setIsCurrentUserReady]);
 
   return (
     <AuthGlobalContext.Provider
       value={{
         currentUser,
         setCurrentUser,
+        parentUser,
+        actingAsChild,
         isCurrentUserReady,
         logIn,
         signUp,
         logOut,
+        refreshSession,
+        createChild,
+        loginChild,
+        switchToParent,
       }}
     >
       {children}

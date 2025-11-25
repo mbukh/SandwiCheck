@@ -155,7 +155,7 @@ const userSchema = new Schema(
   },
 );
 
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', async function () {
   this.roles = [...new Set(this.roles)];
   this.dietaryPreferences = [...new Set(this.dietaryPreferences)];
   this.favoriteSandwiches = [...new Set(this.favoriteSandwiches)];
@@ -173,11 +173,9 @@ userSchema.pre('save', async function (next) {
     if (childUserCount >= MAX_TETHERED_CHILDREN) {
       const error = new Error(`You can only have up to ${MAX_TETHERED_CHILDREN} children with no email`);
       error.name = 'ChildUserLimitExceeded';
-      return next(error);
+      throw error;
     }
   }
-
-  next();
 });
 
 function checkChildWithoutEmail() {

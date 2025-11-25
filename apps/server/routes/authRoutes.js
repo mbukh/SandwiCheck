@@ -6,7 +6,7 @@ import { ROLE } from '../constants/usersConstants.js';
 
 import { protect, authorize } from '../middleware/authMiddleware.js';
 
-import { createChildUser, switchToParent, loginChildUser } from '../controllers/authChildController.js';
+import { createChildUser, switchToParent, loginChildUser, getSession } from '../controllers/authChildController.js';
 import {
   signup,
   login,
@@ -46,6 +46,7 @@ const resendConfirmationRateLimit = rateLimit({
 
 router.post('/signup', signup);
 router.post('/login', login);
+router.get('/session', protect, getSession);
 
 router.get('/confirm-email/:token', confirmEmail);
 router.post('/resend-confirmation', resendConfirmationRateLimit, resendConfirmation);

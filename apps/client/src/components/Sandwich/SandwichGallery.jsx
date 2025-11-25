@@ -142,17 +142,18 @@ const SandwichGallery = ({ children, galleryType = '' }) => {
   return (
     <>
       <div className="sandwich-gallery pt-4 pb-12 px-5 md:pt-6 md:pb-16 md:px-12 lg:pb-20 xl:px-20">
-        <h1 className="text-center text-l uppercase text-shadow-10">
+        <h1 className="text-center text-l uppercase text-shadow-10 pb-2 md:pb-3">
           {childId && (
             <Link
               to={ROUTE_PATHS.FAMILY}
-              className="button bg-magenta inline-block p-2 mr-4 md:my-4 text-xs md:text-sm md:text-base fit-content"
+              className="button bg-magenta text-white inline-block p-2 mr-4 md:my-4 text-xs md:text-sm fit-content"
             >
               Back
             </Link>
           )}
           {childGalleryTitle || galleryTypeTitle || userGalleryTitle}
         </h1>
+        {childId && <div className="mx-auto mt-2 mb-4 h-px w-24 bg-magenta/30"></div>}
         <div className="size-full flex flex-wrap -mx-2 sm:-mx-3">
           {gallerySandwiches.length > 0 ? (
             gallerySandwiches.map((sandwich, index) => (

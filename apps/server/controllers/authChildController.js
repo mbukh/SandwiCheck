@@ -6,13 +6,28 @@ import { setTokenCookie, removeCookie } from '../utils/cookies.js';
 import * as hashAndTokens from '../utils/hashAndTokens.js';
 
 import User from '../models/UserModel.js';
+import EXCLUDED_FIELDS from '../constants/excludeFields.js';
 
-// @desc    Create a chid account
-// @route   POST /auth/create-child
-// @access  Private/Parent
-export const createChildUser = expressAsyncHandler(async (req, res, next) => {
-  const parentUser = req.user;
-  const { name } = req.body;
+const populateUserSessionData = async (userId) => {
+  if (!userId) {
+    return null;
+  }
+
+  return User.findById(userId)
+    .select(EXCLUDED_FIELDS)
+    .populate('sandwiches')
+    .populate('parents', EXCLUDED_FIELDS)
+    .populate('children', EXCLUDED_FIELDS);
+};
+
+/*
+ * @desc    Create a chid account
+ * @route   POST /auth/create-child
+ * @access  Private/Parent
+ */
+export const createChildUser = expressAsyncHandler(async (request, res, next) => {
+  const parentUser = request.user;
+  const { name } = request.body;
 
   if (!name) {
     return next(createHttpError.BadRequest('Name id required'));
@@ -35,15 +50,17 @@ export const createChildUser = expressAsyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    data: childUser,
+    data: await populateUserSessionData(childUser._id),
   });
 });
 
-// @desc    Create a chid account
-// @route   POST /auth/switch-to-parent
-// @access  Private/Child
-export const switchToParent = expressAsyncHandler(async (req, res, next) => {
-  if (!req.parentUser) {
+/*
+ * @desc    Create a chid account
+ * @route   POST /auth/switch-to-parent
+ * @access  Private/Child
+ */
+export const switchToParent = expressAsyncHandler(async (request, res, next) => {
+  if (!request.parentUser) {
     return next(createHttpError.BadRequest('A logged-in parent required to switch back'));
   }
 
@@ -51,26 +68,28 @@ export const switchToParent = expressAsyncHandler(async (req, res, next) => {
 
   const token = {
     name: 'token',
-    value: hashAndTokens.generatePasswordToken({ id: req.parentUser._id }),
+    value: hashAndTokens.generatePasswordToken({ id: request.parentUser._id }),
   };
 
   setTokenCookie(token, res);
 
   res.status(200).json({
     success: true,
-    data: req.parentUser,
+    data: await populateUserSessionData(request.parentUser._id),
   });
 });
 
-// @desc    Login
-// @route   POST /api/auth/login-child
-// @access  Private/Parent
-export const loginChildUser = expressAsyncHandler(async (req, res, next) => {
-  const parentUser = req.user;
-  const { childId } = req.body;
+/*
+ * @desc    Login
+ * @route   POST /api/auth/login-child
+ * @access  Private/Parent
+ */
+export const loginChildUser = expressAsyncHandler(async (request, res, next) => {
+  const parentUser = request.user;
+  const { childId } = request.body;
 
   if (!childId) {
-    createHttpError.BadRequest('Child ID is required');
+    return next(createHttpError.BadRequest('Child ID is required'));
   }
 
   if (!parentUser.children.includes(childId)) {
@@ -92,6 +111,38 @@ export const loginChildUser = expressAsyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    data: childUser,
+    data: await populateUserSessionData(childUser._id),
+  });
+});
+
+/*
+ * @desc    Get active authenticated session
+ * @route   GET /api/auth/session
+ * @access  Private
+ */
+export const getSession = expressAsyncHandler(async (request, res, next) => {
+  if (!request.user?._id) {
+    return next(createHttpError.Unauthorized('Not authorized, no session found'));
+  }
+
+  const activeUser = await populateUserSessionData(request.user._id);
+
+  if (!activeUser) {
+    return next(createHttpError.NotFound('Active user not found'));
+  }
+
+  let parentUser = null;
+
+  if (request.parentUser?._id) {
+    parentUser = await populateUserSessionData(request.parentUser._id);
+  }
+
+  res.status(200).json({
+    success: true,
+    data: {
+      activeUser,
+      parentUser,
+      actingAsChild: Boolean(parentUser),
+    },
   });
 });

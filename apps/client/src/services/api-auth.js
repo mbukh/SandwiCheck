@@ -69,6 +69,19 @@ export const login = async ({ email, password, parentId }) => {
 };
 
 /**
+ * Get active authenticated session details
+ * GET /session
+ * Access: Private
+ * Status: ✅ UI_IMPLEMENTED - Used in AuthGlobalContext for session hydration
+ * @returns {Promise<Object>} { success: boolean, data: { activeUser, parentUser, actingAsChild } }
+ */
+export const getSession = async () => {
+  return await handleResponse(async () => {
+    return api.get('/session');
+  });
+};
+
+/**
  * User logout endpoint
  * POST /logout
  * Access: Private
