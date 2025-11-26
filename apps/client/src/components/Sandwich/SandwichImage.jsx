@@ -13,11 +13,11 @@ const SandwichImage = ({ sandwich, galleryPath, isModal }) => {
   }
 
   const TheSandwichImage = () => (
-    <div className="relative aspect-ratio-square">
+    <div className="relative aspect-square">
       <div className="sandwich-images">
         <img
           src={path + sandwich.image}
-          className="absolute inset-0 object-contain size-full no-drag no-select"
+          className="absolute inset-0 object-contain size-full drag-none select-none"
           alt={sandwich.name}
           loading="lazy"
         />

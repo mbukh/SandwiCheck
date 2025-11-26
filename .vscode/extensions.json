@@ -6,6 +6,7 @@
     "davidanson.vscode-markdownlint",
     "foxundermoon.shell-format",
     "wayou.vscode-todo-highlight",
-    "redhat.vscode-yaml"
+    "redhat.vscode-yaml",
+    "bradlc.vscode-tailwindcss"
   ]
 }

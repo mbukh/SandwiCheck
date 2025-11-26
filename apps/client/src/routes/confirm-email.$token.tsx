@@ -50,7 +50,7 @@ function ConfirmEmail() {
 
   return (
     <div className="login max-w-screen-md text-white text-center mx-auto pb-12 md:pb-16 lg:pb-20">
-      <h1 className="text-center text-l uppercase text-shadow-10 mb-3 md:mb-5">Email Confirmation</h1>
+      <h1 className="text-center text-lg uppercase text-shadow-10 mb-3 md:mb-5">Email Confirmation</h1>
       <h4 className="text-base md:text-xl xl:text-2xl mb-8 md:mb-10">Confirm your email to activate your account</h4>
 
       {loading && (

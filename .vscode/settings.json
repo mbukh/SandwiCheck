@@ -8,9 +8,6 @@
   // Code actions on save - ESLint fixes (runs after Prettier formatting)
   "editor.codeActionsOnSave": { "source.fixAll.eslint": "explicit" },
 
-  // ESLint configuration
-  "eslint.enable": true,
-
   // Prettier configuration
   "prettier.requireConfig": true,
 
@@ -34,5 +31,8 @@
   "search.exclude": {
     "**/routeTree.gen.ts": true
   },
+
+  "files.associations": { "**/apps/client/src/**/*.css": "tailwindcss" },
+
   "typescript.tsdk": "node_modules/typescript/lib"
 }

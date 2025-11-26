@@ -72,19 +72,17 @@ const UserCard = ({
     setFormError('');
     setIsSubmittingEmail(true);
     const res = await onConvertChild(trimmedEmail);
-    if (!res?.success) {
-      setFormError(res?.error?.message || 'Failed to send invite.');
-    } else {
+    if (res?.success) {
       setIsEmailFormOpen(false);
+    } else {
+      setFormError(res?.error?.message || 'Failed to send invite.');
     }
     setIsSubmittingEmail(false);
   };
 
   return (
     <div
-      className={`sandwich-card thumb flex w-1/2 sm:w-1/2 lg:w-1/3 xl:w-1/4 xxl:w-1/5 ${
-        isActive ? 'active-card' : ''
-      }`}
+      className={`sandwich-card thumb flex w-1/2 sm:w-1/2 lg:w-1/3 xl:w-1/4 xxl:w-1/5 ${isActive ? 'active-card' : ''}`}
     >
       <div
         className={`card-wrapper card-bg-${bgIndex} thumb__wrapper flex flex-col flex-1 justify-between m-2 sm:m-3 p-2 sm:p-4 box-shadow-10 relative overflow-hidden`}
@@ -171,14 +169,14 @@ const UserCard = ({
             )}
 
             {canResendInvite && (
-                <button
-                    type="button"
-                    onClick={onResendInvite}
-                    disabled={isResendLoading}
-                    className="button bg-yellow-400 text-black text-xxs sm:text-xs px-2 py-1 uppercase font-bold rounded shadow-sm hover:scale-105 transition-transform disabled:opacity-50"
-                >
-                    {isResendLoading ? '...' : 'Resend Invite'}
-                </button>
+              <button
+                type="button"
+                onClick={onResendInvite}
+                disabled={isResendLoading}
+                className="button bg-yellow-400 text-black text-xxs sm:text-xs px-2 py-1 uppercase font-bold rounded shadow-sm hover:scale-105 transition-transform disabled:opacity-50"
+              >
+                {isResendLoading ? '...' : 'Resend Invite'}
+              </button>
             )}
           </div>
         </div>
@@ -208,9 +206,7 @@ const UserCard = ({
                 disabled={isSubmittingEmail || isConvertLoading}
               />
               {formError && (
-                <p className="text-red-600 text-xs font-bold mb-2 text-shadow-5 bg-red-50 p-2 rounded">
-                  {formError}
-                </p>
+                <p className="text-red-600 text-xs font-bold mb-2 text-shadow-5 bg-red-50 p-2 rounded">{formError}</p>
               )}
               <div className="flex justify-center gap-2 mt-3">
                 <button

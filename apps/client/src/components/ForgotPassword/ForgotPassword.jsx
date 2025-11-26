@@ -16,7 +16,7 @@ function ForgotPassword() {
   const location = useLocation();
 
   // Determine returnTo value (same logic as Login/Signup components)
-  const returnTo = search?.returnTo || (!isAuthRoute(location.pathname) ? location.pathname : null);
+  const returnTo = search?.returnTo || (isAuthRoute(location.pathname) ? null : location.pathname);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -131,11 +131,7 @@ function ForgotPassword() {
 
           <div className="w-full mb-4 md:mb-6 flex justify-center items-center">
             Remember your password?
-            <Link
-              className="mx-2 underline"
-              to={ROUTE_PATHS.LOGIN}
-              search={returnTo ? { returnTo } : {}}
-            >
+            <Link className="mx-2 underline" to={ROUTE_PATHS.LOGIN} search={returnTo ? { returnTo } : {}}>
               Log in
             </Link>
           </div>

@@ -98,7 +98,7 @@ function ResetPassword() {
                 const searchParams = isAuthRoute(currentPath) ? {} : { returnTo: currentPath };
                 navigate({
                   to: ROUTE_PATHS.LOGIN,
-                  search: searchParams
+                  search: searchParams,
                 });
               }}
               className="inline-flex justify-center items-center appearance-none focus:outline-none rounded-lg box-shadow-10 font-bold uppercase bg-magenta text-white h-8 md:h-12 xl:h-14 text-sm md:text-base xl:text-xl py-2 px-5 md:py-3 md:px-6 xl:px-8 xl:box-shadow-20 transition-opacity hover:opacity-90"
@@ -143,7 +143,11 @@ function ResetPassword() {
       )}
 
       {!loading && !success && !error && (
-        <form className="needs-validation text-left text-sm mt-15 md:mt-20 xl:mt-24 md:px-5" noValidate onSubmit={handleSubmit}>
+        <form
+          className="needs-validation text-left text-sm mt-15 md:mt-20 xl:mt-24 md:px-5"
+          noValidate
+          onSubmit={handleSubmit}
+        >
           <div className="mb-4 md:mb-6">
             <label htmlFor="reset-password-new" className="sr-only">
               New password

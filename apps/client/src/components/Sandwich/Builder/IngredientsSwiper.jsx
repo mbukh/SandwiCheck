@@ -106,12 +106,12 @@ const IngredientsSwiper = () => {
       breakpoints={breakpoints}
       // modules={[A11y, Keyboard]}
     >
-      <SwiperSlide className="choice-null no-select">
+      <SwiperSlide className="choice-null select-none">
         {({ isActive }) => <SwiperSlideElementNone currentType={currentType} isActive={isActive} sandwich={sandwich} />}
       </SwiperSlide>
 
       {ingredientsOfType.map((ingredient) => (
-        <SwiperSlide key={ingredient.id} className="no-select">
+        <SwiperSlide key={ingredient.id} className="select-none">
           <SwipeSlideElement ingredient={ingredient} sandwich={sandwich} currentType={currentType} />
         </SwiperSlide>
       ))}

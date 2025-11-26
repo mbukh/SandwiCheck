@@ -188,7 +188,7 @@ const Family = () => {
   if (actingAsChild) {
     return (
       <div className="sandwich-gallery pt-4 pb-12 px-5 md:pt-6 md:pb-16 md:px-12 lg:pb-20 xl:px-20">
-        <h1 className="text-center text-l uppercase text-shadow-10">My family</h1>
+        <h1 className="text-center text-lg uppercase text-shadow-10">My family</h1>
         <div className="flex flex-col items-center gap-4 mt-8 mb-6 text-shadow-5 animate-fade-in">
           <p className="text-base md:text-lg text-center max-w-md">
             You are managing <strong>{currentUser.name}</strong>&apos;s account.
@@ -212,10 +212,10 @@ const Family = () => {
 
   return (
     <div className="sandwich-gallery pt-4 pb-12 px-5 md:pt-6 md:pb-16 md:px-12 lg:pb-20 xl:px-20">
-      <h1 className="text-center text-l uppercase text-shadow-10">My family</h1>
+      <h1 className="text-center text-lg uppercase text-shadow-10">My family</h1>
 
       <RestoredFromChildNote />
- 
+
       {isParentSession && (
         <div className="sandwich-gallery-title w-full py-4 px-5 md:py-5 md:px-12 xl:px-20">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -245,17 +245,17 @@ const Family = () => {
                           textArea.value = shareLink;
                           textArea.style.position = 'fixed';
                           textArea.style.opacity = '0';
-                          document.body.appendChild(textArea);
+                          document.body.append(textArea);
                           textArea.select();
                           try {
                             document.execCommand('copy');
                             showToast('Invite link copied to clipboard!');
-                          } catch (err) {
+                          } catch {
                             showToast('Failed to copy link. Please copy manually.');
                           }
-                          document.body.removeChild(textArea);
+                          textArea.remove();
                         }
-                      } catch (err) {
+                      } catch {
                         showToast('Failed to copy link. Please copy manually.');
                       }
                     }}
@@ -277,12 +277,22 @@ const Family = () => {
           </div>
 
           {isAddChildOpen && (
-            <Modal isModalLoading={false} closeLink="stay" modalId="add-child-modal" setIsOpenLoginModal={setIsAddChildOpen}>
+            <Modal
+              isModalLoading={false}
+              closeLink="stay"
+              modalId="add-child-modal"
+              setIsOpenLoginModal={setIsAddChildOpen}
+            >
               <div className="w-full max-w-screen-sm md:max-w-screen-md mx-auto px-4">
                 <form className="bg-white/95 rounded-lg p-4 md:p-6 box-shadow-10" onSubmit={handleCreateChild}>
-                  <h2 className="text-center text-sm md:text-base uppercase text-magenta font-bold mb-4">Add a child</h2>
+                  <h2 className="text-center text-sm md:text-base uppercase text-magenta font-bold mb-4">
+                    Add a child
+                  </h2>
                   <div className="mb-4">
-                    <label className="block text-xs md:text-sm uppercase mb-2 text-magenta font-bold" htmlFor="child-name">
+                    <label
+                      className="block text-xs md:text-sm uppercase mb-2 text-magenta font-bold"
+                      htmlFor="child-name"
+                    >
                       Child name
                     </label>
                     <input
@@ -321,7 +331,7 @@ const Family = () => {
         </div>
       )}
 
-      <div className="size-full flex flex-wrap -mx-2 sm:-mx-3 text-shadow-10 no-wrap shrink-0">
+      <div className="size-full flex flex-wrap -mx-2 sm:-mx-3 text-shadow-10 text-nowrap shrink-0">
         {children.length > 0 ? (
           children.map((child, index) => (
             <UserCard

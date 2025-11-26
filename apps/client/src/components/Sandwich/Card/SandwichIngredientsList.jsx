@@ -13,7 +13,7 @@ const SandwichIngredientsList = ({ sandwich, ingredientsRawList }) => {
             <li key={ingredient.id}>
               {capitalizeFirst(ingredient.type)}: {ingredient.name}
               <br />
-              <span className="text-s">({ingredient.portion} portion)</span>
+              <span className="text-sm">({ingredient.portion} portion)</span>
             </li>
           ))}
         </ul>
@@ -23,7 +23,7 @@ const SandwichIngredientsList = ({ sandwich, ingredientsRawList }) => {
             <div className="ml-1">{sandwich.comment}</div>
           </div>
         )}
-        {sandwich.dietaryPreferences.length && (
+        {sandwich.dietaryPreferences.length > 0 && (
           <div className="my-5">
             <h5 className="ml-4 mb-4 text-sm sm:text-base uppercase">Dietary preferences:</h5>
             <ul className="text-sm sm:text-base">

@@ -20,7 +20,7 @@ const SwiperNavigationButton = ({ navigation, direction }) => {
   const disabledStyle = isNext ? nextDisabled : prevDisabled;
 
   const swiperNavigationButtonStyle =
-    'btn-wrapper lg:hidden w-10 md:w-15 h-10 md:h-15 -mt-9 md:-mt-11 no-select no-drag';
+    'btn-wrapper lg:hidden w-10 md:w-15 h-10 md:h-15 -mt-9 md:-mt-11 select-none drag-none';
 
   return (
     <button className={`${className} ${swiperNavigationButtonStyle} ${disabledStyle}`} onClick={clickHandler}>

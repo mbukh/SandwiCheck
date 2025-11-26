@@ -15,7 +15,7 @@ const SandwichBuilderImage = () => {
             sandwich,
             imageType: 'builderImage',
           })}
-          className="absolute inset-0 object-contain size-full no-drag no-select"
+          className="absolute inset-0 object-contain size-full drag-none select-none"
           alt={`Sandwich ingredients layer #${index}`}
           loading="lazy"
         />

@@ -18,10 +18,10 @@ const Header = () => {
   const [isOpenSignupModal, setIsOpenSignupModal] = useState(false);
   const [isSwitchingParent, setIsSwitchingParent] = useState(false);
   const { logOut, currentUser: user, actingAsChild, parentUser, switchToParent } = useAuthGlobalContext();
-  const params = useParams({ strict: false });
+  const parameters = useParams({ strict: false });
   const location = useLocation();
   const navigate = useNavigate();
-  const sandwichId = params.sandwichId;
+  const sandwichId = parameters.sandwichId;
 
   const isOnAuthRoute = ['/login', '/signup', '/forgot-password'].includes(location.pathname);
 
@@ -50,17 +50,17 @@ const Header = () => {
 
     // Determine returnTo: use current path if not auth route
     const returnTo = isCurrentPathAuth ? null : currentPath;
-    const searchParams = returnTo ? { returnTo } : {};
+    const searchParameters = returnTo ? { returnTo } : {};
 
     if (e.target.id === 'login') {
       navigate({
         to: ROUTE_PATHS.LOGIN,
-        search: searchParams
+        search: searchParameters,
       });
     } else if (e.target.id === 'signup') {
       navigate({
         to: ROUTE_PATHS.SIGNUP,
-        search: searchParams
+        search: searchParameters,
       });
     }
   };
@@ -76,7 +76,7 @@ const Header = () => {
   };
 
   return (
-    <header className={sandwichId ? 'hide' : ''}>
+    <header className={sandwichId ? 'hidden' : ''}>
       <ActingBanner />
       <MobileMenu
         isMobileMenuOpen={isMobileMenuOpen}
@@ -104,21 +104,21 @@ const Header = () => {
             </div>
           </div>
 
-          <div className="nav-center fl fl-cc">
+          <div className="nav-center flex">
             <Link to={ROUTE_PATHS.LATEST} className="no-hover block size-full">
-              <div className="logo m-i-a">
-                {!user?.name ? (
-                  <div className="fl fl-cc text-xs sm:text-base text-sh-5">
-                    Let us
-                    <br /> inspire
-                    <br /> you
-                  </div>
-                ) : (
-                  <div className="fl fl-cc text-xs sm:text-base text-sh-5">
+              <div className="logo mx-auto">
+                {user?.name ? (
+                  <div className="grid place-items-center text-xs sm:text-base text-sh-5">
                     Let us
                     <br /> inspire you,
                     <br />
                     {user.firstName}
+                  </div>
+                ) : (
+                  <div className="grid place-items-center text-xs sm:text-base text-sh-5">
+                    Let us
+                    <br /> inspire
+                    <br /> you
                   </div>
                 )}
               </div>
@@ -152,7 +152,9 @@ const Header = () => {
                     activeProps={{ className: 'active' }}
                   >
                     Log in
-                    {isOpenLoginModal && !isOnAuthRoute && <LoginModal setIsOpenLoginModal={setIsOpenLoginModal} closeLink="stay" />}
+                    {isOpenLoginModal && !isOnAuthRoute && (
+                      <LoginModal setIsOpenLoginModal={setIsOpenLoginModal} closeLink="stay" />
+                    )}
                   </Link>
                   <Link
                     id="signup"
@@ -162,7 +164,9 @@ const Header = () => {
                     activeProps={{ className: 'active' }}
                   >
                     Signup
-                    {isOpenSignupModal && !isOnAuthRoute && <SignupModal setIsOpenLoginModal={setIsOpenSignupModal} closeLink="stay" />}
+                    {isOpenSignupModal && !isOnAuthRoute && (
+                      <SignupModal setIsOpenLoginModal={setIsOpenSignupModal} closeLink="stay" />
+                    )}
                   </Link>
                 </>
               )}

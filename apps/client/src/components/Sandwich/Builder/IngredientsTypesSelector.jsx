@@ -13,7 +13,7 @@ const IngredientsTypesSelector = () => {
   };
 
   const getButtonClasses = (type) => {
-    const classes = 'my-2 md:my-4  text-xs md:text-sm md:text-base fit-content';
+    const classes = 'my-2 md:my-4  text-xs md:text-sm md:text-base min-w-fit';
     const activeClass = type === currentType ? ' active' : '';
 
     const presetType = isTypeInSandwich(type, sandwich) ? ' text-cyan2' : '';
@@ -43,7 +43,7 @@ const IngredientsTypesSelector = () => {
         ))}
         <li key="randomize">
           <button
-            className="my-2 md:my-4 text-xs md:text-sm md:text-base fit-content"
+            className="my-2 md:my-4 text-xs md:text-sm md:text-base min-w-fit"
             onClick={randomizeSandwich}
             title="Randomize sandwich"
           >

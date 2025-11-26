@@ -29,7 +29,7 @@ const SandwichBuilder = () => {
 
   return (
     <div className="create-sandwich flex flex-col min-h-full py-6 md:pt-9 lg:pt-12 mb-4">
-      <h1 className="text-center text-l uppercase">Create a sandwich</h1>
+      <h1 className="text-center text-lg uppercase">Create a sandwich</h1>
       <div className="creation-section flex-col md:flex-row">
         <IngredientsTypesSelector />
 
@@ -43,7 +43,7 @@ const SandwichBuilder = () => {
       </div>
 
       {isTypeInSandwich(TYPE.bread, sandwich) && (
-        <div className="result-section relative aspect-ratio-3/2 mx-4 w-full md:w-2/3 lg:w-1/3 mx-auto">
+        <div className="result-section relative aspect-video w-full md:w-2/3 lg:w-1/3 mx-auto mt-8">
           <SandwichBuilderImage />
         </div>
       )}

@@ -1,3 +1,5 @@
+@import 'tailwindcss';
+
 .toast-portal {
   position: fixed;
   top: 1rem;
@@ -36,7 +38,7 @@
   background: none;
   border: none;
   font-size: 14px;
-  font-weight: bold;
+  @apply font-bold;
   color: #333;
   cursor: pointer;
 }

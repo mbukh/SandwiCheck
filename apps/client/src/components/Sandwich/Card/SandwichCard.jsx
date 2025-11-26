@@ -42,33 +42,33 @@ const SandwichCard = ({ index, sandwich, galleryPath = '', isModal }) => {
   return (
     <div
       className={`sandwich-card ${true && 'voted'} ${
-        !isModal
-          ? 'thumb flex w-1/2 sm:w-1/2 lg:w-1/3 xl:w-1/4 xxl:w-1/5'
-          : 'thumb modal__thumb flex flex-col md:flex-row justify-center voted'
+        isModal
+          ? 'thumb modal__thumb flex flex-col md:flex-row justify-center voted'
+          : 'thumb flex w-1/2 sm:w-1/2 lg:w-1/3 xl:w-1/4 xxl:w-1/5'
       }`}
     >
       <div
         className={`card-wrapper card-bg-${bgIndex} ${
-          !isModal
-            ? 'thumb__wrapper flex flex-col flex-1 justify-between m-2 sm:m-3 p-2 sm:p-4 box-shadow-10'
-            : 'thumb__wrapper md:w-2/3 flex flex-col flex-shrink-0 justify-between p-2 sm:p-4 box-shadow-10'
+          isModal
+            ? 'thumb__wrapper md:w-2/3 flex flex-col flex-shrink-0 justify-between p-2 sm:p-4 box-shadow-10'
+            : 'thumb__wrapper flex flex-col flex-1 justify-between m-2 sm:m-3 p-2 sm:p-4 box-shadow-10'
         }`}
       >
         <div className="card-header text-center">
           <h3
             className={`card-title ${
-              !isModal
-                ? 'thumb__title text-sm sm:text-base xl:text-lg font-bold uppercase text-shadow-5'
-                : 'thumb__title text-base sm:text-lg lg:text-xl font-bold uppercase text-shadow-5'
+              isModal
+                ? 'thumb__title text-base sm:text-lg lg:text-xl font-bold uppercase text-shadow-5'
+                : 'thumb__title text-sm sm:text-base xl:text-lg font-bold uppercase text-shadow-5'
             }`}
           >
             {sandwich.name || 'Sandwich eater'}
           </h3>
           <h5
             className={`card-name ${
-              !isModal
-                ? 'thumb__name text-xs sm:text-sm text-shadow-5'
-                : 'thumb__name text-sm sm:text-base lg:text-lg text-shadow-5'
+              isModal
+                ? 'thumb__name text-sm sm:text-base lg:text-lg text-shadow-5'
+                : 'thumb__name text-xs sm:text-sm text-shadow-5'
             }`}
           >
             by <span className="capitalize">{sandwich.authorName}</span>
@@ -82,7 +82,7 @@ const SandwichCard = ({ index, sandwich, galleryPath = '', isModal }) => {
         <div className="card-footer relative flex justify-between items-center">
           <div className="card-footer-start w-1/3 flex justify-start items-center">
             <i
-              className={`icon icon-votes w-auto h-7 sm:h-8 ${isUserVoting ? 'bounce' : ''}`}
+              className={`icon icon-votes w-auto h-7 sm:h-8 ${isUserVoting ? 'animate-bounce' : ''}`}
               title="Favorites counter"
             ></i>
             <span className="votesCount text-xs sm:text-sm text-shadow-5">
@@ -97,14 +97,14 @@ const SandwichCard = ({ index, sandwich, galleryPath = '', isModal }) => {
             >
               {!isVotedByUser && (
                 <button className={`btn-wrapper ${isUserVoting ? 'fadeout' : ''}`} onClick={voteForSandwichHandler}>
-                  <i className="icon icon-heart abs inset-0 h-full w-full" title="Add to favorites"></i>
+                  <i className="icon icon-heart absolute inset-0 h-full w-full" title="Add to favorites"></i>
                 </button>
               )}
               {(isVotedByUser || isUserVoting) && (
                 <Link
                   to={ROUTE_PATHS.CREATE}
                   onClick={copyThisSandwichHandler}
-                  className="fade-in abs flex fl-cc inset-0 h-full w-full"
+                  className="fade-in absolute grid place-items-center inset-0 h-full w-full"
                   title="Copy this sandwich"
                 >
                   <svg
@@ -125,7 +125,7 @@ const SandwichCard = ({ index, sandwich, galleryPath = '', isModal }) => {
           </div>
           <div className="card-footer-end w-1/3 flex justify-end">
             <Link
-              to={`https://wa.me/?text=This+sandwich+from+SandwiCheck+looks+yummy%21+${window.location.protocol}%2F%2F${window.location.hostname}%2Fsandwich%2F${sandwich.id}`}
+              to={`https://wa.me/?text=This+sandwich+from+SandwiCheck+looks+yummy%21+${globalThis.location.protocol}%2F%2F${globalThis.location.hostname}%2Fsandwich%2F${sandwich.id}`}
               target="_blank"
               className="inline-block ml-1 md:ml-2"
             >

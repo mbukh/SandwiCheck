@@ -21,7 +21,7 @@ const SandwichBuildButtons = () => {
   const { sandwich, sandwichDispatch, currentIngredient, currentType, hasToBeKosher } = useSandwichContext();
   const { showToast, toastComponents } = useToast();
 
-  const isSandwichEmpty = !sandwich.ingredients.length;
+  const isSandwichEmpty = sandwich.ingredients.length === 0;
   const isEmptyIngredient = !currentIngredient.id;
   const isCurrentlyBread = isBreadType(currentIngredient.type);
   const isMaxIngredientsReached = sandwich.ingredients.length + 1 > MAX_INGREDIENTS_COUNT;
@@ -107,11 +107,11 @@ const SandwichBuildButtons = () => {
           ingredientPlace.isPresent || (isEmptyIngredient && !isTypeInSandwich(currentType, sandwich))
             ? 'text-cyan2'
             : 'fill-magenta'
-        } ${isSandwichEmpty ? 'flex items-center justify-center' : ''}`}
+        } ${isSandwichEmpty ? 'flex items-center justify-center' : ''}
+        ${ingredientPlace.isPresent || (hasToBeKosher && !isStillKosher) ? 'cursor-not-allowed' : ''}`}
         disabled={isMaxIngredientsReached && !ingredientPlace.isPresent}
-        style={ingredientPlace.isPresent || (hasToBeKosher && !isStillKosher) ? { cursor: 'not-allowed' } : {}}
         title="Confirm ingredient"
-        onClick={!isEmptyIngredient ? confirmHandler : clearOfCurrentTypeHandler}
+        onClick={isEmptyIngredient ? clearOfCurrentTypeHandler : confirmHandler}
       >
         {/* <img src={confirmImg} alt="Confirm icon" width="54" height="54" /> */}
         <svg

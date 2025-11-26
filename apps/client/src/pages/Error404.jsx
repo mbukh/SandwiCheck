@@ -6,9 +6,9 @@ import { BUTTON_BASE_CLASSES } from '../constants/ui-constants';
 const Error404 = () => {
   return (
     <div className="pt-4 pb-12 px-5 md:pt-6 md:pb-16 md:px-12 lg:pb-20 xl:px-20">
-      <div className="fl fl-col fl-cc min-h-[calc(100vh-var(--headerHeight)-var(--footerHeight))] py-8">
+      <div className="grid place-items-center min-h-[calc(100vh-var(--headerHeight)-var(--footerHeight))] py-8">
         <div className="max-w-2xl w-full text-center error404-content">
-          <h1 className="text-white text-sh-5 uppercase bold text-2xl md:text-3xl lg:text-4xl mb-4 leading-tight">
+          <h1 className="text-white text-sh-5 uppercase font-bold text-2xl md:text-3xl lg:text-4xl mb-4 leading-tight">
             Oops! This Sandwich Got Away!
           </h1>
 
@@ -17,7 +17,7 @@ const Error404 = () => {
             location.
           </p>
 
-          <div className="fl fl-cc gap-4 md:gap-6 mb-8">
+          <div className="flex justify-center gap-4 md:gap-6 mb-8">
             <span className="error404-digit font-bold text-magenta">4</span>
             <div className="error404-sandwich-orb">
               <div className="card-orb">
@@ -31,7 +31,7 @@ const Error404 = () => {
             Don&apos;t worry though - we have plenty of other delicious sandwiches waiting for you!
           </p>
 
-          <div className="fl fl-cc gap-8">
+          <div className="flex justify-center gap-8">
             <Link to={ROUTE_PATHS.CREATE} className={`${BUTTON_BASE_CLASSES} bg-magenta text-white`}>
               Build a Sandwich
             </Link>

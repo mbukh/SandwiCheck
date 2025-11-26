@@ -134,7 +134,11 @@ const Signup = () => {
         </>
       )}
 
-      <form className="needs-validation text-left text-sm mt-15 md:mt-20 xl:mt-24 md:px-5" noValidate onSubmit={handleSignUp}>
+      <form
+        className="needs-validation text-left text-sm mt-15 md:mt-20 xl:mt-24 md:px-5"
+        noValidate
+        onSubmit={handleSignUp}
+      >
         <div className="mb-4 md:mb-6">
           <label htmlFor="signup-name" className="sr-only">
             Full name
