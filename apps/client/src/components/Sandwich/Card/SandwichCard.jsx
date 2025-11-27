@@ -1,17 +1,11 @@
 import { useState } from 'react';
-
 import { Link, useNavigate } from '@tanstack/react-router';
-
-import { ROUTE_PATHS } from '../../../routes';
-import { hasUserVotedForSandwich, voteForSandwich } from '../../../services/votes';
-
-import { hydrateSandwichIngredientsData } from '../../../utils/sandwich-utils';
-
-import { updateSandwichInCache } from '../../../services/api-sandwiches';
-
 import { useAuthGlobalContext } from '../../../context/AuthGlobalContext';
 import { useIngredientsGlobalContext } from '../../../context/IngredientsGlobalContext';
-
+import { ROUTE_PATHS } from '../../../routes';
+import { updateSandwichInCache } from '../../../services/api-sandwiches';
+import { hasUserVotedForSandwich, voteForSandwich } from '../../../services/votes';
+import { hydrateSandwichIngredientsData } from '../../../utils/sandwich-utils';
 import SandwichImage from '../SandwichImage';
 import SandwichIngredientsList from './SandwichIngredientsList';
 
@@ -31,35 +25,37 @@ const SandwichCard = ({ index, sandwich, galleryPath = '', isModal }) => {
 
     const hydratedSandwich = hydrateSandwichIngredientsData(sandwich, ingredientsRawList);
     updateSandwichInCache(hydratedSandwich);
-    navigate({ to: '/create' });
+    navigate({ to: ROUTE_PATHS.CREATE });
   };
 
-  const voteForSandwichHandler = async (e) => {
+  const voteForSandwichHandler = async (_e) => {
     setIsUserVoting(true);
     await voteForSandwich({ userId: currentUser.id, sandwichId: sandwich.id });
   };
 
   return (
     <div
+      // FIXME: implement voted class from real data
+      // eslint-disable-next-line no-constant-binary-expression
       className={`sandwich-card ${true && 'voted'} ${
         isModal
-          ? 'thumb modal__thumb flex flex-col md:flex-row justify-center voted'
-          : 'thumb flex w-1/2 sm:w-1/2 lg:w-1/3 xl:w-1/4 xxl:w-1/5'
+          ? 'thumb modal__thumb voted flex flex-col justify-center md:flex-row'
+          : 'thumb xxl:w-1/5 flex w-1/2 sm:w-1/2 lg:w-1/3 xl:w-1/4'
       }`}
     >
       <div
         className={`card-wrapper card-bg-${bgIndex} ${
           isModal
-            ? 'thumb__wrapper md:w-2/3 flex flex-col flex-shrink-0 justify-between p-2 sm:p-4 box-shadow-10'
-            : 'thumb__wrapper flex flex-col flex-1 justify-between m-2 sm:m-3 p-2 sm:p-4 box-shadow-10'
+            ? 'thumb__wrapper box-shadow-10 flex flex-shrink-0 flex-col justify-between p-2 sm:p-4 md:w-2/3'
+            : 'thumb__wrapper box-shadow-10 m-2 flex flex-1 flex-col justify-between p-2 sm:m-3 sm:p-4'
         }`}
       >
         <div className="card-header text-center">
           <h3
             className={`card-title ${
               isModal
-                ? 'thumb__title text-base sm:text-lg lg:text-xl font-bold uppercase text-shadow-5'
-                : 'thumb__title text-sm sm:text-base xl:text-lg font-bold uppercase text-shadow-5'
+                ? 'thumb__title text-shadow-5 text-base font-bold uppercase sm:text-lg lg:text-xl'
+                : 'thumb__title text-shadow-5 text-sm font-bold uppercase sm:text-base xl:text-lg'
             }`}
           >
             {sandwich.name || 'Sandwich eater'}
@@ -67,34 +63,30 @@ const SandwichCard = ({ index, sandwich, galleryPath = '', isModal }) => {
           <h5
             className={`card-name ${
               isModal
-                ? 'thumb__name text-sm sm:text-base lg:text-lg text-shadow-5'
-                : 'thumb__name text-xs sm:text-sm text-shadow-5'
+                ? 'thumb__name text-shadow-5 text-sm sm:text-base lg:text-lg'
+                : 'thumb__name text-shadow-5 text-xs sm:text-sm'
             }`}
           >
             by <span className="capitalize">{sandwich.authorName}</span>
           </h5>
         </div>
         <div className="card-middle">
-          <div className="card-orb w-full mt-auto mx-auto">
+          <div className="card-orb mx-auto mt-auto w-full">
             <SandwichImage sandwich={sandwich} galleryPath={galleryPath} isModal={isModal} />
           </div>
         </div>
-        <div className="card-footer relative flex justify-between items-center">
-          <div className="card-footer-start w-1/3 flex justify-start items-center">
+        <div className="card-footer relative flex items-center justify-between">
+          <div className="card-footer-start flex w-1/3 items-center justify-start">
             <i
-              className={`icon icon-votes w-auto h-7 sm:h-8 ${isUserVoting ? 'animate-bounce' : ''}`}
+              className={`icon icon-votes h-7 w-auto sm:h-8 ${isUserVoting ? 'animate-bounce' : ''}`}
               title="Favorites counter"
             ></i>
-            <span className="votesCount text-xs sm:text-sm text-shadow-5">
+            <span className="votesCount text-shadow-5 text-xs sm:text-sm">
               {sandwich.votesCount + (isUserVoting ? 1 : 0)}
             </span>
           </div>
           <div className="card-footer-mid w-1/3 text-center">
-            <div
-              className={`thumb__vote-btn relative w-auto h-10 mx-auto leading-none
-                                ${isModal ? 'md:h-16' : ''}
-                            `}
-            >
+            <div className={`thumb__vote-btn relative mx-auto h-10 w-auto leading-none ${isModal ? 'md:h-16' : ''} `}>
               {!isVotedByUser && (
                 <button className={`btn-wrapper ${isUserVoting ? 'fadeout' : ''}`} onClick={voteForSandwichHandler}>
                   <i className="icon icon-heart absolute inset-0 h-full w-full" title="Add to favorites"></i>
@@ -104,7 +96,7 @@ const SandwichCard = ({ index, sandwich, galleryPath = '', isModal }) => {
                 <Link
                   to={ROUTE_PATHS.CREATE}
                   onClick={copyThisSandwichHandler}
-                  className="fade-in absolute grid place-items-center inset-0 h-full w-full"
+                  className="fade-in absolute inset-0 grid h-full w-full place-items-center"
                   title="Copy this sandwich"
                 >
                   <svg
@@ -123,13 +115,13 @@ const SandwichCard = ({ index, sandwich, galleryPath = '', isModal }) => {
               )}
             </div>
           </div>
-          <div className="card-footer-end w-1/3 flex justify-end">
+          <div className="card-footer-end flex w-1/3 justify-end">
             <Link
               to={`https://wa.me/?text=This+sandwich+from+SandwiCheck+looks+yummy%21+${globalThis.location.protocol}%2F%2F${globalThis.location.hostname}%2Fsandwich%2F${sandwich.id}`}
               target="_blank"
-              className="inline-block ml-1 md:ml-2"
+              className="ml-1 inline-block md:ml-2"
             >
-              <i className="icon icon-whatsapp w-auto h-8 sm:h-10 md:h-12" title="Share via Whatsapp"></i>
+              <i className="icon icon-whatsapp h-8 w-auto sm:h-10 md:h-12" title="Share via Whatsapp"></i>
             </Link>
           </div>
         </div>

@@ -1,13 +1,10 @@
-import { useState, useEffect } from 'react';
-import { Link, useParams, useLocation, useNavigate } from '@tanstack/react-router';
-
+import { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate, useParams } from '@tanstack/react-router';
 import { useAuthGlobalContext } from '../../context/AuthGlobalContext';
 import { ROUTE_PATHS } from '../../routes';
 import { isAuthRoute } from '../../utils/auth-utils';
-
 import LoginModal from '../Login/LoginModal';
 import SignupModal from '../Signup/SignupModal';
-
 import ActingBanner from './ActingBanner';
 import HamburgerMenu from './HamburgerMenu';
 import MobileMenu from './MobileMenu';
@@ -90,12 +87,12 @@ const Header = () => {
       />
 
       <div className="navbar">
-        <nav className="nav-container flex justify-between items-center px-5 md:px-12 xl:px-20">
-          <div className="nav-start w-2/5 flex justify-start">
+        <nav className="nav-container flex items-center justify-between px-5 md:px-12 xl:px-20">
+          <div className="nav-start flex w-2/5 justify-start">
             <HamburgerMenu mobileMenuToggler={toggleMobileMenuHandler} isMobileMenuOpen={isMobileMenuOpen} />
 
-            <div className="desktop-only lg:inline-block xl:text-lg uppercase text-shadow-10">
-              <Link to={ROUTE_PATHS.CREATE} className="mr-6 xl:mr-10 font-bold" activeProps={{ className: 'active' }}>
+            <div className="desktop-only text-shadow-10 uppercase lg:inline-block xl:text-lg">
+              <Link to={ROUTE_PATHS.CREATE} className="mr-6 font-bold xl:mr-10" activeProps={{ className: 'active' }}>
                 Build a sandwich
               </Link>
               <Link to={ROUTE_PATHS.LATEST} className="mr-6 xl:mr-10" activeProps={{ className: 'active' }}>
@@ -108,14 +105,14 @@ const Header = () => {
             <Link to={ROUTE_PATHS.LATEST} className="no-hover block size-full">
               <div className="logo mx-auto">
                 {user?.name ? (
-                  <div className="grid place-items-center text-xs sm:text-base text-sh-5">
+                  <div className="text-sh-5 grid place-items-center text-xs sm:text-base">
                     Let us
                     <br /> inspire you,
                     <br />
                     {user.firstName}
                   </div>
                 ) : (
-                  <div className="grid place-items-center text-xs sm:text-base text-sh-5">
+                  <div className="text-sh-5 grid place-items-center text-xs sm:text-base">
                     Let us
                     <br /> inspire
                     <br /> you
@@ -125,8 +122,8 @@ const Header = () => {
             </Link>
           </div>
 
-          <div className="nav-end w-2/5 flex justify-end">
-            <div className="desktop-only lg:inline-block xl:text-lg uppercase text-shadow-10">
+          <div className="nav-end flex w-2/5 justify-end">
+            <div className="desktop-only text-shadow-10 uppercase lg:inline-block xl:text-lg">
               {user.id ? (
                 <>
                   <Link to={ROUTE_PATHS.MENU} className="mr-6 font-bold" activeProps={{ className: 'active' }}>

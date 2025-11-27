@@ -1,13 +1,9 @@
 import createHttpError from 'http-errors';
-
 import sharp from 'sharp';
-import logger from './logger.js';
-
 import { INGREDIENTS_DIR } from '../config/dir.js';
-
 import { ALL_IMAGE_FIELDS, imageFieldsByType } from '../constants/ingredientsConstants.js';
-
-import { saveBufferToFile, removeFilesInPath } from '../utils/fileUtils.js';
+import { removeFilesInPath, saveBufferToFile } from '../utils/fileUtils.js';
+import logger from './logger.js';
 
 export const removeAllIngredientImagesByImageBase = async (filenameBase) => {
   const allPossibleFiles = ALL_IMAGE_FIELDS.map(

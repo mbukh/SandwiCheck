@@ -1,14 +1,13 @@
 import React from 'react';
 import { Link } from '@tanstack/react-router';
-
 import github from '../../assets/images/icons/github.svg';
 
 const Footer = () => {
   return (
-    <footer className="footer fixed z-10 bottom-0 w-full bg-cyan2 text-white">
-      <div className="flex items-center h-full px-5 md:px-12 xl:px-20">
+    <footer className="footer fixed bottom-0 z-10 w-full bg-cyan2-500 text-white">
+      <div className="flex h-full items-center px-5 md:px-12 xl:px-20">
         <nav className="footer__nav">
-          <ul className="flex text-xxs md:text-xs text-center uppercase text-shadow-3">
+          <ul className="text-shadow-3 flex text-center text-xxs uppercase md:text-xs">
             <li className="mr-4 md:mr-8">
               <Link className="hover:opacity-80" to="https://mbukh.dev" target="_blank">
                 MBUKH.dev
@@ -18,10 +17,10 @@ const Footer = () => {
         </nav>
       </div>
 
-      <div className="footer__triangle absolute bottom-0 right-0 pointer-events-none">
+      <div className="footer__triangle pointer-events-none absolute right-0 bottom-0">
         <Link className="pointer-events-auto" to="https://github.com/mbukh/SandwiCheck" target="_blank">
           <img
-            className="footer__logo block md:w-16 absolute bottom-0 right-0 mb-4 md:mb-5 mr-5 md:mr-12 xl:mr-20"
+            className="footer__logo absolute right-0 bottom-0 mr-5 mb-4 block md:mr-12 md:mb-5 md:w-16 xl:mr-20"
             src={github}
             alt="Github logo"
             width="50"

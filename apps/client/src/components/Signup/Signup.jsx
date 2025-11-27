@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Link, useSearch, useLocation } from '@tanstack/react-router';
-
+import { Link, useLocation, useSearch } from '@tanstack/react-router';
 import { MAX_USER_NAME_LENGTH, ROLE } from '../../constants/user-constants';
-import { ROUTE_PATHS } from '../../routes';
-
 import useForm from '../../hooks/use-form';
 import useToast from '../../hooks/use-toast';
+import { ROUTE_PATHS } from '../../routes';
 import { isAuthRoute } from '../../utils/auth-utils';
 
 const Signup = () => {
@@ -33,10 +31,10 @@ const Signup = () => {
   } = useForm();
 
   // Determine returnTo value (same logic as Login component)
-  const returnTo = search?.returnTo || (!isAuthRoute(location.pathname) ? location.pathname : null);
+  const returnTo = search?.returnTo || (isAuthRoute(location.pathname) ? null : location.pathname);
 
   useEffect(() => {
-    errors.forEach((error) => showToast(error));
+    for (const error of errors) showToast(error);
   }, [errors, showToast]);
 
   const handleSignUp = async (e) => {
@@ -63,17 +61,17 @@ const Signup = () => {
   // Show email confirmation message if needed
   if (needsEmailConfirmation) {
     return (
-      <div className="login max-w-screen-md text-white text-center mx-auto">
-        <h1 className="text-magenta font-bold text-2xl md:text-4xl xl:text-5xl uppercase mb-3 md:mb-5">
+      <div className="login mx-auto max-w-screen-md text-center text-white">
+        <h1 className="mb-3 text-2xl font-bold text-magenta uppercase md:mb-5 md:text-4xl xl:text-5xl">
           Check Your Email!
         </h1>
-        <div className="text-base md:text-xl xl:text-3xl mb-6 md:mb-8">
+        <div className="mb-6 text-base md:mb-8 md:text-xl xl:text-3xl">
           {confirmationMessage && confirmationMessage.includes('confirmation email could not be sent') ? (
             <>
               <p className="mb-4">
                 Your account has been created for <strong className="text-yellow">{confirmationEmail}</strong>
               </p>
-              <p className="mb-4 text-yellow">
+              <p className="text-yellow mb-4">
                 However, the confirmation email could not be sent. Please use the resend confirmation option on the
                 login page.
               </p>
@@ -93,7 +91,7 @@ const Signup = () => {
             </>
           )}
         </div>
-        <div className="w-full mb-4 md:mb-6 flex justify-center items-center">
+        <div className="mb-4 flex w-full items-center justify-center md:mb-6">
           {parentId ? (
             <Link
               className="mx-2 underline"
@@ -104,11 +102,7 @@ const Signup = () => {
               Back to Log In
             </Link>
           ) : (
-            <Link
-              className="mx-2 underline"
-              to={ROUTE_PATHS.LOGIN}
-              search={returnTo ? { returnTo } : {}}
-            >
+            <Link className="mx-2 underline" to={ROUTE_PATHS.LOGIN} search={returnTo ? { returnTo } : {}}>
               Back to Log In
             </Link>
           )}
@@ -119,15 +113,15 @@ const Signup = () => {
   }
 
   return (
-    <div className="login max-w-screen-md text-white text-center mx-auto">
-      <h1 className="text-magenta font-bold text-2xl md:text-4xl xl:text-5xl uppercase mb-3 md:mb-5">
+    <div className="login mx-auto max-w-screen-md text-center text-white">
+      <h1 className="mb-3 text-2xl font-bold text-magenta uppercase md:mb-5 md:text-4xl xl:text-5xl">
         Sandwich creativity with SandwiCheck!
       </h1>
       <h4 className="text-base md:text-xl xl:text-3xl">Create and share your own delicious creations!</h4>
 
       {parentId && (
         <>
-          <div className="text-magenta text-base py-2 md:text-xl xl:text-3xl">
+          <div className="py-2 text-base text-magenta md:text-xl xl:text-3xl">
             You are about to be added as a <strong className="text-yellow">dependent in another user's account,</strong>{' '}
             which means that your information will become visible to those who have shared this link with you.
           </div>
@@ -135,7 +129,7 @@ const Signup = () => {
       )}
 
       <form
-        className="needs-validation text-left text-sm mt-15 md:mt-20 xl:mt-24 md:px-5"
+        className="needs-validation mt-15 text-left text-sm md:mt-20 md:px-5 xl:mt-24"
         noValidate
         onSubmit={handleSignUp}
       >
@@ -145,7 +139,7 @@ const Signup = () => {
           </label>
           <input
             id="signup-name"
-            className="w-full appearance-none focus:outline-none rounded-lg box-shadow-10 bg-white text-magenta text-base xl:text-xl py-2 px-4 md:px-6 xl:py-3 xl:px-8 xl:box-shadow-20"
+            className="box-shadow-10 xl:box-shadow-20 w-full appearance-none rounded-lg bg-white px-4 py-2 text-base text-magenta focus:outline-none md:px-6 xl:px-8 xl:py-3 xl:text-xl"
             name="name"
             type="text"
             autoComplete="name"
@@ -167,7 +161,7 @@ const Signup = () => {
           </label>
           <input
             id="signup-email"
-            className="w-full appearance-none focus:outline-none rounded-lg box-shadow-10 bg-white text-magenta text-base xl:text-xl py-2 px-4 md:px-6 xl:py-3 xl:px-8 xl:box-shadow-20"
+            className="box-shadow-10 xl:box-shadow-20 w-full appearance-none rounded-lg bg-white px-4 py-2 text-base text-magenta focus:outline-none md:px-6 xl:px-8 xl:py-3 xl:text-xl"
             name="email"
             type="email"
             autoComplete="email"
@@ -189,7 +183,7 @@ const Signup = () => {
           </label>
           <input
             id="signup-password"
-            className="w-full appearance-none focus:outline-none rounded-lg box-shadow-10 bg-white text-magenta text-base xl:text-xl py-2 px-4 md:px-6 xl:py-3 xl:px-8 xl:box-shadow-20"
+            className="box-shadow-10 xl:box-shadow-20 w-full appearance-none rounded-lg bg-white px-4 py-2 text-base text-magenta focus:outline-none md:px-6 xl:px-8 xl:py-3 xl:text-xl"
             name="password"
             type="password"
             autoComplete="new-password"
@@ -210,7 +204,7 @@ const Signup = () => {
           </label>
           <input
             id="signup-confirm-password"
-            className="w-full appearance-none focus:outline-none rounded-lg box-shadow-10 bg-white text-magenta text-base xl:text-xl py-2 px-4 md:px-6 xl:py-3 xl:px-8 xl:box-shadow-20"
+            className="box-shadow-10 xl:box-shadow-20 w-full appearance-none rounded-lg bg-white px-4 py-2 text-base text-magenta focus:outline-none md:px-6 xl:px-8 xl:py-3 xl:text-xl"
             name="confirmPassword"
             type="password"
             autoComplete="new-password"
@@ -226,7 +220,7 @@ const Signup = () => {
         </div>
 
         {parentId ? (
-          <div className="mb-4 md:mb-6 custom-control custom-checkbox">
+          <div className="custom-control custom-checkbox mb-4 md:mb-6">
             <input
               className="custom-control-input"
               id="termsCheckbox"
@@ -243,10 +237,10 @@ const Signup = () => {
             </label>
           </div>
         ) : (
-          <div className="mb-2 md:mb-5 w-1/2">
+          <div className="mb-2 w-1/2 md:mb-5">
             <div className="gallery__filter-county relative">
               <select
-                className="w-full py-1 px-4 md:px-6 appearance-none focus:outline-none rounded-lg box-shadow-10 bg-white text-magenta text-sm uppercase"
+                className="box-shadow-10 w-full appearance-none rounded-lg bg-white px-4 py-1 text-sm text-magenta uppercase focus:outline-none md:px-6"
                 title="Choose role"
                 required={true}
                 name="role"
@@ -259,8 +253,8 @@ const Signup = () => {
                   </option>
                 ))}
               </select>
-              <div className="select__arrow pointer-events-none absolute top-0 bottom-0 right-0 flex items-center text-magenta py-1 px-3 md:pr-6">
-                <svg className="fill-current w-auto h-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5">
+              <div className="select__arrow pointer-events-none absolute top-0 right-0 bottom-0 flex items-center px-3 py-1 text-magenta md:pr-6">
+                <svg className="h-3 w-auto fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5">
                   <path d="M2 0L0 2h4zm0 5L0 3h4z"></path>
                 </svg>
               </div>
@@ -271,7 +265,7 @@ const Signup = () => {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full inline-flex justify-center items-center appearance-none focus:outline-none rounded-lg box-shadow-10 font-bold uppercase bg-magenta text-white h-8 md:h-12 xl:h-14 text-sm md:text-base xl:text-xl py-2 px-5 md:py-3 md:px-6 xl:px-8 xl:box-shadow-20 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="box-shadow-10 xl:box-shadow-20 inline-flex h-8 w-full appearance-none items-center justify-center rounded-lg bg-magenta px-5 py-2 text-sm font-bold text-white uppercase focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:h-12 md:px-6 md:py-3 md:text-base xl:h-14 xl:px-8 xl:text-xl"
         >
           <span>{isSubmitting ? 'Creating account...' : 'Create an account'}</span>
         </button>
@@ -279,7 +273,7 @@ const Signup = () => {
 
       <br />
 
-      <div className="w-full mb-4 md:mb-6 flex justify-center items-center">
+      <div className="mb-4 flex w-full items-center justify-center md:mb-6">
         Already have an account?
         {parentId ? (
           <Link className="mx-2 underline" to={ROUTE_PATHS.LOGIN_PARENT} params={{ parentId }}>

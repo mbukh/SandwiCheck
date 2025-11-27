@@ -6,8 +6,10 @@ const isSecure = mailPort === 465;
 const isTLS = mailPort === 587;
 
 const sendEmail = async (options) => {
-  // Build transport config - auth only if username is provided (for Resend.com)
-  // Mailpit doesn't require authentication
+  /*
+   * Build transport config - auth only if username is provided (for Resend.com)
+   * Mailpit doesn't require authentication
+   */
   const transportConfig = { host: mailHost, port: mailPort, secure: isSecure && !isTLS, requireTLS: isTLS };
 
   // Add auth only if MAIL_USERNAME is provided (e.g., for Resend.com)

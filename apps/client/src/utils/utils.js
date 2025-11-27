@@ -2,7 +2,7 @@ export const trimObjectEmptyProperties = (obj) => Object.fromEntries(Object.entr
 
 export const capitalizeFirst = (string) => string.charAt(0).toUpperCase() + string.slice(1);
 
-export const capitalize = (str) => str.replace(/\b\w/g, (l) => l.toUpperCase());
+export const capitalize = (str) => str.replaceAll(/\b\w/g, (l) => l.toUpperCase());
 
 export const timeDifference = (date1, date2) => {
   const difference = date2 - date1;

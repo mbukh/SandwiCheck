@@ -1,7 +1,9 @@
 import { PORTION } from '../../constants/ingredientsConstants.js';
 
-// Helper function to create sandwich data structure
-// Ingredients will be resolved to ObjectIds in initDatabase.js
+/*
+ * Helper function to create sandwich data structure
+ * Ingredients will be resolved to ObjectIds in initDatabase.js
+ */
 const createSandwich = (name, authorEmail, ingredients, comment = null, votesCount = 0, childName = null) => ({
   name,
   authorEmail, // Will be used to find user ObjectId (parent email for tethered children)

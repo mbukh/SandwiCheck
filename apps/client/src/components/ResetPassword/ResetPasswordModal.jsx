@@ -15,4 +15,3 @@ const ResetPasswordModal = ({ setIsOpenLoginModal, closeLink = '' }) => {
 };
 
 export default ResetPasswordModal;
-

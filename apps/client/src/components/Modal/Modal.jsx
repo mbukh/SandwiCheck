@@ -1,11 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useRouter, useLocation } from '@tanstack/react-router';
-
+import { useCallback, useEffect, useState } from 'react';
+import { useLocation, useNavigate, useRouter } from '@tanstack/react-router';
 import { useModalContext } from '../../context/ModalContext';
-import { isAuthRoute } from '../../utils/auth-utils';
 import { ROUTE_PATHS } from '../../routes';
-import Portal from '../Portal/Portal';
+import { isAuthRoute } from '../../utils/auth-utils';
 import Loading from '../Loading';
+import Portal from '../Portal/Portal';
 
 const Modal = ({ children, setIsOpenLoginModal, isModalLoading = true, closeLink = '', modalId }) => {
   const [isModalShow, setIsModalShow] = useState(true);
@@ -34,7 +33,7 @@ const Modal = ({ children, setIsOpenLoginModal, isModalLoading = true, closeLink
             router.history.back();
           } else {
             // No history, navigate to root page
-            navigate({ to: '/', replace: true });
+            navigate({ to: ROUTE_PATHS.INDEX, replace: true });
           }
         }
       }
@@ -74,7 +73,7 @@ const Modal = ({ children, setIsOpenLoginModal, isModalLoading = true, closeLink
           </button>
 
           {isModalLoading ? (
-            <div className="flex flex-col flex-1 justify-center" onClick={(e) => e.stopPropagation()}>
+            <div className="flex flex-1 flex-col justify-center" onClick={(e) => e.stopPropagation()}>
               <Loading />
             </div>
           ) : (

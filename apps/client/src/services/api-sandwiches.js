@@ -1,12 +1,8 @@
-import { createFetchApi } from '../utils/fetch-api';
-
 import { SANDWICH_CACHE_TIME_OUT_DAYS } from '../constants/sandwich-constants';
-
-import { log } from '../utils/log';
-
-import { timeDifference } from '../utils/utils';
-
 import { handleResponse } from '../utils/api-utils';
+import { createFetchApi } from '../utils/fetch-api';
+import { log } from '../utils/log';
+import { timeDifference } from '../utils/utils';
 
 const api = createFetchApi(`${import.meta.env.VITE_API_SERVER}/api/v1/sandwiches`, {
   'Access-Control-Allow-Origin': import.meta.env.VITE_HOST,

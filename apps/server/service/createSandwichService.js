@@ -24,8 +24,10 @@ export const createSandwichService = async ({
 }) => {
   // Extract first name to match API behavior (controller uses req.user.firstName)
   const firstName = authorName && authorName.split(' ')[0];
-  // Convert ingredients to the format expected by the model
-  // Ingredients should already be in format: [{ ingredientId: ObjectId, portion: string }]
+  /*
+   * Convert ingredients to the format expected by the model
+   * Ingredients should already be in format: [{ ingredientId: ObjectId, portion: string }]
+   */
   const saveIngredients = ingredients.map(({ ingredientId, portion }) => ({
     ingredientId,
     portion,
@@ -41,8 +43,10 @@ export const createSandwichService = async ({
     votesCount,
   });
 
-  // Validate the sandwich structure (ingredients, name, etc.)
-  // Note: pre-save hooks (like setting dietaryPreferences) run during save(), not validate()
+  /*
+   * Validate the sandwich structure (ingredients, name, etc.)
+   * Note: pre-save hooks (like setting dietaryPreferences) run during save(), not validate()
+   */
   await newSandwich.validate();
 
   // Generate sandwich image (this is the key part that needs to happen)

@@ -15,8 +15,8 @@ const SwiperNavigationButton = ({ navigation, direction }) => {
 
   const className = isNext ? 'swiper-button-next' : 'swiper-button-prev';
 
-  const nextDisabled = !navigation.next ? 'swiper-button-disabled' : '';
-  const prevDisabled = !navigation.prev ? 'swiper-button-disabled' : '';
+  const nextDisabled = navigation.next ? '' : 'swiper-button-disabled';
+  const prevDisabled = navigation.prev ? '' : 'swiper-button-disabled';
   const disabledStyle = isNext ? nextDisabled : prevDisabled;
 
   const swiperNavigationButtonStyle =
@@ -24,7 +24,7 @@ const SwiperNavigationButton = ({ navigation, direction }) => {
 
   return (
     <button className={`${className} ${swiperNavigationButtonStyle} ${disabledStyle}`} onClick={clickHandler}>
-      <img className="w-full h-full" src={srcImage} alt={`Go to ${directionName} slide`} width="120" height="120" />
+      <img className="h-full w-full" src={srcImage} alt={`Go to ${directionName} slide`} width="120" height="120" />
     </button>
   );
 };

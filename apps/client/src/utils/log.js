@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { debug } from '../constants/debug';
 
 export function log() {

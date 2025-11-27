@@ -1,43 +1,42 @@
 import expressAsyncHandler from 'express-async-handler';
-import createHttpError from 'http-errors';
-
-import logger from '../utils/logger.js';
-import { PROFILE_PICTURES_DIR } from '../config/dir.js';
-
-import { ROLE } from '../constants/usersConstants.js';
-import { NO_USER_SANDWICH_USERNAME } from '../constants/sandwichConstants.js';
 import bcrypt from 'bcryptjs';
-
+import createHttpError from 'http-errors';
+import { PROFILE_PICTURES_DIR } from '../config/dir.js';
 import {
-  generateEmailConfirmationHtml,
-  generateEmailConfirmationText,
   generateChildActivationHtml,
   generateChildActivationText,
+  generateEmailConfirmationHtml,
+  generateEmailConfirmationText,
 } from '../constants/mailing.js';
-
-import { saveBufferToFile, removeFile } from '../utils/fileUtils.js';
-import { removeUserConnections } from '../utils/manageUserConnections.js';
-import * as hashAndTokens from '../utils/hashAndTokens.js';
-import sendEmail from '../utils/mailer.js';
-
-import User from '../models/UserModel.js';
+import { NO_USER_SANDWICH_USERNAME } from '../constants/sandwichConstants.js';
+import { ROLE } from '../constants/usersConstants.js';
 import Sandwich from '../models/SandwichModel.js';
+import User from '../models/UserModel.js';
+import { removeFile, saveBufferToFile } from '../utils/fileUtils.js';
+import * as hashAndTokens from '../utils/hashAndTokens.js';
+import logger from '../utils/logger.js';
+import sendEmail from '../utils/mailer.js';
+import { removeUserConnections } from '../utils/manageUserConnections.js';
 
-// @desc    Get all users
-// @route   GET /api/users
-// @access  Private/Admin
-export const getUsers = expressAsyncHandler(async (req, res, next) => {
+/*
+ * @desc    Get all users
+ * @route   GET /api/users
+ * @access  Private/Admin
+ */
+export const getUsers = expressAsyncHandler(async (req, res, _next) => {
   const users = await User.find({});
   res.status(200).json({ success: true, data: users });
 });
 
-// @desc    Get single user
-// @route   GET /api/users/:userId
-// @route   GET /api/current
-// @access  Private +Parents
+/*
+ * @desc    Get single user
+ * @route   GET /api/users/:userId
+ * @route   GET /api/current
+ * @access  Private +Parents
+ */
 export const getUser = expressAsyncHandler(async (req, res, next) => {
   // current user or another userID
-  const userId = req.params.userId ? req.params.userId : req.user.id;
+  const userId = req.params.userId || req.user.id;
 
   const user = await User.findById(userId).populate('sandwiches').populate('parents').populate('children');
 
@@ -48,9 +47,11 @@ export const getUser = expressAsyncHandler(async (req, res, next) => {
   res.status(200).json({ success: true, data: user });
 });
 
-// @desc    Update user
-// @route   PUT /api/users/:userId
-// @access  Private +Parents
+/*
+ * @desc    Update user
+ * @route   PUT /api/users/:userId
+ * @access  Private +Parents
+ */
 export const updateUser = expressAsyncHandler(async (req, res, next) => {
   const { name, email, role, dietaryPreferences, removeProfilePicture, unlinkParentId, unlinkChildId } = req.body;
   const imageBuffer = req.file && req.file.buffer;
@@ -80,20 +81,20 @@ export const updateUser = expressAsyncHandler(async (req, res, next) => {
     // Generate new confirmation token and send email
     const confirmationToken = hashAndTokens.generateResetPasswordToken();
     user.emailConfirmationToken = hashAndTokens.hashToken(confirmationToken);
-    user.emailConfirmationExpire = Date.now() + parseInt(process.env.EMAIL_CONFIRMATION_EXPIRES_I || '86400000', 10);
+    user.emailConfirmationExpire =
+      Date.now() + Number.parseInt(process.env.EMAIL_CONFIRMATION_EXPIRES_I || '86400000', 10);
 
     const confirmationURL = `${process.env.CLIENT_URL}/confirm-email/${confirmationToken}`;
 
     if (wasTetheredChild) {
-      const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUND || '10', 10);
+      const saltRounds = Number.parseInt(process.env.BCRYPT_SALT_ROUND || '10', 10);
       const temporaryPasswordSeed = hashAndTokens.generateResetPasswordToken();
       user.password = await bcrypt.hash(temporaryPasswordSeed, saltRounds);
       user.isTetheredChild = undefined;
 
       const resetToken = hashAndTokens.generateResetPasswordToken();
       user.resetPasswordToken = hashAndTokens.hashToken(resetToken);
-      user.resetPasswordExpire =
-        Date.now() + parseInt(process.env.RESET_PASSWORD_EXPIRES_I || '3600000', 10);
+      user.resetPasswordExpire = Date.now() + Number.parseInt(process.env.RESET_PASSWORD_EXPIRES_I || '3600000', 10);
 
       let inviterName = null;
       if (user.parents?.length) {
@@ -118,8 +119,8 @@ export const updateUser = expressAsyncHandler(async (req, res, next) => {
         subject: inviterName ? `${inviterName} invited you to SandwiCheck` : 'Activate your SandwiCheck account',
         html: generateChildActivationHtml(emailPayload),
         text: generateChildActivationText(emailPayload),
-      }).catch((err) => {
-        logger.error('Failed to send child activation email:', err);
+      }).catch((error) => {
+        logger.error('Failed to send child activation email:', error);
       });
     } else {
       // Send confirmation email (don't await to avoid blocking the response)
@@ -128,9 +129,9 @@ export const updateUser = expressAsyncHandler(async (req, res, next) => {
         subject: 'Email Confirmation',
         html: generateEmailConfirmationHtml({ user, confirmationURL }),
         text: generateEmailConfirmationText({ user, confirmationURL }),
-      }).catch((err) => {
+      }).catch((error) => {
         // Log error but don't fail the request
-        logger.error('Failed to send email confirmation:', err);
+        logger.error('Failed to send email confirmation:', error);
       });
     }
   }
@@ -140,7 +141,7 @@ export const updateUser = expressAsyncHandler(async (req, res, next) => {
       user.roles.push(ROLE.parent);
     }
     if (role === ROLE.child) {
-      if (user.children && user.children.length) {
+      if (user.children && user.children.length > 0) {
         return next(
           createHttpError.BadRequest(
             'This account already has children. Remove all children before changing to a child user',
@@ -194,9 +195,11 @@ export const updateUser = expressAsyncHandler(async (req, res, next) => {
   res.status(200).json({ success: true, data: updatedUser });
 });
 
-// @desc    Delete user
-// @route   DELETE /api/users/:userId
-// @access  Private / User
+/*
+ * @desc    Delete user
+ * @route   DELETE /api/users/:userId
+ * @access  Private / User
+ */
 export const deleteUser = expressAsyncHandler(async (req, res, next) => {
   const user = await User.findById(req.params.userId);
 
@@ -205,16 +208,16 @@ export const deleteUser = expressAsyncHandler(async (req, res, next) => {
   }
 
   // Remove user from parents' children arrays
-  if (user.parents && user.parents.length) {
+  if (user.parents && user.parents.length > 0) {
     await removeUserConnections(user, 'parents');
   }
 
   // Remove user from children's parents arrays
-  if (user.children && user.children.length) {
+  if (user.children && user.children.length > 0) {
     await removeUserConnections(user, 'children');
   }
 
-  if (user.sandwiches && user.sandwiches.length) {
+  if (user.sandwiches && user.sandwiches.length > 0) {
     await Sandwich.updateMany({ _id: { $in: user.sandwiches } }, { authorName: NO_USER_SANDWICH_USERNAME });
   }
 
@@ -227,9 +230,11 @@ export const deleteUser = expressAsyncHandler(async (req, res, next) => {
   res.status(200).json({ success: true, message: 'User deleted successfully' });
 });
 
-// @desc    Add / Remove favorite sandwich
-// @route   POST | DELETE /api/users/:userId/favorite-sandwiches/:sandwichId
-// @access  Private / User
+/*
+ * @desc    Add / Remove favorite sandwich
+ * @route   POST | DELETE /api/users/:userId/favorite-sandwiches/:sandwichId
+ * @access  Private / User
+ */
 export const updateFavoriteSandwiches = async (req, res, next) => {
   const { userId, sandwichId } = req.params;
 

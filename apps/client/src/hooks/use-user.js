@@ -1,7 +1,5 @@
-import { useState, useCallback } from 'react';
-
+import { useCallback, useState } from 'react';
 import * as apiAuth from '../services/api-auth';
-
 import { logResponse } from '../utils/log';
 
 const useUser = () => {
@@ -60,15 +58,17 @@ const useUser = () => {
       setIsCurrentUserReady(true);
       return res;
     }
-    // Only set currentUser and loggedIn if email confirmation is not required
-    // Check if response has message about checking email
+    /*
+     * Only set currentUser and loggedIn if email confirmation is not required
+     * Check if response has message about checking email
+     */
     const needsEmailConfirmation = res.message && res.message.includes('check your email');
-    if (!needsEmailConfirmation) {
-      localStorage.setItem('loggedIn', JSON.stringify(Date.now()));
-      await refreshSession();
-    } else {
+    if (needsEmailConfirmation) {
       applySession(null);
       setIsCurrentUserReady(true);
+    } else {
+      localStorage.setItem('loggedIn', JSON.stringify(Date.now()));
+      await refreshSession();
     }
     return res;
   };

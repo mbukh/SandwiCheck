@@ -1,7 +1,6 @@
 import { isBreadType } from '../../../constants/ingredients-constants';
-import { isTypeInSandwich } from '../../../utils/sandwich-utils';
-
 import { useSandwichContext } from '../../../context/SandwichContext';
+import { isTypeInSandwich } from '../../../utils/sandwich-utils';
 
 const IngredientsTypesSelector = () => {
   const { ingredients, currentType, sandwich, setCurrentType, swiperContainerRef, randomizeSandwich } =
@@ -16,18 +15,18 @@ const IngredientsTypesSelector = () => {
     const classes = 'my-2 md:my-4  text-xs md:text-sm md:text-base min-w-fit';
     const activeClass = type === currentType ? ' active' : '';
 
-    const presetType = isTypeInSandwich(type, sandwich) ? ' text-cyan2' : '';
+    const presetType = isTypeInSandwich(type, sandwich) ? ' text-cyan2-500' : '';
 
     return classes + activeClass + presetType;
   };
 
   const ingredientTypes = Object.keys(ingredients);
-  const condimentsIndex = ingredientTypes.indexOf('condiments');
+  // const con  dimentsIndex = ingredientTypes.indexOf('condiments');
 
   return (
     <div className="create-sandwich-menu my-2">
-      <ul className="flex flex-wrap md:flex-row justify-center">
-        {ingredientTypes.map((type, index) => (
+      <ul className="flex flex-wrap justify-center md:flex-row">
+        {ingredientTypes.map((type, _index) => (
           <li key={type}>
             <button
               className={getButtonClasses(type)}
@@ -35,7 +34,7 @@ const IngredientsTypesSelector = () => {
                 retainSwiperHeight();
                 setCurrentType(type);
               }}
-              disabled={!sandwich.ingredients.length && !isBreadType(type)}
+              disabled={sandwich.ingredients.length === 0 && !isBreadType(type)}
             >
               {type}
             </button>
@@ -43,11 +42,11 @@ const IngredientsTypesSelector = () => {
         ))}
         <li key="randomize">
           <button
-            className="my-2 md:my-4 text-xs md:text-sm md:text-base min-w-fit"
+            className="my-2 min-w-fit text-xs md:my-4 md:text-base"
             onClick={randomizeSandwich}
             title="Randomize sandwich"
           >
-            <span className="text-[1.5em] md:text-[1.5em] leading-none">🎲</span>
+            <span className="text-[1.5em] leading-none md:text-[1.5em]">🎲</span>
           </button>
         </li>
       </ul>

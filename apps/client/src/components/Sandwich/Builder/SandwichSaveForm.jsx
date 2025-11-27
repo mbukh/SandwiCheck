@@ -1,15 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-
 import { MAX_COMMENT_LENGTH, MAX_NAME_LENGTH } from '../../../constants/sandwich-constants';
-import { ROUTE_PATHS } from '../../../routes';
-import validateForm from '../../../utils/validate-utils';
-
 import { useAuthGlobalContext } from '../../../context/AuthGlobalContext';
 import { useSandwichContext } from '../../../context/SandwichContext';
-
 import useToast from '../../../hooks/use-toast';
-
+import { ROUTE_PATHS } from '../../../routes';
+import validateForm from '../../../utils/validate-utils';
 import Loading from '../../Loading';
 import SignupModal from '../../Signup/SignupModal';
 
@@ -40,10 +36,13 @@ const SandwichSaveForm = () => {
     });
 
     if (errorMessages.length > 0) {
-      return errorMessages.forEach((message) => showToast(message));
+      for (const message of errorMessages) {
+        showToast(message);
+      }
+      return;
     }
 
-    let readySandwich = !sandwich.name ? { ...sandwich, name: defaultName } : sandwich;
+    let readySandwich = sandwich.name ? sandwich : { ...sandwich, name: defaultName };
 
     const res = await saveSandwich(readySandwich);
     if (res.error) {
@@ -74,15 +73,15 @@ const SandwichSaveForm = () => {
     sandwichDispatch({ type: 'SET_COMMENT', payload: e.target.value });
   };
 
-  if (!sandwich.ingredients.length && !sandwich.name && !sandwich.comment) {
+  if (sandwich.ingredients.length === 0 && !sandwich.name && !sandwich.comment) {
     return <></>;
   }
 
   return (
     <>
-      <div className="flex justify-center my-4">
+      <div className="my-4 flex justify-center">
         {sandwich.ingredients.length > 0 && canGoNextType && (
-          <button className="text-cyan2" onClick={goToNextType}>
+          <button className="text-cyan2-500" onClick={goToNextType}>
             next
           </button>
         )}
@@ -119,7 +118,7 @@ const SandwichSaveForm = () => {
                 ></textarea>
               ) : (
                 <button
-                  className="text-xs text-magenta text-gray-500"
+                  className="text-xs text-gray-500 text-magenta"
                   onClick={(e) => {
                     e.preventDefault();
                     setIsCommentOpen(true);

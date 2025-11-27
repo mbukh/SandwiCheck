@@ -1,26 +1,26 @@
 import { render, screen } from '@testing-library/react';
-import App from '../App';
 import AuthGlobalContextProvider from '../context/AuthGlobalContext';
 import IngredientsGlobalContextProvider from '../context/IngredientsGlobalContext';
+import App from '../index';
 import { fakeLocalStorage } from './localStorageMock';
 
 describe('Render the App', () => {
-  const originalLocalStorage = window.localStorage;
+  const originalLocalStorage = globalThis.localStorage;
 
   beforeAll(() => {
-    Object.defineProperty(window, 'localStorage', {
+    Object.defineProperty(globalThis, 'localStorage', {
       value: fakeLocalStorage,
     });
   });
 
   afterAll(() => {
-    Object.defineProperty(window, 'localStorage', {
+    Object.defineProperty(globalThis, 'localStorage', {
       value: originalLocalStorage,
     });
   });
 
   beforeEach(() => {
-    window.localStorage.clear();
+    globalThis.localStorage.clear();
   });
 
   it('renders the app', () => {

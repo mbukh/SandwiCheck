@@ -1,7 +1,7 @@
 import json from '@eslint/json';
 import markdown from '@eslint/markdown';
-import pluginYml from 'eslint-plugin-yml';
 import { defineConfig } from 'eslint/config';
+import pluginYml from 'eslint-plugin-yml';
 import baseConfig from './eslint.base.js';
 
 /**

@@ -1,9 +1,6 @@
 import mongoose from 'mongoose';
-
-import { DIETARY_PREFERENCE, PORTION, PRODUCT, isBreadType } from '../constants/ingredientsConstants.js';
-
-import { MAX_INGREDIENTS_COUNT, MAX_NAME_LENGTH, MAX_COMMENT_LENGTH } from '../constants/sandwichConstants.js';
-
+import { DIETARY_PREFERENCE, isBreadType, PORTION, PRODUCT } from '../constants/ingredientsConstants.js';
+import { MAX_COMMENT_LENGTH, MAX_INGREDIENTS_COUNT, MAX_NAME_LENGTH } from '../constants/sandwichConstants.js';
 import Ingredient from './IngredientModel.js';
 
 const { Schema } = mongoose;

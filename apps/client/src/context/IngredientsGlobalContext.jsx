@@ -1,11 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
-
-import { log } from '../utils/log';
-
 import { getAllIngredients } from '../services/api-ingredients';
-
 import { groupIngredientsByTypes } from '../utils/ingredients-utils';
-
+import { log } from '../utils/log';
 import { useAuthGlobalContext } from './AuthGlobalContext';
 
 const IngredientsGlobalContext = createContext();

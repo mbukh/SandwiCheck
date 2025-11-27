@@ -1,6 +1,5 @@
-import multer from 'multer';
-
 import createHttpError from 'http-errors';
+import multer from 'multer';
 
 const storage = multer.memoryStorage();
 
@@ -17,7 +16,7 @@ const fileFilter = (req, file, cb) => {
 };
 
 const limits = {
-  fileSize: parseInt(process.env.MAX_UPLOAD_SIZE_IN_BYTE, 10),
+  fileSize: Number.parseInt(process.env.MAX_UPLOAD_SIZE_IN_BYTE, 10),
 };
 
 const upload = multer({ storage, limits, fileFilter });

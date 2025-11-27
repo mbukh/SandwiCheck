@@ -8,6 +8,13 @@
   // Code actions on save - ESLint fixes (runs after Prettier formatting)
   "editor.codeActionsOnSave": { "source.fixAll.eslint": "explicit" },
 
+  // ESLint configuration
+  "eslint.workingDirectories": [
+    { "directory": "./apps/client", "changeProcessCWD": true },
+    { "directory": "./apps/server", "changeProcessCWD": true },
+    { "directory": "./packages/shared-utils", "changeProcessCWD": true }
+  ],
+
   // Prettier configuration
   "prettier.requireConfig": true,
 
@@ -21,16 +28,19 @@
   "[css]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
   "[html]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
 
-  // Disable VS Code's built-in JavaScript/TypeScript formatters to prevent conflicts
+  // Disable VS Code's built-in JavaScript/TypeScript **formatters** to prevent conflicts
   "javascript.format.enable": false,
   "typescript.format.enable": false,
+
+  // Disable built-in JS/TS **validation** (and their Fix All actions)
+  // "javascript.validate.enable": false,
+  // "typescript.validate.enable": false,
 
   // Ignore TanStack router generated files
   "files.readonlyInclude": { "**/routeTree.gen.ts": true },
   "files.watcherExclude": { "**/routeTree.gen.ts": true },
-  "search.exclude": {
-    "**/routeTree.gen.ts": true
-  },
+  "search.exclude": { "**/routeTree.gen.ts": true },
+  "files.exclude": { "node_modules": true },
 
   "files.associations": { "**/apps/client/src/**/*.css": "tailwindcss" },
 

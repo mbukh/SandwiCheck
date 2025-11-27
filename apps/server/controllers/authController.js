@@ -1,29 +1,28 @@
-import createHttpError from 'http-errors';
 import expressAsyncHandler from 'express-async-handler';
-
+import { formatDuration } from '@sandwicheck/shared-utils';
 import bcrypt from 'bcryptjs';
-import logger from '../utils/logger.js';
-
-import { ROLE } from '../constants/usersConstants.js';
+import createHttpError from 'http-errors';
+import EXCLUDED_FIELDS from '../constants/excludeFields.js';
 import {
-  generateHtmlMessage,
-  generateTextMessage,
   generateEmailConfirmationHtml,
   generateEmailConfirmationText,
+  generateHtmlMessage,
+  generateTextMessage,
 } from '../constants/mailing.js';
-
-import { createUserParentsConnections } from '../utils/manageUserConnections.js';
-import { setTokenCookie, removeCookie } from '../utils/cookies.js';
-import * as hashAndTokens from '../utils/hashAndTokens.js';
-import sendEmail from '../utils/mailer.js';
-import delay from '../utils/delay.js';
-import EXCLUDED_FIELDS from '../constants/excludeFields.js';
-
+import { ROLE } from '../constants/usersConstants.js';
 import User from '../models/UserModel.js';
+import { removeCookie, setTokenCookie } from '../utils/cookies.js';
+import delay from '../utils/delay.js';
+import * as hashAndTokens from '../utils/hashAndTokens.js';
+import logger from '../utils/logger.js';
+import sendEmail from '../utils/mailer.js';
+import { createUserParentsConnections } from '../utils/manageUserConnections.js';
 
-// @desc    Signup
-// @route   POST /api/auth/signup
-// @access  Public
+/*
+ * @desc    Signup
+ * @route   POST /api/auth/signup
+ * @access  Public
+ */
 export const signup = expressAsyncHandler(async (req, res, next) => {
   // Sanitize and trim inputs
   const name = req.body.name?.trim();
@@ -51,16 +50,18 @@ export const signup = expressAsyncHandler(async (req, res, next) => {
     if (userExists.emailConfirmed) {
       return next(createHttpError.BadRequest('User already exists'));
     }
-    // User exists but not confirmed - invalidate old token and generate new one
-    // Reset resend count and cooldown to give user a fresh start
+    /*
+     * User exists but not confirmed - invalidate old token and generate new one
+     * Reset resend count and cooldown to give user a fresh start
+     */
     const confirmationToken = hashAndTokens.generateResetPasswordToken();
     userExists.emailConfirmationToken = hashAndTokens.hashToken(confirmationToken);
     userExists.emailConfirmationExpire =
-      Date.now() + parseInt(process.env.EMAIL_CONFIRMATION_EXPIRES_I || '86400000', 10);
+      Date.now() + Number.parseInt(process.env.EMAIL_CONFIRMATION_EXPIRES_I || '86400000', 10);
     userExists.emailConfirmationResendCount = 0; // Reset resend count on new signup attempt
     userExists.emailConfirmationResendCooldown = undefined; // Reset cooldown on new signup attempt
     userExists.name = name;
-    userExists.password = await bcrypt.hash(password, parseInt(process.env.BCRYPT_SALT_ROUND, 10));
+    userExists.password = await bcrypt.hash(password, Number.parseInt(process.env.BCRYPT_SALT_ROUND, 10));
     userExists.roles = [ROLE.user, role];
 
     await userExists.save();
@@ -98,7 +99,7 @@ export const signup = expressAsyncHandler(async (req, res, next) => {
     }
   }
 
-  const passwordHash = await bcrypt.hash(password, parseInt(process.env.BCRYPT_SALT_ROUND, 10));
+  const passwordHash = await bcrypt.hash(password, Number.parseInt(process.env.BCRYPT_SALT_ROUND, 10));
 
   const user = await User.create({
     name,
@@ -143,7 +144,8 @@ export const signup = expressAsyncHandler(async (req, res, next) => {
   // Generate email confirmation token for regular users
   const confirmationToken = hashAndTokens.generateResetPasswordToken();
   user.emailConfirmationToken = hashAndTokens.hashToken(confirmationToken);
-  user.emailConfirmationExpire = Date.now() + parseInt(process.env.EMAIL_CONFIRMATION_EXPIRES_I || '86400000', 10);
+  user.emailConfirmationExpire =
+    Date.now() + Number.parseInt(process.env.EMAIL_CONFIRMATION_EXPIRES_I || '86400000', 10);
 
   await user.save();
 
@@ -180,9 +182,11 @@ export const signup = expressAsyncHandler(async (req, res, next) => {
   }
 });
 
-// @desc    Login
-// @route   POST /api/auth/login
-// @access  Public
+/*
+ * @desc    Login
+ * @route   POST /api/auth/login
+ * @access  Public
+ */
 export const login = expressAsyncHandler(async (req, res, next) => {
   // Sanitize and trim inputs
   const email = req.body.email?.trim().toLowerCase();
@@ -220,8 +224,10 @@ export const login = expressAsyncHandler(async (req, res, next) => {
 
   setTokenCookie(token, res);
 
-  // Return user data without sensitive fields (password already excluded by model transform)
-  // Fetch fresh user data without password field to ensure clean response
+  /*
+   * Return user data without sensitive fields (password already excluded by model transform)
+   * Fetch fresh user data without password field to ensure clean response
+   */
   const userData = await User.findById(user._id).select(EXCLUDED_FIELDS);
 
   res.status(200).json({
@@ -230,9 +236,11 @@ export const login = expressAsyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Change password
-// @route   PUT /api/auth/change-password
-// @access  Private
+/*
+ * @desc    Change password
+ * @route   PUT /api/auth/change-password
+ * @access  Private
+ */
 export const changePassword = expressAsyncHandler(async (req, res, next) => {
   const { oldPassword, newPassword } = req.body;
 
@@ -256,7 +264,7 @@ export const changePassword = expressAsyncHandler(async (req, res, next) => {
     return next(createHttpError.Unauthorized('Old password is incorrect'));
   }
 
-  user.password = await bcrypt.hash(newPassword, parseInt(process.env.BCRYPT_SALT_ROUND, 10));
+  user.password = await bcrypt.hash(newPassword, Number.parseInt(process.env.BCRYPT_SALT_ROUND, 10));
 
   await user.save();
 
@@ -266,9 +274,11 @@ export const changePassword = expressAsyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Request forgot password
-// @route   POST /api/auth/forgot-password
-// @access  Public
+/*
+ * @desc    Request forgot password
+ * @route   POST /api/auth/forgot-password
+ * @access  Public
+ */
 export const forgotPassword = expressAsyncHandler(async (req, res, next) => {
   // Sanitize and trim email input
   const email = req.body.email?.trim().toLowerCase();
@@ -293,7 +303,7 @@ export const forgotPassword = expressAsyncHandler(async (req, res, next) => {
   const resetToken = hashAndTokens.generateResetPasswordToken();
 
   user.resetPasswordToken = hashAndTokens.hashToken(resetToken);
-  user.resetPasswordExpire = Date.now() + parseInt(process.env.RESET_PASSWORD_EXPIRES_I || '3600000', 10); // Default 1 hour
+  user.resetPasswordExpire = Date.now() + Number.parseInt(process.env.RESET_PASSWORD_EXPIRES_I || '3600000', 10); // Default 1 hour
 
   await user.save();
 
@@ -312,9 +322,11 @@ export const forgotPassword = expressAsyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Request reset password
-// @route   PUT /api/auth/reset-password/:resetToken
-// @access  Public
+/*
+ * @desc    Request reset password
+ * @route   PUT /api/auth/reset-password/:resetToken
+ * @access  Public
+ */
 export const resetPassword = expressAsyncHandler(async (req, res, next) => {
   const { newPassword } = req.body;
 
@@ -330,7 +342,7 @@ export const resetPassword = expressAsyncHandler(async (req, res, next) => {
   }
 
   // Hash the new password before saving
-  user.password = await bcrypt.hash(newPassword, parseInt(process.env.BCRYPT_SALT_ROUND, 10));
+  user.password = await bcrypt.hash(newPassword, Number.parseInt(process.env.BCRYPT_SALT_ROUND, 10));
   user.resetPasswordToken = undefined;
   user.resetPasswordExpire = undefined;
 
@@ -342,11 +354,13 @@ export const resetPassword = expressAsyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Logout
-// @route   POST /api/auth/logout
-// @access  Private
-// eslint-disable-next-line no-unused-vars
-export const logout = expressAsyncHandler(async (req, res, next) => {
+/*
+ * @desc    Logout
+ * @route   POST /api/auth/logout
+ * @access  Private
+ */
+
+export const logout = expressAsyncHandler(async (req, res, _next) => {
   removeCookie('token', res);
   removeCookie('childToken', res);
 
@@ -356,9 +370,11 @@ export const logout = expressAsyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Confirm email
-// @route   GET /api/auth/confirm-email/:token
-// @access  Public
+/*
+ * @desc    Confirm email
+ * @route   GET /api/auth/confirm-email/:token
+ * @access  Public
+ */
 export const confirmEmail = expressAsyncHandler(async (req, res, next) => {
   const confirmationToken = hashAndTokens.hashToken(req.params.token);
   const MAX_RESEND_COUNT = 5; // Must match resendConfirmation MAX_RESEND_COUNT
@@ -395,8 +411,10 @@ export const confirmEmail = expressAsyncHandler(async (req, res, next) => {
       return next(error);
     }
 
-    // Token not found - invalid token
-    // Use delay for timing attack prevention
+    /*
+     * Token not found - invalid token
+     * Use delay for timing attack prevention
+     */
     await delay(2000 + Math.random() * 2000);
     const error = createHttpError.Unauthorized('Invalid confirmation token. Please check your confirmation link.');
     error.code = 'TOKEN_INVALID';
@@ -433,14 +451,18 @@ export const confirmEmail = expressAsyncHandler(async (req, res, next) => {
     return next(error);
   }
 
-  // Confirm email - keep token for idempotent checks (will expire naturally)
-  // This allows us to identify the user if they click the link again
+  /*
+   * Confirm email - keep token for idempotent checks (will expire naturally)
+   * This allows us to identify the user if they click the link again
+   */
   user.emailConfirmed = true;
   // Reset resend count and cooldown on successful confirmation
   user.emailConfirmationResendCount = 0;
   user.emailConfirmationResendCooldown = undefined;
-  // Note: We keep the token so we can identify the user if they click the link again
-  // The token will expire naturally based on emailConfirmationExpire
+  /*
+   * Note: We keep the token so we can identify the user if they click the link again
+   * The token will expire naturally based on emailConfirmationExpire
+   */
 
   await user.save();
 
@@ -456,15 +478,17 @@ export const confirmEmail = expressAsyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Resend email confirmation
-// @route   POST /api/auth/resend-confirmation
-// @access  Public
+/*
+ * @desc    Resend email confirmation
+ * @route   POST /api/auth/resend-confirmation
+ * @access  Public
+ */
 export const resendConfirmation = expressAsyncHandler(async (req, res, next) => {
   // Sanitize and trim email input
   const email = req.body.email?.trim().toLowerCase();
   const MAX_RESEND_COUNT = 5;
   // Cooldown period: 15 minutes (900000 ms) - can be configured via env var
-  const RESEND_COOLDOWN_MS = parseInt(process.env.EMAIL_CONFIRMATION_RESEND_COOLDOWN_MS || '900000', 10);
+  const RESEND_COOLDOWN_MS = Number.parseInt(process.env.EMAIL_CONFIRMATION_RESEND_COOLDOWN_MS || '900000', 10);
 
   if (!email) {
     return next(createHttpError.BadRequest('Email is required'));
@@ -520,28 +544,17 @@ export const resendConfirmation = expressAsyncHandler(async (req, res, next) => 
 
   if (lastResendTime > 0 && timeSinceLastResend < RESEND_COOLDOWN_MS) {
     const remainingCooldownMs = RESEND_COOLDOWN_MS - timeSinceLastResend;
-    const remainingCooldownSeconds = Math.ceil(remainingCooldownMs / 1000);
-    const remainingMinutes = Math.floor(remainingCooldownSeconds / 60);
-    const remainingSeconds = remainingCooldownSeconds % 60;
 
     // Log cooldown violation (PII will be automatically masked)
     logger.warn('Email confirmation resend cooldown violation', {
       requestId: req.requestId,
       userId: user._id.toString(),
       ip: req.ip || 'unknown',
-      remainingSeconds: remainingCooldownSeconds,
+      remainingSeconds: Math.ceil(remainingCooldownMs / 1000),
     });
 
     // Show precise time remaining
-    let timeMessage;
-    if (remainingMinutes > 0) {
-      timeMessage =
-        remainingSeconds > 0
-          ? `${remainingMinutes} minute${remainingMinutes !== 1 ? 's' : ''} and ${remainingSeconds} second${remainingSeconds !== 1 ? 's' : ''}`
-          : `${remainingMinutes} minute${remainingMinutes !== 1 ? 's' : ''}`;
-    } else {
-      timeMessage = `${remainingSeconds} second${remainingSeconds !== 1 ? 's' : ''}`;
-    }
+    const timeMessage = formatDuration(remainingCooldownMs);
 
     const error = createHttpError.TooManyRequests(
       `Please wait ${timeMessage} before requesting another confirmation email.`,
@@ -554,10 +567,12 @@ export const resendConfirmation = expressAsyncHandler(async (req, res, next) => 
   // Generate token first (before any DB updates)
   const confirmationToken = hashAndTokens.generateResetPasswordToken();
   const hashedToken = hashAndTokens.hashToken(confirmationToken);
-  const tokenExpire = Date.now() + parseInt(process.env.EMAIL_CONFIRMATION_EXPIRES_I || '86400000', 10);
+  const tokenExpire = Date.now() + Number.parseInt(process.env.EMAIL_CONFIRMATION_EXPIRES_I || '86400000', 10);
 
-  // Refresh user data one more time before attempting to send email to catch race conditions
-  // This ensures we have the latest count before sending email
+  /*
+   * Refresh user data one more time before attempting to send email to catch race conditions
+   * This ensures we have the latest count before sending email
+   */
   const refreshedUser = await User.findById(user._id).select('emailConfirmationResendCount');
   if (!refreshedUser) {
     return next(createHttpError.NotFound('User not found'));
@@ -605,17 +620,28 @@ export const resendConfirmation = expressAsyncHandler(async (req, res, next) => 
       { new: true },
     );
 
-    // If update failed (count was already at max), this is a race condition
-    // Invalidate the token we just sent to prevent its use, and log security event
-    if (!updateResult) {
+    /*
+     * If update failed (count was already at max), this is a race condition
+     * Invalidate the token we just sent to prevent its use, and log security event
+     */
+    if (updateResult) {
+      // Log successful resend attempt (PII will be automatically masked)
+      logger.info('Email confirmation resent', {
+        requestId: req.requestId,
+        userId: user._id.toString(),
+        resendCount: updateResult.emailConfirmationResendCount,
+      });
+    } else {
       logger.warn('Email sent but count update failed (race condition)', {
         requestId: req.requestId,
         userId: user._id.toString(),
         ip: req.ip || 'unknown',
       });
 
-      // Invalidate the token we just sent since count was already at max
-      // This prevents the user from using a token sent after limit was reached
+      /*
+       * Invalidate the token we just sent since count was already at max
+       * This prevents the user from using a token sent after limit was reached
+       */
       await User.findByIdAndUpdate(user._id, {
         $set: {
           emailConfirmationToken: undefined,
@@ -623,15 +649,10 @@ export const resendConfirmation = expressAsyncHandler(async (req, res, next) => 
         },
       });
 
-      // Still return success since email was sent, but token is now invalid
-      // This is a rare race condition edge case
-    } else {
-      // Log successful resend attempt (PII will be automatically masked)
-      logger.info('Email confirmation resent', {
-        requestId: req.requestId,
-        userId: user._id.toString(),
-        resendCount: updateResult.emailConfirmationResendCount,
-      });
+      /*
+       * Still return success since email was sent, but token is now invalid
+       * This is a rare race condition edge case
+       */
     }
 
     res.status(200).json({
@@ -646,8 +667,10 @@ export const resendConfirmation = expressAsyncHandler(async (req, res, next) => 
       error: emailError,
     });
 
-    // Email failed - do NOT increment count or set cooldown
-    // User can retry immediately without penalty
-    return next(createHttpError.InternalServerError('Failed to send confirmation email. Please try again later.'));
+    /*
+     * Email failed - do NOT increment count or set cooldown
+     * User can retry immediately without penalty
+     */
+    return next(new createHttpError.InternalServerError('Failed to send confirmation email. Please try again later.'));
   }
 });

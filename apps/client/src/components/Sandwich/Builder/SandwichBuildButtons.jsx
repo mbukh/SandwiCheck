@@ -1,21 +1,16 @@
-import portionImg from '../../../assets/images/icons/portion.svg';
-// import confirmImg from "../../../assets/images/icons/confirm.svg";
+import arrowDownImg from '../../../assets/images/icons/arrow-down.svg'; // import confirmImg from "../../../assets/images/icons/confirm.svg";
 import arrowUpImg from '../../../assets/images/icons/arrow-up.svg';
-import arrowDownImg from '../../../assets/images/icons/arrow-down.svg';
 import binImg from '../../../assets/images/icons/bin.svg';
-
-import { PORTION, DEFAULT_PORTION, isBreadType } from '../../../constants/ingredients-constants';
+import portionImg from '../../../assets/images/icons/portion.svg';
+import { DEFAULT_PORTION, isBreadType, PORTION } from '../../../constants/ingredients-constants';
 import { MAX_INGREDIENTS_COUNT } from '../../../constants/sandwich-constants';
-
-import {
-  isTypeInSandwich,
-  getIngredientPlaceInSandwich,
-  doesStayKosherWithIngredient,
-} from '../../../utils/sandwich-utils';
-
 import { useSandwichContext } from '../../../context/SandwichContext';
-
 import useToast from '../../../hooks/use-toast';
+import {
+  doesStayKosherWithIngredient,
+  getIngredientPlaceInSandwich,
+  isTypeInSandwich,
+} from '../../../utils/sandwich-utils';
 
 const SandwichBuildButtons = () => {
   const { sandwich, sandwichDispatch, currentIngredient, currentType, hasToBeKosher } = useSandwichContext();
@@ -28,7 +23,7 @@ const SandwichBuildButtons = () => {
   const ingredientPlace = getIngredientPlaceInSandwich(currentIngredient, sandwich);
   const isStillKosher = doesStayKosherWithIngredient(currentIngredient, sandwich);
 
-  const confirmHandler = (e) => {
+  const confirmHandler = (_e) => {
     if (isMaxIngredientsReached) {
       showToast(`Maximum of ${MAX_INGREDIENTS_COUNT} ingredients reached`);
       return;
@@ -56,32 +51,32 @@ const SandwichBuildButtons = () => {
     }
   };
 
-  const removeHandler = (e) => {
+  const removeHandler = (_e) => {
     sandwichDispatch({ type: 'REMOVE_INGREDIENT', payload: currentIngredient.id });
   };
 
-  const clearOfCurrentTypeHandler = (e) => {
+  const clearOfCurrentTypeHandler = (_e) => {
     sandwichDispatch({ type: 'REMOVE_INGREDIENTS_OF_TYPE', payload: currentType });
   };
 
-  const moveUpHandler = (e) => {
+  const moveUpHandler = (_e) => {
     sandwichDispatch({ type: 'MOVE_UP_INGREDIENT', payload: currentIngredient.id });
   };
 
-  const moveDownHandler = (e) => {
+  const moveDownHandler = (_e) => {
     sandwichDispatch({ type: 'MOVE_DOWN_INGREDIENT', payload: currentIngredient.id });
   };
 
-  const changePortionHandler = (e) => {
+  const changePortionHandler = (_e) => {
     sandwichDispatch({ type: 'CYCLE_PORTION', payload: currentIngredient.id });
   };
 
   return (
-    <div className="builder__spacer-buttons inline-flex justify-center h-8 px-2 bg-white text-magenta text-xs rounded-lg box-shadow-5">
+    <div className="builder__spacer-buttons box-shadow-5 inline-flex h-8 justify-center rounded-lg bg-white px-2 text-xs text-magenta">
       {!isCurrentlyBread && !isEmptyIngredient && (
         <>
           <button
-            className={`btn-wrapper px-2 ${ingredientPlace.isPresent ? 'fill-magenta' : 'fill-cyan2'}`}
+            className={`btn-wrapper px-2 ${ingredientPlace.isPresent ? 'fill-magenta' : 'fill-cyan2-500'}`}
             style={
               ingredientPlace.isPresent
                 ? {
@@ -105,10 +100,9 @@ const SandwichBuildButtons = () => {
       <button
         className={`btn-wrapper px-2 ${
           ingredientPlace.isPresent || (isEmptyIngredient && !isTypeInSandwich(currentType, sandwich))
-            ? 'text-cyan2'
+            ? 'text-cyan2-500'
             : 'fill-magenta'
-        } ${isSandwichEmpty ? 'flex items-center justify-center' : ''}
-        ${ingredientPlace.isPresent || (hasToBeKosher && !isStillKosher) ? 'cursor-not-allowed' : ''}`}
+        } ${isSandwichEmpty ? 'flex items-center justify-center' : ''} ${ingredientPlace.isPresent || (hasToBeKosher && !isStillKosher) ? 'cursor-not-allowed' : ''}`}
         disabled={isMaxIngredientsReached && !ingredientPlace.isPresent}
         title="Confirm ingredient"
         onClick={isEmptyIngredient ? clearOfCurrentTypeHandler : confirmHandler}

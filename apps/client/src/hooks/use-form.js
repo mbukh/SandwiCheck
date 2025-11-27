@@ -1,15 +1,12 @@
 import { useState } from 'react';
-import { useNavigate, useMatchRoute } from '@tanstack/react-router';
-
+import { useMatchRoute, useNavigate } from '@tanstack/react-router';
 import { useAuthGlobalContext } from '../context/AuthGlobalContext';
+import { useModalContext } from '../context/ModalContext';
 import { ROUTE_PATHS } from '../routes';
-
 import { readSandwichFromCache } from '../services/api-sandwiches';
-
+import { isAuthRoute } from '../utils/auth-utils';
 import validateForm from '../utils/validate-utils';
 import useToast from './use-toast';
-import { useModalContext } from '../context/ModalContext';
-import { isAuthRoute } from '../utils/auth-utils';
 
 const useForm = () => {
   const [name, setName] = useState('');
@@ -52,8 +49,10 @@ const useForm = () => {
       destination = unExpiredSavedSandwich ? ROUTE_PATHS.CREATE : ROUTE_PATHS.MENU;
     }
 
-    // Close any active modal programmatically before navigation
-    // This prevents the modal from trying to navigate back in history
+    /*
+     * Close any active modal programmatically before navigation
+     * This prevents the modal from trying to navigate back in history
+     */
     const modalWasClosed = closeActiveModal();
 
     if (modalWasClosed) {
@@ -121,7 +120,7 @@ const useForm = () => {
     return { success: true, needsEmailConfirmation: false };
   };
 
-  const handleFileChange = (event) => {
+  const handleFileChange = (_event) => {
     /*
      * setFiles((prev) => {
      *     return { ...prev, [event.target.name]: event.target.files[0] };

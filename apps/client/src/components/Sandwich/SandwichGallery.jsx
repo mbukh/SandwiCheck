@@ -1,17 +1,13 @@
-import { useState, useEffect, useLayoutEffect } from 'react';
-import { Link, useNavigate, useMatchRoute, useSearch } from '@tanstack/react-router';
-
-import { ROUTE_PATHS } from '../../routes';
-import { capitalizeFirst } from '../../utils/utils';
-
-import useGallery from '../../hooks/use-gallery';
-
+import { useEffect, useLayoutEffect, useState } from 'react';
+import { Link, useMatchRoute, useNavigate, useSearch } from '@tanstack/react-router';
 import { useAuthGlobalContext } from '../../context/AuthGlobalContext';
 import { useIngredientsGlobalContext } from '../../context/IngredientsGlobalContext';
-
+import useGallery from '../../hooks/use-gallery';
+import { ROUTE_PATHS } from '../../routes/';
+import { capitalizeFirst } from '../../utils/utils';
 import Loading from '../Loading';
-import EmptyGallery from './EmptyGallery';
 import SandwichCard from '../Sandwich/Card/SandwichCard';
+import EmptyGallery from './EmptyGallery';
 import SandwichModal from './SandwichModal';
 
 const SandwichGallery = ({ children, galleryType = '' }) => {
@@ -20,7 +16,7 @@ const SandwichGallery = ({ children, galleryType = '' }) => {
   const { areIngredientsReady } = useIngredientsGlobalContext();
   const { gallerySandwiches, setGallerySandwiches, fetchSandwiches, fetchUserSandwiches } = useGallery();
   const matchRoute = useMatchRoute();
-  const familyRouteMatch = matchRoute({ to: '/family/$childId' });
+  const familyRouteMatch = matchRoute({ to: ROUTE_PATHS.FAMILY_CHILD });
   const familySandwichRouteMatch = matchRoute({ to: '/family/$childId/sandwich/$sandwichId' });
   const childId = familyRouteMatch?.childId || familySandwichRouteMatch?.childId;
   const navigate = useNavigate();
@@ -40,7 +36,7 @@ const SandwichGallery = ({ children, galleryType = '' }) => {
 
     // Redirect if childId doesn't match user's children
     if (isCurrentUserReady && childId && !currentUser?.children?.some((child) => child.id === childId)) {
-      navigate({ to: '/login' });
+      navigate({ to: ROUTE_PATHS.LOGIN });
       return;
     }
   }, [isCurrentUserReady, galleryType, currentUser, childId, navigate]);
@@ -141,12 +137,12 @@ const SandwichGallery = ({ children, galleryType = '' }) => {
 
   return (
     <>
-      <div className="sandwich-gallery pt-4 pb-12 px-5 md:pt-6 md:pb-16 md:px-12 lg:pb-20 xl:px-20">
-        <h1 className="text-center text-lg uppercase text-shadow-10 pb-2 md:pb-3">
+      <div className="sandwich-gallery px-5 pt-4 pb-12 md:px-12 md:pt-6 md:pb-16 lg:pb-20 xl:px-20">
+        <h1 className="text-shadow-10 pb-2 text-center text-lg uppercase md:pb-3">
           {childId && (
             <Link
               to={ROUTE_PATHS.FAMILY}
-              className="button bg-magenta text-white inline-block p-2 mr-4 md:my-4 text-xs md:text-sm min-w-fit"
+              className="button mr-4 inline-block min-w-fit bg-magenta p-2 text-xs text-white md:my-4 md:text-sm"
             >
               Back
             </Link>
@@ -154,7 +150,7 @@ const SandwichGallery = ({ children, galleryType = '' }) => {
           {childGalleryTitle || galleryTypeTitle || userGalleryTitle}
         </h1>
         {childId && <div className="mx-auto mt-2 mb-4 h-px w-24 bg-magenta/30"></div>}
-        <div className="size-full flex flex-wrap -mx-2 sm:-mx-3">
+        <div className="-mx-2 flex size-full flex-wrap sm:-mx-3">
           {gallerySandwiches.length > 0 ? (
             gallerySandwiches.map((sandwich, index) => (
               <SandwichCard

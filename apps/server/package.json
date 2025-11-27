@@ -31,9 +31,10 @@
     "mongoose": "^9.0.0",
     "morgan": "^1.10.1",
     "multer": "^2.0.2",
-    "nodemailer": "^7.0.10",
+    "nodemailer": "^7.0.11",
     "sharp": "^0.34.5",
-    "winston": "^3.18.3"
+    "winston": "^3.18.3",
+    "@sandwicheck/shared-utils": "workspace:*"
   },
   "devDependencies": {
     "@types/nodemailer": "^7.0.4",

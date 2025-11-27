@@ -4,19 +4,15 @@
   --headerHeight: 80px;
   --footerHeight: 30px;
 
-  --black: #000;
-  --white: #fff;
-  --magenta: #e6127d;
-  --light-gray: #e0e0e0;
-
-  --button-color: var(--magenta);
+  --color-magenta: #e6127d;
+  --color-cyan2-500: #00c1d5;
 
   --card-bg-1: #ff4338;
   --card-bg-2: #fdde15;
   --card-bg-3: #6dcff6;
   --card-bg-4: #f9be01;
 
-  --swiper-navigation-size: 44px;
+  --swiper-navigation-size: 3rem;
 
   --text-xxs: 0.625rem;
 }
@@ -47,7 +43,7 @@
 @font-face {
   font-family: LidlFontPro;
   font-style: normal;
-  font-weight: 700;
+  @apply font-bold;
   src:
     url('../assets/fonts/LidlFontPro/LidlFontPro-Bold.woff2') format('woff2'),
     url('../assets/fonts/LidlFontPro/LidlFontPro-Bold.woff') format('woff');
@@ -81,7 +77,7 @@ html:has(.root-portal) {
 }
 
 body {
-  color: var(--white);
+  color: var(--color-white);
   line-height: 1.5;
 }
 
@@ -116,15 +112,15 @@ a:hover {
   text-decoration: none;
 }
 i {
-  color: var(--white);
+  color: var(--color-white);
 }
 
 button,
 .button,
 input,
 textarea {
-  background: var(--white);
-  color: var(--button-color);
+  background: var(--color-white);
+  color: var(--color-magenta);
   border: none;
   outline: none;
   border-radius: 0.5em;
@@ -134,14 +130,9 @@ textarea {
 
 button,
 .button {
-  text-transform: uppercase;
-  font-weight: 700;
+  @apply uppercase;
+  @apply font-bold;
   text-align: center;
-}
-
-.button.bg-white,
-.button.bg-white.text-magenta {
-  color: var(--button-color) !important;
 }
 
 .create-sandwich button:not(.btn-wrapper),
@@ -168,8 +159,8 @@ textarea::placeholder {
 }
 
 button.active {
-  background-color: var(--button-color);
-  color: var(--white);
+  background-color: var(--color-magenta);
+  color: var(--color-white);
   cursor: default;
 }
 
@@ -264,24 +255,6 @@ select option[value=''] {
     transition: none;
   }
 
-  .text-magenta {
-    --text-opacity: 1;
-    color: #e6127d;
-    color: rgba(230, 18, 125, var(--text-opacity));
-  }
-
-  .text-cyan2 {
-    --text-opacity: 1;
-    color: #00c1d5;
-    color: rgba(0, 193, 213, var(--text-opacity));
-  }
-
-  .text-yellow {
-    --text-opacity: 1;
-    color: #f9be01;
-    color: rgba(249, 190, 1, var(--text-opacity));
-  }
-
   /* *** TEXT *** */
 
   /* *** EFFECTS *** */
@@ -300,7 +273,7 @@ select option[value=''] {
     background-color: rgba(230, 18, 125, var(--bg-opacity));
   }
 
-  .bg-cyan2 {
+  .bg-cyan2-500 {
     --bg-opacity: 1;
     background-color: #00c1d5;
     background-color: rgba(0, 193, 213, var(--bg-opacity));
@@ -396,8 +369,8 @@ header a {
 
 header a:hover,
 header a.active {
-  border-bottom: 2px solid var(--white);
-  border-top: 2px solid var(--white);
+  border-bottom: 2px solid var(--color-white);
+  border-top: 2px solid var(--color-white);
 }
 
 header a.no-hover.active {
@@ -406,7 +379,7 @@ header a.no-hover.active {
 }
 
 header .mobile-menu {
-  background: var(--black);
+  background: var(--color-black);
   opacity: 0;
   visibility: hidden;
 }
@@ -434,7 +407,7 @@ header .mobile-menu.open {
 .navbar .hamburger > * {
   height: 3px;
   width: 100%;
-  background: var(--white);
+  background: var(--color-white);
 }
 
 .navbar .hamburger :first-child {
@@ -503,7 +476,7 @@ header .mobile-menu.open {
 }
 
 .sandwich-card.active-card .card-wrapper {
-  border: 3px solid var(--magenta);
+  border: 3px solid var(--color-magenta);
   box-shadow: 0 0 15px rgba(230, 18, 125, 0.5);
 }
 

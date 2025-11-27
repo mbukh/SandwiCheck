@@ -3,12 +3,7 @@ import Signup from './Signup';
 
 const SignupModal = ({ setIsOpenLoginModal, closeLink = '' }) => {
   return (
-    <Modal
-      modalId="signup"
-      setIsOpenLoginModal={setIsOpenLoginModal}
-      isModalLoading={false}
-      closeLink={closeLink}
-    >
+    <Modal modalId="signup" setIsOpenLoginModal={setIsOpenLoginModal} isModalLoading={false} closeLink={closeLink}>
       <Signup />
     </Modal>
   );

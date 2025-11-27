@@ -1,27 +1,20 @@
-import path from 'node:path';
-import { CONFIG_DIR, CLIENT_DIR, UPLOADS_DIR } from './config/dir.js';
-
-import connectDB from './config/db.js';
-
 import express from 'express';
-import cookieParser from 'cookie-parser';
-
-import cors from 'cors';
+import { rateLimit } from 'express-rate-limit';
 import { xss } from 'express-xss-sanitizer';
-import hpp from 'hpp';
-import rateLimit from 'express-rate-limit';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
 import helmet from 'helmet';
-
+import hpp from 'hpp';
 import morgan from 'morgan';
-
-import logger, { morganStream, getLoggerLevel } from './utils/logger.js';
+import connectDB from './config/db.js';
+import { CLIENT_DIR, UPLOADS_DIR } from './config/dir.js';
 import errorHandler from './middleware/errorHandler.js';
 import requestIdMiddleware from './middleware/requestIdMiddleware.js';
-
+import authRoutes from './routes/authRoutes.js';
 import ingredientsRoutes from './routes/ingredientsRoutes.js';
 import sandwichesRoutes from './routes/sandwichesRoutes.js';
-import authRoutes from './routes/authRoutes.js';
 import usersRoutes from './routes/usersRoutes.js';
+import logger, { getLoggerLevel, morganStream } from './utils/logger.js';
 
 const app = express();
 
@@ -68,12 +61,12 @@ if (getLoggerLevel() === 'debug') {
     const status = tokens.status(request, res);
     const responseTime = tokens['response-time'](request, res);
     const remoteAddr = tokens['remote-addr'](request, res);
-    const userAgent = tokens['user-agent'](request, res);
+    // const userAgent = tokens['user-agent'](request, res);
 
     // Sanitize URL - remove tokens from query params and paths
     let sanitizedUrl = url;
     // Remove tokens from URL path (e.g., /confirm-email/TOKEN)
-    sanitizedUrl = sanitizedUrl.replaceAll(/\/(confirm-email|reset-password|reset-password\/)[^\/\s]+/gi, (match) => {
+    sanitizedUrl = sanitizedUrl.replaceAll(/\/(confirm-email|reset-password|reset-password\/)[^/\s]+/gi, (match) => {
       const parts = match.split('/');
       if (parts.length > 0) {
         const lastPart = parts.at(-1);
@@ -87,13 +80,12 @@ if (getLoggerLevel() === 'debug') {
     // Remove tokens from query params
     sanitizedUrl = sanitizedUrl.replaceAll(/([?&])(token|resetToken|confirmationToken)=[^&\s]+/gi, '$1$2=***');
 
+    const logMessage = `${sanitizedUrl} ${status} ${responseTime}ms`;
     if (nodeEnvironment === 'production') {
-      // Production: minimal format (no user agent, sanitized)
-      return `${remoteAddr} - ${method} ${sanitizedUrl} ${status} ${responseTime}ms`;
-    } else {
-      // Development: more details but still sanitized
-      return `${method} ${sanitizedUrl} ${status} ${responseTime}ms - ${remoteAddr}`;
+      return logMessage;
     }
+    // Development: more details but still sanitized
+    return `${method} ${logMessage} - ${remoteAddr}`;
   };
 
   app.use(morgan(sanitizedFormat, { stream: morganStream }));
@@ -149,7 +141,7 @@ try {
       message: error.message,
     },
   });
-  process.exit(1);
+  throw error;
 }
 
 // Handle uncaught exceptions
@@ -170,7 +162,7 @@ process.on('uncaughtException', (error) => {
 });
 
 // Handle unhandled promise rejections
-process.on('unhandledRejection', (error, promise) => {
+process.on('unhandledRejection', (error, _promise) => {
   logger.error('Unhandled Rejection - shutting down:', {
     message: error?.message || String(error),
     stack: error?.stack,

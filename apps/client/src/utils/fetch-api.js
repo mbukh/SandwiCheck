@@ -28,17 +28,17 @@ export function createFetchApi(baseURL, defaultHeaders = {}) {
     // Handle query parameters
     if (params && Object.keys(params).length > 0) {
       const searchParams = new URLSearchParams();
-      Object.entries(params).forEach(([key, value]) => {
+      for (const [key, value] of Object.entries(params)) {
         // Skip undefined and null values
         if (value !== undefined && value !== null) {
           // Handle arrays (e.g., dietaryPreferences: ['kosher', 'vegan'])
           if (Array.isArray(value)) {
-            value.forEach((item) => searchParams.append(key, item));
+            for (const item of value) searchParams.append(key, item);
           } else {
             searchParams.append(key, String(value));
           }
         }
-      });
+      }
       const queryString = searchParams.toString();
       if (queryString) {
         fullUrl += `?${queryString}`;
@@ -97,7 +97,7 @@ export function createFetchApi(baseURL, defaultHeaders = {}) {
     if (contentType.includes('application/json')) {
       try {
         return await response.json();
-      } catch (error) {
+      } catch {
         // If JSON parsing fails, return text
         return await response.text();
       }
@@ -147,9 +147,11 @@ export function createFetchApi(baseURL, defaultHeaders = {}) {
 
       // For non-ok responses, throw error (matching axios behavior)
       if (!response.ok) {
-        // Server error format: { success: false, error: { status, message, code?, cooldownRemainingMs? } }
-        // Ensure error structure matches what catch blocks expect
-        // Normalize data to always be an object (handle non-JSON error responses)
+        /*
+         * Server error format: { success: false, error: { status, message, code?, cooldownRemainingMs? } }
+         * Ensure error structure matches what catch blocks expect
+         * Normalize data to always be an object (handle non-JSON error responses)
+         */
         let errorData = data;
         if (!errorData || typeof errorData === 'string') {
           // If data is string or null, wrap it in expected structure
@@ -189,8 +191,10 @@ export function createFetchApi(baseURL, defaultHeaders = {}) {
         throw error;
       }
 
-      // Network errors (fetch rejections)
-      // Match axios error structure for catch blocks
+      /*
+       * Network errors (fetch rejections)
+       * Match axios error structure for catch blocks
+       */
       throw {
         response: {
           data: {

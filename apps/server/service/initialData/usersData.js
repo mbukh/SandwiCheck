@@ -1,8 +1,10 @@
 import { DIETARY_PREFERENCE as D_P } from '../../constants/ingredientsConstants.js';
 import { ROLE } from '../../constants/usersConstants.js';
 
-// Family 1: Greek Orthodox family (2 parents + 2 children)
-// Nationality: Greek | Food priorities: Mediterranean, kosher-compatible, vegetarian-friendly
+/*
+ * Family 1: Greek Orthodox family (2 parents + 2 children)
+ * Nationality: Greek | Food priorities: Mediterranean, kosher-compatible, vegetarian-friendly
+ */
 export const papadopoulosFamily = [
   {
     name: 'Dimitri Papadopoulos',
@@ -40,8 +42,10 @@ export const papadopoulosFamily = [
   },
 ];
 
-// Family 2: Single mother with child (Middle Eastern/Muslim)
-// Nationality: Middle Eastern | Food priorities: Halal, traditional Middle Eastern
+/*
+ * Family 2: Single mother with child (Middle Eastern/Muslim)
+ * Nationality: Middle Eastern | Food priorities: Halal, traditional Middle Eastern
+ */
 export const alRashidFamily = [
   {
     name: 'Fatima Al-Rashid',
@@ -62,8 +66,10 @@ export const alRashidFamily = [
   },
 ];
 
-// Family 3: American family (2 parents + 1 child)
-// Nationality: American | Food priorities: General American, flexible preferences
+/*
+ * Family 3: American family (2 parents + 1 child)
+ * Nationality: American | Food priorities: General American, flexible preferences
+ */
 export const johnsonFamily = [
   {
     name: 'Michael Johnson',
@@ -92,8 +98,10 @@ export const johnsonFamily = [
   },
 ];
 
-// Family 4: Israeli Jewish family (2 parents + 4 children)
-// Nationality: Israeli | Food priorities: Strict kosher, traditional Jewish cuisine
+/*
+ * Family 4: Israeli Jewish family (2 parents + 4 children)
+ * Nationality: Israeli | Food priorities: Strict kosher, traditional Jewish cuisine
+ */
 export const cohenFamily = [
   {
     name: 'Yitzhak Cohen',
@@ -201,8 +209,10 @@ export const singleAdults = [
   },
 ];
 
-// Family 5: French family (1 parent + 1 child)
-// Nationality: French | Food priorities: Classic French cuisine, quality ingredients
+/*
+ * Family 5: French family (1 parent + 1 child)
+ * Nationality: French | Food priorities: Classic French cuisine, quality ingredients
+ */
 export const duboisFamily = [
   {
     name: 'Pierre Dubois',

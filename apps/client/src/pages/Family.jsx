@@ -1,16 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useMatchRoute, Outlet, useNavigate } from '@tanstack/react-router';
-
-import { useAuthGlobalContext } from '../context/AuthGlobalContext';
-import { ROUTE_PATHS } from '../routes';
-
+import { Link, Outlet, useMatchRoute, useNavigate } from '@tanstack/react-router';
 import Loading from '../components/Loading';
-import UserCard from '../components/UserCard';
-import useToast from '../hooks/use-toast';
-import * as apiUsers from '../services/api-users';
-import * as apiAuth from '../services/api-auth';
-import { logResponse } from '../utils/log';
 import Modal from '../components/Modal/Modal';
+import UserCard from '../components/UserCard';
+import { useAuthGlobalContext } from '../context/AuthGlobalContext';
+import useToast from '../hooks/use-toast';
+import { ROUTE_PATHS } from '../routes';
+import * as apiAuth from '../services/api-auth';
+import * as apiUsers from '../services/api-users';
+import { logResponse } from '../utils/log';
 
 const Family = () => {
   const {
@@ -43,7 +41,7 @@ const Family = () => {
   }, [isCurrentUserReady, currentUser.id, navigate]);
 
   useEffect(() => {
-    const isOnChildRoute = Boolean(matchRoute({ to: '/family/$childId' }));
+    const isOnChildRoute = Boolean(matchRoute({ to: ROUTE_PATHS.FAMILY_CHILD }));
     if (actingAsChild && !isOnChildRoute) {
       setIsAddChildOpen(false);
     }
@@ -179,7 +177,7 @@ const Family = () => {
   if (isCurrentUserReady && !currentUser.id) return null;
 
   // If viewing a specific child's menu under /family/$childId, render nested route only
-  const isOnChildRoute = Boolean(matchRoute({ to: '/family/$childId' }));
+  const isOnChildRoute = Boolean(matchRoute({ to: ROUTE_PATHS.FAMILY_CHILD }));
   if (isOnChildRoute) {
     return <Outlet />;
   }
@@ -187,20 +185,20 @@ const Family = () => {
   // If acting as child, show restricted view
   if (actingAsChild) {
     return (
-      <div className="sandwich-gallery pt-4 pb-12 px-5 md:pt-6 md:pb-16 md:px-12 lg:pb-20 xl:px-20">
-        <h1 className="text-center text-lg uppercase text-shadow-10">My family</h1>
-        <div className="flex flex-col items-center gap-4 mt-8 mb-6 text-shadow-5 animate-fade-in">
-          <p className="text-base md:text-lg text-center max-w-md">
+      <div className="sandwich-gallery px-5 pt-4 pb-12 md:px-12 md:pt-6 md:pb-16 lg:pb-20 xl:px-20">
+        <h1 className="text-shadow-10 text-center text-lg uppercase">My family</h1>
+        <div className="text-shadow-5 animate-fade-in mt-8 mb-6 flex flex-col items-center gap-4">
+          <p className="max-w-md text-center text-base md:text-lg">
             You are managing <strong>{currentUser.name}</strong>&apos;s account.
           </p>
-          <p className="text-xs md:text-sm text-center text-magenta/80 max-w-md">
+          <p className="max-w-md text-center text-xs text-magenta/80 md:text-sm">
             Family management is restricted. Return to your parent account to manage family members.
           </p>
           <button
             type="button"
             onClick={handleSwitchToParent}
             disabled={isSwitchingParent}
-            className="button bg-white text-magenta border-2 border-magenta px-6 py-3 rounded-lg text-sm md:text-base uppercase font-bold hover:scale-105 transition-transform box-shadow-10"
+            className="button box-shadow-10 rounded-lg border-2 border-magenta bg-white px-6 py-3 text-sm font-bold text-magenta uppercase transition-transform hover:scale-105 md:text-base"
           >
             {isSwitchingParent ? 'Switching...' : 'Return to Parent Account'}
           </button>
@@ -211,21 +209,21 @@ const Family = () => {
   }
 
   return (
-    <div className="sandwich-gallery pt-4 pb-12 px-5 md:pt-6 md:pb-16 md:px-12 lg:pb-20 xl:px-20">
-      <h1 className="text-center text-lg uppercase text-shadow-10">My family</h1>
+    <div className="sandwich-gallery px-5 pt-4 pb-12 md:px-12 md:pt-6 md:pb-16 lg:pb-20 xl:px-20">
+      <h1 className="text-shadow-10 text-center text-lg uppercase">My family</h1>
 
       <RestoredFromChildNote />
 
       {isParentSession && (
-        <div className="sandwich-gallery-title w-full py-4 px-5 md:py-5 md:px-12 xl:px-20">
+        <div className="sandwich-gallery-title w-full px-5 py-4 md:px-12 md:py-5 xl:px-20">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div className="flex items-center gap-3 flex-wrap text-shadow-10">
+            <div className="text-shadow-10 flex flex-wrap items-center gap-3">
               <button
                 type="button"
-                className="inline-flex items-center justify-center appearance-none focus:outline-none rounded-lg box-shadow-10 font-bold uppercase bg-magenta text-white py-2 px-4 md:py-3 md:px-5 text-xs md:text-sm xl:box-shadow-20 hover:scale-105 transition-transform duration-200"
+                className="box-shadow-10 xl:box-shadow-20 inline-flex appearance-none items-center justify-center rounded-lg bg-magenta px-4 py-2 text-xs font-bold text-white uppercase transition-transform duration-200 hover:scale-105 focus:outline-none md:px-5 md:py-3 md:text-sm"
                 onClick={() => setIsAddChildOpen(true)}
               >
-                <i className="icon icon-plus h-4 w-4 md:h-5 md:w-5 mr-2"></i>
+                <i className="icon icon-plus mr-2 h-4 w-4 md:h-5 md:w-5"></i>
                 Add child
               </button>
 
@@ -233,7 +231,7 @@ const Family = () => {
                 <>
                   <button
                     type="button"
-                    className="inline-flex items-center justify-center appearance-none focus:outline-none rounded-lg box-shadow-10 font-bold uppercase bg-magenta text-white py-2 px-4 md:py-3 md:px-5 text-xs md:text-sm xl:box-shadow-20 hover:scale-105 transition-transform duration-200"
+                    className="box-shadow-10 xl:box-shadow-20 inline-flex appearance-none items-center justify-center rounded-lg bg-magenta px-4 py-2 text-xs font-bold text-white uppercase transition-transform duration-200 hover:scale-105 focus:outline-none md:px-5 md:py-3 md:text-sm"
                     onClick={async () => {
                       try {
                         if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -260,11 +258,11 @@ const Family = () => {
                       }
                     }}
                   >
-                    <i className="icon icon-select-arrows h-4 w-4 md:h-5 md:w-5 mr-2"></i>
+                    <i className="icon icon-select-arrows mr-2 h-4 w-4 md:h-5 md:w-5"></i>
                     Copy invite link
                   </button>
                   <Link
-                    className="inline-flex items-center gap-2 appearance-none focus:outline-none rounded-lg box-shadow-10 font-bold uppercase bg-magenta text-white py-2 px-4 md:py-3 md:px-5 text-xs md:text-sm xl:box-shadow-20 hover:scale-105 transition-transform duration-200"
+                    className="box-shadow-10 xl:box-shadow-20 inline-flex appearance-none items-center gap-2 rounded-lg bg-magenta px-4 py-2 text-xs font-bold text-white uppercase transition-transform duration-200 hover:scale-105 focus:outline-none md:px-5 md:py-3 md:text-sm"
                     to={shareLink}
                     target="_blank"
                   >
@@ -283,14 +281,14 @@ const Family = () => {
               modalId="add-child-modal"
               setIsOpenLoginModal={setIsAddChildOpen}
             >
-              <div className="w-full max-w-screen-sm md:max-w-screen-md mx-auto px-4">
-                <form className="bg-white/95 rounded-lg p-4 md:p-6 box-shadow-10" onSubmit={handleCreateChild}>
-                  <h2 className="text-center text-sm md:text-base uppercase text-magenta font-bold mb-4">
+              <div className="mx-auto w-full max-w-screen-sm px-4 md:max-w-3xl">
+                <form className="box-shadow-10 rounded-lg bg-white/95 p-4 md:p-6" onSubmit={handleCreateChild}>
+                  <h2 className="mb-4 text-center text-sm font-bold text-magenta uppercase md:text-base">
                     Add a child
                   </h2>
                   <div className="mb-4">
                     <label
-                      className="block text-xs md:text-sm uppercase mb-2 text-magenta font-bold"
+                      className="mb-2 block text-xs font-bold text-magenta uppercase md:text-sm"
                       htmlFor="child-name"
                     >
                       Child name
@@ -298,7 +296,7 @@ const Family = () => {
                     <input
                       id="child-name"
                       type="text"
-                      className="w-full appearance-none focus:outline-none rounded-lg box-shadow-10 bg-white text-magenta text-sm md:text-base py-2 px-4 md:py-3 md:px-6 xl:box-shadow-20 border-none placeholder-magenta/50"
+                      className="box-shadow-10 xl:box-shadow-20 w-full appearance-none rounded-lg border-none bg-white px-4 py-2 text-sm text-magenta placeholder-magenta/50 focus:outline-none md:px-6 md:py-3 md:text-base"
                       placeholder="e.g. Jamie"
                       value={newChildName}
                       onChange={(event) => setNewChildName(event.target.value)}
@@ -306,11 +304,11 @@ const Family = () => {
                       autoFocus
                     />
                   </div>
-                  {createError && <p className="text-xs text-red-500 mt-2 font-bold">{createError}</p>}
-                  <div className="flex justify-end mt-4 gap-2">
+                  {createError && <p className="mt-2 text-xs font-bold text-red-500">{createError}</p>}
+                  <div className="mt-4 flex justify-end gap-2">
                     <button
                       type="button"
-                      className="inline-flex items-center justify-center appearance-none focus:outline-none rounded-lg box-shadow-10 font-bold uppercase bg-white text-magenta border border-magenta py-2 px-4 text-xs md:text-sm"
+                      className="box-shadow-10 inline-flex appearance-none items-center justify-center rounded-lg border border-magenta bg-white px-4 py-2 text-xs font-bold text-magenta uppercase focus:outline-none md:text-sm"
                       onClick={() => setIsAddChildOpen(false)}
                       disabled={isCreatingChild}
                     >
@@ -318,7 +316,7 @@ const Family = () => {
                     </button>
                     <button
                       type="submit"
-                      className="inline-flex items-center justify-center appearance-none focus:outline-none rounded-lg box-shadow-10 font-bold uppercase bg-magenta text-white py-2 px-6 md:py-3 md:px-8 text-xs md:text-sm xl:box-shadow-20 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 transition-transform duration-200"
+                      className="box-shadow-10 xl:box-shadow-20 inline-flex appearance-none items-center justify-center rounded-lg bg-magenta px-6 py-2 text-xs font-bold text-white uppercase transition-transform duration-200 hover:scale-105 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:px-8 md:py-3 md:text-sm"
                       disabled={isCreatingChild}
                     >
                       {isCreatingChild ? 'Creating…' : 'Create child'}
@@ -331,7 +329,7 @@ const Family = () => {
         </div>
       )}
 
-      <div className="size-full flex flex-wrap -mx-2 sm:-mx-3 text-shadow-10 text-nowrap shrink-0">
+      <div className="text-shadow-10 -mx-2 flex size-full shrink-0 flex-wrap text-nowrap sm:-mx-3">
         {children.length > 0 ? (
           children.map((child, index) => (
             <UserCard
@@ -350,7 +348,7 @@ const Family = () => {
             />
           ))
         ) : (
-          <div className="w-full bg-white/80 rounded-lg p-6 md:p-8 text-center text-shadow-5 box-shadow-10">
+          <div className="text-shadow-5 box-shadow-10 w-full rounded-lg bg-white/80 p-6 text-center md:p-8">
             <p className="text-sm md:text-base">
               {isParentSession
                 ? 'Add your first child to start planning family sandwiches together.'
@@ -368,7 +366,7 @@ const Family = () => {
 };
 
 export default Family;
- 
+
 const RestoredFromChildNote = () => {
   const [restoredName, setRestoredName] = useState('');
   useEffect(() => {
@@ -385,10 +383,10 @@ const RestoredFromChildNote = () => {
       // no-op
     }
   }, []);
- 
+
   if (!restoredName) return null;
   return (
-    <div className="text-center text-xs md:text-sm mt-1 mb-3 text-magenta font-bold uppercase text-shadow-5">
+    <div className="text-shadow-5 mt-1 mb-3 text-center text-xs font-bold text-magenta uppercase md:text-sm">
       Switched from managing {restoredName} back to your parent account
     </div>
   );

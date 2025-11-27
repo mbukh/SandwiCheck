@@ -18,13 +18,13 @@ export const isAuthRoute = (pathname) => {
 
   // Pattern matches for auth routes with parameters
   const authRoutePatterns = [
-    /^\/reset-password\/[^/]+$/,  // /reset-password/*
-    /^\/confirm-email\/[^/]+$/,   // /confirm-email/*
-    /^\/login\/parent\/[^/]+$/,   // /login/parent/*
-    /^\/signup\/parent\/[^/]+$/   // /signup/parent/*
+    /^\/reset-password\/[^/]+$/, // /reset-password/*
+    /^\/confirm-email\/[^/]+$/, // /confirm-email/*
+    /^\/login\/parent\/[^/]+$/, // /login/parent/*
+    /^\/signup\/parent\/[^/]+$/, // /signup/parent/*
   ];
 
-  return authRoutePatterns.some(pattern => pattern.test(pathname));
+  return authRoutePatterns.some((pattern) => pattern.test(pathname));
 };
 
 export default { isAuthRoute };

@@ -1,13 +1,13 @@
-import { useEffect, useState, useRef } from 'react';
-import { Link, useNavigate, useSearch, useLocation } from '@tanstack/react-router';
-
-import { ROUTE_PATHS } from '../../routes';
+import { useEffect, useRef, useState } from 'react';
+import { Link, useLocation, useNavigate, useSearch } from '@tanstack/react-router';
+import { formatDuration } from '@sandwicheck/shared-utils';
+import { useAuthGlobalContext } from '../../context/AuthGlobalContext';
 import useForm from '../../hooks/use-form';
 import useToast from '../../hooks/use-toast';
+import { ROUTE_PATHS } from '../../routes';
 import * as apiAuth from '../../services/api-auth';
-import { isAuthRoute } from '../../utils/auth-utils';
-import { useAuthGlobalContext } from '../../context/AuthGlobalContext';
 import { readSandwichFromCache } from '../../services/api-sandwiches';
+import { isAuthRoute } from '../../utils/auth-utils';
 
 const Login = () => {
   const { showToast, toastComponents } = useToast();
@@ -97,21 +97,6 @@ const Login = () => {
     };
   }, []);
 
-  // Format cooldown time for display
-  const formatCooldownTime = (ms) => {
-    if (ms === null || ms <= 0) return null;
-    const totalSeconds = Math.ceil(ms / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-
-    if (minutes > 0) {
-      return seconds > 0
-        ? `${minutes} minute${minutes === 1 ? '' : 's'} and ${seconds} second${seconds === 1 ? '' : 's'}`
-        : `${minutes} minute${minutes === 1 ? '' : 's'}`;
-    }
-    return `${seconds} second${seconds === 1 ? '' : 's'}`;
-  };
-
   const handleResendConfirmation = async () => {
     if (!email) {
       showToast('Please enter your email address first');
@@ -189,15 +174,15 @@ const Login = () => {
   };
 
   return (
-    <div className="login max-w-screen-md text-white text-center mx-auto">
-      <h1 className="text-magenta font-bold text-2xl md:text-4xl xl:text-5xl uppercase mb-3 md:mb-5">
+    <div className="login mx-auto max-w-3xl text-center text-white">
+      <h1 className="mb-3 text-2xl font-bold text-magenta uppercase md:mb-5 md:text-4xl xl:text-5xl">
         Sandwich creativity with SandwiCheck!
       </h1>
       <h4 className="text-base md:text-xl xl:text-3xl">Create and share your own delicious creations!</h4>
 
       {parentId && (
         <>
-          <div className="text-magenta text-base py-2 md:text-xl xl:text-3xl">
+          <div className="py-2 text-base text-magenta md:text-xl xl:text-3xl">
             You are about to be added as a <strong className="text-yellow">dependent in another user's account,</strong>{' '}
             which means that your information will become visible to those who have shared this link with you.
           </div>
@@ -205,7 +190,7 @@ const Login = () => {
       )}
 
       <form
-        className="needs-validation text-left text-sm mt-15 md:mt-20 xl:mt-24 md:px-5"
+        className="needs-validation mt-15 text-left text-sm md:mt-20 md:px-5 xl:mt-24"
         noValidate
         onSubmit={async (e) => {
           e.preventDefault();
@@ -223,7 +208,7 @@ const Login = () => {
           </label>
           <input
             id="login-email"
-            className="w-full appearance-none focus:outline-none rounded-lg box-shadow-10 bg-white text-magenta text-base xl:text-xl py-2 px-4 md:px-6 xl:py-3 xl:px-8 xl:box-shadow-20"
+            className="box-shadow-10 xl:box-shadow-20 w-full appearance-none rounded-lg bg-white px-4 py-2 text-base text-magenta focus:outline-none md:px-6 xl:px-8 xl:py-3 xl:text-xl"
             name="email"
             type="email"
             autoComplete="email"
@@ -245,7 +230,7 @@ const Login = () => {
           </label>
           <input
             id="login-password"
-            className="w-full appearance-none focus:outline-none rounded-lg box-shadow-10 bg-white text-magenta text-base xl:text-xl py-2 px-4 md:px-6 xl:py-3 xl:px-8 xl:box-shadow-20"
+            className="box-shadow-10 xl:box-shadow-20 w-full appearance-none rounded-lg bg-white px-4 py-2 text-base text-magenta focus:outline-none md:px-6 xl:px-8 xl:py-3 xl:text-xl"
             name="password"
             type="password"
             autoComplete="current-password"
@@ -260,18 +245,18 @@ const Login = () => {
           />
         </div>
 
-        <div className="mb-2 md:mb-4 text-right">
+        <div className="mb-2 text-right md:mb-4">
           <Link
             to={ROUTE_PATHS.FORGOT_PASSWORD}
             search={returnTo ? { returnTo } : {}}
-            className="underline text-sm md:text-base"
+            className="text-sm underline md:text-base"
           >
             Forgot Password?
           </Link>
         </div>
 
         {parentId ? (
-          <div className="mb-4 md:mb-6 custom-control custom-checkbox">
+          <div className="custom-control custom-checkbox mb-4 md:mb-6">
             <input
               className="custom-control-input"
               id="termsCheckbox"
@@ -288,22 +273,22 @@ const Login = () => {
             </label>
           </div>
         ) : (
-          <div className="mb-2 md:mb-5 custom-control custom-checkbox"></div>
+          <div className="custom-control custom-checkbox mb-2 md:mb-5"></div>
         )}
 
         {emailSentSuccessfully ? (
-          <div className="mb-4 md:mb-6 text-center">
-            <p className="text-base md:text-xl text-yellow font-semibold">
+          <div className="mb-4 text-center md:mb-6">
+            <p className="text-yellow text-base font-semibold md:text-xl">
               Please check your email to confirm your account.
             </p>
           </div>
         ) : showResendConfirmation ? (
-          <div className="mb-4 md:mb-6 text-center">
-            <p className="text-base md:text-xl mb-2">Need to resend the confirmation email?</p>
+          <div className="mb-4 text-center md:mb-6">
+            <p className="mb-2 text-base md:text-xl">Need to resend the confirmation email?</p>
             {cooldownRemainingMs !== null && cooldownRemainingMs > 0 ? (
               <div className="mb-2">
-                <p className="text-base md:text-lg text-yellow font-semibold">
-                  Please wait {formatCooldownTime(cooldownRemainingMs)} before requesting another confirmation email.
+                <p className="text-yellow text-base font-semibold md:text-lg">
+                  Please wait {formatDuration(cooldownRemainingMs)} before requesting another confirmation email.
                 </p>
               </div>
             ) : null}
@@ -311,7 +296,7 @@ const Login = () => {
               type="button"
               onClick={handleResendConfirmation}
               disabled={resending || (cooldownRemainingMs !== null && cooldownRemainingMs > 0)}
-              className="inline-flex justify-center items-center appearance-none focus:outline-none rounded-lg box-shadow-10 font-bold uppercase bg-yellow text-magenta h-8 md:h-10 xl:h-12 text-sm md:text-base xl:text-lg py-2 px-4 md:px-6 xl:box-shadow-20 disabled:opacity-50"
+              className="box-shadow-10 bg-yellow xl:box-shadow-20 inline-flex h-8 appearance-none items-center justify-center rounded-lg px-4 py-2 text-sm font-bold text-magenta uppercase focus:outline-none disabled:opacity-50 md:h-10 md:px-6 md:text-base xl:h-12 xl:text-lg"
             >
               {resending ? 'Sending...' : 'Resend Confirmation Email'}
             </button>
@@ -321,7 +306,7 @@ const Login = () => {
         <button
           type="submit"
           disabled={isLoggingIn}
-          className="w-full inline-flex justify-center items-center appearance-none focus:outline-none rounded-lg box-shadow-10 font-bold uppercase bg-magenta text-white h-8 md:h-12 xl:h-14 text-sm md:text-base xl:text-xl py-2 px-5 md:py-3 md:px-6 xl:px-8 xl:box-shadow-20 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="box-shadow-10 xl:box-shadow-20 inline-flex h-8 w-full appearance-none items-center justify-center rounded-lg bg-magenta px-5 py-2 text-sm font-bold text-white uppercase focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:h-12 md:px-6 md:py-3 md:text-base xl:h-14 xl:px-8 xl:text-xl"
         >
           <span>{isLoggingIn ? 'Logging in...' : 'Log in'}</span>
         </button>
@@ -329,7 +314,7 @@ const Login = () => {
 
       <br />
 
-      <div className="w-full mb-4 md:mb-6 flex justify-center items-center">
+      <div className="mb-4 flex w-full items-center justify-center md:mb-6">
         Don't have an account?
         {parentId ? (
           <Link

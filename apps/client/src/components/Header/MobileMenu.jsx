@@ -1,16 +1,15 @@
 import { Link } from '@tanstack/react-router';
-
 import { ROUTE_PATHS } from '../../routes';
 import ActingBanner from './ActingBanner';
 
 const MobileMenu = ({ isMobileMenuOpen, toggleMobileMenuHandler, authHandler, user }) => {
   return (
     <div
-      className={`mobile-menu fixed inset-0 w-full h-full z-9998 flex justify-center fade ${isMobileMenuOpen ? 'open' : 'close'}`}
+      className={`mobile-menu fade fixed inset-0 z-9998 flex h-full w-full justify-center ${isMobileMenuOpen ? 'open' : 'close'}`}
     >
       <ActingBanner className="absolute top-0 left-0" />
       <nav
-        className="navbar flex flex-col justify-center items-center uppercase font-bold text-xl"
+        className="navbar flex flex-col items-center justify-center text-xl font-bold uppercase"
         onClick={toggleMobileMenuHandler}
       >
         <Link to={ROUTE_PATHS.CREATE} activeProps={{ className: 'active' }}>

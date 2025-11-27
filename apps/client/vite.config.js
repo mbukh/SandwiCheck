@@ -1,14 +1,15 @@
+/* eslint-disable unicorn/import-style */
+import tailwindcss from '@tailwindcss/vite';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import react from '@vitejs/plugin-react';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
-import tailwindcss from '@tailwindcss/vite';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = dirname(__filename);
 
-// https://vitejs.dev/config/
+/** @type {import('vite').UserConfig} */
 export default defineConfig({
   plugins: [
     // Please make sure that '@tanstack/router-plugin' is passed before '@vitejs/plugin-react'
@@ -19,7 +20,7 @@ export default defineConfig({
     tailwindcss(),
     react({
       babel: {
-        plugins: [['babel-plugin-react-compiler']],
+        plugins: ['babel-plugin-react-compiler'],
       },
     }),
   ],
@@ -28,8 +29,8 @@ export default defineConfig({
   },
   test: {
     globals: true,
+    environment: 'jsdom',
     /*
-     * environment: 'jsdom',
      * setupFiles: ['./src/setupTests.js'],
      * environmentOptions: {
      *   jsdom: {
@@ -37,12 +38,13 @@ export default defineConfig({
      *   },
      * },
      */
+
     alias: {
-      '\\.(css|less|sass|scss)$': path.resolve(__dirname, '__mocks__/styleMock.js'),
-      '\\.(gif|ttf|eot|svg)$': path.resolve(__dirname, '__mocks__/fileMock.js'),
-      '^swiper/react$': path.resolve(__dirname, '__mocks__/swiper.js'),
-      '^swiper/css$': path.resolve(__dirname, '__mocks__/styleMock.js'),
-      '^swiper/css/(.*)$': path.resolve(__dirname, '__mocks__/styleMock.js'),
+      '\\.(css|less|sass|scss)$': resolve(__dirname, '__mocks__/styleMock.js'),
+      '\\.(gif|ttf|eot|svg)$': resolve(__dirname, '__mocks__/fileMock.js'),
+      '^swiper/react$': resolve(__dirname, '__mocks__/swiper.js'),
+      '^swiper/css$': resolve(__dirname, '__mocks__/styleMock.js'),
+      '^swiper/css/(.*)$': resolve(__dirname, '__mocks__/styleMock.js'),
     },
   },
 });

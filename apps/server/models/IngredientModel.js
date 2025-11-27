@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
-
-import { TYPE, SHAPE, DIETARY_PREFERENCE, PRODUCT, isBreadType } from '../constants/ingredientsConstants.js';
+import { DIETARY_PREFERENCE, isBreadType, PRODUCT, SHAPE, TYPE } from '../constants/ingredientsConstants.js';
 
 const { Schema } = mongoose;
 
@@ -21,7 +20,7 @@ const ingredientSchema = new Schema(
     },
     shape: {
       type: String,
-      enum: [...Object.values(SHAPE)],
+      enum: Object.values(SHAPE),
       validate: {
         validator: function () {
           return !isBreadType(this.type) || (isBreadType(this.type) && this.shape);
@@ -40,7 +39,7 @@ const ingredientSchema = new Schema(
       {
         type: String,
         enum: {
-          values: [...Object.values(DIETARY_PREFERENCE)],
+          values: Object.values(DIETARY_PREFERENCE),
           message: `Dietary preferences must be either ${Object.values(DIETARY_PREFERENCE).join(', ')}`,
         },
       },

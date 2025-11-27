@@ -1,12 +1,11 @@
 import { useState } from 'react';
-import { useParams, Link, useNavigate, useLocation } from '@tanstack/react-router';
-
+import { Link, useLocation, useNavigate, useParams } from '@tanstack/react-router';
+import useToast from '../../hooks/use-toast';
 import { ROUTE_PATHS } from '../../routes';
 import * as apiAuth from '../../services/api-auth';
-import useToast from '../../hooks/use-toast';
-import Loading from '../Loading';
-import validateForm from '../../utils/validate-utils';
 import { isAuthRoute } from '../../utils/auth-utils';
+import validateForm from '../../utils/validate-utils';
+import Loading from '../Loading';
 
 function ResetPassword() {
   const parameters = useParams({ strict: false });
@@ -57,16 +56,16 @@ function ResetPassword() {
   };
 
   return (
-    <div className="login max-w-screen-md text-white text-center mx-auto">
-      <h1 className="text-magenta font-bold text-2xl md:text-4xl xl:text-5xl uppercase mb-3 md:mb-5">
+    <div className="login mx-auto max-w-screen-md text-center text-white">
+      <h1 className="mb-3 text-2xl font-bold text-magenta uppercase md:mb-5 md:text-4xl xl:text-5xl">
         Sandwich creativity with SandwiCheck!
       </h1>
-      <h4 className="text-base md:text-xl xl:text-3xl mb-8 md:mb-10">Reset Your Password</h4>
+      <h4 className="mb-8 text-base md:mb-10 md:text-xl xl:text-3xl">Reset Your Password</h4>
 
       {loading && (
         <div className="mt-15 md:mt-20 xl:mt-24">
           <Loading />
-          <p className="text-base md:text-xl xl:text-2xl mt-4">Resetting your password...</p>
+          <p className="mt-4 text-base md:text-xl xl:text-2xl">Resetting your password...</p>
         </div>
       )}
 
@@ -75,7 +74,7 @@ function ResetPassword() {
           <div className="flex flex-col items-center">
             <div className="mb-6 md:mb-8 xl:mb-10">
               <svg
-                className="mx-auto h-12 w-12 md:h-16 md:w-16 xl:h-20 xl:w-20 text-yellow mb-4 md:mb-6"
+                className="text-yellow mx-auto mb-4 h-12 w-12 md:mb-6 md:h-16 md:w-16 xl:h-20 xl:w-20"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -83,17 +82,19 @@ function ResetPassword() {
               >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <h2 className="text-magenta font-bold text-xl md:text-2xl xl:text-3xl uppercase mb-3 md:mb-4">
+              <h2 className="mb-3 text-xl font-bold text-magenta uppercase md:mb-4 md:text-2xl xl:text-3xl">
                 Password Reset Successfully!
               </h2>
-              <p className="text-white text-base md:text-lg xl:text-xl font-normal max-w-md mx-auto leading-relaxed">
+              <p className="mx-auto max-w-md text-base leading-relaxed font-normal text-white md:text-lg xl:text-xl">
                 Your password has been updated. You can now log in with your new password.
               </p>
             </div>
             <button
               onClick={() => {
-                // Don't set returnTo if current path is an auth route
-                // User should be redirected to /menu after login from auth pages
+                /*
+                 * Don't set returnTo if current path is an auth route
+                 * User should be redirected to /menu after login from auth pages
+                 */
                 const currentPath = location.pathname;
                 const searchParams = isAuthRoute(currentPath) ? {} : { returnTo: currentPath };
                 navigate({
@@ -101,7 +102,7 @@ function ResetPassword() {
                   search: searchParams,
                 });
               }}
-              className="inline-flex justify-center items-center appearance-none focus:outline-none rounded-lg box-shadow-10 font-bold uppercase bg-magenta text-white h-8 md:h-12 xl:h-14 text-sm md:text-base xl:text-xl py-2 px-5 md:py-3 md:px-6 xl:px-8 xl:box-shadow-20 transition-opacity hover:opacity-90"
+              className="box-shadow-10 xl:box-shadow-20 inline-flex h-8 appearance-none items-center justify-center rounded-lg bg-magenta px-5 py-2 text-sm font-bold text-white uppercase transition-opacity hover:opacity-90 focus:outline-none md:h-12 md:px-6 md:py-3 md:text-base xl:h-14 xl:px-8 xl:text-xl"
             >
               Log In
             </button>
@@ -114,7 +115,7 @@ function ResetPassword() {
           <div className="flex flex-col items-center">
             <div className="mb-6 md:mb-8 xl:mb-10">
               <svg
-                className="mx-auto h-12 w-12 md:h-16 md:w-16 xl:h-20 xl:w-20 text-magenta mb-4 md:mb-6"
+                className="mx-auto mb-4 h-12 w-12 text-magenta md:mb-6 md:h-16 md:w-16 xl:h-20 xl:w-20"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -122,19 +123,19 @@ function ResetPassword() {
               >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
-              <h2 className="text-magenta font-bold text-xl md:text-2xl xl:text-3xl uppercase mb-3 md:mb-4">
+              <h2 className="mb-3 text-xl font-bold text-magenta uppercase md:mb-4 md:text-2xl xl:text-3xl">
                 Invalid or Expired Reset Link
               </h2>
-              <p className="text-white text-base md:text-lg xl:text-xl font-normal max-w-md mx-auto leading-relaxed mb-2">
+              <p className="mx-auto mb-2 max-w-md text-base leading-relaxed font-normal text-white md:text-lg xl:text-xl">
                 The reset link you used is invalid or has expired. Reset links are valid for 1 hour.
               </p>
-              <p className="text-white text-sm md:text-base xl:text-lg font-normal max-w-md mx-auto leading-relaxed opacity-90">
+              <p className="mx-auto max-w-md text-sm leading-relaxed font-normal text-white opacity-90 md:text-base xl:text-lg">
                 Please request a new password reset link from the forgot password page.
               </p>
             </div>
             <Link
               to={ROUTE_PATHS.FORGOT_PASSWORD}
-              className="inline-flex justify-center items-center appearance-none focus:outline-none rounded-lg box-shadow-10 font-bold uppercase bg-magenta text-white h-8 md:h-12 xl:h-14 text-sm md:text-base xl:text-xl py-2 px-5 md:py-3 md:px-6 xl:px-8 xl:box-shadow-20 transition-opacity hover:opacity-90"
+              className="box-shadow-10 xl:box-shadow-20 inline-flex h-8 appearance-none items-center justify-center rounded-lg bg-magenta px-5 py-2 text-sm font-bold text-white uppercase transition-opacity hover:opacity-90 focus:outline-none md:h-12 md:px-6 md:py-3 md:text-base xl:h-14 xl:px-8 xl:text-xl"
             >
               Request New Reset Link
             </Link>
@@ -144,7 +145,7 @@ function ResetPassword() {
 
       {!loading && !success && !error && (
         <form
-          className="needs-validation text-left text-sm mt-15 md:mt-20 xl:mt-24 md:px-5"
+          className="needs-validation mt-15 text-left text-sm md:mt-20 md:px-5 xl:mt-24"
           noValidate
           onSubmit={handleSubmit}
         >
@@ -154,7 +155,7 @@ function ResetPassword() {
             </label>
             <input
               id="reset-password-new"
-              className="w-full appearance-none focus:outline-none rounded-lg box-shadow-10 bg-white text-magenta text-base xl:text-xl py-2 px-4 md:px-6 xl:py-3 xl:px-8 xl:box-shadow-20"
+              className="box-shadow-10 xl:box-shadow-20 w-full appearance-none rounded-lg bg-white px-4 py-2 text-base text-magenta focus:outline-none md:px-6 xl:px-8 xl:py-3 xl:text-xl"
               name="newPassword"
               type="password"
               autoComplete="new-password"
@@ -175,7 +176,7 @@ function ResetPassword() {
             </label>
             <input
               id="reset-password-confirm"
-              className="w-full appearance-none focus:outline-none rounded-lg box-shadow-10 bg-white text-magenta text-base xl:text-xl py-2 px-4 md:px-6 xl:py-3 xl:px-8 xl:box-shadow-20"
+              className="box-shadow-10 xl:box-shadow-20 w-full appearance-none rounded-lg bg-white px-4 py-2 text-base text-magenta focus:outline-none md:px-6 xl:px-8 xl:py-3 xl:text-xl"
               name="confirmPassword"
               type="password"
               autoComplete="new-password"
@@ -193,7 +194,7 @@ function ResetPassword() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full inline-flex justify-center items-center appearance-none focus:outline-none rounded-lg box-shadow-10 font-bold uppercase bg-magenta text-white h-8 md:h-12 xl:h-14 text-sm md:text-base xl:text-xl py-2 px-5 md:py-3 md:px-6 xl:px-8 xl:box-shadow-20 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="box-shadow-10 xl:box-shadow-20 inline-flex h-8 w-full appearance-none items-center justify-center rounded-lg bg-magenta px-5 py-2 text-sm font-bold text-white uppercase focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:h-12 md:px-6 md:py-3 md:text-base xl:h-14 xl:px-8 xl:text-xl"
           >
             <span>{loading ? 'Resetting...' : 'Reset Password'}</span>
           </button>

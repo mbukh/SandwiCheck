@@ -17,7 +17,7 @@ const SandwichImage = ({ sandwich, galleryPath, isModal }) => {
       <div className="sandwich-images">
         <img
           src={path + sandwich.image}
-          className="absolute inset-0 object-contain size-full drag-none select-none"
+          className="absolute inset-0 size-full object-contain drag-none select-none"
           alt={sandwich.name}
           loading="lazy"
         />

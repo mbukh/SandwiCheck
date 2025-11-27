@@ -1,12 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useParams, useSearch } from '@tanstack/react-router';
-
 import { useIngredientsGlobalContext } from '../../context/IngredientsGlobalContext';
-
 import useSandwich from '../../hooks/use-sandwich';
-
-import SandwichCard from '../Sandwich/Card/SandwichCard';
 import Modal from '../Modal/Modal';
+import SandwichCard from '../Sandwich/Card/SandwichCard';
 
 const SandwichModal = ({ closeLink = '' }) => {
   const [isModalLoading, setIsModalLoading] = useState(true);
@@ -33,7 +30,7 @@ const SandwichModal = ({ closeLink = '' }) => {
 
   return (
     <Modal modalId="sandwich" isModalLoading={isModalLoading} closeLink={closeLink}>
-      <div className="max-w-xs sm:max-w-sm md:max-w-screen-md mx-auto text-white">
+      <div className="mx-auto max-w-xs text-white sm:max-w-sm md:max-w-screen-md">
         <SandwichCard index={Math.ceil(Math.random() * 4)} sandwich={sandwich} galleryPath="" isModal={true} />
       </div>
     </Modal>

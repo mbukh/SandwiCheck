@@ -1,23 +1,22 @@
 import { Link } from '@tanstack/react-router';
-
-import { ROUTE_PATHS } from '../routes';
 import { BUTTON_BASE_CLASSES } from '../constants/ui-constants';
+import { ROUTE_PATHS } from '../routes';
 
 const Error404 = () => {
   return (
-    <div className="pt-4 pb-12 px-5 md:pt-6 md:pb-16 md:px-12 lg:pb-20 xl:px-20">
-      <div className="grid place-items-center min-h-[calc(100vh-var(--headerHeight)-var(--footerHeight))] py-8">
-        <div className="max-w-2xl w-full text-center error404-content">
-          <h1 className="text-white text-sh-5 uppercase font-bold text-2xl md:text-3xl lg:text-4xl mb-4 leading-tight">
+    <div className="px-5 pt-4 pb-12 md:px-12 md:pt-6 md:pb-16 lg:pb-20 xl:px-20">
+      <div className="grid min-h-[calc(100vh-var(--headerHeight)-var(--footerHeight))] place-items-center py-8">
+        <div className="error404-content w-full max-w-2xl text-center">
+          <h1 className="text-sh-5 mb-4 text-2xl leading-tight font-bold text-white uppercase md:text-3xl lg:text-4xl">
             Oops! This Sandwich Got Away!
           </h1>
 
-          <p className="text-white text-sh-5 text-lg md:text-xl lg:text-2xl mb-8 leading-relaxed max-w-lg mx-auto">
+          <p className="text-sh-5 mx-auto mb-8 max-w-lg text-lg leading-relaxed text-white md:text-xl lg:text-2xl">
             We couldn&apos;t find the page you&apos;re looking for. It might have been eaten or moved to a different
             location.
           </p>
 
-          <div className="flex justify-center gap-4 md:gap-6 mb-8">
+          <div className="mb-8 flex justify-center gap-4 md:gap-6">
             <span className="error404-digit font-bold text-magenta">4</span>
             <div className="error404-sandwich-orb">
               <div className="card-orb">
@@ -27,7 +26,7 @@ const Error404 = () => {
             <span className="error404-digit font-bold text-magenta">4</span>
           </div>
 
-          <p className="text-white text-sh-5 text-sm md:text-base mb-8 leading-relaxed max-w-md mx-auto opacity-90">
+          <p className="text-sh-5 mx-auto mb-8 max-w-md text-sm leading-relaxed text-white opacity-90 md:text-base">
             Don&apos;t worry though - we have plenty of other delicious sandwiches waiting for you!
           </p>
 

@@ -1,11 +1,7 @@
-import { createFetchApi } from '../utils/fetch-api';
-
-import { log, logResponse } from '../utils/log';
-
 import { INGREDIENTS_CACHE_TIME_OUT_MINS } from '../constants/ingredients-constants';
-
 import { handleResponse } from '../utils/api-utils';
-
+import { createFetchApi } from '../utils/fetch-api';
+import { log, logResponse } from '../utils/log';
 import { timeDifference } from '../utils/utils';
 
 const api = createFetchApi(`${import.meta.env.VITE_API_SERVER}/api/v1/ingredients`, {

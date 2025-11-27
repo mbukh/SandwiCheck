@@ -3,12 +3,7 @@ import Login from './Login';
 
 const LoginModal = ({ setIsOpenLoginModal, closeLink = '' }) => {
   return (
-    <Modal
-      modalId="login"
-      setIsOpenLoginModal={setIsOpenLoginModal}
-      isModalLoading={false}
-      closeLink={closeLink}
-    >
+    <Modal modalId="login" setIsOpenLoginModal={setIsOpenLoginModal} isModalLoading={false} closeLink={closeLink}>
       <Login />
     </Modal>
   );

@@ -1,22 +1,19 @@
 import express from 'express';
-import rateLimit from 'express-rate-limit';
-
-import logger from '../utils/logger.js';
+import { rateLimit } from 'express-rate-limit';
 import { ROLE } from '../constants/usersConstants.js';
-
-import { protect, authorize } from '../middleware/authMiddleware.js';
-
-import { createChildUser, switchToParent, loginChildUser, getSession } from '../controllers/authChildController.js';
+import { createChildUser, getSession, loginChildUser, switchToParent } from '../controllers/authChildController.js';
 import {
-  signup,
-  login,
   changePassword,
-  forgotPassword,
-  resetPassword,
-  logout,
   confirmEmail,
+  forgotPassword,
+  login,
+  logout,
   resendConfirmation,
+  resetPassword,
+  signup,
 } from '../controllers/authController.js';
+import { authorize, protect } from '../middleware/authMiddleware.js';
+import logger from '../utils/logger.js';
 
 const router = express.Router();
 

@@ -1,13 +1,12 @@
 import mongoose from 'mongoose';
-
+import { DAYS_OF_WEEK } from '../constants/daysOfWeek.js';
 import { DIETARY_PREFERENCE } from '../constants/ingredientsConstants.js';
 import {
-  ROLE,
   MAX_SANDWICHES_PER_DAY,
   MAX_TETHERED_CHILDREN,
   MAX_USER_NAME_LENGTH,
+  ROLE,
 } from '../constants/usersConstants.js';
-import { DAYS_OF_WEEK } from '../constants/daysOfWeek.js';
 
 const { Schema } = mongoose;
 
@@ -68,7 +67,7 @@ const userSchema = new Schema(
     roles: {
       type: [String],
       enum: {
-        values: [...Object.values(ROLE)],
+        values: Object.values(ROLE),
         message: `Role must be either ${Object.values(ROLE).join(', ')}`,
       },
       required: [true, 'Role is required'],

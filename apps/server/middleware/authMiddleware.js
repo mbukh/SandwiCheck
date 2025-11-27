@@ -1,19 +1,18 @@
 import expressAsyncHandler from 'express-async-handler';
 import createHttpError from 'http-errors';
-
 import jwt from 'jsonwebtoken';
-
-import { ROLE } from '../constants/usersConstants.js';
 import EXCLUDED_FIELDS from '../constants/excludeFields.js';
-
+import { ROLE } from '../constants/usersConstants.js';
 import User from '../models/UserModel.js';
 
 export const protect = expressAsyncHandler(async (req, res, next) => {
   let token, parentToken;
 
-  // console.log(req.originalUrl);
-  // console.log("Cookies: ", req.cookies);
-  // console.log("Signed Cookies: ", req.signedCookies);
+  /*
+   * console.log(req.originalUrl);
+   * console.log("Cookies: ", req.cookies);
+   * console.log("Signed Cookies: ", req.signedCookies);
+   */
 
   // Token Bearer
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
@@ -51,7 +50,7 @@ export const protect = expressAsyncHandler(async (req, res, next) => {
     req.user = await User.findById(decoded.id).select(EXCLUDED_FIELDS);
 
     if (!req.user) {
-      throw new Error();
+      throw new Error('User not found');
     }
 
     if (parentToken && req.user.roles.includes(ROLE.child)) {
@@ -60,12 +59,12 @@ export const protect = expressAsyncHandler(async (req, res, next) => {
       req.parentUser = await User.findById(parentDecoded.id).select(EXCLUDED_FIELDS);
 
       if (!req.parentUser) {
-        throw new Error();
+        throw new Error('Parent user not found');
       }
     }
 
     next();
-  } catch (error) {
+  } catch {
     next(createHttpError.Unauthorized('Not authorized, token failed'));
   }
 });
@@ -81,7 +80,7 @@ export const authorize = (...roles) => {
     }
 
     // Check if user has a valid role
-    if (roles.length && !roles.some((role) => user.roles.includes(role))) {
+    if (roles.length > 0 && !roles.some((role) => user.roles.includes(role))) {
       return next(createHttpError.Forbidden('Not authorized to access this resource'));
     }
 

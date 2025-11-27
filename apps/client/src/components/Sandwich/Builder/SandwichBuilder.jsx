@@ -1,11 +1,7 @@
 import { useEffect } from 'react';
-
 import { TYPE } from '../../../constants/ingredients-constants';
-
-import { isTypeInSandwich } from '../../../utils/sandwich-utils';
-
 import { useSandwichContext } from '../../../context/SandwichContext';
-
+import { isTypeInSandwich } from '../../../utils/sandwich-utils';
 import Loading from '../../Loading';
 import IngredientsSwiper from './IngredientsSwiper';
 import IngredientsTypesSelector from './IngredientsTypesSelector';
@@ -28,22 +24,22 @@ const SandwichBuilder = () => {
   }
 
   return (
-    <div className="create-sandwich flex flex-col min-h-full py-6 md:pt-9 lg:pt-12 mb-4">
+    <div className="create-sandwich mb-4 flex min-h-full flex-col py-6 md:pt-9 lg:pt-12">
       <h1 className="text-center text-lg uppercase">Create a sandwich</h1>
       <div className="creation-section flex-col md:flex-row">
         <IngredientsTypesSelector />
 
-        <div className="thumb__wrapper flex flex-col flex-shrink-0 justify-between" ref={swiperContainerRef}>
+        <div className="thumb__wrapper flex flex-shrink-0 flex-col justify-between" ref={swiperContainerRef}>
           {currentType && <IngredientsSwiper />}
         </div>
       </div>
 
-      <div className="builder-section flex justify-center mt-5">
+      <div className="builder-section mt-5 flex justify-center">
         {currentType && currentIngredient && <SandwichBuildButtons />}
       </div>
 
       {isTypeInSandwich(TYPE.bread, sandwich) && (
-        <div className="result-section relative aspect-video w-full md:w-2/3 lg:w-1/3 mx-auto mt-8">
+        <div className="result-section relative mx-auto mt-8 aspect-video w-full md:w-2/3 lg:w-1/3">
           <SandwichBuilderImage />
         </div>
       )}

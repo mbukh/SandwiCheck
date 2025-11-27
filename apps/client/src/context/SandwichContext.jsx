@@ -1,21 +1,16 @@
-import { createContext, useContext, useRef, useState, useEffect } from 'react';
-
-import { log, logResponse } from '../utils/log';
-
-import { DIETARY_PREFERENCE, TYPE, DEFAULT_PORTION, PORTION, PRODUCT } from '../constants/ingredients-constants';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { DIETARY_PREFERENCE, PORTION, PRODUCT, TYPE } from '../constants/ingredients-constants';
 import { EMPTY_SANDWICH } from '../constants/sandwich-constants';
-
+import { useAuthGlobalContext } from '../context/AuthGlobalContext';
+import { useIngredientsGlobalContext } from '../context/IngredientsGlobalContext';
+import useSandwich from '../hooks/use-sandwich';
 import {
+  createSandwich,
   deleteSandwichFromCache,
   readSandwichFromCache,
   updateSandwichInCache,
-  createSandwich,
 } from '../services/api-sandwiches';
-
-import { useIngredientsGlobalContext } from '../context/IngredientsGlobalContext';
-import { useAuthGlobalContext } from '../context/AuthGlobalContext';
-
-import useSandwich from '../hooks/use-sandwich';
+import { log, logResponse } from '../utils/log';
 
 const SandwichContext = createContext();
 
@@ -112,9 +107,11 @@ const SandwichContextProvider = ({ children }) => {
       return true;
     };
 
-    // Always include bread (required)
-    // Note: Ingredients are already filtered by dietary preferences in IngredientsGlobalContext
-    // So all available ingredients already match user's dietary preferences (kosher, halal, vegetarian, vegan, etc.)
+    /*
+     * Always include bread (required)
+     * Note: Ingredients are already filtered by dietary preferences in IngredientsGlobalContext
+     * So all available ingredients already match user's dietary preferences (kosher, halal, vegetarian, vegan, etc.)
+     */
     const breadOptions = ingredients[TYPE.bread] || [];
     if (breadOptions.length > 0) {
       const randomBread = getRandomItem(breadOptions);
@@ -130,9 +127,11 @@ const SandwichContextProvider = ({ children }) => {
       const typeIngredients = ingredients[type] || [];
       if (typeIngredients.length === 0) continue;
 
-      // Filter compatible ingredients for kosher rules (meat/dairy mixing)
-      // Note: Ingredients are already filtered by dietary preferences, but we still need to check
-      // kosher meat/dairy mixing rules since individual kosher ingredients can still conflict when combined
+      /*
+       * Filter compatible ingredients for kosher rules (meat/dairy mixing)
+       * Note: Ingredients are already filtered by dietary preferences, but we still need to check
+       * kosher meat/dairy mixing rules since individual kosher ingredients can still conflict when combined
+       */
       const compatibleIngredients = hasToBeKosher ? typeIngredients.filter(isKosherCompatible) : typeIngredients;
 
       // If no compatible ingredients, skip this type

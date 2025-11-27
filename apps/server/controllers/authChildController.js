@@ -1,12 +1,10 @@
-import createHttpError from 'http-errors';
 import expressAsyncHandler from 'express-async-handler';
-
-import { createUserParentsConnections } from '../utils/manageUserConnections.js';
-import { setTokenCookie, removeCookie } from '../utils/cookies.js';
-import * as hashAndTokens from '../utils/hashAndTokens.js';
-
-import User from '../models/UserModel.js';
+import createHttpError from 'http-errors';
 import EXCLUDED_FIELDS from '../constants/excludeFields.js';
+import User from '../models/UserModel.js';
+import { removeCookie, setTokenCookie } from '../utils/cookies.js';
+import * as hashAndTokens from '../utils/hashAndTokens.js';
+import { createUserParentsConnections } from '../utils/manageUserConnections.js';
 
 const populateUserSessionData = async (userId) => {
   if (!userId) {

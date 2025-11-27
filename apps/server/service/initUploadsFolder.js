@@ -1,7 +1,6 @@
-import path from 'path';
-import fs from 'fs/promises';
-
-import { UPLOADS_DIR, PROFILE_PICTURES_DIR, INGREDIENTS_DIR, SANDWICHES_DIR } from '../config/dir.js';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { INGREDIENTS_DIR, PROFILE_PICTURES_DIR, SANDWICHES_DIR, UPLOADS_DIR } from '../config/dir.js';
 
 const folders = [UPLOADS_DIR, PROFILE_PICTURES_DIR, INGREDIENTS_DIR, SANDWICHES_DIR];
 
@@ -13,7 +12,7 @@ async function ensureDirectory(folderPath) {
       await fs.unlink(folderPath);
       throw new Error(`Folder "${folderPath}" is not a directory`);
     }
-  } catch (error) {
+  } catch {
     await fs.mkdir(folderPath, { recursive: true });
   }
 

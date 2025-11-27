@@ -80,11 +80,11 @@ const migrateEmailConfirmationFields = async () => {
       logger.warn('⚠ Warning: Some users may still be confirmed.');
     }
 
-    process.exit(0);
+    throw new Error('Migration completed successfully');
   } catch (error) {
     logger.error('Migration failed:', error);
-    process.exit(1);
+    throw error;
   }
 };
 
-migrateEmailConfirmationFields();
+await migrateEmailConfirmationFields();

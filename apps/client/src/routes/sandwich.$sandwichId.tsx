@@ -1,8 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
-
-import { sandwichIdSchema } from '../schemas/routeParams';
 import SandwichModal from '../components/Sandwich/SandwichModal';
-import { ROUTE_PATHS } from './routes';
+import { sandwichIdSchema } from '../schemas/routeParams';
+import { ROUTE_PATHS } from './';
 
 export const Route = createFileRoute('/sandwich/$sandwichId')({
   validateParams: sandwichIdSchema,

@@ -1,17 +1,14 @@
 import express from 'express';
-
-import { protect, authorize } from '../middleware/authMiddleware.js';
-import upload from '../middleware/uploadMiddleware.js';
-
 import { ALL_IMAGE_FIELDS } from '../constants/ingredientsConstants.js';
-
 import {
-  getIngredients,
   createIngredient,
-  getIngredient,
-  updateIngredient,
   deleteIngredient,
+  getIngredient,
+  getIngredients,
+  updateIngredient,
 } from '../controllers/ingredientsController.js';
+import { authorize, protect } from '../middleware/authMiddleware.js';
+import upload from '../middleware/uploadMiddleware.js';
 
 // Include other resource routers
 const router = express.Router({ mergeParams: true });

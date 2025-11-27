@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from '@tanstack/react-router';
-
 import { ROUTE_PATHS } from '../routes';
 
 const BADGE_STYLES = {
@@ -82,24 +81,24 @@ const UserCard = ({
 
   return (
     <div
-      className={`sandwich-card thumb flex w-1/2 sm:w-1/2 lg:w-1/3 xl:w-1/4 xxl:w-1/5 ${isActive ? 'active-card' : ''}`}
+      className={`sandwich-card thumb xxl:w-1/5 flex w-1/2 sm:w-1/2 lg:w-1/3 xl:w-1/4 ${isActive ? 'active-card' : ''}`}
     >
       <div
-        className={`card-wrapper card-bg-${bgIndex} thumb__wrapper flex flex-col flex-1 justify-between m-2 sm:m-3 p-2 sm:p-4 box-shadow-10 relative overflow-hidden`}
+        className={`card-wrapper card-bg-${bgIndex} thumb__wrapper box-shadow-10 relative m-2 flex flex-1 flex-col justify-between overflow-hidden p-2 sm:m-3 sm:p-4`}
       >
         {/* Header */}
-        <div className="card-header text-center z-0">
-          <div className="flex justify-center flex-wrap gap-1 mb-1">
+        <div className="card-header z-0 text-center">
+          <div className="mb-1 flex flex-wrap justify-center gap-1">
             {badgeList.map((badge) => (
               <span
                 key={badge.label}
-                className={`inline-block px-1.5 py-0.5 rounded-full text-xxs uppercase tracking-wide font-bold box-shadow-5 ${BADGE_STYLES[badge.variant]}`}
+                className={`box-shadow-5 inline-block rounded-full px-1.5 py-0.5 text-xxs font-bold tracking-wide uppercase ${BADGE_STYLES[badge.variant]}`}
               >
                 {badge.label}
               </span>
             ))}
           </div>
-          <h3 className="card-title thumb__title text-base sm:text-lg lg:text-xl font-bold uppercase text-shadow-5 truncate px-1">
+          <h3 className="card-title thumb__title text-shadow-5 truncate px-1 text-base font-bold uppercase sm:text-lg lg:text-xl">
             <Link to={ROUTE_PATHS.FAMILY_CHILD} params={{ childId: user.id }} className="hover:underline">
               {user.name}
             </Link>
@@ -107,23 +106,23 @@ const UserCard = ({
         </div>
 
         {/* Middle - Child Avatar */}
-        <div className="card-middle my-auto relative z-0">
-          <div className="card-orb w-full mx-auto aspect-square flex items-center justify-center relative">
-            <span className="text-6xl md:text-7xl font-bold text-white drop-shadow-md select-none">
+        <div className="card-middle relative z-0 my-auto">
+          <div className="card-orb relative mx-auto flex aspect-square w-full items-center justify-center">
+            <span className="text-6xl font-bold text-white drop-shadow-md select-none md:text-7xl">
               {user.name ? user.name.charAt(0).toUpperCase() : '?'}
             </span>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="card-footer flex flex-col items-center gap-2 mt-auto z-0">
-          <div className="text-xs text-center text-shadow-5 min-h-[2.5em] flex flex-col justify-center px-2">
+        <div className="card-footer z-0 mt-auto flex flex-col items-center gap-2">
+          <div className="text-shadow-5 flex min-h-[2.5em] flex-col justify-center px-2 text-center text-xs">
             {user.email ? (
               <>
-                <p className="font-semibold truncate max-w-[150px] mx-auto mb-0.5" title={user.email}>
+                <p className="mx-auto mb-0.5 max-w-[150px] truncate font-semibold" title={user.email}>
                   {user.email}
                 </p>
-                <p className="text-xxs uppercase opacity-75 font-medium">
+                <p className="text-xxs font-medium uppercase opacity-75">
                   {user.emailConfirmed ? (
                     <span className="text-green-700">✓ Confirmed</span>
                   ) : (
@@ -132,15 +131,15 @@ const UserCard = ({
                 </p>
               </>
             ) : (
-              <p className="italic opacity-75 text-xxs">Tethered Account Only</p>
+              <p className="text-xxs italic opacity-75">Tethered Account Only</p>
             )}
           </div>
 
-          <div className="flex flex-wrap justify-center gap-1 w-full">
+          <div className="flex w-full flex-wrap justify-center gap-1">
             <Link
               to={ROUTE_PATHS.FAMILY_CHILD}
               params={{ childId: user.id }}
-              className="button bg-white text-magenta text-xxs sm:text-xs px-2 py-1 uppercase font-bold rounded shadow-sm hover:scale-105 transition-transform"
+              className="button rounded bg-white px-2 py-1 text-xxs font-bold text-magenta uppercase shadow-sm transition-transform hover:scale-105 sm:text-xs"
             >
               View Menu
             </Link>
@@ -150,19 +149,19 @@ const UserCard = ({
                 type="button"
                 onClick={onLoginChild}
                 disabled={isLoginLoading}
-                className="button bg-magenta text-white text-xxs sm:text-xs px-2 py-1 uppercase font-bold rounded shadow-sm hover:scale-105 transition-transform disabled:opacity-50"
+                className="button rounded bg-magenta px-2 py-1 text-xxs font-bold text-white uppercase shadow-sm transition-transform hover:scale-105 disabled:opacity-50 sm:text-xs"
               >
                 {isLoginLoading ? '...' : 'Login as Child'}
               </button>
             )}
           </div>
 
-          <div className="flex flex-wrap justify-center gap-1 w-full mt-1">
+          <div className="mt-1 flex w-full flex-wrap justify-center gap-1">
             {canManageEmail && (
               <button
                 type="button"
                 onClick={() => setIsEmailFormOpen(true)}
-                className="button bg-white text-magenta border border-magenta text-xxs sm:text-xs px-2 py-1 uppercase font-bold rounded shadow-sm hover:scale-105 transition-transform"
+                className="button rounded border border-magenta bg-white px-2 py-1 text-xxs font-bold text-magenta uppercase shadow-sm transition-transform hover:scale-105 sm:text-xs"
               >
                 {user.email ? 'Change Email' : 'Assign Email'}
               </button>
@@ -173,7 +172,7 @@ const UserCard = ({
                 type="button"
                 onClick={onResendInvite}
                 disabled={isResendLoading}
-                className="button bg-yellow-400 text-black text-xxs sm:text-xs px-2 py-1 uppercase font-bold rounded shadow-sm hover:scale-105 transition-transform disabled:opacity-50"
+                className="button rounded bg-yellow-400 px-2 py-1 text-xxs font-bold text-black uppercase shadow-sm transition-transform hover:scale-105 disabled:opacity-50 sm:text-xs"
               >
                 {isResendLoading ? '...' : 'Resend Invite'}
               </button>
@@ -184,13 +183,13 @@ const UserCard = ({
         {/* Email Form Overlay */}
         {isEmailFormOpen && (
           <div
-            className={`absolute inset-0 z-10 flex flex-col items-center justify-center p-4 text-center box-shadow-10 rounded-lg fade-in-immediate card-bg-${bgIndex}`}
+            className={`box-shadow-10 fade-in-immediate absolute inset-0 z-10 flex flex-col items-center justify-center rounded-lg p-4 text-center card-bg-${bgIndex}`}
             style={{ backgroundColor: `var(--card-bg-${bgIndex})` }}
           >
-            <h4 className="text-white font-bold uppercase text-sm md:text-base mb-3 text-shadow-10">
+            <h4 className="text-shadow-10 mb-3 text-sm font-bold text-white uppercase md:text-base">
               {user.email ? 'Change Email Address' : 'Assign Email Address'}
             </h4>
-            <p className="text-xs text-magenta/70 mb-3">
+            <p className="mb-3 text-xs text-magenta/70">
               {user.email
                 ? 'Update the email address for this child account.'
                 : 'Add an email to allow this child to log in independently.'}
@@ -201,21 +200,21 @@ const UserCard = ({
                 value={emailValue}
                 onChange={(e) => setEmailValue(e.target.value)}
                 placeholder="child@example.com"
-                className="w-full p-2.5 text-sm border-2 border-magenta/30 rounded-lg mb-2 text-magenta placeholder-magenta/40 focus:outline-none focus:border-magenta focus:ring-2 focus:ring-magenta/20 bg-white box-shadow-5"
+                className="box-shadow-5 mb-2 w-full rounded-lg border-2 border-magenta/30 bg-white p-2.5 text-sm text-magenta placeholder-magenta/40 focus:border-magenta focus:ring-2 focus:ring-magenta/20 focus:outline-none"
                 autoFocus
                 disabled={isSubmittingEmail || isConvertLoading}
               />
               {formError && (
-                <p className="text-red-600 text-xs font-bold mb-2 text-shadow-5 bg-red-50 p-2 rounded">{formError}</p>
+                <p className="text-shadow-5 mb-2 rounded bg-red-50 p-2 text-xs font-bold text-red-600">{formError}</p>
               )}
-              <div className="flex justify-center gap-2 mt-3">
+              <div className="mt-3 flex justify-center gap-2">
                 <button
                   type="button"
                   onClick={() => {
                     setIsEmailFormOpen(false);
                     setFormError('');
                   }}
-                  className="px-4 py-2 text-xs font-bold uppercase text-magenta border-2 border-magenta rounded-lg hover:bg-magenta/5 transition-colors disabled:opacity-50"
+                  className="rounded-lg border-2 border-magenta px-4 py-2 text-xs font-bold text-magenta uppercase transition-colors hover:bg-magenta/5 disabled:opacity-50"
                   disabled={isSubmittingEmail || isConvertLoading}
                 >
                   Cancel
@@ -223,7 +222,7 @@ const UserCard = ({
                 <button
                   type="submit"
                   disabled={isSubmittingEmail || isConvertLoading}
-                  className="px-4 py-2 text-xs font-bold uppercase text-white bg-magenta rounded-lg hover:bg-magenta/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors box-shadow-5"
+                  className="box-shadow-5 rounded-lg bg-magenta px-4 py-2 text-xs font-bold text-white uppercase transition-colors hover:bg-magenta/90 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {isSubmittingEmail || isConvertLoading ? 'Sending...' : user.email ? 'Update' : 'Send Invite'}
                 </button>

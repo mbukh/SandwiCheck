@@ -1,17 +1,14 @@
 import express from 'express';
-
 import { ROLE } from '../constants/usersConstants.js';
-
 import {
-  getSandwiches,
   createSandwich,
+  deleteSandwich,
   getSandwich,
+  getSandwiches,
   updateSandwich,
   updateSandwichVotesCount,
-  deleteSandwich,
 } from '../controllers/sandwichesController.js';
-
-import { protect, authorize } from '../middleware/authMiddleware.js';
+import { authorize, protect } from '../middleware/authMiddleware.js';
 
 // Include other resource routers
 const router = express.Router({ mergeParams: true });

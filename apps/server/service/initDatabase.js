@@ -1,17 +1,13 @@
-import connectDB from '../config/db.js';
-import logger from '../utils/logger.js';
-
 import mongoose from 'mongoose';
-
+import connectDB from '../config/db.js';
+import { isBreadType } from '../constants/ingredientsConstants.js';
 import Ingredient from '../models/IngredientModel.js';
 import Sandwich from '../models/SandwichModel.js';
 import User from '../models/UserModel.js';
-
+import logger from '../utils/logger.js';
 import { generateSandwichImage } from '../utils/manageSandwichesImages.js';
 import { createUserParentsConnections } from '../utils/manageUserConnections.js';
 import { createSandwichService } from './createSandwichService.js';
-
-import { isBreadType } from '../constants/ingredientsConstants.js';
 import { breadData, cheeseData, condimentData, proteinData, toppingData } from './initialData/ingredientsData.js';
 import { sandwichesData } from './initialData/sandwichesData.js';
 import { usersData } from './initialData/usersData.js';
@@ -32,7 +28,7 @@ const waitForConnection = () => {
     // Handle connection errors
     mongoose.connection.once('error', (error) => {
       logger.error('Database connection error:', error);
-      process.exit(1);
+      throw error;
     });
   });
 };
@@ -85,13 +81,13 @@ const getRandomDateAfter = (afterDate) => {
   oneYearAgo.setFullYear(now.getFullYear() - 1);
 
   // Ensure afterDate is within the last year, otherwise use oneYearAgo
-  const minDate = afterDate > oneYearAgo ? afterDate : oneYearAgo;
+  const minDate = Math.max(afterDate, oneYearAgo);
 
   // If minDate is already at or after now, use a date just after minDate (within last year)
   if (minDate >= now) {
     const justAfter = new Date(minDate);
     justAfter.setDate(justAfter.getDate() + 1);
-    return justAfter > now ? now : justAfter;
+    return Math.min(justAfter, now);
   }
 
   const randomTime = minDate.getTime() + Math.random() * (now.getTime() - minDate.getTime());
@@ -150,8 +146,8 @@ const upsertUsers = async () => {
 
       // Validate that all parent emails were found
       if (parents.length < _parentEmails.length) {
-        const foundEmails = parents.map((p) => p.email);
-        const missingEmails = _parentEmails.filter((email) => !foundEmails.includes(email.toLowerCase()));
+        const foundEmails = new Set(parents.map((p) => p.email));
+        const missingEmails = _parentEmails.filter((email) => !foundEmails.has(email.toLowerCase()));
         logger.warn(
           `Child ${childData.name}: Some parents not found (${missingEmails.join(', ')}). Proceeding with found parents only.`,
         );
@@ -165,8 +161,10 @@ const upsertUsers = async () => {
       const childCreatedAt = getRandomDateAfter(earliestParentDate);
       const childUpdatedAt = childCreatedAt;
 
-      // For tethered children, we need to find by name and parent relationship
-      // Since email is not unique for children, we'll use name + parent relationship
+      /*
+       * For tethered children, we need to find by name and parent relationship
+       * Since email is not unique for children, we'll use name + parent relationship
+       */
       const existingChild = await User.findOne({
         name: childData.name,
         isTetheredChild: true,
@@ -279,9 +277,11 @@ const createSandwiches = async () => {
             continue;
           }
 
-          // Find the child by name and parent relationship
-          // Using $in to explicitly check if parent is in the parents array (handles multiple parents)
-          // Also verify that ALL parents match to ensure we get the correct child
+          /*
+           * Find the child by name and parent relationship
+           * Using $in to explicitly check if parent is in the parents array (handles multiple parents)
+           * Also verify that ALL parents match to ensure we get the correct child
+           */
           const parentIds = [parentInfo.id];
           const childUser = await User.findOne({
             name: sandwichData.childName,
@@ -433,11 +433,11 @@ const main = async () => {
     logger.info('All data upserted to database');
   } catch (error) {
     logger.error('Error in main execution:', error);
-    process.exit(1);
+    throw error;
   } finally {
     await mongoose.connection.close();
     logger.info('Database connection closed');
   }
 };
 
-main();
+await main();

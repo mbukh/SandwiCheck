@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
 import './Toast.css';
+import { useEffect, useState } from 'react';
 
 const TOAST_TIMEOUT = 3500;
 const FADE_DURATION = 1500;
@@ -28,7 +28,7 @@ const Toast = ({ message }) => {
       <div className={`toast ${fade ? 'fade-out' : ''}`}>
         <p>{message}</p>
         <button className="btn-wrapper ml-1" onClick={() => setVisible(false)}>
-          <span className="text-magenta text-shadow-3  ml-1">X</span>
+          <span className="text-shadow-3 ml-1 text-magenta">X</span>
         </button>
       </div>
     )

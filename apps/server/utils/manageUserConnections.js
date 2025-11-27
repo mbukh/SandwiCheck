@@ -1,5 +1,4 @@
 import { ROLE } from '../constants/usersConstants.js';
-
 import User from '../models/UserModel.js';
 
 export const removeUserConnections = async (user, field, connectionId) => {
@@ -43,7 +42,7 @@ export const removeUserConnections = async (user, field, connectionId) => {
 
   // If any connections were modified, update their roles
   if (result.modifiedCount > 0) {
-    const result = await User.updateMany(
+    await User.updateMany(
       {
         _id: { $in: ids },
         [oppositeField]: { $size: 0 },

@@ -1,20 +1,18 @@
 import expressAsyncHandler from 'express-async-handler';
-
 import createHttpError from 'http-errors';
-
-import { NO_USER_SANDWICH_USERNAME } from '../constants/sandwichConstants.js';
 import { SANDWICHES_DIR } from '../config/dir.js';
-
+import { NO_USER_SANDWICH_USERNAME } from '../constants/sandwichConstants.js';
+import Sandwich from '../models/SandwichModel.js';
+import User from '../models/UserModel.js';
 import { removeFile } from '../utils/fileUtils.js';
 import { generateSandwichImage } from '../utils/manageSandwichesImages.js';
 
-import Sandwich from '../models/SandwichModel.js';
-import User from '../models/UserModel.js';
-
-// @desc    Fetch all sandwiches
-// @route   GET /api/sandwiches
-// @access  Public
-export const getSandwiches = expressAsyncHandler(async (req, res, next) => {
+/*
+ * @desc    Fetch all sandwiches
+ * @route   GET /api/sandwiches
+ * @access  Public
+ */
+export const getSandwiches = expressAsyncHandler(async (req, res, _next) => {
   const { dietaryPreferences, ingredients, sortBy, page, limit } = {
     ...req.query,
     ...req.body,
@@ -37,8 +35,8 @@ export const getSandwiches = expressAsyncHandler(async (req, res, next) => {
   }
 
   // Set default values for page and limit if not provided
-  const pageNumber = parseInt(page, 10) || 1;
-  const pageLimit = parseInt(limit, 10) || process.env.SANDWICHES_PER_PAGE_DEFAULT;
+  const pageNumber = Number.parseInt(page, 10) || 1;
+  const pageLimit = Number.parseInt(limit, 10) || process.env.SANDWICHES_PER_PAGE_DEFAULT;
 
   // Calculate the number of documents to skip based on the current page and limit
   const skipCount = (pageNumber - 1) * pageLimit;
@@ -55,9 +53,11 @@ export const getSandwiches = expressAsyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Fetch a single sandwich
-// @route   GET /api/sandwiches/:sandwichId
-// @access  Public
+/*
+ * @desc    Fetch a single sandwich
+ * @route   GET /api/sandwiches/:sandwichId
+ * @access  Public
+ */
 export const getSandwich = expressAsyncHandler(async (req, res, next) => {
   const sandwich = await Sandwich.findById(req.params.sandwichId);
 
@@ -71,10 +71,12 @@ export const getSandwich = expressAsyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Create an sandwich
-// @route   POST /api/sandwiches
-// @access  Private
-export const createSandwich = expressAsyncHandler(async (req, res, next) => {
+/*
+ * @desc    Create an sandwich
+ * @route   POST /api/sandwiches
+ * @access  Private
+ */
+export const createSandwich = expressAsyncHandler(async (req, res, _next) => {
   const { name, ingredients, comment } = req.body;
   const { id: userId, firstName } = req.user;
 
@@ -108,9 +110,11 @@ export const createSandwich = expressAsyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Update an sandwich
-// @route   PUT /api/sandwiches/:sandwichId
-// @access  Private
+/*
+ * @desc    Update an sandwich
+ * @route   PUT /api/sandwiches/:sandwichId
+ * @access  Private
+ */
 export const updateSandwich = expressAsyncHandler(async (req, res, next) => {
   const { name, ingredients, comment } = req.body;
 
@@ -127,7 +131,7 @@ export const updateSandwich = expressAsyncHandler(async (req, res, next) => {
 
   const timeDiff = (Date.now() - sandwich.createdAt) / 1000 / 60;
 
-  if (timeDiff > parseInt(process.env.SANDWICH_UPDATE_EXPIRES_IN_MIN, 10)) {
+  if (timeDiff > Number.parseInt(process.env.SANDWICH_UPDATE_EXPIRES_IN_MIN, 10)) {
     return next(
       createHttpError.Forbidden(
         `A sandwich can only be updated within the first ` +
@@ -149,7 +153,7 @@ export const updateSandwich = expressAsyncHandler(async (req, res, next) => {
   if (newImage !== sandwich.image) {
     const oldImage = sandwich.image;
     const sandwichesWithOldImage = await Sandwich.find({ image: oldImage });
-    if (!sandwichesWithOldImage.length) {
+    if (sandwichesWithOldImage.length === 0) {
       removeFile(SANDWICHES_DIR, oldImage);
     }
   }
@@ -165,9 +169,11 @@ export const updateSandwich = expressAsyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Delete an sandwich
-// @route   DELETE /api/sandwiches/:sandwichId
-// @access  Private
+/*
+ * @desc    Delete an sandwich
+ * @route   DELETE /api/sandwiches/:sandwichId
+ * @access  Private
+ */
 export const deleteSandwich = expressAsyncHandler(async (req, res, next) => {
   const sandwich = await Sandwich.findById(req.params.sandwichId);
 
@@ -187,9 +193,11 @@ export const deleteSandwich = expressAsyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Update vote count of a sandwich
-// @route   POST|DELETE /api/sandwiches/:sandwichId/vote
-// @access  Private
+/*
+ * @desc    Update vote count of a sandwich
+ * @route   POST|DELETE /api/sandwiches/:sandwichId/vote
+ * @access  Private
+ */
 export const updateSandwichVotesCount = async (req, res, next) => {
   const { sandwichId } = req.params;
   const method = req.method;

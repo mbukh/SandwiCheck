@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: ['main']
     paths: ['apps/client/**', 'apps/server/**', 'docker/**', 'package.json', 'pnpm-workspace.yaml']
-  workflow_call:
+  workflow_call: {}
 
 permissions:
   id-token: write

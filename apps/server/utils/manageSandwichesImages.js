@@ -1,10 +1,8 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
 import sharp from 'sharp';
-import fs from 'fs/promises';
-import path from 'path';
-
 import { INGREDIENTS_DIR, SANDWICHES_DIR } from '../config/dir.js';
 import { isBreadType } from '../constants/ingredientsConstants.js';
-
 import Ingredient from '../models/IngredientModel.js';
 
 export const generateSandwichImage = async (ingredientsWithPortions) => {
@@ -90,11 +88,7 @@ async function generateSandwichLayer(shape, ingredient) {
   const { imageBase, type, portion } = ingredient;
   let suffix = '';
 
-  if (isBreadType(type)) {
-    suffix = '_sliced';
-  } else {
-    suffix = `_${shape}_${portion}`;
-  }
+  suffix = isBreadType(type) ? '_sliced' : `_${shape}_${portion}`;
 
   const imageFile = path.join(INGREDIENTS_DIR, `${imageBase}${suffix}.${process.env.INGREDIENTS_IMAGE_EXTENSION}`);
 
@@ -105,11 +99,11 @@ async function fileExists(filePath) {
   try {
     await fs.access(filePath);
     return true;
-  } catch (err) {
-    if (err.code === 'ENOENT') {
+  } catch (error) {
+    if (error.code === 'ENOENT') {
       return false;
     } else {
-      throw err;
+      throw error;
     }
   }
 }

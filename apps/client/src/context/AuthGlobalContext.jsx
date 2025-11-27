@@ -1,12 +1,8 @@
 import { createContext, useContext, useEffect } from 'react';
-
-import useUser from '../hooks/use-user';
-
 import { LOGGED_IN_USER_TIME_OUT_DAYS } from '../constants/user-constants';
-
-import { timeDifference } from '../utils/utils';
-
+import useUser from '../hooks/use-user';
 import { logResponse } from '../utils/log';
+import { timeDifference } from '../utils/utils';
 
 const AuthGlobalContext = createContext();
 

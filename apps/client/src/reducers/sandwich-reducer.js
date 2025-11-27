@@ -1,31 +1,36 @@
-import { PORTION, DEFAULT_PORTION } from '../constants/ingredients-constants';
+import { DEFAULT_PORTION, PORTION } from '../constants/ingredients-constants';
 
-// sandwich = {
-//     name: "",
-//     ingredients: [{ id, ingredientType, portion }],
-//     comment: "",
-// };
+/*
+ * sandwich = {
+ *     name: "",
+ *     ingredients: [{ id, ingredientType, portion }],
+ *     comment: "",
+ * };
+ */
 
 const sandwichReducer = (state, action) => {
   switch (action.type) {
-    case 'ADD_INGREDIENT':
+    case 'ADD_INGREDIENT': {
       return {
         ...state,
         ingredients: [...state.ingredients, { portion: DEFAULT_PORTION, ...action.payload }],
       };
-    case 'REMOVE_INGREDIENT':
+    }
+    case 'REMOVE_INGREDIENT': {
       return {
         ...state,
         ingredients: state.ingredients.filter((ingredient) => ingredient.id !== action.payload),
       };
-    case 'REMOVE_INGREDIENTS_OF_TYPE':
+    }
+    case 'REMOVE_INGREDIENTS_OF_TYPE': {
       return {
         ...state,
         ingredients: state.ingredients.filter((ingredient) => ingredient.type !== action.payload),
       };
-    case 'MOVE_UP_INGREDIENT':
+    }
+    case 'MOVE_UP_INGREDIENT': {
       const indexDown = state.ingredients.findIndex((ingredient) => ingredient.id === action.payload);
-      if (indexDown < 0 || indexDown === state.ingredients.length - 1) return state;
+      if (indexDown === -1 || indexDown === state.ingredients.length - 1) return state;
       return {
         ...state,
         ingredients: [
@@ -35,7 +40,8 @@ const sandwichReducer = (state, action) => {
           ...state.ingredients.slice(indexDown + 2),
         ],
       };
-    case 'MOVE_DOWN_INGREDIENT':
+    }
+    case 'MOVE_DOWN_INGREDIENT': {
       const indexUp = state.ingredients.findIndex((ingredient) => ingredient.id === action.payload);
       if (indexUp <= 0) return state;
       return {
@@ -47,7 +53,8 @@ const sandwichReducer = (state, action) => {
           ...state.ingredients.slice(indexUp + 1),
         ],
       };
-    case 'INCREASE_PORTION':
+    }
+    case 'INCREASE_PORTION': {
       return {
         ...state,
         ingredients: state.ingredients.map((ingredient) =>
@@ -59,7 +66,8 @@ const sandwichReducer = (state, action) => {
             : ingredient,
         ),
       };
-    case 'CYCLE_PORTION':
+    }
+    case 'CYCLE_PORTION': {
       return {
         ...state,
         ingredients: state.ingredients.map((ingredient) =>
@@ -71,7 +79,8 @@ const sandwichReducer = (state, action) => {
             : ingredient,
         ),
       };
-    case 'DECREASE_PORTION':
+    }
+    case 'DECREASE_PORTION': {
       return {
         ...state,
         ingredients: state.ingredients.map((ingredient) =>
@@ -83,16 +92,22 @@ const sandwichReducer = (state, action) => {
             : ingredient,
         ),
       };
-    case 'UPDATE_INGREDIENTS':
+    }
+    case 'UPDATE_INGREDIENTS': {
       return { ...state, ingredients: action.payload };
-    case 'UPDATE_SANDWICH':
+    }
+    case 'UPDATE_SANDWICH': {
       return action.payload;
-    case 'SET_NAME':
+    }
+    case 'SET_NAME': {
       return { ...state, name: action.payload };
-    case 'SET_COMMENT':
+    }
+    case 'SET_COMMENT': {
       return { ...state, comment: action.payload };
-    default:
+    }
+    default: {
       return state;
+    }
   }
 };
 

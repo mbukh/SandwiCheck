@@ -1,5 +1,5 @@
+import { MAX_COMMENT_LENGTH, MAX_NAME_LENGTH } from '../constants/sandwich-constants';
 import { MAX_USER_NAME_LENGTH } from '../constants/user-constants';
-import { MAX_NAME_LENGTH, MAX_COMMENT_LENGTH } from '../constants/sandwich-constants';
 
 const validateForm = ({
   email = null,
@@ -14,10 +14,8 @@ const validateForm = ({
 }) => {
   const errorMessages = [];
 
-  if (email != null) {
-    if (email.length < 5 || !email.includes('@') || !email.includes('.')) {
-      errorMessages.push('Email is invalid');
-    }
+  if (email != null && (email.length < 5 || !email.includes('@') || !email.includes('.'))) {
+    errorMessages.push('Email is invalid');
   }
 
   if (name != null) {

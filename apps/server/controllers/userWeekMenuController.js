@@ -2,9 +2,11 @@ import expressAsyncHandler from 'express-async-handler';
 import createHttpError from 'http-errors';
 import User from '../models/UserModel.js';
 
-// @desc    Add a sandwich to the week menu
-// @route   PUT /api/users/:userId/week-menu/:day
-// @access  Private
+/*
+ * @desc    Add a sandwich to the week menu
+ * @route   PUT /api/users/:userId/week-menu/:day
+ * @access  Private
+ */
 export const addSandwichToWeekMenu = expressAsyncHandler(async (req, res, next) => {
   const { userId, day } = req.params;
   const { sandwichId } = req.body;
@@ -44,9 +46,11 @@ export const addSandwichToWeekMenu = expressAsyncHandler(async (req, res, next) 
   });
 });
 
-// @desc    Remove a sandwich from the week menu
-// @route   DELETE /api/users/:userId/week-menu/:day
-// @access  Private
+/*
+ * @desc    Remove a sandwich from the week menu
+ * @route   DELETE /api/users/:userId/week-menu/:day
+ * @access  Private
+ */
 export const removeSandwichFromWeekMenu = expressAsyncHandler(async (req, res, next) => {
   const { userId, day } = req.params;
   const { sandwichId } = req.body;

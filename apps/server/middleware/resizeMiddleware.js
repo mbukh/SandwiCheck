@@ -1,8 +1,8 @@
-import sharp from 'sharp';
 import createHttpError from 'http-errors';
+import sharp from 'sharp';
 
-const width = parseInt(process.env.USER_IMAGE_WIDTH, 10);
-const height = parseInt(process.env.USER_IMAGE_HEIGH, 10);
+const width = Number.parseInt(process.env.USER_IMAGE_WIDTH, 10);
+const height = Number.parseInt(process.env.USER_IMAGE_HEIGH, 10);
 
 const resizeImage = async (req, res, next) => {
   if (req.file) {
@@ -13,7 +13,7 @@ const resizeImage = async (req, res, next) => {
         .toBuffer();
 
       req.file.buffer = resizedBuffer;
-    } catch (err) {
+    } catch {
       return next(createHttpError.BadRequest('Unsupported image format'));
     }
   }

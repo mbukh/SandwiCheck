@@ -1,5 +1,5 @@
-import { generateIngredientImageSrc as generateIngredientImageSource } from '../../../utils/ingredients-utils';
 import { useSwiperSlide } from 'swiper/react';
+import { generateIngredientImageSrc as generateIngredientImageSource } from '../../../utils/ingredients-utils';
 
 const SwipeSlideElement = ({ ingredient, sandwich }) => {
   const swiperSlide = useSwiperSlide();
@@ -12,10 +12,10 @@ const SwipeSlideElement = ({ ingredient, sandwich }) => {
           ingredient,
           sandwich,
         })}
-        className="inset-0 object-contain size-full drag-none"
+        className="inset-0 size-full object-contain drag-none"
         alt={ingredient.name}
       />
-      <div className="inline-block max-w-full rounded box-shadow-5 bg-white text-magenta text-xxs uppercase min-w-fit py-1 px-4">
+      <div className="box-shadow-5 inline-block max-w-full min-w-fit rounded bg-white px-4 py-1 text-xxs text-magenta uppercase">
         {ingredient.name}
       </div>
     </div>

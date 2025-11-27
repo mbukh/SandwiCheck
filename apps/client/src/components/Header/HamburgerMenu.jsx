@@ -2,7 +2,7 @@ const HamburgerMenu = ({ mobileMenuToggler, isMobileMenuOpen }) => {
   const openStatus = isMobileMenuOpen ? 'on' : 'off';
   return (
     <button
-      className={`hamburger btn-wrapper ${openStatus} className="mobile-only relative lg:hidden w-10 h-8 focus:outline-none z-9999`}
+      className={`hamburger btn-wrapper ${openStatus} className="mobile-only relative z-9999 h-8 w-10 focus:outline-none lg:hidden`}
       onClick={mobileMenuToggler}
     >
       <div></div>

@@ -1,5 +1,5 @@
+import * as crypto from 'node:crypto';
 import jwt from 'jsonwebtoken';
-import * as crypto from 'crypto';
 
 export const generatePasswordToken = (payload) => {
   if (!process.env.JWT_SECRET) {

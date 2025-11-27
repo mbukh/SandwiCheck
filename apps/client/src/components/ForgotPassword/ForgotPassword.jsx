@@ -1,11 +1,10 @@
 import { useState } from 'react';
-import { Link, useSearch, useLocation } from '@tanstack/react-router';
-
+import { Link, useLocation, useSearch } from '@tanstack/react-router';
+import useToast from '../../hooks/use-toast';
 import { ROUTE_PATHS } from '../../routes';
 import * as apiAuth from '../../services/api-auth';
-import useToast from '../../hooks/use-toast';
-import validateForm from '../../utils/validate-utils';
 import { isAuthRoute } from '../../utils/auth-utils';
+import validateForm from '../../utils/validate-utils';
 
 function ForgotPassword() {
   const { showToast, toastComponents } = useToast();
@@ -44,8 +43,8 @@ function ForgotPassword() {
   };
 
   return (
-    <div className="login max-w-screen-md text-white text-center mx-auto">
-      <h1 className="text-magenta font-bold text-2xl md:text-4xl xl:text-5xl uppercase mb-3 md:mb-5">
+    <div className="__login mx-auto max-w-3xl text-center text-white">
+      <h1 className="mb-3 text-2xl font-bold text-magenta uppercase md:mb-5 md:text-4xl xl:text-5xl">
         Sandwich creativity with SandwiCheck!
       </h1>
       <h4 className="text-base md:text-xl xl:text-3xl">Reset your password</h4>
@@ -55,7 +54,7 @@ function ForgotPassword() {
           <div className="flex flex-col items-center">
             <div className="mb-6 md:mb-8 xl:mb-10">
               <svg
-                className="mx-auto h-12 w-12 md:h-16 md:w-16 xl:h-20 xl:w-20 text-yellow mb-4 md:mb-6"
+                className="text-yellow mx-auto mb-4 h-12 w-12 md:mb-6 md:h-16 md:w-16 xl:h-20 xl:w-20"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -64,14 +63,14 @@ function ForgotPassword() {
               >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <h2 className="text-magenta font-bold text-xl md:text-2xl xl:text-3xl uppercase mb-3 md:mb-4">
+              <h2 className="mb-3 text-xl font-bold text-magenta uppercase md:mb-4 md:text-2xl xl:text-3xl">
                 Reset Email Sent
               </h2>
-              <p className="text-base md:text-xl xl:text-3xl mb-4">
+              <p className="mb-4 text-base md:text-xl xl:text-3xl">
                 If an account exists with this email, a password reset link has been sent. Please check your inbox and
                 spam folder.
               </p>
-              <p className="text-sm md:text-base xl:text-lg mb-4">
+              <p className="mb-4 text-sm md:text-base xl:text-lg">
                 The reset link will expire in 1 hour. If you don&apos;t receive the email, please check your spam folder
                 or try again.
               </p>
@@ -79,7 +78,7 @@ function ForgotPassword() {
             <Link
               to={ROUTE_PATHS.LOGIN}
               search={returnTo ? { returnTo } : {}}
-              className="inline-flex justify-center items-center appearance-none focus:outline-none rounded-lg box-shadow-10 font-bold uppercase bg-magenta text-white h-8 md:h-12 xl:h-14 text-sm md:text-base xl:text-xl py-2 px-5 md:py-3 md:px-6 xl:px-8 xl:box-shadow-20"
+              className="box-shadow-10 xl:box-shadow-20 inline-flex h-8 appearance-none items-center justify-center rounded-lg bg-magenta px-5 py-2 text-sm font-bold text-white uppercase focus:outline-none md:h-12 md:px-6 md:py-3 md:text-base xl:h-14 xl:px-8 xl:text-xl"
             >
               Back to Login
             </Link>
@@ -87,12 +86,12 @@ function ForgotPassword() {
         </div>
       ) : (
         <>
-          <p className="text-sm md:text-base xl:text-lg mb-6 md:mb-8 max-w-lg mx-auto">
+          <p className="mx-auto mb-6 max-w-lg text-sm md:mb-8 md:text-base xl:text-lg">
             Enter your email address and we&apos;ll send you a link to reset your password.
           </p>
 
           <form
-            className="needs-validation text-left text-sm mt-15 md:mt-20 xl:mt-24 md:px-5"
+            className="needs-validation mt-15 text-left text-sm md:mt-20 md:px-5 xl:mt-24"
             noValidate
             onSubmit={handleSubmit}
           >
@@ -102,7 +101,7 @@ function ForgotPassword() {
               </label>
               <input
                 id="forgot-password-email"
-                className="w-full appearance-none focus:outline-none rounded-lg box-shadow-10 bg-white text-magenta text-base xl:text-xl py-2 px-4 md:px-6 xl:py-3 xl:px-8 xl:box-shadow-20"
+                className="box-shadow-10 xl:box-shadow-20 w-full appearance-none rounded-lg bg-white px-4 py-2 text-base text-magenta focus:outline-none md:px-6 xl:px-8 xl:py-3 xl:text-xl"
                 name="email"
                 type="email"
                 autoComplete="email"
@@ -121,7 +120,7 @@ function ForgotPassword() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full inline-flex justify-center items-center appearance-none focus:outline-none rounded-lg box-shadow-10 font-bold uppercase bg-magenta text-white h-8 md:h-12 xl:h-14 text-sm md:text-base xl:text-xl py-2 px-5 md:py-3 md:px-6 xl:px-8 xl:box-shadow-20 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="box-shadow-10 xl:box-shadow-20 inline-flex h-8 w-full appearance-none items-center justify-center rounded-lg bg-magenta px-5 py-2 text-sm font-bold text-white uppercase focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:h-12 md:px-6 md:py-3 md:text-base xl:h-14 xl:px-8 xl:text-xl"
             >
               <span>{loading ? 'Sending...' : 'Send Reset Email'}</span>
             </button>
@@ -129,7 +128,7 @@ function ForgotPassword() {
 
           <br />
 
-          <div className="w-full mb-4 md:mb-6 flex justify-center items-center">
+          <div className="mb-4 flex w-full items-center justify-center md:mb-6">
             Remember your password?
             <Link className="mx-2 underline" to={ROUTE_PATHS.LOGIN} search={returnTo ? { returnTo } : {}}>
               Log in

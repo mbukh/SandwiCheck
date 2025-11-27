@@ -9,7 +9,7 @@ import appsBaseConfig from '../../eslint.apps.base.js';
 export default defineConfig([
   ...appsBaseConfig,
   {
-    files: ['**/*.{js,mjs,cjs}'],
+    files: ['**/*.{js,mjs,cjs,ts}'],
     languageOptions: {
       globals: globals.node,
     },

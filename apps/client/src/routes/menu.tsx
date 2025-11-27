@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
-
 import SandwichGallery from '../components/Sandwich/SandwichGallery';
+
 import { ROUTE_PATHS } from '.';
 
 export const Route = createFileRoute('/menu')({

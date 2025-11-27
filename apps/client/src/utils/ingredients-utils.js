@@ -1,4 +1,4 @@
-import { TYPE, EXTENSION, SHAPE, DEFAULT_PORTION, INGREDIENTS_IMAGES_PATH } from '../constants/ingredients-constants';
+import { DEFAULT_PORTION, EXTENSION, INGREDIENTS_IMAGES_PATH, SHAPE, TYPE } from '../constants/ingredients-constants';
 
 export const generateIngredientImageSrc = ({ ingredient, sandwich, imageType = 'swiper' }) => {
   const { imageBase, type, portion = DEFAULT_PORTION } = ingredient;
@@ -31,18 +31,18 @@ export const groupIngredientsByTypes = (ingredients) => {
   }
 
   // Add each ingredient to the corresponding type array
-  ingredients.forEach((ingredient) => {
-    if (groupedByTypes.hasOwnProperty(ingredient.type)) {
+  for (const ingredient of ingredients) {
+    if (Object.prototype.hasOwnProperty.call(groupedByTypes, ingredient.type)) {
       groupedByTypes[ingredient.type].push(ingredient);
     }
-  });
+  }
 
   // Add any missing types to the end
-  ingredients.forEach((ingredient) => {
-    if (!groupedByTypes.hasOwnProperty(ingredient.type)) {
+  for (const ingredient of ingredients) {
+    if (!Object.prototype.hasOwnProperty.call(groupedByTypes, ingredient.type)) {
       groupedByTypes[ingredient.type] = [ingredient];
     }
-  });
+  }
 
   return groupedByTypes;
 };

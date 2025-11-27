@@ -1,19 +1,17 @@
 import expressAsyncHandler from 'express-async-handler';
-
 import createHttpError from 'http-errors';
-
 import { isBreadType, TYPE } from '../constants/ingredientsConstants.js';
-
-import { getTimeBasedFilename } from '../utils/fileUtils.js';
-import { saveIngredientImages, removeAllIngredientImagesByImageBase } from '../utils/manageIngredientsImages.js';
-
 import Ingredient from '../models/IngredientModel.js';
 import Sandwich from '../models/SandwichModel.js';
+import { getTimeBasedFilename } from '../utils/fileUtils.js';
+import { removeAllIngredientImagesByImageBase, saveIngredientImages } from '../utils/manageIngredientsImages.js';
 
-// @desc    Fetch all ingredients
-// @route   GET /api/ingredients
-// @access  Public
-export const getIngredients = expressAsyncHandler(async (req, res, next) => {
+/*
+ * @desc    Fetch all ingredients
+ * @route   GET /api/ingredients
+ * @access  Public
+ */
+export const getIngredients = expressAsyncHandler(async (req, res, _next) => {
   const { dietaryPreferences, type, sortBy } = { ...req.query, ...req.body };
   let query = {};
 
@@ -38,9 +36,11 @@ export const getIngredients = expressAsyncHandler(async (req, res, next) => {
   res.status(200).json({ success: true, data: ingredients });
 });
 
-// @desc    Fetch a single ingredient
-// @route   GET /api/ingredients/:ingredientId
-// @access  Public
+/*
+ * @desc    Fetch a single ingredient
+ * @route   GET /api/ingredients/:ingredientId
+ * @access  Public
+ */
 export const getIngredient = expressAsyncHandler(async (req, res, next) => {
   const ingredient = await Ingredient.findById(req.params.ingredientId);
 
@@ -51,9 +51,11 @@ export const getIngredient = expressAsyncHandler(async (req, res, next) => {
   res.status(200).json({ success: true, data: ingredient });
 });
 
-// @desc    Create an ingredient
-// @route   POST /api/ingredients
-// @access  Private/Admin
+/*
+ * @desc    Create an ingredient
+ * @route   POST /api/ingredients
+ * @access  Private/Admin
+ */
 export const createIngredient = expressAsyncHandler(async (req, res, next) => {
   const { name, type, dietaryPreferences, shape, displayPriority } = req.body;
   const reqFiles = req.files;
@@ -72,7 +74,7 @@ export const createIngredient = expressAsyncHandler(async (req, res, next) => {
     next,
   });
 
-  if (!savedFileNames || !savedFileNames.length) {
+  if (!savedFileNames || savedFileNames.length === 0) {
     return;
   }
 
@@ -82,21 +84,23 @@ export const createIngredient = expressAsyncHandler(async (req, res, next) => {
       type,
       shape,
       dietaryPreferences,
-      displayPriority: parseInt(displayPriority, 10),
+      displayPriority: Number.parseInt(displayPriority, 10),
       imageBase: filenameBase,
     });
 
     res.status(201).json({ success: true, data: ingredient });
-  } catch (err) {
+  } catch (error) {
     await removeAllIngredientImagesByImageBase(filenameBase);
 
-    return next(err);
+    return next(error);
   }
 });
 
-// @desc    Update an ingredient
-// @route   PUT /api/ingredients/:ingredientId
-// @access  Private/Admin
+/*
+ * @desc    Update an ingredient
+ * @route   PUT /api/ingredients/:ingredientId
+ * @access  Private/Admin
+ */
 export const updateIngredient = expressAsyncHandler(async (req, res, next) => {
   const { name, type, dietaryPreferences, shape, displayPriority } = req.body;
   const reqFiles = req.files;
@@ -121,7 +125,7 @@ export const updateIngredient = expressAsyncHandler(async (req, res, next) => {
     );
   }
 
-  if (Object.keys(req.files).length) {
+  if (Object.keys(req.files).length > 0) {
     const filenameBase = ingredient.imageBase;
 
     const savedFileNames = await saveIngredientImages({
@@ -132,7 +136,7 @@ export const updateIngredient = expressAsyncHandler(async (req, res, next) => {
       next,
     });
 
-    if (!savedFileNames || !savedFileNames.length) {
+    if (!savedFileNames || savedFileNames.length === 0) {
       return;
     }
   }
@@ -141,16 +145,18 @@ export const updateIngredient = expressAsyncHandler(async (req, res, next) => {
   ingredient.type = type;
   ingredient.shape = shape;
   ingredient.dietaryPreferences = dietaryPreferences;
-  ingredient.displayPriority = parseInt(displayPriority, 10);
+  ingredient.displayPriority = Number.parseInt(displayPriority, 10);
 
   const updatedIngredient = await ingredient.save();
 
   res.status(200).json({ success: true, data: updatedIngredient });
 });
 
-// @desc    Delete an ingredient
-// @route   DELETE /api/ingredients/:ingredientId
-// @access  Private/Admin
+/*
+ * @desc    Delete an ingredient
+ * @route   DELETE /api/ingredients/:ingredientId
+ * @access  Private/Admin
+ */
 export const deleteIngredient = expressAsyncHandler(async (req, res, next) => {
   const ingredientId = req.params.ingredientId;
 

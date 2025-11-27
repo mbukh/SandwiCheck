@@ -1,12 +1,11 @@
 import { Link } from '@tanstack/react-router';
-
-import { ROUTE_PATHS } from '../../routes';
 import { BUTTON_BASE_CLASSES } from '../../constants/ui-constants';
+import { ROUTE_PATHS } from '../../routes';
 
 const EmptyGallery = ({ galleryType, childId }) => {
   return (
-    <div className="flex flex-col justify-center mx-auto">
-      <div className="text-center my-4 py-4">This menu is empty.</div>
+    <div className="mx-auto flex flex-col justify-center">
+      <div className="my-4 py-4 text-center">This menu is empty.</div>
       {galleryType === 'personal' && !childId && (
         <Link className={`${BUTTON_BASE_CLASSES} bg-magenta text-white`} to={ROUTE_PATHS.CREATE}>
           <svg

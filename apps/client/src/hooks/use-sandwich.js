@@ -1,14 +1,9 @@
-import { useState, useReducer, useCallback } from 'react';
-
-import { logResponse } from '../utils/log';
-
+import { useCallback, useReducer, useState } from 'react';
 import { TYPE } from '../constants/ingredients-constants';
-
 import { EMPTY_SANDWICH } from '../constants/sandwich-constants';
-
-import { fetchSandwichById } from '../services/api-sandwiches';
-
 import sandwichReducer from '../reducers/sandwich-reducer';
+import { fetchSandwichById } from '../services/api-sandwiches';
+import { logResponse } from '../utils/log';
 
 const useSandwich = () => {
   const [currentType, setCurrentType] = useState(TYPE.bread);

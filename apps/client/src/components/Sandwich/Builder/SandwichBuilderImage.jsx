@@ -1,5 +1,4 @@
 import { useSandwichContext } from '../../../context/SandwichContext';
-
 import { generateIngredientImageSrc } from '../../../utils/ingredients-utils';
 
 const SandwichBuilderImage = () => {
@@ -15,7 +14,7 @@ const SandwichBuilderImage = () => {
             sandwich,
             imageType: 'builderImage',
           })}
-          className="absolute inset-0 object-contain size-full drag-none select-none"
+          className="absolute inset-0 size-full object-contain drag-none select-none"
           alt={`Sandwich ingredients layer #${index}`}
           loading="lazy"
         />

@@ -1,25 +1,22 @@
-import { useEffect, useRef, useState } from 'react';
-
 // import { A11y, Keyboard } from 'swiper/modules';
-import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/a11y';
 import '../../../styles/Swiper.css';
-
-import { useIngredientsGlobalContext } from '../../../context/IngredientsGlobalContext';
-import { useSandwichContext } from '../../../context/SandwichContext';
-
+import { useEffect, useRef, useState } from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
 import { isBreadType } from '../../../constants/ingredients-constants';
 import { breakpoints } from '../../../constants/swiper-constants';
+import { useIngredientsGlobalContext } from '../../../context/IngredientsGlobalContext';
+import { useSandwichContext } from '../../../context/SandwichContext';
+import { log } from '../../../utils/log';
 import { getTopIngredientOfCurrentType } from '../../../utils/sandwich-utils';
-
 import SwiperNavigationButton from '../SwiperNavigationButton';
 import SwiperSlideElementNone from '../SwiperSlideElementNone';
 import SwipeSlideElement from './SwipeSlideElement';
 
 const IngredientsSwiper = () => {
   const [navigation, setNavigation] = useState({ prev: false, next: true });
-  const swiperRef = useRef(null);
+  const swiperReference = useRef(null);
   const { ingredients } = useIngredientsGlobalContext();
   const { sandwich, currentType, currentIngredient, setCurrentIngredient } = useSandwichContext();
 
@@ -38,7 +35,7 @@ const IngredientsSwiper = () => {
 
   useEffect(() => {
     // rewind when swipe is being rerendered
-    saveSwiperSlideTo(swiperRef.current, currentSwipeIndex);
+    saveSwiperSlideTo(swiperReference.current, currentSwipeIndex);
   }, [currentType, currentSwipeIndex]);
 
   const updateNavigationButtons = (activeIndex) => {
@@ -56,16 +53,16 @@ const IngredientsSwiper = () => {
     try {
       swiper.slideTo?.(index);
     } catch (error) {
-      console.log(error);
+      log(error);
     }
   };
 
   const initSwiperHandler = (swiper) => {
     // first swiper is rendered
-    swiperRef.current = swiper;
+    swiperReference.current = swiper;
 
     setTimeout(() => {
-      if (isBreadType(currentType) && !sandwich.ingredients.length)
+      if (isBreadType(currentType) && sandwich.ingredients.length === 0)
         setTimeout(() => {
           saveSwiperSlideTo(swiper, 1);
 
@@ -94,10 +91,12 @@ const IngredientsSwiper = () => {
       centeredSlides={true}
       grabCursor={true}
       mousewheel={true}
-      // keyboard={{
-      //   enabled: true,
-      // }}
-      // a11y={{ enabled: true }}
+      /*
+       * keyboard={{
+       *   enabled: true,
+       * }}
+       * a11y={{ enabled: true }}
+       */
       slideToClickedSlide={true}
       onSwiper={initSwiperHandler}
       onSlideChange={slideChangeHandler}

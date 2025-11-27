@@ -1,8 +1,6 @@
-import { createFetchApi } from '../utils/fetch-api';
-
-import { log } from '../utils/log';
-
 import { handleResponse } from '../utils/api-utils';
+import { createFetchApi } from '../utils/fetch-api';
+import { log } from '../utils/log';
 
 const api = createFetchApi(`${import.meta.env.VITE_API_SERVER}/api/v1/users`, {
   'Access-Control-Allow-Origin': import.meta.env.VITE_HOST,

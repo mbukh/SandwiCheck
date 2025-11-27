@@ -1,6 +1,5 @@
 import { addVoteToSandwich } from '../services/api-sandwiches';
-
-import { hasUserVotedForSandwichByIdUsingLocalStorage, addSandwichToFavoritesByUserId } from '../services/api-users';
+import { addSandwichToFavoritesByUserId, hasUserVotedForSandwichByIdUsingLocalStorage } from '../services/api-users';
 
 export const hasUserVotedForSandwich = (sandwich, user) => {
   if (!user.id) return hasUserVotedForSandwichByIdUsingLocalStorage(sandwich.id);
