@@ -71,12 +71,19 @@ const SandwichBuildButtons = () => {
     sandwichDispatch({ type: 'CYCLE_PORTION', payload: currentIngredient.id });
   };
 
+  const confirmButtonToneClass =
+    ingredientPlace.isPresent || (isEmptyIngredient && !isTypeInSandwich(currentType, sandwich))
+      ? 'ingredients-confirm-button--inactive'
+      : 'ingredients-confirm-button--active';
+
   return (
     <div className="builder__spacer-buttons box-shadow-5 inline-flex h-8 justify-center rounded-lg bg-white px-2 text-xs text-magenta">
       {!isCurrentlyBread && !isEmptyIngredient && (
         <>
           <button
-            className={`btn-wrapper px-2 ${ingredientPlace.isPresent ? 'fill-magenta' : 'fill-cyan2-500'}`}
+            className={`btn-wrapper px-2 transition-transform duration-200 hover:scale-110 active:scale-95 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:scale-100 ${
+              ingredientPlace.isPresent ? 'fill-magenta' : 'fill-cyan2-500'
+            }`}
             style={
               ingredientPlace.isPresent
                 ? {
@@ -98,11 +105,9 @@ const SandwichBuildButtons = () => {
         </>
       )}
       <button
-        className={`btn-wrapper px-2 ${
-          ingredientPlace.isPresent || (isEmptyIngredient && !isTypeInSandwich(currentType, sandwich))
-            ? 'text-cyan2-500'
-            : 'fill-magenta'
-        } ${isSandwichEmpty ? 'flex items-center justify-center' : ''} ${ingredientPlace.isPresent || (hasToBeKosher && !isStillKosher) ? 'cursor-not-allowed' : ''}`}
+        className={`btn-wrapper px-2 transition-transform duration-200 hover:scale-110 active:scale-95 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:scale-100 ${confirmButtonToneClass} ${
+          isSandwichEmpty ? 'flex items-center justify-center' : ''
+        } ${ingredientPlace.isPresent || (hasToBeKosher && !isStillKosher) ? 'cursor-not-allowed' : ''}`}
         disabled={isMaxIngredientsReached && !ingredientPlace.isPresent}
         title="Confirm ingredient"
         onClick={isEmptyIngredient ? clearOfCurrentTypeHandler : confirmHandler}
@@ -126,21 +131,25 @@ const SandwichBuildButtons = () => {
         <>
           <div className="mx-1"></div>
           <button
-            className="btn-wrapper px-2"
+            className="btn-wrapper px-2 transition-transform duration-200 hover:scale-110 active:scale-95 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:scale-100"
             disabled={!ingredientPlace.isPresent || ingredientPlace.isTop}
             onClick={moveUpHandler}
           >
             <img src={arrowUpImg} alt="Up icon" width="54" height="54" />
           </button>
           <button
-            className="btn-wrapper px-2"
+            className="btn-wrapper px-2 transition-transform duration-200 hover:scale-110 active:scale-95 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:scale-100"
             disabled={!ingredientPlace.isPresent || ingredientPlace.isBottom}
             onClick={moveDownHandler}
           >
             <img src={arrowDownImg} alt="Down icon" width="54" height="54" />
           </button>
           <div className="mx-1"></div>
-          <button className="btn-wrapper px-2" disabled={!ingredientPlace.isPresent} onClick={removeHandler}>
+          <button
+            className="btn-wrapper px-2 transition-transform duration-200 hover:scale-110 active:scale-95 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:scale-100"
+            disabled={!ingredientPlace.isPresent}
+            onClick={removeHandler}
+          >
             <img src={binImg} alt="Delete icon" width="45" height="54" />
           </button>
         </>

@@ -95,15 +95,13 @@ const sandwichSchema = new Schema(
   },
 );
 
-sandwichSchema.pre('save', async function (next) {
+sandwichSchema.pre('save', async function () {
   const ingredientIds = this.ingredients.map((item) => item.ingredientId);
   const ingredients = await Ingredient.find({
     _id: { $in: ingredientIds },
   });
 
   this.dietaryPreferences = setDietaryPreferences(ingredients);
-
-  next();
 });
 
 async function ingredientsValidator(ingredientsWithPortions) {

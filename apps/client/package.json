@@ -15,12 +15,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@sandwicheck/shared-utils": "workspace:*",
     "@tanstack/react-router": "^1.139.7",
-    "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react": "^19.2.0",
     "swiper": "^12.0.3",
-    "valibot": "^1.2.0",
-    "@sandwicheck/shared-utils": "workspace:*"
+    "valibot": "^1.2.0"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.17",

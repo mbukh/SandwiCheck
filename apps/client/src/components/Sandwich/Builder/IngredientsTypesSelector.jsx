@@ -12,12 +12,20 @@ const IngredientsTypesSelector = () => {
   };
 
   const getButtonClasses = (type) => {
-    const classes = 'my-2 md:my-4  text-xs md:text-sm md:text-base min-w-fit';
-    const activeClass = type === currentType ? ' active' : '';
+    const baseClasses =
+      'my-2 md:my-4 text-xs md:text-sm md:text-base min-w-fit transition-all duration-200 hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed';
 
-    const presetType = isTypeInSandwich(type, sandwich) ? ' text-cyan2-500' : '';
+    const isActive = type === currentType;
+    const isIncluded = isTypeInSandwich(type, sandwich) && !isActive;
 
-    return classes + activeClass + presetType;
+    // Use Tailwind utility classes for states, ensuring no transparency on hover for unused items
+    const stateClasses = isActive
+      ? ' active ring-2 ring-magenta ring-offset-2'
+      : isIncluded
+        ? ' ingredients-type--included'
+        : ' hover:bg-gray-50'; // Explicit background on hover to prevent "transparent" feel if any
+
+    return `${baseClasses}${stateClasses}`;
   };
 
   const ingredientTypes = Object.keys(ingredients);
@@ -42,7 +50,7 @@ const IngredientsTypesSelector = () => {
         ))}
         <li key="randomize">
           <button
-            className="my-2 min-w-fit text-xs md:my-4 md:text-base"
+            className="my-2 min-w-fit text-xs transition-transform duration-200 hover:scale-110 active:scale-95 md:my-4 md:text-base"
             onClick={randomizeSandwich}
             title="Randomize sandwich"
           >

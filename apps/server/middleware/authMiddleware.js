@@ -101,7 +101,13 @@ export const authorize = (...roles) => {
     }
 
     // Check if user is accessing their own sandwich
-    if (sandwichId && user.sandwiches.includes(sandwichId)) {
+    if (
+      sandwichId &&
+      Array.isArray(user.sandwiches) &&
+      user.sandwiches.some(
+        (ownedSandwichId) => ownedSandwichId.equals?.(sandwichId) || String(ownedSandwichId) === String(sandwichId),
+      )
+    ) {
       return next();
     }
 

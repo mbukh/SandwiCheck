@@ -29,7 +29,7 @@ const SandwichBuilder = () => {
       <div className="creation-section flex-col md:flex-row">
         <IngredientsTypesSelector />
 
-        <div className="thumb__wrapper flex flex-shrink-0 flex-col justify-between" ref={swiperContainerRef}>
+        <div className="thumb__wrapper flex shrink-0 flex-col justify-between" ref={swiperContainerRef}>
           {currentType && <IngredientsSwiper />}
         </div>
       </div>
@@ -39,12 +39,12 @@ const SandwichBuilder = () => {
       </div>
 
       {isTypeInSandwich(TYPE.bread, sandwich) && (
-        <div className="result-section relative mx-auto mt-8 aspect-video w-full md:w-2/3 lg:w-1/3">
+        <div className="result-section relative mx-auto mt-8 aspect-square w-full md:aspect-4/3 md:w-2/3 lg:aspect-video lg:w-1/3">
           <SandwichBuilderImage />
         </div>
       )}
 
-      {currentType ? <SandwichSaveForm /> : <Loading />}
+      <div className="mt-8">{currentType ? <SandwichSaveForm /> : <Loading />}</div>
     </div>
   );
 };

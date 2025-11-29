@@ -71,7 +71,8 @@ export const fetchSandwichById = async (sandwichId) => {
  * @returns {Promise<Object>} { success: boolean, data: sandwich }
  */
 export const createSandwich = async (parameters) => {
-  return await handleResponse(async () => api.post('/', parameters));
+  const payload = buildSandwichPayload(parameters);
+  return await handleResponse(async () => api.post('/', payload));
 };
 
 /**
@@ -172,4 +173,32 @@ export const deleteSandwichFromCache = () => {
   log('Removing sandwich from cache');
 
   localStorage.removeItem('sandwich');
+};
+
+/**
+ * Normalize sandwich builder state into API payload structure.
+ * @param {Object} sandwich - Sandwich builder state or payload
+ * @returns {Object} API-ready sandwich payload
+ */
+export const buildSandwichPayload = (sandwich) => {
+  if (!sandwich) {
+    return sandwich;
+  }
+
+  const normalizedName = typeof sandwich.name === 'string' ? sandwich.name.trim() : sandwich.name;
+  const normalizedComment =
+    typeof sandwich.comment === 'string' && sandwich.comment.trim().length > 0 ? sandwich.comment.trim() : undefined;
+
+  const normalizedIngredients = Array.isArray(sandwich.ingredients)
+    ? sandwich.ingredients.map(({ ingredientId, id, portion }) => ({
+        ingredientId: ingredientId ?? id,
+        portion,
+      }))
+    : [];
+
+  return {
+    name: normalizedName,
+    comment: normalizedComment,
+    ingredients: normalizedIngredients,
+  };
 };

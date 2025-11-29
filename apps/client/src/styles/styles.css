@@ -299,6 +299,32 @@ select option[value=''] {
   border: none;
   cursor: pointer;
 }
+
+.create-sandwich button.ingredients-type--included {
+  color: var(--color-cyan2-500);
+  box-shadow:
+    0 0 0 2px rgba(0, 193, 213, 0.35),
+    0 0 10px 0 rgba(0, 0, 0, 0.25);
+}
+
+.create-sandwich button.ingredients-type--included:hover,
+.create-sandwich button.ingredients-type--included:focus-visible {
+  background-color: rgba(0, 193, 213, 0.122);
+}
+
+.builder__spacer-buttons .ingredients-confirm-button--active {
+  color: var(--color-magenta);
+}
+
+.builder__spacer-buttons .ingredients-confirm-button--inactive {
+  color: var(--color-cyan2-500);
+  opacity: 0.65;
+}
+
+.builder__spacer-buttons .ingredients-confirm-button--inactive:hover,
+.builder__spacer-buttons .ingredients-confirm-button--inactive:focus-visible {
+  opacity: 0.65;
+}
 .no-scroll {
   left: 0;
   overflow: hidden;

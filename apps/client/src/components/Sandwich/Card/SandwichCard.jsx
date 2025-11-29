@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { useAuthGlobalContext } from '../../../context/AuthGlobalContext';
 import { useIngredientsGlobalContext } from '../../../context/IngredientsGlobalContext';
+import useToast from '../../../hooks/use-toast';
 import { ROUTE_PATHS } from '../../../routes';
 import { updateSandwichInCache } from '../../../services/api-sandwiches';
 import { hasUserVotedForSandwich, voteForSandwich } from '../../../services/votes';
@@ -10,13 +11,27 @@ import SandwichImage from '../SandwichImage';
 import SandwichIngredientsList from './SandwichIngredientsList';
 
 const SandwichCard = ({ index, sandwich, galleryPath = '', isModal }) => {
-  const [isUserVoting, setIsUserVoting] = useState(false);
-  const { currentUser } = useAuthGlobalContext();
+  const { currentUser, setCurrentUser } = useAuthGlobalContext();
   const { ingredientsRawList } = useIngredientsGlobalContext();
+  const { showToast, toastComponents } = useToast();
+
+  const [votesCount, setVotesCount] = useState(sandwich.votesCount);
+  const [isProcessingVote, setIsProcessingVote] = useState(false);
+  const [isOptimisticallyVoted, setIsOptimisticallyVoted] = useState(() =>
+    hasUserVotedForSandwich(sandwich, currentUser),
+  );
 
   const navigate = useNavigate();
 
-  const isVotedByUser = hasUserVotedForSandwich(sandwich, currentUser);
+  const isVotedByUser = isOptimisticallyVoted;
+
+  useEffect(() => {
+    setVotesCount(sandwich.votesCount);
+  }, [sandwich.votesCount]);
+
+  useEffect(() => {
+    setIsOptimisticallyVoted(hasUserVotedForSandwich(sandwich, currentUser));
+  }, [sandwich, currentUser]);
 
   const bgIndex = (index % 4) + 1;
 
@@ -28,9 +43,51 @@ const SandwichCard = ({ index, sandwich, galleryPath = '', isModal }) => {
     navigate({ to: ROUTE_PATHS.CREATE });
   };
 
-  const voteForSandwichHandler = async (_e) => {
-    setIsUserVoting(true);
-    await voteForSandwich({ userId: currentUser.id, sandwichId: sandwich.id });
+  const voteForSandwichHandler = async (event) => {
+    event.preventDefault();
+
+    if (isProcessingVote || isVotedByUser) {
+      return;
+    }
+
+    if (!currentUser.id) {
+      showToast('Please log in to vote for sandwiches');
+      return;
+    }
+
+    setIsProcessingVote(true);
+
+    try {
+      const response = await voteForSandwich({ userId: currentUser.id, sandwichId: sandwich.id });
+
+      if (!response?.success) {
+        showToast(response?.error?.message || 'Unable to add this sandwich to your favorites');
+        return;
+      }
+
+      setVotesCount((prev) => response?.data?.votesCount ?? prev + 1);
+      setIsOptimisticallyVoted(true);
+
+      setCurrentUser((previousUser) => {
+        if (!previousUser?.id) {
+          return previousUser;
+        }
+
+        const favorites = new Set(previousUser.favoriteSandwiches || []);
+        favorites.add(sandwich.id);
+
+        return {
+          ...previousUser,
+          favoriteSandwiches: [...favorites],
+        };
+      });
+    } catch (error) {
+      const fallbackMessage =
+        error?.response?.data?.error?.message || error?.message || 'Unable to add this sandwich to your favorites';
+      showToast(fallbackMessage);
+    } finally {
+      setIsProcessingVote(false);
+    }
   };
 
   return (
@@ -78,21 +135,23 @@ const SandwichCard = ({ index, sandwich, galleryPath = '', isModal }) => {
         <div className="card-footer relative flex items-center justify-between">
           <div className="card-footer-start flex w-1/3 items-center justify-start">
             <i
-              className={`icon icon-votes h-7 w-auto sm:h-8 ${isUserVoting ? 'animate-bounce' : ''}`}
+              className={`icon icon-votes h-7 w-auto sm:h-8 ${isProcessingVote ? 'animate-bounce' : ''}`}
               title="Favorites counter"
             ></i>
-            <span className="votesCount text-shadow-5 text-xs sm:text-sm">
-              {sandwich.votesCount + (isUserVoting ? 1 : 0)}
-            </span>
+            <span className="votesCount text-shadow-5 text-xs sm:text-sm">{votesCount}</span>
           </div>
           <div className="card-footer-mid w-1/3 text-center">
             <div className={`thumb__vote-btn relative mx-auto h-10 w-auto leading-none ${isModal ? 'md:h-16' : ''} `}>
               {!isVotedByUser && (
-                <button className={`btn-wrapper ${isUserVoting ? 'fadeout' : ''}`} onClick={voteForSandwichHandler}>
+                <button
+                  className={`btn-wrapper ${isProcessingVote ? 'fadeout' : ''}`}
+                  onClick={voteForSandwichHandler}
+                  disabled={isProcessingVote}
+                >
                   <i className="icon icon-heart absolute inset-0 h-full w-full" title="Add to favorites"></i>
                 </button>
               )}
-              {(isVotedByUser || isUserVoting) && (
+              {(isVotedByUser || isProcessingVote) && (
                 <Link
                   to={ROUTE_PATHS.CREATE}
                   onClick={copyThisSandwichHandler}
@@ -128,6 +187,7 @@ const SandwichCard = ({ index, sandwich, galleryPath = '', isModal }) => {
       </div>
 
       {isModal && <SandwichIngredientsList sandwich={sandwich} ingredientsRawList={ingredientsRawList} />}
+      {toastComponents}
     </div>
   );
 };

@@ -1,7 +1,13 @@
 import expressAsyncHandler from 'express-async-handler';
 import createHttpError from 'http-errors';
+import mongoose from 'mongoose';
 import { SANDWICHES_DIR } from '../config/dir.js';
-import { NO_USER_SANDWICH_USERNAME } from '../constants/sandwichConstants.js';
+import { PORTION } from '../constants/ingredientsConstants.js';
+import {
+  DEFAULT_SANDWICH_UPDATE_WINDOW_MINUTES,
+  DEFAULT_SANDWICHES_PER_PAGE,
+  NO_USER_SANDWICH_USERNAME,
+} from '../constants/sandwichConstants.js';
 import Sandwich from '../models/SandwichModel.js';
 import User from '../models/UserModel.js';
 import { removeFile } from '../utils/fileUtils.js';
@@ -18,30 +24,26 @@ export const getSandwiches = expressAsyncHandler(async (req, res, _next) => {
     ...req.body,
   };
 
+  const dietaryFilters = normalizeListParam(dietaryPreferences);
+  const ingredientFilters = normalizeListParam(ingredients);
+
   const query = Sandwich.find();
 
-  if (dietaryPreferences) {
-    query.where('dietaryPreferences').all(dietaryPreferences.split('|'));
+  if (dietaryFilters.length > 0) {
+    query.where('dietaryPreferences').all(dietaryFilters);
   }
 
-  if (ingredients) {
-    const ingredientIds = ingredients.split('|');
-    query.where('ingredients.ingredientId').all(ingredientIds);
+  if (ingredientFilters.length > 0) {
+    query.where('ingredients.ingredientId').all(ingredientFilters);
   }
 
-  // default sort by creation date
-  if (sortBy) {
-    query.sort(sortBy === 'votesCount' || sortBy === 'votes' ? '-votesCount' : '-createdAt');
-  }
+  query.sort(normalizeSort(sortBy));
 
-  // Set default values for page and limit if not provided
-  const pageNumber = Number.parseInt(page, 10) || 1;
-  const pageLimit = Number.parseInt(limit, 10) || process.env.SANDWICHES_PER_PAGE_DEFAULT;
+  const defaultLimit = parsePositiveInteger(process.env.SANDWICHES_PER_PAGE_DEFAULT, DEFAULT_SANDWICHES_PER_PAGE);
+  const pageLimit = parsePositiveInteger(limit, defaultLimit);
+  const pageNumber = parsePositiveInteger(page, 1);
 
-  // Calculate the number of documents to skip based on the current page and limit
-  const skipCount = (pageNumber - 1) * pageLimit;
-
-  query.skip(skipCount).limit(pageLimit);
+  query.skip((pageNumber - 1) * pageLimit).limit(pageLimit);
 
   const sandwiches = await query.exec();
 
@@ -80,17 +82,18 @@ export const createSandwich = expressAsyncHandler(async (req, res, _next) => {
   const { name, ingredients, comment } = req.body;
   const { id: userId, firstName } = req.user;
 
-  const saveIngredients = ingredients.map(({ id, portion }) => ({
-    ingredientId: id,
-    portion,
-  }));
+  const saveIngredients = normalizeIngredients(ingredients);
+
+  if (saveIngredients.length < 2) {
+    throw createHttpError.BadRequest('Please add at least two ingredients before saving your sandwich');
+  }
 
   const newSandwich = new Sandwich({
-    name,
+    name: typeof name === 'string' ? name.trim() : name,
     ingredients: saveIngredients,
     authorName: firstName,
     authorId: userId,
-    comment: comment,
+    comment: sanitizeOptionalString(comment),
   });
 
   await newSandwich.validate();
@@ -100,8 +103,10 @@ export const createSandwich = expressAsyncHandler(async (req, res, _next) => {
   await newSandwich.save();
 
   const user = await User.findById(req.user._id);
-  user.sandwiches.push(newSandwich._id);
-  await user.save();
+  if (user) {
+    user.sandwiches.addToSet(newSandwich._id);
+    await user.save();
+  }
 
   res.status(201).json({
     success: true,
@@ -124,43 +129,46 @@ export const updateSandwich = expressAsyncHandler(async (req, res, next) => {
     return next(createHttpError.NotFound('Sandwich not found'));
   }
 
-  const newIngredients = ingredients.map(({ id, portion }) => ({
-    ingredientId: id,
-    portion,
-  }));
+  const newIngredients = normalizeIngredients(ingredients);
 
-  const timeDiff = (Date.now() - sandwich.createdAt) / 1000 / 60;
+  if (newIngredients.length < 2) {
+    throw createHttpError.BadRequest('Please add at least two ingredients before updating your sandwich');
+  }
 
-  if (timeDiff > Number.parseInt(process.env.SANDWICH_UPDATE_EXPIRES_IN_MIN, 10)) {
+  const updateWindowMinutes = parsePositiveInteger(
+    process.env.SANDWICH_UPDATE_EXPIRES_IN_MIN,
+    DEFAULT_SANDWICH_UPDATE_WINDOW_MINUTES,
+  );
+  const minutesSinceCreation = (Date.now() - sandwich.createdAt.getTime()) / 60_000;
+
+  if (minutesSinceCreation > updateWindowMinutes) {
     return next(
       createHttpError.Forbidden(
-        `A sandwich can only be updated within the first ` +
-          `${process.env.SANDWICH_UPDATE_EXPIRES_IN_MINS} minutes.` +
-          `Please create a new sandwich instead.`,
+        `A sandwich can only be updated within the first ${updateWindowMinutes} minutes. Please create a new sandwich instead.`,
       ),
     );
   }
 
-  sandwich.name = name;
+  if (typeof name === 'string') {
+    sandwich.name = name.trim();
+  }
   sandwich.ingredients = newIngredients;
-  sandwich.comment = comment;
+  sandwich.comment = sanitizeOptionalString(comment);
 
   await sandwich.validate();
 
   const newImage = await generateSandwichImage(newIngredients);
-
-  // Clear unused sandwich image
-  if (newImage !== sandwich.image) {
-    const oldImage = sandwich.image;
-    const sandwichesWithOldImage = await Sandwich.find({ image: oldImage });
-    if (sandwichesWithOldImage.length === 0) {
-      removeFile(SANDWICHES_DIR, oldImage);
-    }
-  }
+  const oldImage = sandwich.image;
 
   sandwich.image = newImage;
-
   await sandwich.save();
+
+  if (newImage !== oldImage) {
+    const stillUsingImage = await Sandwich.exists({ image: oldImage, _id: { $ne: sandwich._id } });
+    if (!stillUsingImage) {
+      await removeFile(SANDWICHES_DIR, oldImage);
+    }
+  }
 
   res.status(200).json({
     success: true,
@@ -183,9 +191,11 @@ export const deleteSandwich = expressAsyncHandler(async (req, res, next) => {
 
   await Sandwich.updateOne({ _id: sandwich._id }, { authorName: NO_USER_SANDWICH_USERNAME }, { runValidators: true });
 
-  const user = await User.findById(sandwich.authorId);
-  user.sandwiches = user.sandwiches.filter((sandwichId) => !sandwichId.equals(sandwich._id));
-  await user.save();
+  const user = sandwich.authorId ? await User.findById(sandwich.authorId) : null;
+  if (user) {
+    user.sandwiches = user.sandwiches.filter((sandwichId) => !sandwichId.equals(sandwich._id));
+    await user.save();
+  }
 
   res.status(200).json({
     success: true,
@@ -198,20 +208,111 @@ export const deleteSandwich = expressAsyncHandler(async (req, res, next) => {
  * @route   POST|DELETE /api/sandwiches/:sandwichId/vote
  * @access  Private
  */
-export const updateSandwichVotesCount = async (req, res, next) => {
+export const updateSandwichVotesCount = expressAsyncHandler(async (req, res, next) => {
   const { sandwichId } = req.params;
   const method = req.method;
 
-  const updateOperation = method === 'POST' ? { $inc: { votesCount: 1 } } : { $inc: { votesCount: -1 } };
-
-  const sandwich = await Sandwich.findByIdAndUpdate(sandwichId, updateOperation, { new: true });
+  const sandwich = await Sandwich.findById(sandwichId);
 
   if (!sandwich) {
     return next(createHttpError.NotFound('Sandwich not found'));
   }
 
+  if (method === 'POST') {
+    sandwich.votesCount = (sandwich.votesCount ?? 0) + 1;
+  } else if (method === 'DELETE') {
+    sandwich.votesCount = Math.max(0, (sandwich.votesCount ?? 0) - 1);
+  } else {
+    throw createHttpError.MethodNotAllowed('Unsupported vote action');
+  }
+
+  await sandwich.save();
+
   res.status(200).json({
     success: true,
     data: sandwich,
   });
-};
+});
+
+function normalizeListParam(value) {
+  if (!value) {
+    return [];
+  }
+
+  const rawValues = Array.isArray(value) ? value : [value];
+
+  const flattened = rawValues
+    .flatMap((item) => String(item).split(/[,|]/))
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  return [...new Set(flattened)];
+}
+
+function parsePositiveInteger(value, fallback) {
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function normalizeSort(sortBy) {
+  const sortKey = typeof sortBy === 'string' ? sortBy.trim() : '';
+
+  if (sortKey === 'votesCount' || sortKey === 'votes') {
+    return '-votesCount';
+  }
+
+  return '-createdAt';
+}
+
+const ALLOWED_PORTIONS = new Set(Object.values(PORTION));
+
+function normalizeIngredients(ingredients) {
+  if (!Array.isArray(ingredients)) {
+    throw createHttpError.BadRequest('Ingredients must be provided as an array');
+  }
+
+  return ingredients.map((ingredient, index) => {
+    const rawId = ingredient?.ingredientId ?? ingredient?.id ?? ingredient?._id;
+    const ingredientId =
+      typeof rawId === 'string'
+        ? rawId.trim()
+        : rawId && typeof rawId.toString === 'function'
+          ? rawId.toString().trim()
+          : '';
+
+    if (!ingredientId) {
+      throw createHttpError.BadRequest(`Ingredient at position ${index + 1} is missing an id`);
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(ingredientId)) {
+      throw createHttpError.BadRequest(`Ingredient id "${ingredientId}" is invalid`);
+    }
+
+    let portion = ingredient?.portion;
+    if (portion !== undefined && portion !== null) {
+      portion = String(portion).trim().toLowerCase();
+
+      if (portion.length === 0) {
+        portion = undefined;
+      } else if (!ALLOWED_PORTIONS.has(portion)) {
+        throw createHttpError.BadRequest(`Invalid portion value "${portion}" for ingredient at position ${index + 1}`);
+      }
+    } else {
+      portion = undefined;
+    }
+
+    return {
+      ingredientId,
+      portion,
+    };
+  });
+}
+
+function sanitizeOptionalString(value) {
+  if (typeof value !== 'string') {
+    return;
+  }
+
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+}

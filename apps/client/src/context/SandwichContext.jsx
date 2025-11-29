@@ -1,16 +1,11 @@
-import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { DIETARY_PREFERENCE, PORTION, PRODUCT, TYPE } from '../constants/ingredients-constants';
 import { EMPTY_SANDWICH } from '../constants/sandwich-constants';
 import { useAuthGlobalContext } from '../context/AuthGlobalContext';
 import { useIngredientsGlobalContext } from '../context/IngredientsGlobalContext';
 import useSandwich from '../hooks/use-sandwich';
-import {
-  createSandwich,
-  deleteSandwichFromCache,
-  readSandwichFromCache,
-  updateSandwichInCache,
-} from '../services/api-sandwiches';
-import { log, logResponse } from '../utils/log';
+import { createSandwich, deleteSandwichFromCache, updateSandwichInCache } from '../services/api-sandwiches';
+import { logResponse } from '../utils/log';
 
 const SandwichContext = createContext();
 
@@ -18,7 +13,7 @@ const SandwichContextProvider = ({ children }) => {
   const [currentIngredient, setCurrentIngredient] = useState({});
   const swiperContainerRef = useRef(null);
   const { ingredients, areIngredientsReady, forceFetchIngredients } = useIngredientsGlobalContext();
-  const { currentUser, isCurrentUserReady } = useAuthGlobalContext();
+  const { currentUser, setCurrentUser, isCurrentUserReady } = useAuthGlobalContext();
   const {
     currentType,
     setCurrentType,
@@ -48,20 +43,21 @@ const SandwichContextProvider = ({ children }) => {
 
   useEffect(() => {
     forceFetchIngredients();
-
-    const sandwichFromCache = readSandwichFromCache();
-    log('Sandwich retrieved from cache', sandwichFromCache);
-
-    if (sandwichFromCache) {
-      sandwichDispatch({ type: 'UPDATE_SANDWICH', payload: sandwichFromCache });
-    }
-  }, [forceFetchIngredients, isSavingSandwich, sandwichDispatch]);
+  }, [forceFetchIngredients]);
 
   useEffect(() => {
+    const isEmptySandwich =
+      sandwich.ingredients.length === 0 && (!sandwich.name || sandwich.name.trim() === '') && !sandwich.comment;
+
+    if (isEmptySandwich) {
+      deleteSandwichFromCache();
+      return;
+    }
+
     updateSandwichInCache(sandwich);
   }, [sandwich]);
 
-  const clearSandwich = () => {
+  const clearSandwich = useCallback(() => {
     sandwichDispatch({ type: 'UPDATE_SANDWICH', payload: EMPTY_SANDWICH });
 
     setCurrentType('');
@@ -70,7 +66,7 @@ const SandwichContextProvider = ({ children }) => {
     setTimeout(() => {
       setCurrentType(TYPE.bread);
     }, 400);
-  };
+  }, [sandwichDispatch, setCurrentType]);
 
   const randomizeSandwich = () => {
     if (!areIngredientsReady || Object.keys(ingredients).length === 0) {
@@ -156,25 +152,45 @@ const SandwichContextProvider = ({ children }) => {
     sandwichDispatch({ type: 'UPDATE_SANDWICH', payload: { ...EMPTY_SANDWICH, ingredients: randomIngredients } });
 
     setCurrentType('');
-    deleteSandwichFromCache();
 
     setTimeout(() => {
       setCurrentType(TYPE.bread);
     }, 400);
   };
 
-  const saveSandwich = async (sandwich) => {
-    setIsSavingSandwich(true);
+  const saveSandwich = useCallback(
+    async (sandwichToSave) => {
+      setIsSavingSandwich(true);
 
-    const res = await createSandwich(sandwich);
-    logResponse('👽 🥪 Create sandwich', res);
-    if (res.success) {
-      clearSandwich();
-    }
+      try {
+        const res = await createSandwich(sandwichToSave);
+        logResponse('👽 🥪 Create sandwich', res);
 
-    setIsSavingSandwich(false);
-    return res;
-  };
+        if (res.success) {
+          setCurrentUser((previousUser) => {
+            if (!previousUser?.id || !res.data) {
+              return previousUser;
+            }
+
+            const existingSandwiches = previousUser.sandwiches || [];
+            const alreadyIncluded = existingSandwiches.some((item) => item.id === res.data.id);
+
+            return {
+              ...previousUser,
+              sandwiches: alreadyIncluded ? existingSandwiches : [...existingSandwiches, res.data],
+            };
+          });
+
+          deleteSandwichFromCache();
+        }
+
+        return res;
+      } finally {
+        setIsSavingSandwich(false);
+      }
+    },
+    [setCurrentUser, setIsSavingSandwich],
+  );
 
   return (
     <SandwichContext.Provider

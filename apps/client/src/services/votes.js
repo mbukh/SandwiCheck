@@ -4,12 +4,16 @@ import { addSandwichToFavoritesByUserId, hasUserVotedForSandwichByIdUsingLocalSt
 export const hasUserVotedForSandwich = (sandwich, user) => {
   if (!user.id) return hasUserVotedForSandwichByIdUsingLocalStorage(sandwich.id);
 
-  return user.favoriteSandwiches.includes(sandwich.id);
+  return user.favoriteSandwiches?.includes?.(sandwich.id) ?? false;
 };
 
 export const voteForSandwich = async ({ userId, sandwichId }) => {
   if (userId) {
-    await addSandwichToFavoritesByUserId({ userId, sandwichId });
+    const favoritesResponse = await addSandwichToFavoritesByUserId({ userId, sandwichId });
+    if (!favoritesResponse?.success) {
+      return favoritesResponse;
+    }
   }
-  await addVoteToSandwich(sandwichId);
+
+  return await addVoteToSandwich(sandwichId);
 };
