@@ -1,4 +1,3 @@
-// prettier.config.js, .prettierrc.js, prettier.config.mjs, or .prettierrc.mjs
 import baseConfig from '../../prettier.config.js';
 
 /**
@@ -7,7 +6,7 @@ import baseConfig from '../../prettier.config.js';
  */
 const config = {
   ...baseConfig,
-  plugins: [...(baseConfig.plugins || []), import('prettier-plugin-tailwindcss')],
+  plugins: [...(baseConfig.plugins || []), await import('prettier-plugin-tailwindcss')],
   tailwindStylesheet: './src/styles/styles.css',
 };
 

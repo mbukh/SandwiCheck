@@ -12,7 +12,6 @@ const SandwichBuilderImage = () => {
           src={generateIngredientImageSrc({
             ingredient,
             sandwich,
-            imageType: 'builderImage',
           })}
           className="absolute inset-0 size-full object-contain drag-none select-none"
           alt={`Sandwich ingredients layer #${index}`}

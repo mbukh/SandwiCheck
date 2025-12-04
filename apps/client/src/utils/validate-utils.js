@@ -1,4 +1,4 @@
-import { MAX_COMMENT_LENGTH, MAX_NAME_LENGTH } from '../constants/sandwich-constants';
+import { MAX_COMMENT_LENGTH, MAX_COMMENT_LINES, MAX_NAME_LENGTH } from '../constants/sandwich-constants';
 import { MAX_USER_NAME_LENGTH } from '../constants/user-constants';
 
 const validateForm = ({
@@ -60,6 +60,15 @@ const validateForm = ({
   sandwichName != null && sandwichName.length > MAX_NAME_LENGTH && errorMessages.push('Sandwich name is too long');
 
   sandwichComment != null && sandwichComment.length > MAX_COMMENT_LENGTH && errorMessages.push('Comment is too long');
+
+  if (sandwichComment != null && typeof sandwichComment === 'string') {
+    const newlineCount = (sandwichComment.match(/\n/g) || []).length;
+    if (newlineCount > MAX_COMMENT_LINES - 1) {
+      errorMessages.push(
+        `Comment cannot contain more than ${MAX_COMMENT_LINES - 1} newlines (${MAX_COMMENT_LINES} lines total)`,
+      );
+    }
+  }
 
   return errorMessages;
 };

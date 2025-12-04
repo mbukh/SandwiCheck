@@ -1,6 +1,11 @@
 import mongoose from 'mongoose';
 import { DIETARY_PREFERENCE, isBreadType, PORTION, PRODUCT } from '../constants/ingredientsConstants.js';
-import { MAX_COMMENT_LENGTH, MAX_INGREDIENTS_COUNT, MAX_NAME_LENGTH } from '../constants/sandwichConstants.js';
+import {
+  MAX_COMMENT_LENGTH,
+  MAX_COMMENT_LINES,
+  MAX_INGREDIENTS_COUNT,
+  MAX_NAME_LENGTH,
+} from '../constants/sandwichConstants.js';
 import Ingredient from './IngredientModel.js';
 
 const { Schema } = mongoose;
@@ -72,6 +77,10 @@ const sandwichSchema = new Schema(
       type: String,
       trim: true,
       maxlength: [MAX_COMMENT_LENGTH, `Keep your comment within ${MAX_COMMENT_LENGTH} characters`],
+      validate: [
+        commentNewlinesValidator,
+        `Comment cannot contain more than ${MAX_COMMENT_LINES - 1} newlines (${MAX_COMMENT_LINES} lines total)`,
+      ],
     },
   },
   {
@@ -103,6 +112,14 @@ sandwichSchema.pre('save', async function () {
 
   this.dietaryPreferences = setDietaryPreferences(ingredients);
 });
+
+function commentNewlinesValidator(comment) {
+  if (!comment || typeof comment !== 'string') {
+    return true; // Allow empty/undefined comments
+  }
+  const newlineCount = (comment.match(/\n/g) || []).length;
+  return newlineCount <= MAX_COMMENT_LINES - 1;
+}
 
 async function ingredientsValidator(ingredientsWithPortions) {
   if (ingredientsWithPortions.length < 2) {

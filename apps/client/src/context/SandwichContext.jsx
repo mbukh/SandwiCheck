@@ -12,6 +12,8 @@ const SandwichContext = createContext();
 const SandwichContextProvider = ({ children }) => {
   const [currentIngredient, setCurrentIngredient] = useState({});
   const swiperContainerRef = useRef(null);
+  const [editingLayerIndex, setEditingLayerIndex] = useState(null); // number | null
+  const [isAddingLayer, setIsAddingLayer] = useState(false); // boolean
   const { ingredients, areIngredientsReady, forceFetchIngredients } = useIngredientsGlobalContext();
   const { currentUser, setCurrentUser, isCurrentUserReady } = useAuthGlobalContext();
   const {
@@ -45,20 +47,53 @@ const SandwichContextProvider = ({ children }) => {
     forceFetchIngredients();
   }, [forceFetchIngredients]);
 
+  // Initialize with random bread when sandwich is empty and ingredients are ready
   useEffect(() => {
+    if (!areIngredientsReady || !ingredients[TYPE.bread] || ingredients[TYPE.bread].length === 0) {
+      return;
+    }
+
     const isEmptySandwich =
       sandwich.ingredients.length === 0 && (!sandwich.name || sandwich.name.trim() === '') && !sandwich.comment;
 
     if (isEmptySandwich) {
+      // Add random bread only if sandwich is truly empty
+      const breadOptions = ingredients[TYPE.bread] || [];
+      if (breadOptions.length > 0) {
+        const randomBread = breadOptions[Math.floor(Math.random() * breadOptions.length)];
+        sandwichDispatch({
+          type: 'UPDATE_INGREDIENTS',
+          payload: [{ ...randomBread, portion: PORTION.full }],
+        });
+      }
       deleteSandwichFromCache();
       return;
     }
 
-    updateSandwichInCache(sandwich);
-  }, [sandwich]);
+    // Update cache for non-empty sandwiches
+    const hasBread = sandwich.ingredients.some((ing) => ing.type === TYPE.bread);
+    if (hasBread || sandwich.ingredients.length > 0 || sandwich.name || sandwich.comment) {
+      updateSandwichInCache(sandwich);
+    }
+  }, [sandwich, areIngredientsReady, ingredients, sandwichDispatch]);
 
   const clearSandwich = useCallback(() => {
-    sandwichDispatch({ type: 'UPDATE_SANDWICH', payload: EMPTY_SANDWICH });
+    // Cancel any active layer editing before clearing
+    setEditingLayerIndex(null);
+    setIsAddingLayer(false);
+
+    // Add random bread when clearing
+    const breadOptions = ingredients[TYPE.bread] || [];
+    let initialBread = null;
+    if (breadOptions.length > 0) {
+      const randomBread = breadOptions[Math.floor(Math.random() * breadOptions.length)];
+      initialBread = { ...randomBread, portion: PORTION.full };
+    }
+
+    sandwichDispatch({
+      type: 'UPDATE_SANDWICH',
+      payload: initialBread ? { ...EMPTY_SANDWICH, ingredients: [initialBread] } : EMPTY_SANDWICH,
+    });
 
     setCurrentType('');
     deleteSandwichFromCache();
@@ -66,12 +101,16 @@ const SandwichContextProvider = ({ children }) => {
     setTimeout(() => {
       setCurrentType(TYPE.bread);
     }, 400);
-  }, [sandwichDispatch, setCurrentType]);
+  }, [sandwichDispatch, setCurrentType, ingredients, setEditingLayerIndex, setIsAddingLayer]);
 
   const randomizeSandwich = () => {
     if (!areIngredientsReady || Object.keys(ingredients).length === 0) {
       return;
     }
+
+    // Cancel any active layer editing before randomizing
+    setEditingLayerIndex(null);
+    setIsAddingLayer(false);
 
     const randomIngredients = [];
     let hasMeat = false;
@@ -210,6 +249,10 @@ const SandwichContextProvider = ({ children }) => {
         currentIngredient,
         setCurrentIngredient,
         swiperContainerRef,
+        editingLayerIndex,
+        setEditingLayerIndex,
+        isAddingLayer,
+        setIsAddingLayer,
         ingredients,
         areIngredientsReady,
         isCurrentUserReady,

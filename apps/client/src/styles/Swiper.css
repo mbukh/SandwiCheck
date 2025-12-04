@@ -5,21 +5,7 @@
 }
 
 .swiper-slide {
-  text-align: center;
-
-  /* Center slide text vertically */
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: -webkit-flex;
-  display: flex;
-  -webkit-box-pack: center;
-  -ms-flex-pack: center;
-  -webkit-justify-content: center;
-  justify-content: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  -webkit-align-items: center;
-  align-items: center;
+  @apply flex items-center justify-center;
 }
 
 .swiper-slide-container {
@@ -31,4 +17,26 @@
 .swiper-slide-container.active {
   opacity: 1;
   scale: 1;
+}
+
+/* Larger images for layer slider */
+.layer-slider .swiper-slide-container {
+  scale: 0.9;
+  max-width: 500px;
+  width: 100%;
+}
+
+.layer-slider .swiper-slide-container.active {
+  scale: 1.05;
+}
+
+/* Ensure swiper maintains aspect ratio */
+.layer-slider .relative {
+  width: 100%;
+  height: 100%;
+}
+
+.layer-slider .swiper {
+  width: 100%;
+  height: 100%;
 }

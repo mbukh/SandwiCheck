@@ -6,6 +6,7 @@ import { PORTION } from '../constants/ingredientsConstants.js';
 import {
   DEFAULT_SANDWICH_UPDATE_WINDOW_MINUTES,
   DEFAULT_SANDWICHES_PER_PAGE,
+  MAX_COMMENT_LINES,
   NO_USER_SANDWICH_USERNAME,
 } from '../constants/sandwichConstants.js';
 import Sandwich from '../models/SandwichModel.js';
@@ -314,5 +315,17 @@ function sanitizeOptionalString(value) {
   }
 
   const trimmed = value.trim();
-  return trimmed.length > 0 ? trimmed : undefined;
+  if (trimmed.length === 0) {
+    return;
+  }
+
+  // Validate newline count
+  const newlineCount = (trimmed.match(/\n/g) || []).length;
+  if (newlineCount > MAX_COMMENT_LINES - 1) {
+    throw createHttpError.BadRequest(
+      `Comment cannot contain more than ${MAX_COMMENT_LINES - 1} newlines (${MAX_COMMENT_LINES} lines total)`,
+    );
+  }
+
+  return trimmed;
 }

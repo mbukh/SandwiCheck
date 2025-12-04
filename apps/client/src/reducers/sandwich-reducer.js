@@ -1,4 +1,4 @@
-import { DEFAULT_PORTION, PORTION } from '../constants/ingredients-constants';
+import { DEFAULT_PORTION, PORTION, TYPE } from '../constants/ingredients-constants';
 
 /*
  * sandwich = {
@@ -16,13 +16,32 @@ const sandwichReducer = (state, action) => {
         ingredients: [...state.ingredients, { portion: DEFAULT_PORTION, ...action.payload }],
       };
     }
+    case 'INSERT_INGREDIENT_AT': {
+      const { ingredient, index } = action.payload;
+      const newIngredients = [...state.ingredients];
+      // Insert at index + 1 (after the specified index)
+      newIngredients.splice(index + 1, 0, { portion: DEFAULT_PORTION, ...ingredient });
+      return {
+        ...state,
+        ingredients: newIngredients,
+      };
+    }
     case 'REMOVE_INGREDIENT': {
+      // Prevent removing bread (bread is always at index 0)
+      const ingredientToRemove = state.ingredients.find((ing) => ing.id === action.payload);
+      if (ingredientToRemove?.type === TYPE.bread) {
+        return state; // Don't remove bread
+      }
       return {
         ...state,
         ingredients: state.ingredients.filter((ingredient) => ingredient.id !== action.payload),
       };
     }
     case 'REMOVE_INGREDIENTS_OF_TYPE': {
+      // Prevent removing bread type
+      if (action.payload === TYPE.bread) {
+        return state; // Don't remove bread
+      }
       return {
         ...state,
         ingredients: state.ingredients.filter((ingredient) => ingredient.type !== action.payload),

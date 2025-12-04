@@ -79,6 +79,7 @@ html:has(.root-portal) {
 body {
   color: var(--color-white);
   line-height: 1.5;
+  padding-bottom: var(--footerHeight);
 }
 
 body:before {
@@ -1212,3 +1213,252 @@ header .mobile-menu.open {
 }
 
 /* ======== END ERROR 404 ======== */
+
+/* ======== SANDWICH BUILDER LAYER SYSTEM ======== */
+
+.layer-stack {
+  position: relative;
+  width: 100%;
+}
+
+.layer-item {
+  transition-property: transform, top, opacity;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.layer-active {
+  z-index: 10 !important;
+  filter: drop-shadow(0 0 20px rgba(230, 18, 125, 0.3));
+}
+
+.layer-image-container {
+  /* Center image takes only as much space as needed */
+  max-width: 100%;
+}
+
+.layer-slider {
+  width: 100%;
+}
+
+.layer-slider-container {
+  width: 100%;
+  min-width: 0;
+}
+
+.preview-mode {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-sandwich-image {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes layerAlign {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(calc(50vh - 50%));
+  }
+}
+
+@keyframes layerReorder {
+  0% {
+    transform: translateY(var(--start-y, 0));
+  }
+  100% {
+    transform: translateY(var(--end-y, 0));
+  }
+}
+
+@keyframes sliderAppear {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes sliderContentAppear {
+  0% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes previewCollapse {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05) translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes layerPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 20px rgba(230, 18, 125, 0.3));
+  }
+  50% {
+    transform: scale(1.02);
+    filter: drop-shadow(0 0 25px rgba(230, 18, 125, 0.5));
+  }
+}
+
+@keyframes imageFadeScaleOut {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+@keyframes sliderFadeScaleIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes controlsFadeScaleIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes controlsFadeScaleOut {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+@keyframes sliderFadeScaleOut {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+@keyframes imageFadeScaleIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes layerCollapse {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Transition classes using animation constants */
+.layer-align {
+  animation: layerAlign 400ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.layer-reorder {
+  animation: layerReorder 400ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.slider-appear {
+  animation: sliderAppear 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.preview-collapse {
+  animation: previewCollapse 600ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.image-fade-scale-out {
+  animation: imageFadeScaleOut 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.slider-fade-scale-in {
+  animation: sliderFadeScaleIn 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.controls-fade-scale-in {
+  animation: controlsFadeScaleIn 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.controls-fade-scale-out {
+  animation: controlsFadeScaleOut 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.slider-fade-scale-out {
+  animation: sliderFadeScaleOut 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.image-fade-scale-in {
+  animation: imageFadeScaleIn 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.layer-collapse {
+  animation: layerCollapse 600ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .image-fade-scale-out,
+  .slider-fade-scale-in,
+  .controls-fade-scale-in,
+  .controls-fade-scale-out,
+  .slider-fade-scale-out,
+  .image-fade-scale-in,
+  .layer-collapse {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* ======== END SANDWICH BUILDER LAYER SYSTEM ======== */

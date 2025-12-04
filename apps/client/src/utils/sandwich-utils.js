@@ -4,7 +4,16 @@ export const hydrateSandwichIngredientsData = (sandwich, ingredientsRawList) => 
   const newSandwich = { ...sandwich };
 
   newSandwich.ingredients = newSandwich.ingredients.reduce((acc, ingredient) => {
-    const matchingIngredient = ingredientsRawList.find((item) => item.id === ingredient.ingredientId);
+    // If ingredient already has full data (from builder), use it as-is
+    if (ingredient.id && ingredient.type && ingredient.name) {
+      acc.push(ingredient);
+      return acc;
+    }
+
+    // Otherwise, look up by ingredientId (server format) or id (fallback)
+    const matchingIngredient = ingredientsRawList.find(
+      (item) => item.id === ingredient.ingredientId || item.id === ingredient.id,
+    );
 
     if (matchingIngredient) {
       acc.push({

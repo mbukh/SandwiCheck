@@ -11,8 +11,8 @@
     "dev": "NODE_ENV=local node --env-file ./config/.env --watch server.js",
     "dev:staging": "NODE_ENV=development node --env-file ./config/.env --watch server.js",
     "init-db": "node --env-file ./config/.env service/initDatabase.js",
-    "lint": "eslint . --config ./eslint.config.js",
-    "lint:fix": "eslint . --config ./eslint.config.js --fix",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
     "init-uploads": "node --env-file ./config/.env service/initUploadsFolder.js",
     "migrate-email-confirmation-fields": "node --env-file ./config/.env service/migrateEmailConfirmationFields.js"
   },

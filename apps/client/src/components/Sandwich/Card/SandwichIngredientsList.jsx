@@ -1,7 +1,7 @@
 import { hydrateSandwichIngredientsData } from '../../../utils/sandwich-utils';
 import { capitalizeFirst } from '../../../utils/utils';
 
-const SandwichIngredientsList = ({ sandwich, ingredientsRawList }) => {
+const SandwichIngredientsList = ({ sandwich, ingredientsRawList, hideComment = false }) => {
   const hydratedSandwich = hydrateSandwichIngredientsData(sandwich, ingredientsRawList);
 
   return (
@@ -17,13 +17,13 @@ const SandwichIngredientsList = ({ sandwich, ingredientsRawList }) => {
             </li>
           ))}
         </ul>
-        {sandwich.comment && (
+        {!hideComment && sandwich.comment && (
           <div className="my-5">
             <h5 className="mb-4 ml-4 text-sm uppercase sm:text-base">Comment:</h5>
             <div className="ml-1">{sandwich.comment}</div>
           </div>
         )}
-        {sandwich.dietaryPreferences.length > 0 && (
+        {sandwich.dietaryPreferences && sandwich.dietaryPreferences.length > 0 && (
           <div className="my-5">
             <h5 className="mb-4 ml-4 text-sm uppercase sm:text-base">Dietary preferences:</h5>
             <ul className="text-sm sm:text-base">

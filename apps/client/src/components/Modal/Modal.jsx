@@ -6,7 +6,7 @@ import { isAuthRoute } from '../../utils/auth-utils';
 import Loading from '../Loading';
 import Portal from '../Portal/Portal';
 
-const Modal = ({ children, setIsOpenLoginModal, isModalLoading = true, closeLink = '', modalId }) => {
+const Modal = ({ children, setIsOpenLoginModal, isModalLoading = true, closeLink = '', modalId, onClose }) => {
   const [isModalShow, setIsModalShow] = useState(true);
   const navigate = useNavigate();
   const router = useRouter();
@@ -39,8 +39,10 @@ const Modal = ({ children, setIsOpenLoginModal, isModalLoading = true, closeLink
       }
       setIsModalShow(false);
       setIsOpenLoginModal && setIsOpenLoginModal(false);
+      // Call onClose callback if provided
+      onClose && onClose();
     },
-    [closeLink, navigate, router, location, setIsOpenLoginModal],
+    [closeLink, navigate, router, location, setIsOpenLoginModal, onClose],
   );
 
   useEffect(() => {

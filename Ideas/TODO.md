@@ -1,5 +1,7 @@
 # TODO list
 
+TRPC
+
 ## Which actions allowed for parent on behalf of the child?
 
     - [ ? ] create sandwich
@@ -27,3 +29,7 @@
 ## Adding email to a child
 
     warning that this can't be undone
+
+## Gallery delay
+
+In a gallery i want each card to show up with the exactly the same manner but with slight delay.
