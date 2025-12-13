@@ -14,6 +14,7 @@ const SandwichContextProvider = ({ children }) => {
   const swiperContainerRef = useRef(null);
   const [editingLayerIndex, setEditingLayerIndex] = useState(null); // number | null
   const [isAddingLayer, setIsAddingLayer] = useState(false); // boolean
+  const editingSnapshotRef = useRef(null);
   const { ingredients, areIngredientsReady, forceFetchIngredients } = useIngredientsGlobalContext();
   const { currentUser, setCurrentUser, isCurrentUserReady } = useAuthGlobalContext();
   const {
@@ -77,10 +78,44 @@ const SandwichContextProvider = ({ children }) => {
     }
   }, [sandwich, areIngredientsReady, ingredients, sandwichDispatch]);
 
+  const resetEditingState = useCallback(
+    (revertChanges = false) => {
+      if (revertChanges && editingSnapshotRef.current) {
+        sandwichDispatch({ type: 'UPDATE_SANDWICH', payload: editingSnapshotRef.current });
+      }
+      editingSnapshotRef.current = null;
+      setEditingLayerIndex(null);
+      setIsAddingLayer(false);
+      setCurrentIngredient({});
+    },
+    [sandwichDispatch, setCurrentIngredient],
+  );
+
+  const startEditingLayer = useCallback(
+    (index) => {
+      /*
+       * If we switch layers while an edit session is active, revert the previous
+       * unsaved changes before starting a new session.
+       */
+      if (editingLayerIndex !== null && editingLayerIndex !== index && editingSnapshotRef.current) {
+        sandwichDispatch({ type: 'UPDATE_SANDWICH', payload: editingSnapshotRef.current });
+        editingSnapshotRef.current = null;
+      }
+
+      if (!editingSnapshotRef.current) {
+        editingSnapshotRef.current = sandwich;
+      }
+
+      setEditingLayerIndex(index);
+      setIsAddingLayer(false);
+      setCurrentIngredient(sandwich.ingredients[index] || {});
+    },
+    [editingLayerIndex, sandwich, sandwichDispatch, setCurrentIngredient],
+  );
+
   const clearSandwich = useCallback(() => {
     // Cancel any active layer editing before clearing
-    setEditingLayerIndex(null);
-    setIsAddingLayer(false);
+    resetEditingState(true);
 
     // Add random bread when clearing
     const breadOptions = ingredients[TYPE.bread] || [];
@@ -101,7 +136,7 @@ const SandwichContextProvider = ({ children }) => {
     setTimeout(() => {
       setCurrentType(TYPE.bread);
     }, 400);
-  }, [sandwichDispatch, setCurrentType, ingredients, setEditingLayerIndex, setIsAddingLayer]);
+  }, [ingredients, resetEditingState, sandwichDispatch, setCurrentType]);
 
   const randomizeSandwich = () => {
     if (!areIngredientsReady || Object.keys(ingredients).length === 0) {
@@ -109,8 +144,7 @@ const SandwichContextProvider = ({ children }) => {
     }
 
     // Cancel any active layer editing before randomizing
-    setEditingLayerIndex(null);
-    setIsAddingLayer(false);
+    resetEditingState(true);
 
     const randomIngredients = [];
     let hasMeat = false;
@@ -261,6 +295,8 @@ const SandwichContextProvider = ({ children }) => {
         defaultName,
         isSandwichReady,
         hasToBeKosher,
+        startEditingLayer,
+        resetEditingState,
       }}
     >
       {children}

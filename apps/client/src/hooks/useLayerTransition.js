@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ANIMATION } from '../constants/animations';
+import { calculateLayerHeight } from './useStableLayerHeight';
 
 /**
  * Custom hook to manage layer transition state and animations
@@ -133,7 +134,7 @@ export const useLayerTransition = ({ isActive, containerRef }) => {
                    * Get current width to calculate natural image height
                    */
                   const containerWidth = containerRef.current.getBoundingClientRect().width;
-                  const targetHeight = (containerWidth * 360) / 650;
+                  const targetHeight = calculateLayerHeight(containerWidth);
 
                   // Ensure transition is set
                   containerRef.current.style.transition = `height ${ANIMATION.DURATION.STANDARD}ms ${ANIMATION.EASING.STANDARD}`;
@@ -292,11 +293,11 @@ export const useLayerTransition = ({ isActive, containerRef }) => {
     transitionState === 'delete-collapse';
 
   /*
-   * Show image when inactive, during image-out transition, or during image-in exit
-   * Don't show image during active editing (slider-in/controls-in) or during delete collapse
+   * Show image when inactive, while idle, during image-out transition, or during image-in exit.
+   * Including the idle state for active layers prevents a blank frame before the fade-out starts.
    */
   const showImage =
-    (!isActive || transitionState === 'image-out' || transitionState === 'image-in') &&
+    (transitionState === 'idle' || transitionState === 'image-out' || transitionState === 'image-in' || !isActive) &&
     transitionState !== 'delete-collapse' &&
     transitionState !== 'slider-in' &&
     transitionState !== 'controls-in';

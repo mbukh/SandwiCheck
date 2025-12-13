@@ -24,8 +24,8 @@ const LayerControls = ({
     editingLayerIndex: contextEditingLayerIndex,
     isAddingLayer: contextIsAddingLayer,
     setEditingLayerIndex,
-    setIsAddingLayer,
     hasToBeKosher,
+    resetEditingState,
   } = useSandwichContext();
 
   const { showToast, toastComponents } = useToast();
@@ -69,12 +69,12 @@ const LayerControls = ({
         onDelete(() => {
           // Remove ingredient and reset state after collapse animation completes
           sandwichDispatch({ type: 'REMOVE_INGREDIENT', payload: editingIngredient.id });
-          setEditingLayerIndex(null);
+          resetEditingState(false);
         });
       } else {
         // Fallback: remove immediately if no callback provided
         sandwichDispatch({ type: 'REMOVE_INGREDIENT', payload: editingIngredient.id });
-        setEditingLayerIndex(null);
+        resetEditingState(false);
       }
       return;
     }
@@ -175,14 +175,11 @@ const LayerControls = ({
     // Start exit transition (will measure height and handle state reset after animation)
     if (onUpdateOrCancel) {
       onUpdateOrCancel(() => {
-        // Reset state after transition completes
-        setEditingLayerIndex(null);
-        setIsAddingLayer(false);
+        resetEditingState(false);
       });
     } else {
       // Fallback: reset state immediately if no callback provided
-      setEditingLayerIndex(null);
-      setIsAddingLayer(false);
+      resetEditingState(false);
     }
   };
 
@@ -241,14 +238,11 @@ const LayerControls = ({
     // Start exit transition (will measure height and handle state reset after animation)
     if (onUpdateOrCancel) {
       onUpdateOrCancel(() => {
-        // Reset state after transition completes
-        setEditingLayerIndex(null);
-        setIsAddingLayer(false);
+        resetEditingState(true);
       });
     } else {
       // Fallback: reset state immediately if no callback provided
-      setEditingLayerIndex(null);
-      setIsAddingLayer(false);
+      resetEditingState(true);
     }
   };
 

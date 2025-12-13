@@ -8,12 +8,9 @@ const SwipeSlideElement = ({ ingredient, sandwich }) => {
 
   return (
     <div
-      className={cn(
-        'swiper-slide-container relative flex aspect-video size-full flex-col items-center justify-center gap-32',
-        {
-          active: isActive,
-        },
-      )}
+      className={cn('swiper-slide-container relative flex h-full w-full flex-col items-center justify-center gap-3', {
+        active: isActive,
+      })}
     >
       <img
         key={`${ingredient.id}-${ingredient.portion || 'default'}`}
@@ -21,7 +18,7 @@ const SwipeSlideElement = ({ ingredient, sandwich }) => {
           ingredient,
           sandwich,
         })}
-        className="drag-none"
+        className="h-full w-full max-w-[500px] object-contain drag-none"
         alt={ingredient.name}
       />
       <div className="box-shadow-5 absolute bottom-2 left-1/2 inline-block max-w-full min-w-fit -translate-x-1/2 rounded bg-white px-4 py-1 text-sm text-magenta uppercase">

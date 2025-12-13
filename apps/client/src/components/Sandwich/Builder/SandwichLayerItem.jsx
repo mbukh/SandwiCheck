@@ -22,6 +22,13 @@ const SandwichLayerItem = forwardRef(
       isActive,
       containerRef,
     });
+    const shouldElevateZIndex = showSwiper;
+    const baseZIndex = style?.zIndex ?? originalIndex;
+    const mergedStyle = {
+      ...style,
+      // Elevate only while the swiper is visible to keep z-index changes aligned with the fade/scale timings
+      zIndex: shouldElevateZIndex ? Math.max(10, baseZIndex) : baseZIndex,
+    };
 
     // Enhanced handleEditLayer that measures height before transition to edit mode
     const handleEditLayerWithMeasurement = (e, index) => {
@@ -34,8 +41,13 @@ const SandwichLayerItem = forwardRef(
       <div
         ref={layerRef}
         data-layer-index={originalIndex}
-        className={cn('layer-item-wrapper w-full', { 'layer-active': isActive }, { 'layer-bread': isBread }, className)}
-        style={style}
+        className={cn(
+          'layer-item-wrapper w-full',
+          { 'layer-active': isActive && !isExiting },
+          { 'layer-bread': isBread },
+          className,
+        )}
+        style={mergedStyle}
       >
         <div
           className={cn(

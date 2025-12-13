@@ -6,20 +6,13 @@ import { cn } from '../../../utils/cn';
 import SandwichLayerItem from './SandwichLayerItem';
 
 const SandwichLayerStack = () => {
-  const {
-    sandwich,
-    editingLayerIndex,
-    isAddingLayer: _isAddingLayer,
-    setEditingLayerIndex,
-    setIsAddingLayer,
-  } = useSandwichContext();
+  const { sandwich, editingLayerIndex, isAddingLayer: _isAddingLayer, startEditingLayer } = useSandwichContext();
   const activeLayerRef = useRef(null);
   const prevEditingLayerIndexRef = useRef(editingLayerIndex);
 
   const handleEditLayer = (e, index) => {
     e.stopPropagation();
-    setEditingLayerIndex(index);
-    setIsAddingLayer(false);
+    startEditingLayer(index);
   };
 
   // Smooth scroll to active layer when editingLayerIndex changes
@@ -56,19 +49,20 @@ const SandwichLayerStack = () => {
         {sandwich.ingredients.toReversed().map((ingredient, reversedIndex) => {
           // Calculate original index (bread is at index 0, so it should be at the bottom)
           const originalIndex = sandwich.ingredients.length - 1 - reversedIndex;
+          const layerKey = ingredient.id ?? `layer-${originalIndex}`;
           const isFirst = reversedIndex === 0;
           const isActive = editingLayerIndex === originalIndex;
 
           return (
             <SandwichLayerItem
-              key={`layer-${originalIndex}`}
+              key={layerKey}
               ref={isActive ? activeLayerRef : null}
               ingredient={ingredient}
               originalIndex={originalIndex}
               isActive={isActive}
               isBread={isBreadType(ingredient.type)}
               handleEditLayer={handleEditLayer}
-              className={cn('transition-[margin-top]', !isFirst && (isActive ? 'mt-2' : '-mt-12'))}
+              className={cn('transition-[margin-top]', !isFirst && '-mt-12')}
               style={{
                 zIndex: originalIndex,
                 transitionDuration: `${ANIMATION.DURATION.STANDARD}ms`,

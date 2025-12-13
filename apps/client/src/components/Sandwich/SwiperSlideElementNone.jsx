@@ -5,12 +5,9 @@ import { isTypeInSandwich } from '../../utils/sandwich-utils';
 const SwiperSlideElementNone = ({ currentType, isActive, sandwich }) => {
   return (
     <div
-      className={cn(
-        'swiper-slide-container relative flex aspect-video size-full flex-col items-center justify-center',
-        {
-          active: isActive,
-        },
-      )}
+      className={cn('swiper-slide-container relative flex h-full w-full flex-col items-center justify-center', {
+        active: isActive,
+      })}
     >
       <div className="button w-1/2 min-w-fit text-xxs uppercase md:text-xs lg:w-1/3">
         {isTypeInSandwich(currentType, sandwich)

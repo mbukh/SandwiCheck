@@ -1,4 +1,5 @@
 import { ANIMATION } from '../../../constants/animations';
+import { useStableLayerHeight } from '../../../hooks/useStableLayerHeight';
 import { cn } from '../../../utils/cn';
 import LayerControls from './LayerControls';
 import LayerImageView from './LayerImageView';
@@ -23,33 +24,30 @@ const LayerContentContainer = ({
   onUpdateOrCancel,
   onDelete,
 }) => {
+  const stableHeight = useStableLayerHeight(containerRef);
+  const resolvedHeight = preservedHeight ?? stableHeight;
+  const deleteCollapseActive = transitionState === 'delete-collapse' && resolvedHeight !== null;
+
   return (
     <div
       ref={containerRef}
-      className={cn(
-        'relative min-w-0 border-2 border-blue-500',
-        transitionState === 'delete-collapse' && 'layer-collapse',
-      )}
+      className={cn('relative min-w-0', transitionState === 'delete-collapse' && 'layer-collapse')}
       style={{
         // Optimize for animations during transitions
         willChange: isExiting || isActive ? 'transform, opacity, height' : 'auto',
-        // When height is preserved, use it instead of aspectRatio to prevent collapse
-        ...(preservedHeight !== null && transitionState !== 'delete-collapse'
+        // Keep a predictable height driven by viewport or preserved measurement; avoid extra height transitions
+        ...(resolvedHeight && !deleteCollapseActive ? { height: `${resolvedHeight}px` } : {}),
+        ...(deleteCollapseActive
           ? {
-              height: `${preservedHeight}px`,
-              transition: `height ${ANIMATION.DURATION.STANDARD}ms ${ANIMATION.EASING.STANDARD}`,
+              /*
+               * For delete collapse, transition height to 0 with opacity fade
+               * Height starts at preserved height, then transitions to 0 via useEffect
+               */
+              height: `${resolvedHeight}px`,
+              transition: `height ${ANIMATION.DURATION.PREVIEW_COLLAPSE}ms ${ANIMATION.EASING.STANDARD}, opacity ${ANIMATION.DURATION.PREVIEW_COLLAPSE}ms ${ANIMATION.EASING.STANDARD}`,
+              opacity: 1,
             }
-          : transitionState === 'delete-collapse' && preservedHeight !== null
-            ? {
-                /*
-                 * For delete collapse, transition height to 0 with opacity fade
-                 * Height starts at preserved height, then transitions to 0 via useEffect
-                 */
-                height: `${preservedHeight}px`,
-                transition: `height ${ANIMATION.DURATION.PREVIEW_COLLAPSE}ms ${ANIMATION.EASING.STANDARD}, opacity ${ANIMATION.DURATION.PREVIEW_COLLAPSE}ms ${ANIMATION.EASING.STANDARD}`,
-                opacity: 1,
-              }
-            : {}),
+          : {}),
       }}
     >
       {/* Static Image - fades-scales-out when transitioning to active, fades-scales-in when exiting */}

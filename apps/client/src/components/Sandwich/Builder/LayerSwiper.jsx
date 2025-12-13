@@ -164,7 +164,7 @@ const LayerSwiper = ({
   }
 
   return (
-    <div className={cn('layer-slider w-full', className)}>
+    <div className={cn('layer-slider min-h-0 w-full flex-1', className)}>
       {/* Integrated Type Selector - Only show when adding new layer */}
       {isAddingLayer && (
         <div className="mb-4 flex justify-center">
@@ -186,7 +186,7 @@ const LayerSwiper = ({
 
       {/* Ingredients Swiper */}
       {currentType && ingredientsOfType.length > 0 && (
-        <div className="relative">
+        <div className="relative h-full">
           <Swiper
             key={`swiper-${editingLayerIndex}-${currentType}`}
             spaceBetween={0}
