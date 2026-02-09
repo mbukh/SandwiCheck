@@ -17,7 +17,7 @@ export const TYPE_ORDER = [TYPE.bread, TYPE.protein, TYPE.cheese, TYPE.toppings,
  */
 export const getNextIngredientType = (topType) => {
   const i = TYPE_ORDER.indexOf(topType);
-  if (i < 0 || i >= TYPE_ORDER.length - 1) return TYPE_ORDER[TYPE_ORDER.length - 1];
+  if (i === -1 || i >= TYPE_ORDER.length - 1) return TYPE_ORDER.at(-1);
   return TYPE_ORDER[i + 1];
 };
 
@@ -45,7 +45,7 @@ export const DEFAULT_PORTION = PORTION.full;
 export const getNextPortion = (currentPortion) => {
   const portionValues = Object.values(PORTION);
   const currentIndex = portionValues.indexOf(currentPortion);
-  if (currentIndex < 0 || currentIndex >= portionValues.length - 1) return portionValues[0];
+  if (currentIndex === -1 || currentIndex >= portionValues.length - 1) return portionValues[0];
   return portionValues[currentIndex + 1];
 };
 
