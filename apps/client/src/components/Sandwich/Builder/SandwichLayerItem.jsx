@@ -21,6 +21,7 @@ const SandwichLayerItem = forwardRef(
     } = useLayerTransition({
       isActive,
       containerRef,
+      skipImageEntry: Boolean(ingredient?.unconfirmed),
     });
     const shouldElevateZIndex = showSwiper;
     const baseZIndex = style?.zIndex ?? originalIndex;

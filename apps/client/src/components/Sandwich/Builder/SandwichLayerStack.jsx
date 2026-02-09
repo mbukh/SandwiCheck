@@ -1,14 +1,18 @@
 import { useEffect, useRef } from 'react';
 import { ANIMATION } from '../../../constants/animations';
 import { isBreadType } from '../../../constants/ingredients-constants';
+import { MAX_INGREDIENTS_COUNT } from '../../../constants/sandwich-constants';
 import { useSandwichContext } from '../../../context/SandwichContext';
 import { cn } from '../../../utils/cn';
+import { getLayerTargetId } from '../../../utils/layer-instance-utils';
 import SandwichLayerItem from './SandwichLayerItem';
 
 const SandwichLayerStack = () => {
-  const { sandwich, editingLayerIndex, isAddingLayer: _isAddingLayer, startEditingLayer } = useSandwichContext();
+  const { sandwich, editingLayerIndex, isAddingLayer, startEditingLayer, startAddingLayer } = useSandwichContext();
   const activeLayerRef = useRef(null);
   const prevEditingLayerIndexRef = useRef(editingLayerIndex);
+  const hasLayers = sandwich.ingredients.length > 0;
+  const isAtMaxLayers = sandwich.ingredients.length >= MAX_INGREDIENTS_COUNT;
 
   const handleEditLayer = (e, index) => {
     e.stopPropagation();
@@ -44,12 +48,28 @@ const SandwichLayerStack = () => {
 
   return (
     <div className="layer-stack relative mx-auto w-full">
+      <button
+        className="absolute -top-4 left-1/2 z-10 -translate-x-1/2 rounded-lg bg-white px-4 py-2 text-sm font-medium text-magenta shadow-lg transition-all hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60"
+        onClick={startAddingLayer}
+        disabled={!hasLayers || isAtMaxLayers || isAddingLayer || editingLayerIndex !== null}
+        title={
+          isAtMaxLayers
+            ? `Maximum of ${MAX_INGREDIENTS_COUNT} layers reached`
+            : isAddingLayer || editingLayerIndex !== null
+              ? 'Please finish adding or editing the current layer'
+              : 'Add the next layer'
+        }
+      >
+        Add layer
+      </button>
+
       {/* Edit mode: layers displayed one after another vertically, from bottom to top (bread at bottom) */}
-      <div className="flex flex-col">
+      <div className="flex flex-col pt-6">
         {sandwich.ingredients.toReversed().map((ingredient, reversedIndex) => {
           // Calculate original index (bread is at index 0, so it should be at the bottom)
           const originalIndex = sandwich.ingredients.length - 1 - reversedIndex;
-          const layerKey = ingredient.id ?? `layer-${originalIndex}`;
+          // Use layerInstanceId as key for proper React reconciliation with added layers
+          const layerKey = getLayerTargetId(ingredient) ?? `layer-${originalIndex}`;
           const isFirst = reversedIndex === 0;
           const isActive = editingLayerIndex === originalIndex;
 

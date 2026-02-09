@@ -11,6 +11,7 @@ import { useIngredientsGlobalContext } from '../../../context/IngredientsGlobalC
 import { useModalContext } from '../../../context/ModalContext';
 import { useSandwichContext } from '../../../context/SandwichContext';
 import useToast from '../../../hooks/use-toast';
+import { SANDWICH_ACTION } from '../../../reducers/sandwich-reducer';
 import { ROUTE_PATHS } from '../../../routes';
 import { generateIngredientImageSrc } from '../../../utils/ingredients-utils';
 import validateForm from '../../../utils/validate-utils';
@@ -140,7 +141,7 @@ const SandwichSaveModal = ({ isOpen, onClose }) => {
   }, [currentUser.id, defaultName, isSavingSandwich, navigate, sandwich, saveSandwich, showToast, closeActiveModal]);
 
   const onChangeSandwichName = (e) => {
-    sandwichDispatch({ type: 'SET_NAME', payload: e.target.value });
+    sandwichDispatch({ type: SANDWICH_ACTION.SET_NAME, payload: e.target.value });
   };
 
   const onChangeSandwichComment = (e) => {
@@ -160,7 +161,7 @@ const SandwichSaveModal = ({ isOpen, onClose }) => {
       // Clear warning after 5 seconds
       setTimeout(() => setShowNewlineWarning(false), 5000);
       setPreviousCommentValue(value);
-      sandwichDispatch({ type: 'SET_COMMENT', payload: value });
+      sandwichDispatch({ type: SANDWICH_ACTION.SET_COMMENT, payload: value });
       return;
     }
 
@@ -184,7 +185,7 @@ const SandwichSaveModal = ({ isOpen, onClose }) => {
 
     // Update previous value for next change
     setPreviousCommentValue(value);
-    sandwichDispatch({ type: 'SET_COMMENT', payload: value });
+    sandwichDispatch({ type: SANDWICH_ACTION.SET_COMMENT, payload: value });
   };
 
   const handleCommentKeyDown = (e) => {

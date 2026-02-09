@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { TYPE } from '../../../constants/ingredients-constants';
 import { useSandwichContext } from '../../../context/SandwichContext';
 import { isTypeInSandwich } from '../../../utils/sandwich-utils';
@@ -10,6 +10,7 @@ import SandwichSaveModal from './SandwichSaveModal';
 
 const SandwichBuilder = () => {
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
+  const layerStackSectionRef = useRef(null);
   const {
     currentType,
     sandwich,
@@ -18,6 +19,7 @@ const SandwichBuilder = () => {
     isCurrentUserReady,
     randomizeSandwich,
     clearSandwich,
+    isAddingLayer,
   } = useSandwichContext();
 
   useEffect(() => {
@@ -25,6 +27,13 @@ const SandwichBuilder = () => {
       setTimeout(() => (swiperContainerRef.current.style.height = ''), 200);
     }
   }, [currentType, swiperContainerRef]);
+
+  // When entering add-layer mode (e.g. only bread), keep layer stack in view
+  useEffect(() => {
+    if (isAddingLayer && sandwich.ingredients.length > 0 && layerStackSectionRef.current) {
+      layerStackSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [isAddingLayer, sandwich.ingredients.length]);
 
   if (!areIngredientsReady || !isCurrentUserReady) {
     return <Loading />;
@@ -114,7 +123,7 @@ const SandwichBuilder = () => {
       </div>
 
       {/* Layer-Based Builder - Always show, bread will be required */}
-      <div className="layer-builder-section relative mx-auto">
+      <div className="layer-builder-section relative mx-auto w-full min-w-0" ref={layerStackSectionRef}>
         <SandwichLayerStack />
         <LayerSwiper />
         <LayerControls />

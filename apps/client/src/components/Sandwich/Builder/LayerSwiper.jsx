@@ -17,14 +17,17 @@ const LayerSwiper = ({
   className,
 }) => {
   const [navigation, setNavigation] = useState({ prev: false, next: true });
-  const [selectedType, setSelectedType] = useState('');
   const swiperReference = useRef(null);
   const {
     editingLayerIndex: contextEditingLayerIndex,
     isAddingLayer: contextIsAddingLayer,
     sandwich,
+    currentIngredient: contextCurrentIngredient,
     setCurrentIngredient,
+    layerAddedViaAddTopRef,
+    selectedType,
   } = useSandwichContext();
+  const [addedLayerIndex, setAddedLayerIndex] = useState(null);
   const { ingredients: allIngredients } = useIngredientsGlobalContext();
 
   /* Use props if provided (for inline usage), otherwise use context (for standalone usage) */
@@ -41,9 +44,26 @@ const LayerSwiper = ({
   const hasEditingIndex = editingLayerIndex !== null;
   const isVisible = isInlineUsage ? hasEditingIndex || isAddingLayer : isAddingLayer;
 
-  // Determine current type based on context
-  const currentType = isAddingLayer
-    ? selectedType
+  // Sync add-layer marker ref to state without reading refs during render.
+  useEffect(() => {
+    setAddedLayerIndex(layerAddedViaAddTopRef?.current ?? null);
+  }, [layerAddedViaAddTopRef, editingLayerIndex, isAddingLayer]);
+
+  /*
+   * Treat unconfirmed layer being edited as "added layer" immediately,
+   * and keep add-mode latched while exit animation runs.
+   */
+  const editingIngredient = editingLayerIndex === null ? null : sandwich.ingredients[editingLayerIndex];
+  const isEditingAddedLayer =
+    editingLayerIndex !== null && (Boolean(editingIngredient?.unconfirmed) || addedLayerIndex === editingLayerIndex);
+  const isAddingNewLayer = isAddingLayer || isEditingAddedLayer;
+
+  /*
+   * Determine current type based on context
+   * If editing a layer added via addTopLayer, allow type selection (use selectedType)
+   */
+  const currentType = isAddingNewLayer
+    ? selectedType || sandwich.ingredients[editingLayerIndex]?.type
     : editingLayerIndex === null
       ? ''
       : sandwich.ingredients[editingLayerIndex]?.type;
@@ -51,64 +71,110 @@ const LayerSwiper = ({
 
   // Get the portion from the editing layer (if editing, not adding)
   const editingLayerPortion = useMemo(() => {
-    if (!isAddingLayer && editingLayerIndex !== null) {
+    if (!isAddingNewLayer && editingLayerIndex !== null) {
       return sandwich.ingredients[editingLayerIndex]?.portion;
     }
     return null;
-  }, [isAddingLayer, editingLayerIndex, sandwich]);
+  }, [isAddingNewLayer, editingLayerIndex, sandwich]);
 
-  // Calculate initial slide index when editing (to avoid animation)
+  // Calculate initial slide index when editing or adding with pre-selected ingredient
   const initialSlide = useMemo(() => {
-    if (!isAddingLayer && editingLayerIndex !== null && ingredientsOfType.length > 0) {
+    const hasNoneSlide = !isAddingNewLayer;
+
+    if (!isAddingNewLayer && editingLayerIndex !== null && ingredientsOfType.length > 0) {
       const editingIngredient = sandwich.ingredients[editingLayerIndex];
       if (editingIngredient) {
         const ingredientIndex = ingredientsOfType.findIndex((ing) => ing.id === editingIngredient.id);
         if (ingredientIndex !== -1) {
-          // Add 1 because first slide is the "none" slide
-          return ingredientIndex + 1;
+          // Add 1 if "none" slide exists, otherwise use ingredient index directly
+          return hasNoneSlide ? ingredientIndex + 1 : ingredientIndex;
         }
       }
     }
+    // When adding layer with pre-selected ingredient (e.g., from addTopLayer)
+    if (isAddingNewLayer && contextCurrentIngredient?.id && ingredientsOfType.length > 0) {
+      const ingredientIndex = ingredientsOfType.findIndex((ing) => ing.id === contextCurrentIngredient.id);
+      if (ingredientIndex !== -1) {
+        // Add 1 if "none" slide exists, otherwise use ingredient index directly
+        return hasNoneSlide ? ingredientIndex + 1 : ingredientIndex;
+      }
+    }
+    /*
+     * When adding new layer without pre-selected ingredient, start at first ingredient (index 0, no "none" slide)
+     * When editing existing layer, start at "none" slide (index 0)
+     */
     return 0;
-  }, [isAddingLayer, editingLayerIndex, sandwich, ingredientsOfType]);
+  }, [isAddingNewLayer, editingLayerIndex, sandwich, ingredientsOfType, contextCurrentIngredient]);
 
   // Set current ingredient when slider initializes at correct position
   useEffect(() => {
-    if (isVisible && !isAddingLayer && editingLayerIndex !== null && initialSlide > 0) {
-      const ingredientIndex = initialSlide - 1; // Subtract 1 because first slide is "none"
-      if (ingredientsOfType[ingredientIndex]) {
-        setCurrentIngredient(ingredientsOfType[ingredientIndex]);
+    const hasNoneSlide = !isAddingNewLayer;
+    const noneSlideOffset = hasNoneSlide ? 1 : 0;
+    const activeIndex = swiperReference.current?.activeIndex;
+
+    /*
+     * When editing an existing layer (not one just added via addTopLayer), sync currentIngredient from the layer.
+     * When isEditingAddedLayer we must not overwrite: user's swiper choice is the source of truth.
+     */
+    if (isVisible && !isAddingLayer && !isEditingAddedLayer && editingLayerIndex !== null && initialSlide >= 0) {
+      // If the user already moved the swiper, don't force-reset their selection.
+      if (typeof activeIndex === 'number' && activeIndex !== initialSlide) {
+        return;
+      }
+      if (initialSlide === 0 && hasNoneSlide) {
+        // At "none" slide when editing existing layer
+        setCurrentIngredient({});
+      } else if (initialSlide > 0 || (initialSlide === 0 && !hasNoneSlide)) {
+        // At an ingredient slide
+        const ingredientIndex = initialSlide - noneSlideOffset;
+        if (ingredientsOfType[ingredientIndex]) {
+          setCurrentIngredient(ingredientsOfType[ingredientIndex]);
+        }
       }
     }
-  }, [isVisible, isAddingLayer, editingLayerIndex, initialSlide, ingredientsOfType, setCurrentIngredient]);
-
-  useEffect(() => {
-    if (isAddingLayer && !selectedType && Object.keys(allIngredients).length > 0) {
-      // Default to bread type when adding first layer (if no bread exists)
-      const hasBread = sandwich.ingredients.some((ing) => ing.type === 'bread');
-      if (hasBread) {
-        // Default to first available type
-        setSelectedType(Object.keys(allIngredients)[0]);
-      } else {
-        setSelectedType('bread');
+    // When adding layer with pre-selected ingredient, ensure it's set correctly
+    if (isVisible && (isAddingLayer || isEditingAddedLayer) && initialSlide >= 0 && contextCurrentIngredient?.id) {
+      const ingredientIndex = initialSlide - noneSlideOffset;
+      if (ingredientsOfType[ingredientIndex]?.id === contextCurrentIngredient.id) {
+        // Ingredient is already set correctly, no need to update
+        return;
       }
     }
-  }, [isAddingLayer, selectedType, allIngredients, sandwich]);
-
-  useEffect(() => {
-    if (!isVisible) {
-      setSelectedType('');
+    // When adding new layer without pre-selected ingredient, set first ingredient
+    if (
+      isVisible &&
+      (isAddingLayer || isEditingAddedLayer) &&
+      initialSlide === 0 &&
+      !hasNoneSlide &&
+      ingredientsOfType.length > 0 &&
+      !contextCurrentIngredient?.id
+    ) {
+      setCurrentIngredient(ingredientsOfType[0]);
     }
-  }, [isVisible]);
+  }, [
+    isVisible,
+    isAddingLayer,
+    isEditingAddedLayer,
+    isAddingNewLayer,
+    editingLayerIndex,
+    initialSlide,
+    ingredientsOfType,
+    setCurrentIngredient,
+    contextCurrentIngredient,
+    swiperReference,
+  ]);
 
   const updateNavigationButtons = (activeIndex) => {
+    const hasNoneSlide = !isAddingNewLayer;
+    const totalSlides = ingredientsOfType.length + (hasNoneSlide ? 1 : 0);
+
     const navUpdate = {
       0: { prev: true, next: true },
       1: { prev: false, next: true },
       2: { prev: true, next: false },
     };
     const start = +(activeIndex === 0) * 1;
-    const end = +(activeIndex === ingredientsOfType.length) * 2;
+    const end = +(activeIndex === totalSlides - 1) * 2;
     setNavigation(navUpdate[start + end]);
   };
 
@@ -124,8 +190,18 @@ const LayerSwiper = ({
              * Use default animation speed for smooth transition
              * slideChange event will automatically update navigation buttons
              */
-            swiperReference.current.slideTo(0);
-            setCurrentIngredient({});
+            const hasNoneSlide = !isAddingNewLayer;
+            /*
+             * When adding new layer, "first slide" is first ingredient (index 0), not "none"
+             * When editing existing layer, "first slide" is "none" (index 0)
+             */
+            // Use default speed (undefined) for smooth animation, or 300ms for explicit smooth scroll
+            swiperReference.current.slideTo(0, 300);
+            if (hasNoneSlide) {
+              setCurrentIngredient({});
+            } else if (ingredientsOfType.length > 0) {
+              setCurrentIngredient(ingredientsOfType[0]);
+            }
           } catch {
             // Ignore errors
           }
@@ -133,9 +209,12 @@ const LayerSwiper = ({
       });
     }
 
-    // If editing a layer, ensure we're at the correct position without animation
-    if (!isAddingLayer && editingLayerIndex !== null && initialSlide > 0) {
-      // Use slideTo with speed 0 to set position immediately without animation
+    // If editing a layer or adding with pre-selected ingredient, ensure we're at the correct position without animation
+    if (initialSlide > 0 || (initialSlide === 0 && !(isAddingLayer || isEditingAddedLayer))) {
+      /*
+       * Use slideTo with speed 0 to set position immediately without animation
+       * For adding new layer at index 0, swiper is already at correct position, but we still want to trigger slideChange
+       */
       try {
         swiper.slideTo(initialSlide, 0);
       } catch {
@@ -150,13 +229,10 @@ const LayerSwiper = ({
   };
 
   const slideChangeHandler = (swiper) => {
-    setCurrentIngredient(ingredientsOfType[swiper.activeIndex - 1] || {});
+    const hasNoneSlide = !isAddingNewLayer;
+    const noneSlideOffset = hasNoneSlide ? 1 : 0;
+    setCurrentIngredient(ingredientsOfType[swiper.activeIndex - noneSlideOffset] || {});
     updateNavigationButtons(swiper.activeIndex);
-  };
-
-  const handleTypeSelect = (type) => {
-    setSelectedType(type);
-    setCurrentIngredient(null);
   };
 
   if (!isVisible) {
@@ -165,30 +241,11 @@ const LayerSwiper = ({
 
   return (
     <div className={cn('layer-slider min-h-0 w-full flex-1', className)}>
-      {/* Integrated Type Selector - Only show when adding new layer */}
-      {isAddingLayer && (
-        <div className="mb-4 flex justify-center">
-          <div className="flex flex-wrap justify-center gap-2 rounded-lg bg-white p-4 shadow-lg">
-            {Object.keys(allIngredients).map((type) => (
-              <button
-                key={type}
-                className={`rounded px-3 py-1 text-sm font-medium transition-colors ${
-                  selectedType === type ? 'bg-magenta text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-                onClick={() => handleTypeSelect(type)}
-              >
-                {type}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Ingredients Swiper */}
       {currentType && ingredientsOfType.length > 0 && (
         <div className="relative h-full">
           <Swiper
-            key={`swiper-${editingLayerIndex}-${currentType}`}
+            key={`swiper-${editingLayerIndex}-${currentType}-${isAddingNewLayer ? 'add' : 'edit'}`}
             spaceBetween={0}
             slidesPerView={1.5}
             centeredSlides={true}
@@ -219,16 +276,24 @@ const LayerSwiper = ({
               },
             }}
           >
-            <SwiperSlide className="choice-null select-none">
-              {({ isActive }) => (
-                <SwiperSlideElementNone currentType={currentType} isActive={isActive} sandwich={sandwich} />
-              )}
-            </SwiperSlide>
+            {/* Hide "none" slide when adding a new layer */}
+            {!isAddingNewLayer && (
+              <SwiperSlide className="choice-null select-none">
+                {({ isActive }) => (
+                  <SwiperSlideElementNone currentType={currentType} isActive={isActive} sandwich={sandwich} />
+                )}
+              </SwiperSlide>
+            )}
 
             {ingredientsOfType.map((ingredient) => {
-              // When editing a layer, use the portion from the editing layer for the slider images
-              const ingredientWithPortion =
-                editingLayerPortion && !isAddingLayer ? { ...ingredient, portion: editingLayerPortion } : ingredient;
+              // When adding new layer, use currentIngredient.portion for preview; when editing, use editing layer portion
+              const portion =
+                isAddingNewLayer && contextCurrentIngredient?.portion
+                  ? contextCurrentIngredient.portion
+                  : editingLayerPortion && !isAddingNewLayer
+                    ? editingLayerPortion
+                    : ingredient.portion;
+              const ingredientWithPortion = portion ? { ...ingredient, portion } : ingredient;
               return (
                 <SwiperSlide key={ingredient.id} className="select-none">
                   <SwipeSlideElement ingredient={ingredientWithPortion} sandwich={sandwich} currentType={currentType} />

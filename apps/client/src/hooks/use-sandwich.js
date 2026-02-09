@@ -1,9 +1,25 @@
 import { useCallback, useReducer, useState } from 'react';
 import { TYPE } from '../constants/ingredients-constants';
 import { EMPTY_SANDWICH } from '../constants/sandwich-constants';
-import sandwichReducer from '../reducers/sandwich-reducer';
+import sandwichReducer, { SANDWICH_ACTION } from '../reducers/sandwich-reducer';
 import { fetchSandwichById, readSandwichFromCache } from '../services/api-sandwiches';
+import { ensureLayerInstanceIds } from '../utils/layer-instance-utils';
 import { logResponse } from '../utils/log';
+
+/**
+ * Ensures a sandwich has layer instance IDs for all ingredients.
+ * Used during initialization from cache to ensure proper layer management.
+ * Also filters out unconfirmed layers that were added but never confirmed.
+ */
+const ensureSandwichLayerIds = (sandwich) => {
+  if (!sandwich) return EMPTY_SANDWICH;
+  // Filter out unconfirmed layers when loading from cache
+  const confirmedIngredients = (sandwich.ingredients || []).filter((ing) => !ing.unconfirmed);
+  return {
+    ...sandwich,
+    ingredients: ensureLayerInstanceIds(confirmedIngredients),
+  };
+};
 
 const useSandwich = () => {
   const [currentType, setCurrentType] = useState(TYPE.bread);
@@ -15,7 +31,7 @@ const useSandwich = () => {
       }
 
       const cachedSandwich = readSandwichFromCache();
-      return cachedSandwich || EMPTY_SANDWICH;
+      return ensureSandwichLayerIds(cachedSandwich || EMPTY_SANDWICH);
     } catch {
       return EMPTY_SANDWICH;
     }
@@ -29,7 +45,7 @@ const useSandwich = () => {
 
     if (res.success) {
       sandwichDispatch({
-        type: 'UPDATE_SANDWICH',
+        type: SANDWICH_ACTION.UPDATE_SANDWICH,
         payload: res.data || EMPTY_SANDWICH,
       });
     }

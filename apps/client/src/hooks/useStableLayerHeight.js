@@ -8,7 +8,7 @@ const MAX_REF_WIDTH = 540;
 
 export const calculateLayerHeight = (
   width,
-  viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 0,
+  viewportHeight = globalThis.window === undefined ? 0 : window.innerHeight,
 ) => {
   if (!width || !viewportHeight) return null;
   const aspectRatio = ASPECT_HEIGHT / ASPECT_WIDTH;

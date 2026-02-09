@@ -6,7 +6,7 @@ import { calculateLayerHeight } from './useStableLayerHeight';
  * Custom hook to manage layer transition state and animations
  * Handles entry/exit transitions, height preservation, and derived state
  */
-export const useLayerTransition = ({ isActive, containerRef }) => {
+export const useLayerTransition = ({ isActive, containerRef, skipImageEntry = false }) => {
   const [transitionState, setTransitionState] = useState('idle'); // 'idle' | 'image-out' | 'slider-in' | 'controls-in' | 'controls-out' | 'slider-out' | 'image-in' | 'delete-collapse'
   const [preservedHeight, setPreservedHeight] = useState(null);
   const prevIsActiveRef = useRef(isActive);
@@ -222,29 +222,42 @@ export const useLayerTransition = ({ isActive, containerRef }) => {
         for (const timeout of exitTimeoutsRef.current) clearTimeout(timeout);
         exitTimeoutsRef.current = [];
 
-        // Step 1: Start image fade-scale-out
-        setTransitionState('image-out');
-
-        // Step 2: After image animation completes, show slider
-        const sliderTimer = setTimeout(() => {
+        if (skipImageEntry) {
+          // Newly added unconfirmed layers should enter directly into swiper mode.
           setTransitionState('slider-in');
-
-          // Step 3: After slider animation completes, show controls
           const controlsTimer = setTimeout(() => {
             setTransitionState('controls-in');
             isTransitioningRef.current = false;
-            // Remove will-change after transition for better performance
             if (containerRef.current) {
               containerRef.current.style.willChange = '';
             }
-            /*
-             * Keep preserved height throughout the active editing state
-             * Only clear it when exiting edit mode to prevent height jumps
-             */
           }, ANIMATION.DURATION.STANDARD);
           entryTimeoutsRef.current.push(controlsTimer);
-        }, ANIMATION.DURATION.STANDARD);
-        entryTimeoutsRef.current.push(sliderTimer);
+        } else {
+          // Step 1: Start image fade-scale-out
+          setTransitionState('image-out');
+
+          // Step 2: After image animation completes, show slider
+          const sliderTimer = setTimeout(() => {
+            setTransitionState('slider-in');
+
+            // Step 3: After slider animation completes, show controls
+            const controlsTimer = setTimeout(() => {
+              setTransitionState('controls-in');
+              isTransitioningRef.current = false;
+              // Remove will-change after transition for better performance
+              if (containerRef.current) {
+                containerRef.current.style.willChange = '';
+              }
+              /*
+               * Keep preserved height throughout the active editing state
+               * Only clear it when exiting edit mode to prevent height jumps
+               */
+            }, ANIMATION.DURATION.STANDARD);
+            entryTimeoutsRef.current.push(controlsTimer);
+          }, ANIMATION.DURATION.STANDARD);
+          entryTimeoutsRef.current.push(sliderTimer);
+        }
       }
     } else if (prevIsActiveRef.current && !isActive) {
       /*

@@ -1,13 +1,13 @@
 import { DEFAULT_PORTION, EXTENSION, INGREDIENTS_IMAGES_PATH, SHAPE, TYPE } from '../constants/ingredients-constants';
 
-export const generateIngredientImageSrc = ({ ingredient, sandwich }) => {
+export const generateIngredientImageSrc = ({ ingredient, sandwich, forceBreadSliced = false }) => {
   const { imageBase, type, portion = DEFAULT_PORTION } = ingredient;
 
   const path = `${import.meta.env.VITE_API_SERVER}/${INGREDIENTS_IMAGES_PATH}`;
 
   const breadShape = sandwich.ingredients[0]?.shape || SHAPE.long;
 
-  const breadImageIndex = sandwich.ingredients.length < 2 ? 0 : 1;
+  const breadImageIndex = sandwich.ingredients.length < 2 && !forceBreadSliced ? 0 : 1;
 
   const suffix = {
     [TYPE.bread]: ['', '_sliced'][breadImageIndex],

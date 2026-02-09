@@ -1,11 +1,14 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { DIETARY_PREFERENCE, PORTION, PRODUCT, TYPE } from '../constants/ingredients-constants';
-import { EMPTY_SANDWICH } from '../constants/sandwich-constants';
+import { DIETARY_PREFERENCE, getNextIngredientType, PORTION, PRODUCT, TYPE } from '../constants/ingredients-constants';
+import { EMPTY_SANDWICH, MAX_INGREDIENTS_COUNT } from '../constants/sandwich-constants';
 import { useAuthGlobalContext } from '../context/AuthGlobalContext';
 import { useIngredientsGlobalContext } from '../context/IngredientsGlobalContext';
 import useSandwich from '../hooks/use-sandwich';
+import { SANDWICH_ACTION } from '../reducers/sandwich-reducer';
 import { createSandwich, deleteSandwichFromCache, updateSandwichInCache } from '../services/api-sandwiches';
+import { withLayerInstanceId } from '../utils/layer-instance-utils';
 import { logResponse } from '../utils/log';
+import { doesStayKosherWithIngredient } from '../utils/sandwich-utils';
 
 const SandwichContext = createContext();
 
@@ -14,7 +17,9 @@ const SandwichContextProvider = ({ children }) => {
   const swiperContainerRef = useRef(null);
   const [editingLayerIndex, setEditingLayerIndex] = useState(null); // number | null
   const [isAddingLayer, setIsAddingLayer] = useState(false); // boolean
+  const [selectedType, setSelectedType] = useState(''); // string - for type selection when adding layer
   const editingSnapshotRef = useRef(null);
+  const layerAddedViaAddTopRef = useRef(null);
   const { ingredients, areIngredientsReady, forceFetchIngredients } = useIngredientsGlobalContext();
   const { currentUser, setCurrentUser, isCurrentUserReady } = useAuthGlobalContext();
   const {
@@ -63,7 +68,7 @@ const SandwichContextProvider = ({ children }) => {
       if (breadOptions.length > 0) {
         const randomBread = breadOptions[Math.floor(Math.random() * breadOptions.length)];
         sandwichDispatch({
-          type: 'UPDATE_INGREDIENTS',
+          type: SANDWICH_ACTION.UPDATE_INGREDIENTS,
           payload: [{ ...randomBread, portion: PORTION.full }],
         });
       }
@@ -81,24 +86,27 @@ const SandwichContextProvider = ({ children }) => {
   const resetEditingState = useCallback(
     (revertChanges = false) => {
       if (revertChanges && editingSnapshotRef.current) {
-        sandwichDispatch({ type: 'UPDATE_SANDWICH', payload: editingSnapshotRef.current });
+        sandwichDispatch({ type: SANDWICH_ACTION.UPDATE_SANDWICH, payload: editingSnapshotRef.current });
       }
       editingSnapshotRef.current = null;
       setEditingLayerIndex(null);
       setIsAddingLayer(false);
       setCurrentIngredient({});
+      setSelectedType('');
+      // Clear the addTopLayer flag when resetting editing state
+      layerAddedViaAddTopRef.current = null;
     },
-    [sandwichDispatch, setCurrentIngredient],
+    [sandwichDispatch, setCurrentIngredient, setSelectedType],
   );
 
   const startEditingLayer = useCallback(
-    (index) => {
+    (index, ingredientOverride = null) => {
       /*
        * If we switch layers while an edit session is active, revert the previous
        * unsaved changes before starting a new session.
        */
       if (editingLayerIndex !== null && editingLayerIndex !== index && editingSnapshotRef.current) {
-        sandwichDispatch({ type: 'UPDATE_SANDWICH', payload: editingSnapshotRef.current });
+        sandwichDispatch({ type: SANDWICH_ACTION.UPDATE_SANDWICH, payload: editingSnapshotRef.current });
         editingSnapshotRef.current = null;
       }
 
@@ -108,9 +116,9 @@ const SandwichContextProvider = ({ children }) => {
 
       setEditingLayerIndex(index);
       setIsAddingLayer(false);
-      setCurrentIngredient(sandwich.ingredients[index] || {});
+      setCurrentIngredient(ingredientOverride || sandwich.ingredients[index] || {});
     },
-    [editingLayerIndex, sandwich, sandwichDispatch, setCurrentIngredient],
+    [editingLayerIndex, sandwich, sandwichDispatch, setCurrentIngredient, setEditingLayerIndex, setIsAddingLayer],
   );
 
   const clearSandwich = useCallback(() => {
@@ -126,8 +134,10 @@ const SandwichContextProvider = ({ children }) => {
     }
 
     sandwichDispatch({
-      type: 'UPDATE_SANDWICH',
-      payload: initialBread ? { ...EMPTY_SANDWICH, ingredients: [initialBread] } : EMPTY_SANDWICH,
+      type: SANDWICH_ACTION.UPDATE_SANDWICH,
+      payload: initialBread
+        ? { ...EMPTY_SANDWICH, ingredients: [initialBread], forceNewIds: true }
+        : { ...EMPTY_SANDWICH, forceNewIds: true },
     });
 
     setCurrentType('');
@@ -222,7 +232,10 @@ const SandwichContextProvider = ({ children }) => {
     }
 
     // Clear and set the random sandwich
-    sandwichDispatch({ type: 'UPDATE_SANDWICH', payload: { ...EMPTY_SANDWICH, ingredients: randomIngredients } });
+    sandwichDispatch({
+      type: SANDWICH_ACTION.UPDATE_SANDWICH,
+      payload: { ...EMPTY_SANDWICH, ingredients: randomIngredients, forceNewIds: true },
+    });
 
     setCurrentType('');
 
@@ -265,6 +278,84 @@ const SandwichContextProvider = ({ children }) => {
     [setCurrentUser, setIsSavingSandwich],
   );
 
+  const startAddingLayer = useCallback(() => {
+    const { ingredients: sandwichIngredients } = sandwich;
+    if (sandwichIngredients.length === 0 || sandwichIngredients.length >= MAX_INGREDIENTS_COUNT) {
+      return;
+    }
+    const topLayer = sandwichIngredients.at(-1);
+    if (!topLayer) {
+      return;
+    }
+
+    /*
+     * Pick the next available type in the add order relative to the current top layer.
+     * If a type has no options, move forward until a type with options is found.
+     */
+    let nextType = getNextIngredientType(topLayer.type);
+    const visitedTypes = new Set();
+    let pool = [];
+
+    while (!visitedTypes.has(nextType)) {
+      visitedTypes.add(nextType);
+
+      const list = ingredients[nextType] || [];
+      if (list.length > 0) {
+        const kosherList = hasToBeKosher ? list.filter((ing) => doesStayKosherWithIngredient(ing, sandwich)) : list;
+        pool = kosherList.length > 0 ? kosherList : list;
+        if (pool.length > 0) {
+          break;
+        }
+      }
+
+      if (nextType === TYPE.condiments) {
+        break;
+      }
+      nextType = getNextIngredientType(nextType);
+    }
+
+    if (pool.length === 0) {
+      return;
+    }
+
+    const randomIngredient = pool[Math.floor(Math.random() * pool.length)];
+
+    if (!randomIngredient) {
+      return;
+    }
+
+    // Use the same unconfirmed-layer flow as addTopLayer so preview stays in final stack position.
+    const addedLayer = withLayerInstanceId(
+      {
+        ...randomIngredient,
+        portion: PORTION.full,
+        unconfirmed: true,
+      },
+      true,
+    );
+    const updatedIngredients = [...sandwichIngredients, addedLayer];
+    const newLayerIndex = updatedIngredients.length - 1;
+
+    layerAddedViaAddTopRef.current = newLayerIndex;
+    sandwichDispatch({ type: SANDWICH_ACTION.UPDATE_INGREDIENTS, payload: updatedIngredients });
+    setSelectedType(nextType);
+    setTimeout(() => {
+      startEditingLayer(newLayerIndex, addedLayer);
+    }, 0);
+  }, [
+    sandwich,
+    ingredients,
+    hasToBeKosher,
+    setSelectedType,
+    sandwichDispatch,
+    startEditingLayer,
+    layerAddedViaAddTopRef,
+  ]);
+
+  const addTopLayer = useCallback(() => {
+    startAddingLayer();
+  }, [startAddingLayer]);
+
   return (
     <SandwichContext.Provider
       value={{
@@ -287,6 +378,8 @@ const SandwichContextProvider = ({ children }) => {
         setEditingLayerIndex,
         isAddingLayer,
         setIsAddingLayer,
+        selectedType,
+        setSelectedType,
         ingredients,
         areIngredientsReady,
         isCurrentUserReady,
@@ -297,6 +390,9 @@ const SandwichContextProvider = ({ children }) => {
         hasToBeKosher,
         startEditingLayer,
         resetEditingState,
+        addTopLayer,
+        startAddingLayer,
+        layerAddedViaAddTopRef,
       }}
     >
       {children}

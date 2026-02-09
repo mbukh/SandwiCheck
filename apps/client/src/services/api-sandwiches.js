@@ -190,10 +190,12 @@ export const buildSandwichPayload = (sandwich) => {
     typeof sandwich.comment === 'string' && sandwich.comment.trim().length > 0 ? sandwich.comment.trim() : undefined;
 
   const normalizedIngredients = Array.isArray(sandwich.ingredients)
-    ? sandwich.ingredients.map(({ ingredientId, id, portion }) => ({
-        ingredientId: ingredientId ?? id,
-        portion,
-      }))
+    ? sandwich.ingredients
+        .filter((ing) => !ing.unconfirmed) // Filter out unconfirmed layers before saving
+        .map(({ ingredientId, id, portion }) => ({
+          ingredientId: ingredientId ?? id,
+          portion,
+        }))
     : [];
 
   return {
