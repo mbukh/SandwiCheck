@@ -1,5 +1,5 @@
 # Build stage
-FROM node:24-alpine AS build-stage
+FROM node:24.16.0-alpine AS build-stage
 
 # Define build arguments
 ARG VITE_HOST

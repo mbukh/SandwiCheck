@@ -170,12 +170,14 @@ export default defineConfig([
       },
       // Treat these as "core" modules so import/no-unresolved doesn't complain
       'import/core-modules': [
+        '@rolldown/plugin-babel',
         '@tailwindcss/vite',
         '@tanstack/router-plugin/vite',
         '@vitejs/plugin-react',
         'swiper/css',
         'swiper/css/a11y',
         'swiper/react',
+        'vite',
       ],
     },
   },

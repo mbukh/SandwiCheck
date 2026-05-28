@@ -32,7 +32,7 @@ app.use(
   cors({
     origin: (origin, callback) => {
       const isOriginAllowed = process.env.CLIENT_URL === origin || !origin;
-      callback(null, isOriginAllowed);
+      callback(null, process.env.NODE_ENV === 'local' || isOriginAllowed);
     },
     credentials: true,
   }),

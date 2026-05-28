@@ -393,6 +393,7 @@ const createSandwiches = async () => {
           );
           throw new Error(
             `Sandwich creation failed: ${failed} failures exceeded threshold of ${MAX_FAILURE_THRESHOLD}`,
+            { cause: error },
           );
         }
       }

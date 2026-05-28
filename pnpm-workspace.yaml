@@ -2,6 +2,10 @@ packages:
   - apps/*
   - packages/*
 
+allowBuilds:
+  esbuild: true
+  sharp: true
+
 ignoredBuiltDependencies:
   - core-js
   - core-js-pure
@@ -9,3 +13,6 @@ ignoredBuiltDependencies:
 
 onlyBuiltDependencies:
   - esbuild
+
+patchedDependencies:
+  eslint-plugin-react@7.37.5: patches/eslint-plugin-react@7.37.5.patch

@@ -17,27 +17,27 @@
     "migrate-email-confirmation-fields": "node --env-file ./config/.env service/migrateEmailConfirmationFields.js"
   },
   "dependencies": {
+    "@sandwicheck/shared-utils": "workspace:*",
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
-    "cors": "^2.8.5",
-    "express": "^5.1.0",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
     "express-async-handler": "^1.2.0",
-    "express-rate-limit": "^8.2.1",
-    "express-xss-sanitizer": "^2.0.1",
-    "helmet": "^8.1.0",
+    "express-rate-limit": "^8.5.2",
+    "express-xss-sanitizer": "^2.0.2",
+    "helmet": "^8.2.0",
     "hpp": "^0.2.3",
     "http-errors": "^2.0.1",
-    "jsonwebtoken": "^9.0.2",
-    "mongoose": "^9.0.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.6.3",
     "morgan": "^1.10.1",
-    "multer": "^2.0.2",
-    "nodemailer": "^7.0.11",
+    "multer": "^2.1.1",
+    "nodemailer": "^8.0.9",
     "sharp": "^0.34.5",
-    "winston": "^3.18.3",
-    "@sandwicheck/shared-utils": "workspace:*"
+    "winston": "^3.19.0"
   },
   "devDependencies": {
-    "@types/nodemailer": "^7.0.4",
-    "globals": "^16.5.0"
+    "@types/nodemailer": "^7.0.11",
+    "globals": "^17.6.0"
   }
 }

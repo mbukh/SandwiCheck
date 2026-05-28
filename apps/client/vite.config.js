@@ -3,7 +3,8 @@ import tailwindcss from '@tailwindcss/vite';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
-import react from '@vitejs/plugin-react';
+import babel from '@rolldown/plugin-babel';
+import react, { reactCompilerPreset } from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -18,11 +19,8 @@ export default defineConfig({
       autoCodeSplitting: true,
     }),
     tailwindcss(),
-    react({
-      babel: {
-        plugins: ['babel-plugin-react-compiler'],
-      },
-    }),
+    react(),
+    babel({ presets: [reactCompilerPreset()] }),
   ],
   build: {
     outDir: 'build',

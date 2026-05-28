@@ -86,9 +86,7 @@ async function fillIngredientsData(ingredientsWithPortions) {
 
 async function generateSandwichLayer(shape, ingredient) {
   const { imageBase, type, portion } = ingredient;
-  let suffix = '';
-
-  suffix = isBreadType(type) ? '_sliced' : `_${shape}_${portion}`;
+  const suffix = isBreadType(type) ? '_sliced' : `_${shape}_${portion}`;
 
   const imageFile = path.join(INGREDIENTS_DIR, `${imageBase}${suffix}.${process.env.INGREDIENTS_IMAGE_EXTENSION}`);
 

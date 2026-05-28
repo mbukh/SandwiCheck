@@ -20,8 +20,8 @@
   "homepage": "https://github.com/mbukh/Appleseeds-SandwiCheck#readme",
   "scripts": {
     "server": "pnpm --filter @sandwicheck/server dev",
-    "client": "pnpm --filter @sandwicheck/client start",
-    "dev": "concurrently \"pnpm run server\" \"pnpm run client\"",
+    "client": "pnpm --filter @sandwicheck/client start --host",
+    "dev": "pnpm run \"/server|client/\"",
     "init-db": "pnpm --filter @sandwicheck/server init-db",
     "lint:root": "eslint .",
     "lint:root:fix": "eslint . --fix",
@@ -31,34 +31,29 @@
     "format:fix": "prettier --write .",
     "knip": "knip",
     "update:all": "corepack use pnpm@latest && pnpm up --recursive",
-    "update:all:latest": "corepack use pnpm@latest &&pnpm up --latest --recursive",
+    "update:all:latest": "corepack use pnpm@latest &&pnpm up --latest --recursive --interactive",
     "prepare": "husky"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.1",
-    "@eslint/json": "^0.14.0",
+    "@eslint/js": "^10.0.1",
+    "@eslint/json": "^1.2.0",
     "@eslint/markdown": "^7.5.1",
-    "@types/node": "^24.10.1",
+    "@types/node": "^25.9.1",
     "concurrently": "^9.2.1",
-    "eslint": "^9.39.1",
+    "eslint": "^10.4.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
-    "eslint-plugin-unicorn": "62.0.0",
-    "eslint-plugin-unused-imports": "^4.3.0",
-    "eslint-plugin-yml": "^1.19.0",
-    "globals": "^16.5.0",
+    "eslint-plugin-unicorn": "63.0.0",
+    "eslint-plugin-unused-imports": "^4.4.1",
+    "eslint-plugin-yml": "^3.3.2",
+    "globals": "^17.6.0",
     "husky": "^9.1.7",
-    "knip": "^5.70.2",
-    "lint-staged": "^16.2.7",
-    "prettier": "^3.7.3",
+    "knip": "^5.88.1",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.8.3",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.48.0"
+    "typescript-eslint": "^8.60.0"
   },
-  "pnpm": {
-    "overrides": {
-      "vite": "npm:rolldown-vite@7.2.5"
-    }
-  },
-  "packageManager": "pnpm@10.24.0+sha512.01ff8ae71b4419903b65c60fb2dc9d34cf8bb6e06d03bde112ef38f7a34d6904c424ba66bea5cdcf12890230bf39f9580473140ed9c946fef328b6e5238a345a"
+  "packageManager": "pnpm@11.4.0+sha512.f0febc7e37552ab485494a914241b338e0b3580b93d54ce31f00933015880863129038a1b4ae4e414a0ee63ac35bf21197e990172c4a68256450b5636310968f"
 }
