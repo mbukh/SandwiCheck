@@ -34,4 +34,26 @@ export default defineConfig([
       'no-console': 'error',
     },
   },
+  {
+    files: ['**/*.{ts,tsx}'],
+    plugins: {
+      'unused-imports': unusedImports,
+    },
+    rules: {
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+      'unused-imports/no-unused-imports': 'error',
+      'unused-imports/no-unused-vars': [
+        'error',
+        {
+          vars: 'all',
+          varsIgnorePattern: '^_',
+          args: 'after-used',
+          argsIgnorePattern: '^_',
+        },
+      ],
+      'import/no-dynamic-require': 'error',
+      'no-console': 'error',
+    },
+  },
 ]);

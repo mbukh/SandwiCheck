@@ -18,6 +18,10 @@
     "url": "https://github.com/mbukh/Appleseeds-SandwiCheck/issues"
   },
   "homepage": "https://github.com/mbukh/Appleseeds-SandwiCheck#readme",
+  "engines": {
+    "node": ">=24.0.0",
+    "pnpm": ">=11.0.0"
+  },
   "scripts": {
     "server": "pnpm --filter @sandwicheck/server dev",
     "client": "pnpm --filter @sandwicheck/client start --host",
@@ -25,13 +29,14 @@
     "init-db": "pnpm --filter @sandwicheck/server init-db",
     "lint:root": "eslint .",
     "lint:root:fix": "eslint . --fix",
-    "lint": "pnpm lint:root && pnpm --recursive lint",
-    "lint:fix": "pnpm lint:root:fix && pnpm --recursive lint:fix",
+    "lint": "pnpm lint:root && pnpm --recursive --parallel lint",
+    "lint:fix": "pnpm lint:root:fix && pnpm --recursive --parallel lint:fix",
+    "typecheck": "pnpm --recursive --parallel typecheck",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
     "knip": "knip",
     "update:all": "corepack use pnpm@latest && pnpm up --recursive",
-    "update:all:latest": "corepack use pnpm@latest &&pnpm up --latest --recursive --interactive",
+    "update:all:latest": "corepack use pnpm@latest && pnpm up --latest --recursive --interactive",
     "prepare": "husky"
   },
   "devDependencies": {
@@ -40,20 +45,20 @@
     "@eslint/markdown": "^7.5.1",
     "@types/node": "^25.9.1",
     "concurrently": "^9.2.1",
-    "eslint": "^10.4.0",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-simple-import-sort": "^12.1.1",
-    "eslint-plugin-unicorn": "63.0.0",
-    "eslint-plugin-unused-imports": "^4.4.1",
+    "eslint": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "eslint-plugin-import": "catalog:",
+    "eslint-plugin-simple-import-sort": "catalog:",
+    "eslint-plugin-unicorn": "catalog:",
+    "eslint-plugin-unused-imports": "catalog:",
     "eslint-plugin-yml": "^3.3.2",
-    "globals": "^17.6.0",
+    "globals": "catalog:",
     "husky": "^9.1.7",
     "knip": "^5.88.1",
     "lint-staged": "^16.4.0",
-    "prettier": "^3.8.3",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.60.0"
+    "prettier": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:"
   },
   "packageManager": "pnpm@11.4.0+sha512.f0febc7e37552ab485494a914241b338e0b3580b93d54ce31f00933015880863129038a1b4ae4e414a0ee63ac35bf21197e990172c4a68256450b5636310968f"
 }

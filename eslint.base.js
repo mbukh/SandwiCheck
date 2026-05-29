@@ -42,6 +42,37 @@ export default defineConfig([
     // only pull in the rules part of the legacy TS config
     rules: {
       ...importPlugin.configs.typescript.rules,
+      // Auto-add the `type` keyword to type-only imports (inline form, compatible with verbatimModuleSyntax)
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        { prefer: 'type-imports', fixStyle: 'inline-type-imports' },
+      ],
+      // Ensure type-only imports never trigger a runtime side effect
+      '@typescript-eslint/no-import-type-side-effects': 'error',
+      /*
+       * No-enum convention (intentional, enforced):
+       * This codebase models enumerations as `as const` objects plus a derived
+       * union type — e.g. `export const ROLE = { ... } as const;
+       * export type Role = (typeof ROLE)[keyof typeof ROLE];`. That keeps values
+       * as plain, tree-shakeable, JSON-serializable strings (no reverse-mapping or
+       * runtime object emit like TS `enum`), and the literal values transfer
+       * cleanly to the client and to packages/shared once detached.
+       * Decisively: `enum` is NON-ERASABLE syntax. It is already rejected by tsconfig
+       * `erasableSyntaxOnly`, and Node's default type-stripping (strip-only, how this
+       * server runs `.ts`) would refuse to execute it without `--experimental-transform-types`.
+       * `const enum` is unsafe on top of that under isolatedModules. So `enum` is
+       * banned by design; use the `as const` + union pattern instead. (This rule is
+       * intentionally redundant with `erasableSyntaxOnly` for a clearer message and to
+       * cover any package that doesn't set that compiler flag.)
+       */
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'TSEnumDeclaration',
+          message:
+            'Do not use `enum`. Use an `as const` object plus a derived union type instead (e.g. `const ROLE = {...} as const; type Role = (typeof ROLE)[keyof typeof ROLE]`).',
+        },
+      ],
     },
   },
 
@@ -57,7 +88,6 @@ export default defineConfig([
     rules: {
       strict: ['error', 'global'],
       'multiline-comment-style': ['error', 'starred-block'],
-      // '@typescript-eslint/consistent-type-imports': ['error', { fixStyle: 'inline-type-imports' }],
       'unicorn/filename-case': [
         'error',
         {

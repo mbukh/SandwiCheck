@@ -2,19 +2,20 @@
   "name": "@sandwicheck/server",
   "version": "1.0.0",
   "description": "SandwiCheck server application",
-  "main": "./server.js",
+  "main": "./server.ts",
   "type": "module",
   "author": "Moshe Bukhman",
   "license": "CC BY-NC-ND 4.0",
   "scripts": {
-    "start": "NODE_ENV=production node server.js",
-    "dev": "NODE_ENV=local node --env-file ./config/.env --watch server.js",
-    "dev:staging": "NODE_ENV=development node --env-file ./config/.env --watch server.js",
-    "init-db": "node --env-file ./config/.env service/initDatabase.js",
+    "start": "NODE_ENV=production node server.ts",
+    "dev": "NODE_ENV=local node --env-file ./config/.env --watch server.ts",
+    "dev:staging": "NODE_ENV=development node --env-file ./config/.env --watch server.ts",
+    "init-db": "node --env-file ./config/.env service/initDatabase.ts",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
-    "init-uploads": "node --env-file ./config/.env service/initUploadsFolder.js",
-    "migrate-email-confirmation-fields": "node --env-file ./config/.env service/migrateEmailConfirmationFields.js"
+    "typecheck": "tsc --noEmit",
+    "init-uploads": "node --env-file ./config/.env service/initUploadsFolder.ts",
+    "migrate-email-confirmation-fields": "node --env-file ./config/.env service/migrateEmailConfirmationFields.ts"
   },
   "dependencies": {
     "@sandwicheck/shared-utils": "workspace:*",
@@ -22,7 +23,6 @@
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "express": "^5.2.1",
-    "express-async-handler": "^1.2.0",
     "express-rate-limit": "^8.5.2",
     "express-xss-sanitizer": "^2.0.2",
     "helmet": "^8.2.0",
@@ -37,7 +37,16 @@
     "winston": "^3.19.0"
   },
   "devDependencies": {
-    "@types/nodemailer": "^7.0.11",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/express-serve-static-core": "5.1.1",
+    "@types/hpp": "^0.2.7",
+    "@types/http-errors": "^2.0.5",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/morgan": "^1.9.10",
+    "@types/multer": "^2.1.0",
+    "@types/nodemailer": "^8.0.0",
     "globals": "^17.6.0"
   }
 }

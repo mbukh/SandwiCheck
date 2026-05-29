@@ -2,6 +2,22 @@ packages:
   - apps/*
   - packages/*
 
+# Single source of truth for shared dependency versions across the workspace.
+# Reference with the `catalog:` protocol (e.g. "eslint": "catalog:") so every
+# package — including the client/shared packages as they migrate to TS — stays
+# on one aligned version.
+catalog:
+  eslint: ^10.4.0
+  eslint-config-prettier: ^10.1.8
+  eslint-plugin-import: ^2.32.0
+  eslint-plugin-simple-import-sort: ^12.1.1
+  eslint-plugin-unicorn: 63.0.0
+  eslint-plugin-unused-imports: ^4.4.1
+  globals: ^17.6.0
+  prettier: ^3.8.3
+  typescript: ^5.9.3
+  typescript-eslint: ^8.60.0
+
 allowBuilds:
   esbuild: true
   sharp: true
