@@ -1,13 +1,14 @@
-import mongoose from 'mongoose';
-import { type DayOfWeek, DAYS_OF_WEEK } from '../constants/daysOfWeek.ts';
-import { DIETARY_PREFERENCE, type DietaryPreference } from '../constants/ingredientsConstants.ts';
 import {
-  MAX_SANDWICHES_PER_DAY,
-  MAX_TETHERED_CHILDREN,
+  type DayOfWeek,
+  DAYS_OF_WEEK,
+  DIETARY_PREFERENCE,
+  type DietaryPreference,
   MAX_USER_NAME_LENGTH,
   ROLE,
   type Role,
-} from '../constants/usersConstants.ts';
+} from '@sandwicheck/shared';
+import mongoose from 'mongoose';
+import { MAX_SANDWICHES_PER_DAY, MAX_TETHERED_CHILDREN } from '#constants/usersConstants.ts';
 
 const { Schema } = mongoose;
 

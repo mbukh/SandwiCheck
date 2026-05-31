@@ -1,25 +1,25 @@
 import { useEffect, useState } from 'react';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import Loading from '../components/Loading';
-import useToast from '../hooks/use-toast';
-import * as apiAuth from '../services/api-auth';
-
-import { ROUTE_PATHS } from '.';
+import { ERROR_CODE } from '@sandwicheck/shared';
+import Loading from '@/components/Loading';
+import { ROUTE_PATHS } from '@/constants/route-paths';
+import useToast from '@/hooks/use-toast';
+import * as apiAuth from '@/services/api-auth';
 
 export const Route = createFileRoute('/confirm-email/$token')({
   component: ConfirmEmail,
 });
 
-function ConfirmEmail() {
+function ConfirmEmail(): React.JSX.Element {
   const { token } = Route.useParams();
   const { showToast, toastComponents } = useToast();
   const [loading, setLoading] = useState(true);
   const [success, setSuccess] = useState(false);
-  const [error, setError] = useState(null);
-  const [errorType, setErrorType] = useState(null); // 'TOKEN_EXPIRED' | 'TOKEN_INVALID' | 'MAX_RESENDS' | null
+  const [error, setError] = useState<string | null>(null);
+  const [errorType, setErrorType] = useState<string | number | null>(null); // ERROR_CODE value (tokenExpired | tokenInvalid | maxResends) | null
 
   useEffect(() => {
-    const confirmEmail = async () => {
+    const confirmEmail = async (): Promise<void> => {
       try {
         const res = await apiAuth.confirmEmail(token);
         if (res.success) {
@@ -29,23 +29,20 @@ function ConfirmEmail() {
           const errorMessage = res.error?.message || res.message || 'Failed to confirm email';
           const errorCode = res.error?.code;
           setError(errorMessage);
-          setErrorType(errorCode);
+          setErrorType(errorCode ?? null);
           showToast(errorMessage);
         }
       } catch (error_) {
-        const errorData = error_.response?.data?.error || {};
-        const errorMessage =
-          errorData.message || error_.response?.data?.message || 'Failed to confirm email. Please try again.';
-        const errorCode = errorData.code;
+        const errorMessage = error_ instanceof Error ? error_.message : 'Failed to confirm email. Please try again.';
         setError(errorMessage);
-        setErrorType(errorCode);
+        setErrorType(null);
         showToast(errorMessage);
       } finally {
         setLoading(false);
       }
     };
 
-    confirmEmail();
+    void confirmEmail();
   }, [token, showToast]);
 
   return (
@@ -93,7 +90,7 @@ function ConfirmEmail() {
 
       {!loading && error && (
         <div className="mt-15 md:mt-20 xl:mt-24">
-          {errorType === 'MAX_RESENDS' ||
+          {errorType === ERROR_CODE.maxResends ||
           error.includes('Maximum number') ||
           error.includes('max resends') ||
           error.includes('contact support') ? (
@@ -127,7 +124,7 @@ function ConfirmEmail() {
                 Go to Login
               </Link>
             </div>
-          ) : errorType === 'TOKEN_EXPIRED' ? (
+          ) : errorType === ERROR_CODE.tokenExpired ? (
             <div className="flex flex-col items-center">
               <div className="mb-6 md:mb-8 xl:mb-10">
                 <svg
@@ -162,7 +159,7 @@ function ConfirmEmail() {
                 </p>
               </div>
             </div>
-          ) : errorType === 'TOKEN_INVALID' ? (
+          ) : errorType === ERROR_CODE.tokenInvalid ? (
             <div className="flex flex-col items-center">
               <div className="mb-6 md:mb-8 xl:mb-10">
                 <svg

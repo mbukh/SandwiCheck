@@ -1,4 +1,4 @@
-import { DIETARY_PREFERENCE as D_P, SHAPE, TYPE } from '../../constants/ingredientsConstants.ts';
+import { DIETARY_PREFERENCE as D_P, SHAPE, TYPE } from '@sandwicheck/shared';
 
 export const breadData = [
   {

@@ -1,12 +1,10 @@
 import type { ParamsDictionary } from 'express-serve-static-core';
+import { type ApiResponse, type DayOfWeek, DAYS_OF_WEEK, type WeekMenuItemDto } from '@sandwicheck/shared';
 import createHttpError from 'http-errors';
 import type mongoose from 'mongoose';
-import { type DayOfWeek, DAYS_OF_WEEK } from '../constants/daysOfWeek.ts';
-import type { IDayMenuItem } from '../models/UserModel.ts';
-import User from '../models/UserModel.ts';
-import type { ApiResponse } from '../types/api.ts';
-import type { WeekMenuItemDto } from '../types/dto.ts';
-import asyncHandler from '../utils/asyncHandler.ts';
+import type { IDayMenuItem } from '#models/UserModel.ts';
+import User from '#models/UserModel.ts';
+import asyncHandler from '#utils/asyncHandler.ts';
 
 const DAYS_OF_WEEK_SET = new Set<string>(DAYS_OF_WEEK);
 

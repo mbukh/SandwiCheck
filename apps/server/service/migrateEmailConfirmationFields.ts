@@ -34,9 +34,9 @@
  * - Consider running during maintenance window
  */
 
-import connectDB from '../config/db.ts';
-import User from '../models/UserModel.ts';
-import logger from '../utils/logger.ts';
+import connectDB from '#config/db.ts';
+import User from '#models/UserModel.ts';
+import logger from '#utils/logger.ts';
 
 const migrateEmailConfirmationFields = async (): Promise<void> => {
   try {

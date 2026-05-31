@@ -1,5 +1,5 @@
 import express from 'express';
-import { ROLE } from '../constants/usersConstants.ts';
+import { ROLE } from '@sandwicheck/shared';
 import {
   createSandwich,
   deleteSandwich,
@@ -7,8 +7,8 @@ import {
   getSandwiches,
   updateSandwich,
   updateSandwichVotesCount,
-} from '../controllers/sandwichesController.ts';
-import { authorize, protect } from '../middleware/authMiddleware.ts';
+} from '#controllers/sandwichesController.ts';
+import { authorize, protect } from '#middleware/authMiddleware.ts';
 
 // Include other resource routers
 const router = express.Router({ mergeParams: true });

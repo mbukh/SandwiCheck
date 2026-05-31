@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { INGREDIENTS_DIR, PROFILE_PICTURES_DIR, SANDWICHES_DIR, UPLOADS_DIR } from '../config/dir.ts';
+import { INGREDIENTS_DIR, PROFILE_PICTURES_DIR, SANDWICHES_DIR, UPLOADS_DIR } from '#config/dir.ts';
 
 const folders = [UPLOADS_DIR, PROFILE_PICTURES_DIR, INGREDIENTS_DIR, SANDWICHES_DIR];
 

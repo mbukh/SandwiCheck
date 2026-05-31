@@ -1,8 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router';
-import SandwichGallery from '../components/Sandwich/SandwichGallery';
-import { childIdSchema } from '../schemas/routeParams';
+import * as v from 'valibot';
+import SandwichGallery from '@/components/Sandwich/SandwichGallery';
+import { childIdSchema } from '@/schemas/routeParams';
 
 export const Route = createFileRoute('/family/$childId')({
-  validateParams: childIdSchema,
+  params: {
+    parse: (raw) => v.parse(childIdSchema, raw),
+  },
   component: SandwichGallery,
 });

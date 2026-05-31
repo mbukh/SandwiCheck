@@ -1,9 +1,9 @@
 import type { NextFunction } from 'express';
 import createHttpError from 'http-errors';
 import sharp from 'sharp';
-import { INGREDIENTS_DIR } from '../config/dir.ts';
-import { ALL_IMAGE_FIELDS, imageFieldsByType } from '../constants/ingredientsConstants.ts';
-import { removeFilesInPath, saveBufferToFile } from '../utils/fileUtils.ts';
+import { INGREDIENTS_DIR } from '#config/dir.ts';
+import { ALL_IMAGE_FIELDS, imageFieldsByType } from '#constants/ingredientsConstants.ts';
+import { removeFilesInPath, saveBufferToFile } from '#utils/fileUtils.ts';
 import logger from './logger.ts';
 
 type ReqFiles = Record<string, Express.Multer.File[]>;

@@ -1,8 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router';
-import SignupModal from '../components/Signup/SignupModal';
-import { parentIdSchema } from '../schemas/routeParams';
+import * as v from 'valibot';
+import SignupModal from '@/components/Signup/SignupModal';
+import { parentIdSchema } from '@/schemas/routeParams';
 
 export const Route = createFileRoute('/signup/parent/$parentId')({
-  validateParams: parentIdSchema,
+  params: {
+    parse: (raw) => v.parse(parentIdSchema, raw),
+  },
   component: SignupModal,
 });

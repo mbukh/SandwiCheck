@@ -1,10 +1,10 @@
+import { isBreadType, TYPE } from '@sandwicheck/shared';
 import createHttpError from 'http-errors';
-import { isBreadType, TYPE } from '../constants/ingredientsConstants.ts';
-import Ingredient from '../models/IngredientModel.ts';
-import Sandwich from '../models/SandwichModel.ts';
-import asyncHandler from '../utils/asyncHandler.ts';
-import { getTimeBasedFilename } from '../utils/fileUtils.ts';
-import { removeAllIngredientImagesByImageBase, saveIngredientImages } from '../utils/manageIngredientsImages.ts';
+import Ingredient from '#models/IngredientModel.ts';
+import Sandwich from '#models/SandwichModel.ts';
+import asyncHandler from '#utils/asyncHandler.ts';
+import { getTimeBasedFilename } from '#utils/fileUtils.ts';
+import { removeAllIngredientImagesByImageBase, saveIngredientImages } from '#utils/manageIngredientsImages.ts';
 
 /*
  * @desc    Fetch all ingredients

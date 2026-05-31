@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import {
   DIETARY_PREFERENCE,
   type DietaryPreference,
@@ -8,7 +7,8 @@ import {
   SHAPE,
   type Shape,
   TYPE,
-} from '../constants/ingredientsConstants.ts';
+} from '@sandwicheck/shared';
+import mongoose from 'mongoose';
 
 const { Schema } = mongoose;
 

@@ -1,6 +1,6 @@
 import type { ErrorRequestHandler } from 'express';
 import createHttpError from 'http-errors';
-import logger from '../utils/logger.ts';
+import logger from '#utils/logger.ts';
 
 interface AppError extends Error {
   status?: number;

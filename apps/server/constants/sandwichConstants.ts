@@ -1,17 +1,8 @@
 /*
- * SHARED-READY: sandwich validation limits.
- * MAX_INGREDIENTS_COUNT, MAX_NAME_LENGTH, MAX_COMMENT_LENGTH and MAX_COMMENT_LINES
- * are duplicated on the client (apps/client/src/constants/sandwich-constants.js)
- * with identical values. Move these four to packages/shared so the builder UI and
- * the Mongoose validators stay in lockstep.
+ * SERVER-ONLY sandwich list/feed defaults and the anonymous-author username.
+ * Shared validation limits (MAX_NAME_LENGTH, MAX_COMMENT_LENGTH, MAX_COMMENT_LINES,
+ * MAX_INGREDIENTS_COUNT) live in @sandwicheck/shared — import them from there directly.
  */
-export const MAX_INGREDIENTS_COUNT = 10;
-
-export const MAX_NAME_LENGTH = 25;
-export const MAX_COMMENT_LENGTH = 75;
-export const MAX_COMMENT_LINES = 3;
-
-// SERVER-ONLY: list/feed defaults and the anonymous-author username.
 export const NO_USER_SANDWICH_USERNAME = 'people';
 
 export const DEFAULT_SANDWICHES_PER_PAGE = 48;

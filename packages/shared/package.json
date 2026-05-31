@@ -1,0 +1,19 @@
+{
+  "name": "@sandwicheck/shared",
+  "version": "1.0.0",
+  "description": "Shared domain constants, API contract types, and utilities for SandwiCheck (single source of truth for client + server)",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./constants": "./src/constants/index.ts",
+    "./types": "./src/types/index.ts",
+    "./utils": "./src/utils/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "typecheck": "tsc --noEmit"
+  },
+  "author": "Moshe Bukhman",
+  "license": "CC BY-NC-ND 4.0"
+}

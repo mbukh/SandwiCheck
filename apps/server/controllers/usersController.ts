@@ -1,26 +1,25 @@
 import type { ParamsDictionary } from 'express-serve-static-core';
+import { ROLE, type UpdateUserDto } from '@sandwicheck/shared';
 import bcrypt from 'bcryptjs';
 import type { RequestHandler } from 'express';
 import createHttpError from 'http-errors';
 import type mongoose from 'mongoose';
-import { PROFILE_PICTURES_DIR } from '../config/dir.ts';
+import { PROFILE_PICTURES_DIR } from '#config/dir.ts';
 import {
   generateChildActivationHtml,
   generateChildActivationText,
   generateEmailConfirmationHtml,
   generateEmailConfirmationText,
-} from '../constants/mailing.ts';
-import { NO_USER_SANDWICH_USERNAME } from '../constants/sandwichConstants.ts';
-import { ROLE } from '../constants/usersConstants.ts';
-import Sandwich from '../models/SandwichModel.ts';
-import User from '../models/UserModel.ts';
-import type { UpdateUserDto } from '../types/dto.ts';
-import asyncHandler from '../utils/asyncHandler.ts';
-import { removeFile, saveBufferToFile } from '../utils/fileUtils.ts';
-import * as hashAndTokens from '../utils/hashAndTokens.ts';
-import logger from '../utils/logger.ts';
-import sendEmail from '../utils/mailer.ts';
-import { removeUserConnections } from '../utils/manageUserConnections.ts';
+} from '#constants/mailing.ts';
+import { NO_USER_SANDWICH_USERNAME } from '#constants/sandwichConstants.ts';
+import Sandwich from '#models/SandwichModel.ts';
+import User from '#models/UserModel.ts';
+import asyncHandler from '#utils/asyncHandler.ts';
+import { removeFile, saveBufferToFile } from '#utils/fileUtils.ts';
+import * as hashAndTokens from '#utils/hashAndTokens.ts';
+import logger from '#utils/logger.ts';
+import sendEmail from '#utils/mailer.ts';
+import { removeUserConnections } from '#utils/manageUserConnections.ts';
 
 /*
  * @desc    Get all users

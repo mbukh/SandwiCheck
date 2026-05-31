@@ -1,13 +1,13 @@
 import type { ParamsDictionary } from 'express-serve-static-core';
+import type { CreateChildDto, LoginChildDto } from '@sandwicheck/shared';
 import createHttpError from 'http-errors';
 import type mongoose from 'mongoose';
-import EXCLUDED_FIELDS from '../constants/excludeFields.ts';
-import User, { type UserDocument } from '../models/UserModel.ts';
-import type { CreateChildDto, LoginChildDto } from '../types/dto.ts';
-import asyncHandler from '../utils/asyncHandler.ts';
-import { removeCookie, setTokenCookie } from '../utils/cookies.ts';
-import * as hashAndTokens from '../utils/hashAndTokens.ts';
-import { createUserParentsConnections } from '../utils/manageUserConnections.ts';
+import EXCLUDED_FIELDS from '#constants/excludeFields.ts';
+import User, { type UserDocument } from '#models/UserModel.ts';
+import asyncHandler from '#utils/asyncHandler.ts';
+import { removeCookie, setTokenCookie } from '#utils/cookies.ts';
+import * as hashAndTokens from '#utils/hashAndTokens.ts';
+import { createUserParentsConnections } from '#utils/manageUserConnections.ts';
 
 const populateUserSessionData = async (userId?: mongoose.Types.ObjectId | string): Promise<UserDocument | null> => {
   if (!userId) {

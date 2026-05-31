@@ -1,22 +1,26 @@
 import type { ParamsDictionary } from 'express-serve-static-core';
+import {
+  type ApiResponse,
+  type CreateSandwichDto,
+  MAX_COMMENT_LINES,
+  PORTION,
+  type Portion,
+  type UpdateSandwichDto,
+} from '@sandwicheck/shared';
 import createHttpError from 'http-errors';
 import mongoose from 'mongoose';
-import { SANDWICHES_DIR } from '../config/dir.ts';
-import { PORTION, type Portion } from '../constants/ingredientsConstants.ts';
+import { SANDWICHES_DIR } from '#config/dir.ts';
 import {
   DEFAULT_SANDWICH_UPDATE_WINDOW_MINUTES,
   DEFAULT_SANDWICHES_PER_PAGE,
-  MAX_COMMENT_LINES,
   NO_USER_SANDWICH_USERNAME,
-} from '../constants/sandwichConstants.ts';
-import type { IIngredientWithPortion, SandwichDocument } from '../models/SandwichModel.ts';
-import Sandwich from '../models/SandwichModel.ts';
-import User from '../models/UserModel.ts';
-import type { ApiResponse } from '../types/api.ts';
-import type { CreateSandwichDto, UpdateSandwichDto } from '../types/dto.ts';
-import asyncHandler from '../utils/asyncHandler.ts';
-import { removeFile } from '../utils/fileUtils.ts';
-import { generateSandwichImage } from '../utils/manageSandwichesImages.ts';
+} from '#constants/sandwichConstants.ts';
+import type { IIngredientWithPortion, SandwichDocument } from '#models/SandwichModel.ts';
+import Sandwich from '#models/SandwichModel.ts';
+import User from '#models/UserModel.ts';
+import asyncHandler from '#utils/asyncHandler.ts';
+import { removeFile } from '#utils/fileUtils.ts';
+import { generateSandwichImage } from '#utils/manageSandwichesImages.ts';
 
 /*
  * @desc    Fetch all sandwiches

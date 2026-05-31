@@ -1,14 +1,14 @@
 import express from 'express';
-import { ALL_IMAGE_FIELDS } from '../constants/ingredientsConstants.ts';
+import { ALL_IMAGE_FIELDS } from '#constants/ingredientsConstants.ts';
 import {
   createIngredient,
   deleteIngredient,
   getIngredient,
   getIngredients,
   updateIngredient,
-} from '../controllers/ingredientsController.ts';
-import { authorize, protect } from '../middleware/authMiddleware.ts';
-import upload from '../middleware/uploadMiddleware.ts';
+} from '#controllers/ingredientsController.ts';
+import { authorize, protect } from '#middleware/authMiddleware.ts';
+import upload from '#middleware/uploadMiddleware.ts';
 
 // Include other resource routers
 const router = express.Router({ mergeParams: true });

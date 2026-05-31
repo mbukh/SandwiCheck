@@ -1,18 +1,16 @@
-import mongoose from 'mongoose';
 import {
   DIETARY_PREFERENCE,
   type DietaryPreference,
   isBreadType,
-  PORTION,
-  type Portion,
-  PRODUCT,
-} from '../constants/ingredientsConstants.ts';
-import {
   MAX_COMMENT_LENGTH,
   MAX_COMMENT_LINES,
   MAX_INGREDIENTS_COUNT,
   MAX_NAME_LENGTH,
-} from '../constants/sandwichConstants.ts';
+  PORTION,
+  type Portion,
+  PRODUCT,
+} from '@sandwicheck/shared';
+import mongoose from 'mongoose';
 import Ingredient from './IngredientModel.ts';
 
 const { Schema } = mongoose;

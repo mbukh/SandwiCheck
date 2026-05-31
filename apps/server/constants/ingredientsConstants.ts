@@ -1,53 +1,10 @@
 /*
- * SHARED-READY: ingredient domain value sets + derived types.
- * TYPE, DIETARY_PREFERENCE, SHAPE, PORTION, PRODUCT and their derived union types
- * are framework-agnostic domain vocabulary already duplicated on the client
- * (apps/client/src/constants/ingredients-constants.js). Move these to
- * packages/shared so client and server share one source of truth.
- * NOTE on divergence to reconcile when detaching:
- *   - The client's DIETARY_PREFERENCE has only { vegetarian, kosher, halal, vegan }
- *     and keeps meat/fish/dairy under PRODUCT only; the server folds meat/dairy/fish
- *     into DIETARY_PREFERENCE as well. Pick one canonical shape before sharing.
- * The IMAGE_FIELDS* tables and image helpers below are server-only (image pipeline)
- * and should NOT move to shared.
+ * SERVER-ONLY image-pipeline field tables + helpers (the on-disk image variants
+ * the server generates per ingredient shape/portion). The ingredient domain
+ * vocabulary (TYPE, SHAPE, PORTION, DIETARY_PREFERENCE, isBreadType, …) lives in
+ * @sandwicheck/shared — import it from there directly.
  */
-export const TYPE = {
-  bread: 'bread',
-  protein: 'protein',
-  cheese: 'cheese',
-  toppings: 'toppings',
-  condiments: 'condiments',
-} as const;
-
-export type IngredientCategory = (typeof TYPE)[keyof typeof TYPE];
-
-export const DIETARY_PREFERENCE = {
-  vegetarian: 'vegetarian',
-  kosher: 'kosher',
-  halal: 'halal',
-  vegan: 'vegan',
-  meat: 'meat',
-  dairy: 'dairy',
-  fish: 'fish',
-} as const;
-
-export type DietaryPreference = (typeof DIETARY_PREFERENCE)[keyof typeof DIETARY_PREFERENCE];
-
-export const SHAPE = {
-  long: 'long',
-  round: 'round',
-  trapezoid: 'trapezoid',
-} as const;
-
-export type Shape = (typeof SHAPE)[keyof typeof SHAPE];
-
-export const PORTION = {
-  full: 'full',
-  half: 'half',
-  double: 'double',
-} as const;
-
-export type Portion = (typeof PORTION)[keyof typeof PORTION];
+import { isBreadType, PORTION, SHAPE } from '@sandwicheck/shared';
 
 // SERVER-ONLY: image-pipeline field tables — do not move to packages/shared.
 export const IMAGE_FIELDS = [
@@ -116,16 +73,3 @@ export const ALL_IMAGE_FIELDS = [...IMAGE_FIELDS, ...IMAGE_FIELDS_BREAD];
 export const imageFieldsByType = (type: string): { fieldName: string; title: string; suffix: string }[] => {
   return isBreadType(type) ? IMAGE_FIELDS_BREAD : IMAGE_FIELDS;
 };
-
-export const isBreadType = (type: string): boolean => type === TYPE.bread;
-
-export const PRODUCT = {
-  meat: 'meat',
-  fish: 'fish',
-  dairy: 'dairy',
-} as const;
-
-export type Product = (typeof PRODUCT)[keyof typeof PRODUCT];
-
-/** Full set of values accepted by an ingredient's `type` field (categories + product kinds). */
-export type IngredientType = IngredientCategory | Product;

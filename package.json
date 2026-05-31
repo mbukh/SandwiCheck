@@ -47,6 +47,7 @@
     "concurrently": "^9.2.1",
     "eslint": "catalog:",
     "eslint-config-prettier": "catalog:",
+    "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import": "catalog:",
     "eslint-plugin-simple-import-sort": "catalog:",
     "eslint-plugin-unicorn": "catalog:",

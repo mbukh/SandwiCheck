@@ -1,10 +1,10 @@
 import express from 'express';
-import { ROLE } from '../constants/usersConstants.ts';
-import { deleteUser, getUser, getUsers, updateFavoriteSandwiches, updateUser } from '../controllers/usersController.ts';
-import { addSandwichToWeekMenu, removeSandwichFromWeekMenu } from '../controllers/userWeekMenuController.ts';
-import { authorize, protect } from '../middleware/authMiddleware.ts';
-import resizeImage from '../middleware/resizeMiddleware.ts';
-import upload from '../middleware/uploadMiddleware.ts';
+import { ROLE } from '@sandwicheck/shared';
+import { deleteUser, getUser, getUsers, updateFavoriteSandwiches, updateUser } from '#controllers/usersController.ts';
+import { addSandwichToWeekMenu, removeSandwichFromWeekMenu } from '#controllers/userWeekMenuController.ts';
+import { authorize, protect } from '#middleware/authMiddleware.ts';
+import resizeImage from '#middleware/resizeMiddleware.ts';
+import upload from '#middleware/uploadMiddleware.ts';
 
 // Include other resource routers
 const router = express.Router({ mergeParams: true });

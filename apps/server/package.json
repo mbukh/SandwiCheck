@@ -4,6 +4,17 @@
   "description": "SandwiCheck server application",
   "main": "./server.ts",
   "type": "module",
+  "imports": {
+    "#config/*": "./config/*",
+    "#constants/*": "./constants/*",
+    "#controllers/*": "./controllers/*",
+    "#middleware/*": "./middleware/*",
+    "#models/*": "./models/*",
+    "#routes/*": "./routes/*",
+    "#service/*": "./service/*",
+    "#types/*": "./types/*",
+    "#utils/*": "./utils/*"
+  },
   "author": "Moshe Bukhman",
   "license": "CC BY-NC-ND 4.0",
   "scripts": {
@@ -18,7 +29,7 @@
     "migrate-email-confirmation-fields": "node --env-file ./config/.env service/migrateEmailConfirmationFields.ts"
   },
   "dependencies": {
-    "@sandwicheck/shared-utils": "workspace:*",
+    "@sandwicheck/shared": "workspace:*",
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",

@@ -1,7 +1,6 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import SandwichGallery from '../components/Sandwich/SandwichGallery';
-
-import { ROUTE_PATHS } from '.';
+import SandwichGallery from '@/components/Sandwich/SandwichGallery';
+import { ROUTE_PATHS } from '@/constants/route-paths';
 
 export const Route = createFileRoute('/menu')({
   beforeLoad: ({ location }) => {

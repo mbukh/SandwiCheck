@@ -1,10 +1,10 @@
+import { ROLE, type Role } from '@sandwicheck/shared';
 import type { RequestHandler } from 'express';
 import createHttpError from 'http-errors';
 import jwt from 'jsonwebtoken';
-import EXCLUDED_FIELDS from '../constants/excludeFields.ts';
-import { ROLE, type Role } from '../constants/usersConstants.ts';
-import User from '../models/UserModel.ts';
-import asyncHandler from '../utils/asyncHandler.ts';
+import EXCLUDED_FIELDS from '#constants/excludeFields.ts';
+import User from '#models/UserModel.ts';
+import asyncHandler from '#utils/asyncHandler.ts';
 
 export const protect = asyncHandler(async (req, res, next) => {
   let token, parentToken;

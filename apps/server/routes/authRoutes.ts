@@ -1,7 +1,7 @@
 import express from 'express';
 import { rateLimit } from 'express-rate-limit';
-import { ROLE } from '../constants/usersConstants.ts';
-import { createChildUser, getSession, loginChildUser, switchToParent } from '../controllers/authChildController.ts';
+import { ROLE } from '@sandwicheck/shared';
+import { createChildUser, getSession, loginChildUser, switchToParent } from '#controllers/authChildController.ts';
 import {
   changePassword,
   confirmEmail,
@@ -11,9 +11,9 @@ import {
   resendConfirmation,
   resetPassword,
   signup,
-} from '../controllers/authController.ts';
-import { authorize, protect } from '../middleware/authMiddleware.ts';
-import logger from '../utils/logger.ts';
+} from '#controllers/authController.ts';
+import { authorize, protect } from '#middleware/authMiddleware.ts';
+import logger from '#utils/logger.ts';
 
 const router = express.Router();
 

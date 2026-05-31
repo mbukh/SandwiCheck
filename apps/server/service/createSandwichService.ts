@@ -1,8 +1,8 @@
 import type mongoose from 'mongoose';
-import type { IIngredientWithPortion, SandwichDocument } from '../models/SandwichModel.ts';
-import Sandwich from '../models/SandwichModel.ts';
-import User from '../models/UserModel.ts';
-import { generateSandwichImage } from '../utils/manageSandwichesImages.ts';
+import type { IIngredientWithPortion, SandwichDocument } from '#models/SandwichModel.ts';
+import Sandwich from '#models/SandwichModel.ts';
+import User from '#models/UserModel.ts';
+import { generateSandwichImage } from '#utils/manageSandwichesImages.ts';
 
 interface CreateSandwichServiceParams {
   name: string;

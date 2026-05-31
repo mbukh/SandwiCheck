@@ -1,31 +1,32 @@
 import type { ParamsDictionary } from 'express-serve-static-core';
-import { formatDuration } from '@sandwicheck/shared-utils';
+import {
+  type ChangePasswordDto,
+  ERROR_CODE,
+  type ForgotPasswordDto,
+  formatDuration,
+  type LoginDto,
+  type ResendConfirmationDto,
+  type ResetPasswordDto,
+  ROLE,
+  type SignupDto,
+} from '@sandwicheck/shared';
 import bcrypt from 'bcryptjs';
 import createHttpError from 'http-errors';
-import EXCLUDED_FIELDS from '../constants/excludeFields.ts';
+import EXCLUDED_FIELDS from '#constants/excludeFields.ts';
 import {
   generateEmailConfirmationHtml,
   generateEmailConfirmationText,
   generateHtmlMessage,
   generateTextMessage,
-} from '../constants/mailing.ts';
-import { ROLE } from '../constants/usersConstants.ts';
-import User from '../models/UserModel.ts';
-import type {
-  ChangePasswordDto,
-  ForgotPasswordDto,
-  LoginDto,
-  ResendConfirmationDto,
-  ResetPasswordDto,
-  SignupDto,
-} from '../types/dto.ts';
-import asyncHandler from '../utils/asyncHandler.ts';
-import { removeCookie, setTokenCookie } from '../utils/cookies.ts';
-import delay from '../utils/delay.ts';
-import * as hashAndTokens from '../utils/hashAndTokens.ts';
-import logger from '../utils/logger.ts';
-import sendEmail from '../utils/mailer.ts';
-import { createUserParentsConnections } from '../utils/manageUserConnections.ts';
+} from '#constants/mailing.ts';
+import User from '#models/UserModel.ts';
+import asyncHandler from '#utils/asyncHandler.ts';
+import { removeCookie, setTokenCookie } from '#utils/cookies.ts';
+import delay from '#utils/delay.ts';
+import * as hashAndTokens from '#utils/hashAndTokens.ts';
+import logger from '#utils/logger.ts';
+import sendEmail from '#utils/mailer.ts';
+import { createUserParentsConnections } from '#utils/manageUserConnections.ts';
 
 /*
  * @desc    Signup
@@ -424,7 +425,7 @@ export const confirmEmail = asyncHandler(async (req, res, next) => {
       const error = createHttpError.Unauthorized(
         'This confirmation link has expired and is no longer valid. Confirmation links are valid for a limited time. Please request a new confirmation email from the login page.',
       );
-      error.code = 'TOKEN_EXPIRED';
+      error.code = ERROR_CODE.tokenExpired;
       return next(error);
     }
 
@@ -434,7 +435,7 @@ export const confirmEmail = asyncHandler(async (req, res, next) => {
      */
     await delay(2000 + Math.random() * 2000);
     const error = createHttpError.Unauthorized('Invalid confirmation token. Please check your confirmation link.');
-    error.code = 'TOKEN_INVALID';
+    error.code = ERROR_CODE.tokenInvalid;
     return next(error);
   }
 
@@ -464,7 +465,7 @@ export const confirmEmail = asyncHandler(async (req, res, next) => {
     const error = createHttpError.Forbidden(
       'Maximum number of confirmation email resends reached. Please contact support for assistance.',
     );
-    error.code = 'MAX_RESENDS';
+    error.code = ERROR_CODE.maxResends;
     return next(error);
   }
 
@@ -549,7 +550,7 @@ export const resendConfirmation = asyncHandler<ParamsDictionary, unknown, Resend
       const error = createHttpError.Forbidden(
         'Maximum number of confirmation email resends reached. Please contact support for assistance.',
       );
-      error.code = 'MAX_RESENDS';
+      error.code = ERROR_CODE.maxResends;
       return next(error);
     }
 
@@ -606,7 +607,7 @@ export const resendConfirmation = asyncHandler<ParamsDictionary, unknown, Resend
       const error = createHttpError.Forbidden(
         'Maximum number of confirmation email resends reached. Please contact support for assistance.',
       );
-      error.code = 'MAX_RESENDS';
+      error.code = ERROR_CODE.maxResends;
       return next(error);
     }
 

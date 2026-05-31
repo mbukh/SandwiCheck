@@ -150,9 +150,9 @@ export default defineConfig([
 
             /*
              * Internal aliases (tune these to your monorepo)
-             * e.g. @app/*, @server/*, @shared/*, etc.
+             * e.g. @/* (client src), @app/*, @server/*, @shared/*, etc.
              */
-            ['^(@app|@server|@shared|@components|@lib)(/.*|$)'],
+            ['^@/', '^#', '^(@app|@server|@shared|@components|@lib)(/.*|$)'],
 
             // Parent imports
             [String.raw`^\.\.(?!/?$)`, String.raw`^\.\./?$`],
@@ -188,12 +188,17 @@ export default defineConfig([
   },
 
   /*
-   * Shared import resolver + modules that ESLint can't statically resolve
-   * Should be remove when project is fully migrated to TypeScript
+   * Shared import resolver + modules that ESLint can't statically resolve.
+   * The TypeScript resolver understands workspace packages, `exports` maps and
+   * `.ts` sources (e.g. @sandwicheck/shared); the node resolver is kept as a
+   * fallback for plain JS configs.
    */
   {
     settings: {
       'import/resolver': {
+        typescript: {
+          alwaysTryTypes: true,
+        },
         node: {
           extensions: ['.js', '.jsx', '.ts', '.tsx'],
         },

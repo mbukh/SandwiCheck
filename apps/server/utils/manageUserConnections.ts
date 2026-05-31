@@ -1,7 +1,7 @@
+import { ROLE } from '@sandwicheck/shared';
 import type mongoose from 'mongoose';
-import { ROLE } from '../constants/usersConstants.ts';
-import type { UserDocument } from '../models/UserModel.ts';
-import User from '../models/UserModel.ts';
+import type { UserDocument } from '#models/UserModel.ts';
+import User from '#models/UserModel.ts';
 
 type ConnectionId = mongoose.Types.ObjectId | string;
 

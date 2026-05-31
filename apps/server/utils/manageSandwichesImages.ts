@@ -1,12 +1,12 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { isBreadType } from '@sandwicheck/shared';
 import type mongoose from 'mongoose';
 import sharp from 'sharp';
-import { INGREDIENTS_DIR, SANDWICHES_DIR } from '../config/dir.ts';
-import { isBreadType } from '../constants/ingredientsConstants.ts';
-import type { IIngredient } from '../models/IngredientModel.ts';
-import Ingredient from '../models/IngredientModel.ts';
-import type { IIngredientWithPortion } from '../models/SandwichModel.ts';
+import { INGREDIENTS_DIR, SANDWICHES_DIR } from '#config/dir.ts';
+import type { IIngredient } from '#models/IngredientModel.ts';
+import Ingredient from '#models/IngredientModel.ts';
+import type { IIngredientWithPortion } from '#models/SandwichModel.ts';
 
 type SandwichLayerIngredient = Pick<IIngredient, 'imageBase' | 'type' | 'shape'> & {
   _id: mongoose.Types.ObjectId;

@@ -21,6 +21,7 @@ catalog:
 allowBuilds:
   esbuild: true
   sharp: true
+  unrs-resolver: true
 
 ignoredBuiltDependencies:
   - core-js
@@ -29,6 +30,7 @@ ignoredBuiltDependencies:
 
 onlyBuiltDependencies:
   - esbuild
+  - unrs-resolver
 
 patchedDependencies:
   eslint-plugin-react@7.37.5: patches/eslint-plugin-react@7.37.5.patch

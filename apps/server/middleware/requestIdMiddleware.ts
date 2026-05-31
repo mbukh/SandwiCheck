@@ -1,5 +1,5 @@
 import type { RequestHandler } from 'express';
-import { generateRequestId } from '../utils/logger.ts';
+import { generateRequestId } from '#utils/logger.ts';
 
 /**
  * Request ID Middleware

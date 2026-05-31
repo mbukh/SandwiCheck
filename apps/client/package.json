@@ -12,10 +12,11 @@
     "test:ci": "vitest run --reporter=verbose --reporter=junit --outputFile=reports/jest-junit.xml",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
+    "typecheck": "tsc --noEmit",
     "preview": "vite preview"
   },
   "dependencies": {
-    "@sandwicheck/shared-utils": "workspace:*",
+    "@sandwicheck/shared": "workspace:*",
     "@tanstack/react-router": "^1.170.8",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",

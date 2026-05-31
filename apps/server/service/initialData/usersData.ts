@@ -1,5 +1,4 @@
-import { DIETARY_PREFERENCE as D_P } from '../../constants/ingredientsConstants.ts';
-import { ROLE } from '../../constants/usersConstants.ts';
+import { DIETARY_PREFERENCE as D_P, ROLE } from '@sandwicheck/shared';
 
 /*
  * Family 1: Greek Orthodox family (2 parents + 2 children)

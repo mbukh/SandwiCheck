@@ -1,4 +1,4 @@
-import { PORTION, type Portion } from '../../constants/ingredientsConstants.ts';
+import { PORTION, type Portion } from '@sandwicheck/shared';
 
 interface SandwichSeed {
   name: string;
