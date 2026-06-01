@@ -59,12 +59,12 @@ check_docker_image_current_tag() {
 # Update Dockerfiles with the new Node.js version if the flag is set
 if [ "$update_dockerfiles" = true ]; then
   image=node
-  current_tag=$(tr -d 'v' <.nvmrc)-slim
-  old_tag=${oldver#v}-slim
+  current_tag=$(tr -d 'v' <.nvmrc)-alpine
+  old_tag=${oldver#v}-alpine
 
   if check_docker_image_current_tag $current_tag; then
     # Replace the old Node.js image tag with the new one in Dockerfile
-    for file in ./*Dockerfile; do
+    for file in ./docker/*Dockerfile; do
       # Check if the Dockerfile contains a Node.js image tag that is different from the current one
       if grep -q "$image:" "$file" && ! grep -q "$image:$current_tag" "$file"; then
         sed -i "" "s/$image:[^ ]*/$image:$current_tag/g" "$file"

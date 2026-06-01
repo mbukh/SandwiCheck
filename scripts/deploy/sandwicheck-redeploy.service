@@ -1,0 +1,30 @@
+# systemd service: one-shot SandwiCheck API redeploy check.
+# Pairs with sandwicheck-redeploy.timer. This is a TEMPLATE — edit User and the
+# ExecStart path for your server, then install:
+#
+#   sudo cp scripts/deploy/sandwicheck-redeploy.service /etc/systemd/system/
+#   sudo cp scripts/deploy/sandwicheck-redeploy.timer   /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now sandwicheck-redeploy.timer
+#   systemctl list-timers sandwicheck-redeploy.timer      # verify schedule
+#   journalctl -u sandwicheck-redeploy.service -f         # follow deploy logs
+
+[Unit]
+Description=SandwiCheck API auto-redeploy (poll git, rebuild image, restart container)
+After=network-online.target docker.service
+Wants=network-online.target
+Requires=docker.service
+
+[Service]
+Type=oneshot
+# Runs as root to match the current box (Docker daemon is root; rootless is deferred).
+# To drop privilege later, create a dedicated user and point this at it:
+#   useradd -r -s /usr/sbin/nologin -G docker deploy
+#   chown -R deploy:deploy /opt/sandwicheck/SandwiCheck
+#   then set User=deploy  (note: 'docker' group membership is still root-equivalent —
+#   real isolation comes from rootless Docker).
+User=root
+# EDIT: absolute path to the script on this server.
+ExecStart=/opt/sandwicheck/SandwiCheck/scripts/deploy/redeploy.sh
+# Give the image build + health wait room to finish.
+TimeoutStartSec=900

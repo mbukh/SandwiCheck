@@ -1,0 +1,16 @@
+# systemd timer: runs sandwicheck-redeploy.service on a schedule.
+# Install + enable instructions are in sandwicheck-redeploy.service.
+
+[Unit]
+Description=Run SandwiCheck API auto-redeploy every 5 minutes
+
+[Timer]
+# First check shortly after boot, then every 5 minutes while running.
+OnBootSec=2min
+OnUnitActiveSec=5min
+# After downtime, run once on resume instead of replaying every missed tick.
+Persistent=true
+Unit=sandwicheck-redeploy.service
+
+[Install]
+WantedBy=timers.target

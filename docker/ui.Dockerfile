@@ -7,21 +7,26 @@ ARG VITE_API_SERVER
 
 WORKDIR /app
 
-# Enable corepack and prepare pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# Enable corepack; pnpm resolves to the version pinned in package.json's
+# "packageManager" field — reproducible, not "latest".
+RUN corepack enable
 
-# Copy root package.json and workspace config
-COPY package.json pnpm-workspace.yaml ./
+# Copy workspace manifests, lockfile, and patches first for better layer caching.
+# (Lockfile + patches make `--frozen-lockfile` reproducible.)
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY patches ./patches
 
-# Copy client package files
-COPY ./apps/client/package*.json ./apps/client/
+# Copy only the manifests this image needs: the client app and its workspace
+# dependency @sandwicheck/shared, so the workspace link resolves at install time.
+COPY ./apps/client/package.json ./apps/client/
+COPY ./packages/shared/package.json ./packages/shared/
 
-# Install dependencies (this layer will be cached if package files don't change)
-# Using --frozen-lockfile ensures reproducible builds if pnpm-lock.yaml exists
-RUN pnpm install --frozen-lockfile || pnpm install
+# Install just the client subtree (client + shared); skips server-only native deps.
+RUN pnpm install --frozen-lockfile --filter "@sandwicheck/client..."
 
-# Copy client source code
+# Copy source for the client and the shared package it imports at build time.
 COPY ./apps/client ./apps/client
+COPY ./packages/shared ./packages/shared
 
 # Set environment variables for the build process
 ENV VITE_HOST=${VITE_HOST}
@@ -39,9 +44,6 @@ COPY --from=build-stage /app/apps/client/build /usr/share/nginx/html
 
 # Copy nginx configuration
 COPY ./apps/client/nginx/default.conf /etc/nginx/conf.d/default.conf
-
-# Remove default nginx config if it exists
-RUN rm -f /etc/nginx/conf.d/default.conf.bak 2>/dev/null || true
 
 # Install wget for healthcheck (lightweight, done as root)
 RUN apk add --no-cache wget

@@ -13,6 +13,9 @@ uploads
 *.env*
 !*.env.example
 
+# Deploy (machine-specific paths; real secrets live in the gitignored env file)
+scripts/deploy/redeploy.config
+
 # Logs
 logs
 *.log

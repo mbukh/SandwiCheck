@@ -3,16 +3,85 @@ name: Build and Test
 on:
   pull_request:
     branches: ['main']
-    paths: ['apps/client/**', 'apps/server/**', 'docker/**', 'package.json', 'pnpm-workspace.yaml']
-  workflow_call: {}
 
 permissions:
-  id-token: write
   checks: write
   contents: read
 
+# Cancel superseded runs on the same PR branch — only the latest commit matters.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build-test:
+  # Which areas of the monorepo changed? Used to gate the heavier jobs so a PR
+  # that only touches one app doesn't rebuild the other.
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      client: ${{ steps.filter.outputs.client }}
+      server: ${{ steps.filter.outputs.server }}
+      shared: ${{ steps.filter.outputs.shared }}
+      root: ${{ steps.filter.outputs.root }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Detect changed areas
+        id: filter
+        uses: dorny/paths-filter@v4
+        with:
+          filters: |
+            shared:
+              - 'packages/**'
+            client:
+              - 'apps/client/**'
+            server:
+              - 'apps/server/**'
+            root:
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - 'tsconfig.base.json'
+              - 'eslint*.js'
+              - 'prettier.config.js'
+              - 'patches/**'
+              - 'docker/**'
+              - '.github/workflows/**'
+
+  # Static checks across the WHOLE monorepo (every package + root YAML / JSON /
+  # Markdown / configs). Fast and cross-cutting, so it always runs.
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Configure Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24.16.0'
+          cache: 'pnpm' # caches the pnpm store keyed by pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+  # Client: verify it tests and builds. No artifact is kept — the Pages build is
+  # produced by deploy-to-pages.yml, so there's nothing to hand off here.
+  client:
+    needs: changes
+    if:
+      ${{ needs.changes.outputs.client == 'true' || needs.changes.outputs.shared == 'true' || needs.changes.outputs.root
+      == 'true' }}
     runs-on: ubuntu-latest
 
     env:
@@ -21,51 +90,57 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install pnpm
-        # Version is resolved from the root package.json "packageManager" field
-        # (kept current via manage-package-manager-versions); don't pin it here.
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       - name: Configure Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '24.16.0'
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install
-        working-directory: ./
+        run: pnpm install --frozen-lockfile --filter "@sandwicheck/client..."
 
       - name: Test
         run: pnpm --filter @sandwicheck/client run test:ci
-        working-directory: ./
 
       - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: success() || failure() # run this step even if previous step failed
+        uses: dorny/test-reporter@v3
+        if: success() || failure() # run this step even if the test step failed
         with:
-          name: JEST Tests # Name of the check run which will be created
-          path: ./apps/client/reports/jest-*.xml # Path to test results
-          reporter: jest-junit # Format of test results
+          name: Vitest Tests
+          path: ./apps/client/reports/jest-*.xml
+          reporter: jest-junit
 
       - name: Build
-        run: |
-          pnpm --filter @sandwicheck/client run build
-        working-directory: ./
+        run: pnpm --filter @sandwicheck/client run build
 
-      - name: Upload Build Artifact
-        uses: actions/upload-artifact@v4
+  # Server: smoke-build the production image (the same one the Debian box runs).
+  # Uses Buildx with the GitHub Actions layer cache, and never pushes/loads it.
+  server:
+    needs: changes
+    if:
+      ${{ needs.changes.outputs.server == 'true' || needs.changes.outputs.shared == 'true' || needs.changes.outputs.root
+      == 'true' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build API image (cached, not pushed)
+        uses: docker/build-push-action@v7
         with:
-          name: build-artifact
-          path: ./apps/client/build/
-
-      - name: Build Docker Image
-        run: |
-          pwd
-          ls -a
-          docker build . --file ./docker/ui.Dockerfile -t sandwicheck-app-image \
-            --build-arg VITE_HOST=${{ env.VITE_HOST }} \
-            --build-arg VITE_API_SERVER=${{ env.VITE_API_SERVER }}
-        working-directory: ./
+          context: .
+          file: ./docker/api.Dockerfile
+          push: false
+          load: false
+          tags: sandwicheck-api-image
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
