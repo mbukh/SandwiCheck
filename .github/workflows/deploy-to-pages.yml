@@ -1,59 +1,65 @@
-# Simple workflow for deploying static content to GitHub Pages
+# Build the client and deploy it to GitHub Pages.
+# Self-contained: builds here and uploads only the (required) Pages artifact —
+# no intermediate build artifact is passed between workflows.
 name: Deploy Build to Pages
 
 on:
-  # Runs on pushes targeting the default branch
   push:
     branches: ['main']
-    paths: ['client/**']
+    paths: ['apps/client/**', 'packages/**', 'pnpm-lock.yaml']
+  # Allows running this workflow manually from the Actions tab
+  workflow_dispatch: {}
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+# Least privilege: only what Pages deployment needs.
 permissions:
   contents: read
-  checks: write
-  id-token: write
   pages: write
+  id-token: write
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+# Allow one concurrent deployment; never cancel an in-progress production deploy.
 concurrency:
   group: 'pages'
   cancel-in-progress: false
 
 jobs:
-  build-and-test:
-    uses: ./.github/workflows/build-test.yml
-
   deploy:
-    needs: build-and-test
-
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
 
     runs-on: ubuntu-latest
 
+    env:
+      VITE_HOST: 'https://mbukh.github.io/SandwiCheck'
+      VITE_API_SERVER: 'https://api.sandwicheck.app'
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
-      - name: Download Build Artifact
-        uses: actions/download-artifact@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Configure Node.js
+        uses: actions/setup-node@v6
         with:
-          name: build-artifact
-          path: ./artifact/
+          node-version: '24.16.0'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --filter "@sandwicheck/client..."
+
+      - name: Build
+        run: pnpm --filter @sandwicheck/client run build
 
       - name: Setup Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
-      - name: Upload Artifact to Pages
-        uses: actions/upload-pages-artifact@v3
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v5
         with:
-          path: ./artifact/
+          path: ./apps/client/build/
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

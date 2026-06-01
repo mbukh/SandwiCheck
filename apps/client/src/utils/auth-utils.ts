@@ -1,0 +1,24 @@
+/**
+ * Auth Route Utilities
+ *
+ * Provides utility functions for handling authentication-related routes.
+ */
+
+/** Checks if a pathname is an auth route (e.g. '/login', '/reset-password/abc123'). */
+export const isAuthRoute = (pathname: string): boolean => {
+  // Exact matches for auth routes
+  const exactAuthRoutes = ['/login', '/signup', '/forgot-password'];
+  if (exactAuthRoutes.includes(pathname)) {
+    return true;
+  }
+
+  // Pattern matches for auth routes with parameters
+  const authRoutePatterns = [
+    /^\/reset-password\/[^/]+$/, // /reset-password/*
+    /^\/confirm-email\/[^/]+$/, // /confirm-email/*
+    /^\/login\/parent\/[^/]+$/, // /login/parent/*
+    /^\/signup\/parent\/[^/]+$/, // /signup/parent/*
+  ];
+
+  return authRoutePatterns.some((pattern) => pattern.test(pathname));
+};

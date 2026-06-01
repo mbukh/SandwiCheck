@@ -1,37 +1,42 @@
 # Dependencies
 node_modules
+.pnpm-store/
 
 # Build/Production
-/client/build
-server/uploads/sandwiches
+build
+dist
+dist-ssr
+uploads
+/data
 
 # Environment variables
 *.env*
 !*.env.example
 
+# Deploy (machine-specific paths; real secrets live in the gitignored env file)
+scripts/deploy/redeploy.config
+
 # Logs
 logs
 *.log
-
-# Editor specific
-.vscode
-.idea
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
 # Temporary files
 *.sw?
 *.cache
 .DS_Store
+tmp/
 
 # Generated / Auto-generated files
 /dist
 /dist-ssr
 .eslintcache
+.tanstack/
 
-# Configuration
-.prettierrc
-
-/data/
+# testing
+coverage
+reports

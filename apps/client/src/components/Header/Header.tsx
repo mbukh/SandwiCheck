@@ -1,0 +1,183 @@
+import { useState } from 'react';
+import { Link, useLocation, useNavigate, useParams } from '@tanstack/react-router';
+import LoginModal from '@/components/Login/LoginModal';
+import SignupModal from '@/components/Signup/SignupModal';
+import { ROUTE_PATHS } from '@/constants/route-paths';
+import { useAuthGlobalContext } from '@/context/AuthGlobalContext';
+import { isAuthRoute } from '@/utils/auth-utils';
+import ActingBanner from './ActingBanner';
+import HamburgerMenu from './HamburgerMenu';
+import MobileMenu from './MobileMenu';
+
+const Header = (): React.JSX.Element => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isOpenLoginModal, setIsOpenLoginModal] = useState(false);
+  const [isOpenSignupModal, setIsOpenSignupModal] = useState(false);
+  const [isSwitchingParent, setIsSwitchingParent] = useState(false);
+  const { logOut, currentUser: user, actingAsChild, parentUser, switchToParent } = useAuthGlobalContext();
+  const parameters = useParams({ strict: false });
+  const location = useLocation();
+  const navigate = useNavigate();
+  const sandwichId = parameters.sandwichId;
+
+  const isOnAuthRoute = ['/login', '/signup', '/forgot-password'].includes(location.pathname);
+
+  // Close the login/signup modals when navigating onto an auth route (reset during render, not in an effect).
+  const [wasOnAuthRoute, setWasOnAuthRoute] = useState(isOnAuthRoute);
+  if (isOnAuthRoute !== wasOnAuthRoute) {
+    setWasOnAuthRoute(isOnAuthRoute);
+    if (isOnAuthRoute) {
+      setIsOpenLoginModal(false);
+      setIsOpenSignupModal(false);
+    }
+  }
+
+  const toggleMobileMenuHandler = (): void => {
+    setIsMobileMenuOpen((state) => !state);
+  };
+
+  const authHandler = (e: React.MouseEvent<HTMLAnchorElement>): void => {
+    e.preventDefault();
+
+    const targetId = e.target instanceof HTMLElement ? e.target.id : '';
+
+    if (targetId === 'logout') {
+      logOut();
+      return;
+    }
+
+    // Get current pathname and check if it's an auth route
+    const currentPath = location.pathname;
+    const isCurrentPathAuth = isAuthRoute(currentPath);
+
+    // Determine returnTo: use current path if not auth route
+    const returnTo = isCurrentPathAuth ? null : currentPath;
+    const searchParameters = returnTo ? { returnTo } : {};
+
+    if (targetId === 'login') {
+      navigate({
+        to: ROUTE_PATHS.LOGIN,
+        search: searchParameters,
+      });
+    } else if (targetId === 'signup') {
+      navigate({
+        to: ROUTE_PATHS.SIGNUP,
+        search: searchParameters,
+      });
+    }
+  };
+
+  const handleSwitchToParent = async (): Promise<void> => {
+    if (isSwitchingParent) return;
+    setIsSwitchingParent(true);
+    const res = await switchToParent();
+    setIsSwitchingParent(false);
+    if (res?.success) {
+      navigate({ to: ROUTE_PATHS.FAMILY });
+    }
+  };
+
+  return (
+    <header className={sandwichId ? 'hidden' : ''}>
+      <ActingBanner />
+      <MobileMenu
+        isMobileMenuOpen={isMobileMenuOpen}
+        toggleMobileMenuHandler={toggleMobileMenuHandler}
+        authHandler={authHandler}
+        user={user}
+        actingAsChild={actingAsChild}
+        parentUser={parentUser}
+        onSwitchToParent={handleSwitchToParent}
+        isSwitchingParent={isSwitchingParent}
+      />
+
+      <div className="navbar">
+        <nav className="nav-container flex items-center justify-between px-5 md:px-12 xl:px-20">
+          <div className="nav-start flex w-2/5 justify-start">
+            <HamburgerMenu mobileMenuToggler={toggleMobileMenuHandler} isMobileMenuOpen={isMobileMenuOpen} />
+
+            <div className="desktop-only text-shadow-10 uppercase lg:inline-block xl:text-lg">
+              <Link to={ROUTE_PATHS.CREATE} className="mr-6 font-bold xl:mr-10" activeProps={{ className: 'active' }}>
+                Build a sandwich
+              </Link>
+              <Link to={ROUTE_PATHS.LATEST} className="mr-6 xl:mr-10" activeProps={{ className: 'active' }}>
+                Gallery
+              </Link>
+            </div>
+          </div>
+
+          <div className="nav-center flex">
+            <Link to={ROUTE_PATHS.LATEST} className="no-hover block size-full">
+              <div className="logo mx-auto">
+                {user?.name ? (
+                  <div className="text-sh-5 grid place-items-center text-xs sm:text-base">
+                    Let us
+                    <br /> inspire you,
+                    <br />
+                    {user.firstName}
+                  </div>
+                ) : (
+                  <div className="text-sh-5 grid place-items-center text-xs sm:text-base">
+                    Let us
+                    <br /> inspire
+                    <br /> you
+                  </div>
+                )}
+              </div>
+            </Link>
+          </div>
+
+          <div className="nav-end flex w-2/5 justify-end">
+            <div className="desktop-only text-shadow-10 uppercase lg:inline-block xl:text-lg">
+              {user.id ? (
+                <>
+                  <Link to={ROUTE_PATHS.MENU} className="mr-6 font-bold" activeProps={{ className: 'active' }}>
+                    My menu
+                  </Link>
+                  {user.roles?.includes('parent') && (
+                    <Link to={ROUTE_PATHS.FAMILY} className="ml-6 xl:mx-10" activeProps={{ className: 'active' }}>
+                      My Family
+                    </Link>
+                  )}
+
+                  <Link id="logout" onClick={authHandler} to="/logout" className="ml-6 xl:ml-4">
+                    Log out
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link
+                    id="login"
+                    onClick={authHandler}
+                    to={ROUTE_PATHS.LOGIN}
+                    className="mr-6"
+                    activeProps={{ className: 'active' }}
+                  >
+                    Log in
+                    {isOpenLoginModal && !isOnAuthRoute && (
+                      <LoginModal setIsOpenLoginModal={setIsOpenLoginModal} closeLink="stay" />
+                    )}
+                  </Link>
+                  <Link
+                    id="signup"
+                    onClick={authHandler}
+                    to={ROUTE_PATHS.SIGNUP}
+                    className="font-bold"
+                    activeProps={{ className: 'active' }}
+                  >
+                    Signup
+                    {isOpenSignupModal && !isOnAuthRoute && (
+                      <SignupModal setIsOpenLoginModal={setIsOpenSignupModal} closeLink="stay" />
+                    )}
+                  </Link>
+                </>
+              )}
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
+  );
+};
+
+export default Header;

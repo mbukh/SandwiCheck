@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "streetsidesoftware.code-spell-checker",
+    "davidanson.vscode-markdownlint",
+    "foxundermoon.shell-format",
+    "wayou.vscode-todo-highlight",
+    "redhat.vscode-yaml",
+    "bradlc.vscode-tailwindcss"
+  ]
+}

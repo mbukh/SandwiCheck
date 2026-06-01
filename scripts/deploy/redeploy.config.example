@@ -1,0 +1,42 @@
+# redeploy.config.example — copy to "redeploy.config" (same dir) and edit for this
+# server, OR export the same variables in the environment / systemd unit.
+# redeploy.config is gitignored: it holds machine-specific paths only (no secrets;
+# the real secrets live in ENV_FILE, which is also gitignored).
+#
+#   cp scripts/deploy/redeploy.config.example scripts/deploy/redeploy.config
+
+# Absolute path to the cloned repo (default: two levels up from scripts/deploy/).
+# REPO_DIR=/opt/sandwicheck/SandwiCheck
+
+# Git branch to track and deploy (default: main, kept CI-clean via branch protection).
+# BRANCH=main
+
+# Image / container naming.
+# IMAGE_NAME=sandwicheck-api
+# CONTAINER_NAME=sandwicheck-api
+
+# Port mapping: HOST_PORT (exposed on the server) -> CONTAINER_PORT (the server's
+# PORT env). Keep CONTAINER_PORT = PORT in ENV_FILE = 5001 so the image's
+# HEALTHCHECK (hard-coded to 5001) matches. Change HOST_PORT to sit behind a proxy.
+# HOST_PORT=5001
+# CONTAINER_PORT=5001
+
+# Production env file the container reads (Atlas MONGO_URI, JWT_SECRET, mail, ...).
+# Template: apps/server/config/.env.example
+# ENV_FILE=/opt/sandwicheck/SandwiCheck/apps/server/config/.env
+
+# Host directory bind-mounted for stateful uploads + generated sandwich/ingredient
+# images. Persists across rebuilds.
+# UPLOADS_DIR=/opt/sandwicheck/SandwiCheck/apps/server/uploads
+
+# How many 2s health-check polls to wait after (re)starting the container.
+# HEALTH_RETRIES=30
+
+# Set to true to rebuild + restart even when there are no new commits (debugging).
+# FORCE=false
+
+# ---------------------------------------------------------------------------
+# Cron alternative to the systemd timer (run every 5 minutes, log to a file):
+#   crontab -e
+#   */5 * * * * /opt/sandwicheck/SandwiCheck/scripts/deploy/redeploy.sh >> /var/log/sandwicheck-redeploy.log 2>&1
+# ---------------------------------------------------------------------------

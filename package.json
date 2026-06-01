@@ -2,8 +2,8 @@
   "name": "sandwicheck-fullstack",
   "version": "1.0.0",
   "description": "a sandwich maker app for the whole family",
-  "main": "./server/server.js",
   "type": "module",
+  "private": true,
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mbukh/Appleseeds-SandwiCheck.git"
@@ -18,43 +18,46 @@
     "url": "https://github.com/mbukh/Appleseeds-SandwiCheck/issues"
   },
   "homepage": "https://github.com/mbukh/Appleseeds-SandwiCheck#readme",
+  "engines": {
+    "node": ">=24.0.0",
+    "pnpm": ">=11.0.0"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ./server/server.js",
-    "server": "node --env-file ./server/config/.env --watch ./server/server.js",
-    "client": "npm start --prefix client",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "format:write": "prettier --write ."
+    "server": "pnpm --filter @sandwicheck/server dev",
+    "client": "pnpm --filter @sandwicheck/client start --host",
+    "dev": "pnpm run \"/server|client/\"",
+    "init-db": "pnpm --filter @sandwicheck/server init-db",
+    "lint:root": "eslint .",
+    "lint:root:fix": "eslint . --fix",
+    "lint": "pnpm lint:root && pnpm --recursive --parallel lint",
+    "lint:fix": "pnpm lint:root:fix && pnpm --recursive --parallel lint:fix",
+    "typecheck": "pnpm --recursive --parallel typecheck",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
+    "knip": "knip",
+    "update:all": "corepack use pnpm@latest && pnpm up --recursive",
+    "update:all:latest": "corepack use pnpm@latest && pnpm up --latest --recursive --interactive"
   },
   "devDependencies": {
-    "@eslint/js": "^9.10.0",
-    "concurrently": "^9.0.1",
-    "eslint": "^9.10.0",
-    "eslint-config-prettier": "^9.1.0",
-    "globals": "^15.9.0",
-    "nodemon": "^3.1.5",
-    "npm-check-updates": "^17.1.1",
-    "prettier": "^3.3.3"
+    "@eslint/js": "^10.0.1",
+    "@eslint/json": "^1.2.0",
+    "@eslint/markdown": "^7.5.1",
+    "@types/node": "^25.9.1",
+    "concurrently": "^9.2.1",
+    "eslint": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import": "catalog:",
+    "eslint-plugin-simple-import-sort": "catalog:",
+    "eslint-plugin-unicorn": "catalog:",
+    "eslint-plugin-unused-imports": "catalog:",
+    "eslint-plugin-yml": "^3.4.0",
+    "globals": "catalog:",
+    "knip": "^5.88.1",
+    "lefthook": "^2.1.9",
+    "prettier": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:"
   },
-  "dependencies": {
-    "bcryptjs": "^2.4.3",
-    "colors": "^1.4.0",
-    "cookie-parser": "^1.4.6",
-    "cors": "^2.8.5",
-    "crypto": "^1.0.1",
-    "dotenv": "^16.4.5",
-    "express": "^4.21.0",
-    "express-async-handler": "^1.2.0",
-    "express-rate-limit": "^7.4.0",
-    "express-xss-sanitizer": "^1.2.0",
-    "helmet": "^7.1.0",
-    "hpp": "^0.2.3",
-    "http-errors": "^2.0.0",
-    "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.6.3",
-    "morgan": "^1.10.0",
-    "multer": "^1.4.5-lts.1",
-    "nodemailer": "^6.9.15",
-    "sharp": "^0.33.5"
-  }
+  "packageManager": "pnpm@11.5.0+sha512.dbfcc4f81cf48597afd4bc391ffdf12c11f1a9fb83a395bfa6b0a2d9cc2fd8ffebafdb1ccbd529632153f793904c2615b7f09fe1a345473fd1c35845172a8eb1"
 }

@@ -1,36 +1,86 @@
 services:
-  # # Mongodb service
-  # mongo_db:
-  #   container_name: mongo
-  #   image: mongo
-  #   restart: always
-  #   volumes:
-  #     - ./data:/data/db
-  #   hostname: mongo_db
+  # ui:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/ui.Dockerfile
+  #     args:
+  #       VITE_HOST: ${VITE_HOST:-}
+  #       VITE_API_SERVER: ${VITE_API_SERVER:-}
+  #   container_name: sandwicheck-ui
   #   ports:
-  #     - "27018:27017"
-  #   # environment:
-  #     # API_SERVER: http://localhost:5001
+  #     - "5173:80"
+  #   env_file: apps/client/.env.example
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+  #     interval: 30s
+  #     timeout: 3s
+  #     retries: 3
+  #     start_period: 10s
+  #   networks:
+  #     - sandwicheck-network
 
-  # volumes:
-  # mongo_data: {}
+  # api:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/api.Dockerfile
+  #   container_name: sandwicheck-api
+  #   ports:
+  #     - "5001:5001"
+  #   volumes:
+  #     - ./apps/server/uploads:/app/apps/server/uploads:rw
+  #   env_file: apps/server/config/.env
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: ["CMD", "node", "-e", "require('net').createConnection(5001, 'localhost', () => process.exit(0)).on('error', () => process.exit(1))"]
+  #     interval: 30s
+  #     timeout: 3s
+  #     retries: 3
+  #     start_period: 10s
+  #   networks:
+  #     - sandwicheck-network
+  # #   Uncomment when MongoDB is needed:
+  #   depends_on:
+  #     mongo_db:
+  #       condition: service_healthy
+  #     mailpit:
+  #       condition: service_started
 
-  ui:
-    build:
-      context: .
-      dockerfile: docker/ui.Dockerfile
-    ports:
-      - 3000:80
-    env_file: client/.env.example
-
-  api:
-    build:
-      context: .
-      dockerfile: docker/api.Dockerfile
-    ports:
-      - 5001:5001
-    # depends_on:
-    #   - mongo_db
+  # MongoDB service (uncomment when needed)
+  mongo_db:
+    image: mongo:latest
+    container_name: sandwicheck-mongo
+    restart: unless-stopped
     volumes:
-      - ./server/uploads:/app/server/uploads
-    env_file: server/config/.env
+      - ./data/mongo:/data/db
+    ports:
+      - '27018:27017'
+    environment:
+      MONGO_INITDB_DATABASE: sandwicheck
+    healthcheck:
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    networks:
+      - sandwicheck-network
+
+  # Mailpit - Local SMTP server for development
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: sandwicheck-mailpit
+    restart: unless-stopped
+    ports:
+      - '1025:1025' # SMTP port
+      - '8025:8025' # Web UI port
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+    networks:
+      - sandwicheck-network
+
+networks:
+  sandwicheck-network:
+    driver: bridge

@@ -1,0 +1,37 @@
+# lefthook.yml — Git hooks for SandwiCheck (replaces husky + lint-staged).
+#
+# Lefthook self-installs via its package postinstall (allow-listed in
+# pnpm-workspace.yaml > onlyBuiltDependencies). It is a NO-OP where it isn't
+# wanted: skipped in CI (CI=true) and absent from production installs (it's a
+# devDependency, omitted by `pnpm install --prod` in docker/api.Dockerfile) —
+# which is why there is no longer a "prepare" script to break --prod builds.
+#
+# Manual use:  pnpm exec lefthook run pre-commit   |   pnpm exec lefthook install
+# Bypass once: git commit --no-verify   (or LEFTHOOK=0 git commit)
+
+pre-commit:
+  jobs:
+    # Autofix-lint then format staged JS/TS. Sequential (not parallel) so eslint
+    # and prettier never race on the same file; stage_fixed re-stages their fixes.
+    - name: eslint
+      glob: '*.{js,mjs,cjs,jsx,ts,tsx}'
+      run: pnpm exec eslint --fix {staged_files}
+      stage_fixed: true
+
+    - name: prettier
+      run: pnpm exec prettier --write --ignore-unknown {staged_files}
+      stage_fixed: true
+
+    # Shell scripts — notably scripts/deploy/*.sh, which run as root on the box.
+    # Skips gracefully when shellcheck isn't installed on this machine.
+    - name: shellcheck
+      glob: '*.sh'
+      run: shellcheck {staged_files}
+      skip:
+        - run: '! command -v shellcheck >/dev/null 2>&1'
+
+pre-push:
+  jobs:
+    # Fail fast locally before the CI `quality` gate (tsc --noEmit across the repo).
+    - name: typecheck
+      run: pnpm typecheck

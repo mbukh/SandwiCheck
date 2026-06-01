@@ -1,0 +1,43 @@
+@import 'tailwindcss';
+
+.swiper {
+  @apply size-full;
+}
+
+.swiper-slide {
+  @apply flex items-center justify-center;
+}
+
+.swiper-slide-container {
+  opacity: 0.5;
+  scale: 0.8;
+  transition: all 0.3s ease-in-out;
+}
+
+.swiper-slide-container.active {
+  opacity: 1;
+  scale: 1;
+}
+
+/* Larger images for layer slider */
+.layer-slider .swiper-slide-container {
+  scale: 0.9;
+  max-width: 500px;
+  width: 100%;
+  height: 100%;
+}
+
+.layer-slider .swiper-slide-container.active {
+  scale: 1.05;
+}
+
+/* Ensure swiper maintains aspect ratio */
+.layer-slider .relative {
+  width: 100%;
+  height: 100%;
+}
+
+.layer-slider .swiper {
+  width: 100%;
+  height: 100%;
+}
