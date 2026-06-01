@@ -77,6 +77,14 @@ const fileExists = async (filePath: string): Promise<boolean> => {
 const generateMissingSandwichImages = async (): Promise<void> => {
   const stats = { total: 0, present: 0, generated: 0, dbUpdated: 0, wouldGenerate: 0, failed: 0 };
 
+  /*
+   * `sharp().toFile()` does not create parent dirs; ensure the output folder exists
+   * so a fresh/empty uploads volume doesn't fail every write (mirrors initUploadsFolder.ts).
+   */
+  if (!DRY_RUN) {
+    await fs.mkdir(SANDWICHES_DIR, { recursive: true });
+  }
+
   const sandwiches = await Sandwich.find({}).select('_id name image ingredients').lean<LeanSandwich[]>();
 
   stats.total = sandwiches.length;
