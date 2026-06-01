@@ -18,7 +18,7 @@ const fileFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCallb
 };
 
 const limits = {
-  fileSize: Number.parseInt(process.env.MAX_UPLOAD_SIZE_IN_BYTE ?? '', 10),
+  fileSize: Number.parseInt(process.env.MAX_UPLOAD_SIZE_IN_BYTES ?? '', 10),
 };
 
 const upload = multer({ storage, limits, fileFilter });

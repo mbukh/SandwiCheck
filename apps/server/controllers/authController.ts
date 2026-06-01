@@ -67,12 +67,12 @@ export const signup = asyncHandler<ParamsDictionary, unknown, SignupDto>(async (
     const confirmationToken = hashAndTokens.generateResetPasswordToken();
     userExists.emailConfirmationToken = hashAndTokens.hashToken(confirmationToken);
     userExists.emailConfirmationExpire = new Date(
-      Date.now() + Number.parseInt(process.env.EMAIL_CONFIRMATION_EXPIRES_I || '86400000', 10),
+      Date.now() + Number.parseInt(process.env.EMAIL_CONFIRMATION_EXPIRES_IN || '86400000', 10),
     );
     userExists.emailConfirmationResendCount = 0; // Reset resend count on new signup attempt
     userExists.emailConfirmationResendCooldown = undefined; // Reset cooldown on new signup attempt
     userExists.name = name;
-    userExists.password = await bcrypt.hash(password, Number.parseInt(process.env.BCRYPT_SALT_ROUND ?? '', 10));
+    userExists.password = await bcrypt.hash(password, Number.parseInt(process.env.BCRYPT_SALT_ROUNDS ?? '', 10));
     userExists.roles = [ROLE.user, role];
 
     await userExists.save();
@@ -110,7 +110,7 @@ export const signup = asyncHandler<ParamsDictionary, unknown, SignupDto>(async (
     }
   }
 
-  const passwordHash = await bcrypt.hash(password, Number.parseInt(process.env.BCRYPT_SALT_ROUND ?? '', 10));
+  const passwordHash = await bcrypt.hash(password, Number.parseInt(process.env.BCRYPT_SALT_ROUNDS ?? '', 10));
 
   const user = await User.create({
     name,
@@ -156,7 +156,7 @@ export const signup = asyncHandler<ParamsDictionary, unknown, SignupDto>(async (
   const confirmationToken = hashAndTokens.generateResetPasswordToken();
   user.emailConfirmationToken = hashAndTokens.hashToken(confirmationToken);
   user.emailConfirmationExpire = new Date(
-    Date.now() + Number.parseInt(process.env.EMAIL_CONFIRMATION_EXPIRES_I || '86400000', 10),
+    Date.now() + Number.parseInt(process.env.EMAIL_CONFIRMATION_EXPIRES_IN || '86400000', 10),
   );
 
   await user.save();
@@ -276,7 +276,7 @@ export const changePassword = asyncHandler<ParamsDictionary, unknown, ChangePass
     return next(createHttpError.Unauthorized('Old password is incorrect'));
   }
 
-  user.password = await bcrypt.hash(newPassword, Number.parseInt(process.env.BCRYPT_SALT_ROUND ?? '', 10));
+  user.password = await bcrypt.hash(newPassword, Number.parseInt(process.env.BCRYPT_SALT_ROUNDS ?? '', 10));
 
   await user.save();
 
@@ -316,7 +316,7 @@ export const forgotPassword = asyncHandler<ParamsDictionary, unknown, ForgotPass
 
   user.resetPasswordToken = hashAndTokens.hashToken(resetToken);
   user.resetPasswordExpire = new Date(
-    Date.now() + Number.parseInt(process.env.RESET_PASSWORD_EXPIRES_I || '3600000', 10),
+    Date.now() + Number.parseInt(process.env.RESET_PASSWORD_EXPIRES_IN || '3600000', 10),
   ); // Default 1 hour
 
   await user.save();
@@ -360,7 +360,7 @@ export const resetPassword = asyncHandler<ParamsDictionary, unknown, ResetPasswo
   }
 
   // Hash the new password before saving
-  user.password = await bcrypt.hash(newPassword, Number.parseInt(process.env.BCRYPT_SALT_ROUND ?? '', 10));
+  user.password = await bcrypt.hash(newPassword, Number.parseInt(process.env.BCRYPT_SALT_ROUNDS ?? '', 10));
   user.resetPasswordToken = undefined;
   user.resetPasswordExpire = undefined;
 
@@ -586,7 +586,7 @@ export const resendConfirmation = asyncHandler<ParamsDictionary, unknown, Resend
     // Generate token first (before any DB updates)
     const confirmationToken = hashAndTokens.generateResetPasswordToken();
     const hashedToken = hashAndTokens.hashToken(confirmationToken);
-    const tokenExpire = Date.now() + Number.parseInt(process.env.EMAIL_CONFIRMATION_EXPIRES_I || '86400000', 10);
+    const tokenExpire = Date.now() + Number.parseInt(process.env.EMAIL_CONFIRMATION_EXPIRES_IN || '86400000', 10);
 
     /*
      * Refresh user data one more time before attempting to send email to catch race conditions

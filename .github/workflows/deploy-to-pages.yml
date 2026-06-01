@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      VITE_HOST: 'https://mbukh.github.io/SandwiCheck'
+      VITE_HOST: 'https://sandwicheck.app'
       VITE_API_SERVER: 'https://api.sandwicheck.app'
 
     steps:
