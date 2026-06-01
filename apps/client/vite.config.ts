@@ -1,14 +1,29 @@
 /* eslint-disable unicorn/import-style */
 import tailwindcss from '@tailwindcss/vite';
+import { copyFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import babel from '@rolldown/plugin-babel';
 import react, { reactCompilerPreset } from '@vitejs/plugin-react';
-import { defineConfig } from 'vitest/config';
+import { defineConfig, type Plugin } from 'vitest/config';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+/*
+ * GitHub Pages has no SPA rewrite engine (the Netlify-style public/_redirects is
+ * ignored there) — it serves 404.html for any unknown path. Emitting 404.html as a
+ * copy of index.html lets deep links like /create boot the app so the client router
+ * can resolve them, instead of returning GitHub's default 404.
+ */
+const spaPagesFallback = (): Plugin => ({
+  name: 'spa-pages-404-fallback',
+  closeBundle() {
+    const outDir = resolve(__dirname, 'build');
+    copyFileSync(resolve(outDir, 'index.html'), resolve(outDir, '404.html'));
+  },
+});
 
 export default defineConfig({
   plugins: [
@@ -20,6 +35,7 @@ export default defineConfig({
     tailwindcss(),
     react(),
     babel({ presets: [reactCompilerPreset()] }),
+    spaPagesFallback(),
   ],
   resolve: {
     // `@/…` → apps/client/src/… (keeps deep imports short; mirrors tsconfig `paths`).
