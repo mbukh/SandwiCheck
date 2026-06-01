@@ -6,7 +6,7 @@
 #   cp scripts/deploy/redeploy.config.example scripts/deploy/redeploy.config
 
 # Absolute path to the cloned repo (default: two levels up from scripts/deploy/).
-# REPO_DIR=/opt/sandwicheck/SandwiCheck
+# REPO_DIR=/app/sandwicheck
 
 # Git branch to track and deploy (default: main, kept CI-clean via branch protection).
 # BRANCH=main
@@ -23,11 +23,11 @@
 
 # Production env file the container reads (Atlas MONGO_URI, JWT_SECRET, mail, ...).
 # Template: apps/server/config/.env.example
-# ENV_FILE=/opt/sandwicheck/SandwiCheck/apps/server/config/.env
+# ENV_FILE=/app/sandwicheck/apps/server/config/.env
 
 # Host directory bind-mounted for stateful uploads + generated sandwich/ingredient
 # images. Persists across rebuilds.
-# UPLOADS_DIR=/opt/sandwicheck/SandwiCheck/apps/server/uploads
+# UPLOADS_DIR=/app/sandwicheck/apps/server/uploads
 
 # How many 2s health-check polls to wait after (re)starting the container.
 # HEALTH_RETRIES=30
@@ -38,5 +38,5 @@
 # ---------------------------------------------------------------------------
 # Cron alternative to the systemd timer (run every 5 minutes, log to a file):
 #   crontab -e
-#   */5 * * * * /opt/sandwicheck/SandwiCheck/scripts/deploy/redeploy.sh >> /var/log/sandwicheck-redeploy.log 2>&1
+#   */5 * * * * /app/sandwicheck/scripts/deploy/redeploy.sh >> /var/log/sandwicheck-redeploy.log 2>&1
 # ---------------------------------------------------------------------------

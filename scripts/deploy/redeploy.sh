@@ -21,7 +21,7 @@
 #         # Docker: https://docs.docker.com/engine/install/debian/
 #         sudo usermod -aG docker "$USER"   # then re-login
 #   2.  Clone the repo (it deploys the default branch, main):
-#         git clone <repo> /opt/sandwicheck/SandwiCheck
+#         git clone <repo> /app/sandwicheck
 #   3.  Create the production env file from the template and fill MONGO_URI (Atlas),
 #       JWT_SECRET, mail creds, etc. Keep PORT=5001 to match the image HEALTHCHECK:
 #         cp apps/server/config/.env.example apps/server/config/.env && edit it
