@@ -20,6 +20,7 @@ catalog:
 
 allowBuilds:
   esbuild: true
+  lefthook: true
   sharp: true
   unrs-resolver: true
 
@@ -31,6 +32,7 @@ ignoredBuiltDependencies:
 onlyBuiltDependencies:
   - esbuild
   - unrs-resolver
+  - lefthook
 
 patchedDependencies:
   eslint-plugin-react@7.37.5: patches/eslint-plugin-react@7.37.5.patch

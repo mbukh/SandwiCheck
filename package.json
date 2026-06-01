@@ -36,8 +36,7 @@
     "format:fix": "prettier --write .",
     "knip": "knip",
     "update:all": "corepack use pnpm@latest && pnpm up --recursive",
-    "update:all:latest": "corepack use pnpm@latest && pnpm up --latest --recursive --interactive",
-    "prepare": "husky || true"
+    "update:all:latest": "corepack use pnpm@latest && pnpm up --latest --recursive --interactive"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -54,9 +53,8 @@
     "eslint-plugin-unused-imports": "catalog:",
     "eslint-plugin-yml": "^3.4.0",
     "globals": "catalog:",
-    "husky": "^9.1.7",
     "knip": "^5.88.1",
-    "lint-staged": "^16.4.0",
+    "lefthook": "^2.1.9",
     "prettier": "catalog:",
     "typescript": "catalog:",
     "typescript-eslint": "catalog:"
