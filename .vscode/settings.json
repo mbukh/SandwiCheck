@@ -29,8 +29,10 @@
   "[html]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
 
   // Disable VS Code's built-in JavaScript/TypeScript **formatters** to prevent conflicts
-  "javascript.format.enable": false,
-  "typescript.format.enable": false,
+  "js/ts.format.enabled": true,
+
+  // Enable typescript path aliases
+  "js/ts.preferences.importModuleSpecifier": "shortest",
 
   // Disable built-in JS/TS **validation** (and their Fix All actions)
   // "javascript.validate.enable": false,

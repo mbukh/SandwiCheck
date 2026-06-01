@@ -26,7 +26,8 @@
     "lint:fix": "eslint --fix",
     "typecheck": "tsc --noEmit",
     "init-uploads": "node --env-file ./config/.env service/initUploadsFolder.ts",
-    "migrate-email-confirmation-fields": "node --env-file ./config/.env service/migrateEmailConfirmationFields.ts"
+    "migrate-email-confirmation-fields": "node --env-file ./config/.env service/migrateEmailConfirmationFields.ts",
+    "generate-missing-sandwich-images": "node --env-file ./config/.env service/generateMissingSandwichImages.ts"
   },
   "dependencies": {
     "@sandwicheck/shared": "workspace:*",
