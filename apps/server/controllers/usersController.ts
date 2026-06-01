@@ -85,13 +85,13 @@ export const updateUser = asyncHandler<ParamsDictionary, unknown, UpdateUserDto>
     const confirmationToken = hashAndTokens.generateResetPasswordToken();
     user.emailConfirmationToken = hashAndTokens.hashToken(confirmationToken);
     user.emailConfirmationExpire = new Date(
-      Date.now() + Number.parseInt(process.env.EMAIL_CONFIRMATION_EXPIRES_I || '86400000', 10),
+      Date.now() + Number.parseInt(process.env.EMAIL_CONFIRMATION_EXPIRES_IN || '86400000', 10),
     );
 
     const confirmationURL = `${process.env.CLIENT_URL}/confirm-email/${confirmationToken}`;
 
     if (wasTetheredChild) {
-      const saltRounds = Number.parseInt(process.env.BCRYPT_SALT_ROUND || '10', 10);
+      const saltRounds = Number.parseInt(process.env.BCRYPT_SALT_ROUNDS || '10', 10);
       const temporaryPasswordSeed = hashAndTokens.generateResetPasswordToken();
       user.password = await bcrypt.hash(temporaryPasswordSeed, saltRounds);
       user.isTetheredChild = undefined;
@@ -99,7 +99,7 @@ export const updateUser = asyncHandler<ParamsDictionary, unknown, UpdateUserDto>
       const resetToken = hashAndTokens.generateResetPasswordToken();
       user.resetPasswordToken = hashAndTokens.hashToken(resetToken);
       user.resetPasswordExpire = new Date(
-        Date.now() + Number.parseInt(process.env.RESET_PASSWORD_EXPIRES_I || '3600000', 10),
+        Date.now() + Number.parseInt(process.env.RESET_PASSWORD_EXPIRES_IN || '3600000', 10),
       );
 
       let inviterName: string | undefined;
