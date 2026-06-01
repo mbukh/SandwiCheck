@@ -148,7 +148,7 @@ export const updateSandwich = asyncHandler<ParamsDictionary, ApiResponse<Sandwic
     }
 
     const updateWindowMinutes = parsePositiveInteger(
-      process.env.SANDWICH_UPDATE_EXPIRES_IN_MIN,
+      process.env.SANDWICH_UPDATE_EXPIRES_IN_MINS,
       DEFAULT_SANDWICH_UPDATE_WINDOW_MINUTES,
     );
     const minutesSinceCreation = (Date.now() - sandwich.createdAt.getTime()) / 60_000;
