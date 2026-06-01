@@ -37,7 +37,7 @@
     "knip": "knip",
     "update:all": "corepack use pnpm@latest && pnpm up --recursive",
     "update:all:latest": "corepack use pnpm@latest && pnpm up --latest --recursive --interactive",
-    "prepare": "husky"
+    "prepare": "husky || true"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
