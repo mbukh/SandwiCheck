@@ -1,5 +1,5 @@
 import { type FormEvent, useEffect, useMemo, useState } from 'react';
-import { Link, Outlet, useMatchRoute, useNavigate } from '@tanstack/react-router';
+import { Outlet, useMatchRoute, useNavigate } from '@tanstack/react-router';
 import Loading from '@/components/Loading';
 import Modal from '@/components/Modal/Modal';
 import UserCard from '@/components/UserCard';
@@ -35,6 +35,8 @@ const Family = (): React.JSX.Element | null => {
   const [loginChildId, setLoginChildId] = useState<string | null>(null);
   const [resendChildId, setResendChildId] = useState<string | null>(null);
   const [isSwitchingParent, setIsSwitchingParent] = useState(false);
+  const [inviteUrl, setInviteUrl] = useState<string | null>(null);
+  const [isGeneratingInvite, setIsGeneratingInvite] = useState(false);
 
   useEffect(() => {
     if (isCurrentUserReady && !currentUser.id) {
@@ -53,7 +55,6 @@ const Family = (): React.JSX.Element | null => {
 
   const isParentSession = Boolean(currentUser.roles?.includes('parent')) && !actingAsChild;
   const activeChildId = actingAsChild ? currentUser.id : null;
-  const familyOwner = isParentSession ? currentUser : parentUser || currentUser;
   const children = useMemo<User[]>(() => {
     if (isParentSession) {
       return currentUser.children || [];
@@ -67,10 +68,58 @@ const Family = (): React.JSX.Element | null => {
         ? `${globalThis.location.protocol}//${globalThis.location.host}`
         : ''
       : globalThis.location.origin;
-  const ownerId = familyOwner?.id;
-  const shareLink = ownerId
-    ? `https://wa.me/?text=Hey%20kids%2C%20join%20me%20at%20SandwiCheck%20and%20be%20a%20part%20of%20my%20sandwich%20squad%21+${signupOrigin}${ROUTE_PATHS.SIGNUP_PARENT.replace('$parentId', ownerId)}`
-    : '';
+  const buildWhatsAppShare = (url: string): string =>
+    `https://wa.me/?text=Hey%20kids%2C%20join%20me%20at%20SandwiCheck%20and%20be%20a%20part%20of%20my%20sandwich%20squad%21+${url}`;
+
+  /*
+   * Mint a FRESH single-use invite link, replacing any previously generated one.
+   * Each link onboards exactly one child and is consumed on first redemption, so we
+   * deliberately do NOT reuse a token across children — generating again rotates the
+   * server-side token. Copy/Send act on the link shown after generating.
+   */
+  const handleGenerateInvite = async (): Promise<void> => {
+    setIsGeneratingInvite(true);
+    const res = await apiAuth.createInvite();
+    setIsGeneratingInvite(false);
+    if (!res?.success || !res.data?.token) {
+      showToast(res?.error?.message || 'Unable to generate an invite link right now.');
+      return;
+    }
+    setInviteUrl(`${signupOrigin}${ROUTE_PATHS.SIGNUP_PARENT.replace('$parentId', res.data.token)}`);
+  };
+
+  const handleCopyInvite = async (): Promise<void> => {
+    if (!inviteUrl) return;
+    const shareText = buildWhatsAppShare(inviteUrl);
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(shareText);
+        showToast('Invite link copied to clipboard!');
+      } else {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = shareText;
+        textArea.style.position = 'fixed';
+        textArea.style.opacity = '0';
+        document.body.append(textArea);
+        textArea.select();
+        try {
+          document.execCommand('copy');
+          showToast('Invite link copied to clipboard!');
+        } catch {
+          showToast('Failed to copy link. Please copy manually.');
+        }
+        textArea.remove();
+      }
+    } catch {
+      showToast('Failed to copy link. Please copy manually.');
+    }
+  };
+
+  const handleSendInvite = (): void => {
+    if (!inviteUrl) return;
+    globalThis.open(buildWhatsAppShare(inviteUrl), '_blank', 'noopener,noreferrer');
+  };
 
   const resetActionStates = (): void => {
     setConvertChildId(null);
@@ -232,48 +281,39 @@ const Family = (): React.JSX.Element | null => {
                 Add child
               </button>
 
-              {shareLink && (
+              <button
+                type="button"
+                className="box-shadow-10 xl:box-shadow-20 inline-flex appearance-none items-center justify-center rounded-lg bg-magenta px-4 py-2 text-xs font-bold text-white uppercase transition-transform duration-200 hover:scale-105 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:px-5 md:py-3 md:text-sm"
+                onClick={handleGenerateInvite}
+                disabled={isGeneratingInvite}
+              >
+                <i className="icon icon-select-arrows mr-2 h-4 w-4 md:h-5 md:w-5"></i>
+                {inviteUrl ? 'New invite link' : 'Generate invite link'}
+              </button>
+
+              {inviteUrl && (
                 <>
                   <button
                     type="button"
-                    className="box-shadow-10 xl:box-shadow-20 inline-flex appearance-none items-center justify-center rounded-lg bg-magenta px-4 py-2 text-xs font-bold text-white uppercase transition-transform duration-200 hover:scale-105 focus:outline-none md:px-5 md:py-3 md:text-sm"
-                    onClick={async () => {
-                      try {
-                        if (navigator.clipboard && navigator.clipboard.writeText) {
-                          await navigator.clipboard.writeText(shareLink);
-                          showToast('Invite link copied to clipboard!');
-                        } else {
-                          // Fallback for older browsers
-                          const textArea = document.createElement('textarea');
-                          textArea.value = shareLink;
-                          textArea.style.position = 'fixed';
-                          textArea.style.opacity = '0';
-                          document.body.append(textArea);
-                          textArea.select();
-                          try {
-                            document.execCommand('copy');
-                            showToast('Invite link copied to clipboard!');
-                          } catch {
-                            showToast('Failed to copy link. Please copy manually.');
-                          }
-                          textArea.remove();
-                        }
-                      } catch {
-                        showToast('Failed to copy link. Please copy manually.');
-                      }
-                    }}
+                    className="box-shadow-10 xl:box-shadow-20 inline-flex appearance-none items-center justify-center rounded-lg bg-magenta px-4 py-2 text-xs font-bold text-white uppercase transition-transform duration-200 hover:scale-105 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:px-5 md:py-3 md:text-sm"
+                    onClick={handleCopyInvite}
+                    disabled={isGeneratingInvite}
                   >
                     <i className="icon icon-select-arrows mr-2 h-4 w-4 md:h-5 md:w-5"></i>
-                    Copy invite link
+                    Copy link
                   </button>
-                  <Link
-                    className="box-shadow-10 xl:box-shadow-20 inline-flex appearance-none items-center gap-2 rounded-lg bg-magenta px-4 py-2 text-xs font-bold text-white uppercase transition-transform duration-200 hover:scale-105 focus:outline-none md:px-5 md:py-3 md:text-sm"
-                    to={shareLink}
-                    target="_blank"
+                  <button
+                    type="button"
+                    className="box-shadow-10 xl:box-shadow-20 inline-flex appearance-none items-center gap-2 rounded-lg bg-magenta px-4 py-2 text-xs font-bold text-white uppercase transition-transform duration-200 hover:scale-105 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:px-5 md:py-3 md:text-sm"
+                    onClick={handleSendInvite}
+                    disabled={isGeneratingInvite}
                   >
-                    <span>Send invite link</span>
+                    <span>Send link</span>
                     <i className="icon icon-whatsapp h-5 w-5 md:h-6 md:w-6"></i>
-                  </Link>
+                  </button>
+                  <p className="w-full text-xs font-semibold opacity-80">
+                    Each link invites one child. Generating a new link replaces the previous one.
+                  </p>
                 </>
               )}
             </div>

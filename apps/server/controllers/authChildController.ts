@@ -147,3 +147,34 @@ export const getSession = asyncHandler(async (request, res, next) => {
     },
   });
 });
+
+/*
+ * @desc    Create a parent invite token used to link children on signup/login
+ * @route   POST /api/auth/create-invite
+ * @access  Private/Parent
+ *
+ * Replaces the previous flow where any raw parentId in the request body linked a
+ * caller to an arbitrary user without consent. Only the (hashed) token is stored;
+ * the raw token is returned once so the parent can share an invite link. The token
+ * is single-use: it is consumed the first time a child redeems it, and a new call
+ * replaces any previous unused token — so only the most recently generated link is
+ * live (one link onboards one child).
+ */
+export const createInvite = asyncHandler(async (request, res, _next) => {
+  const parentUser = request.user!;
+
+  const rawToken = hashAndTokens.generateResetPasswordToken();
+  const expiresInMs = Number.parseInt(process.env.INVITE_TOKEN_EXPIRES_IN || '604800000', 10); // default 7 days
+
+  await User.findByIdAndUpdate(parentUser._id, {
+    $set: {
+      inviteToken: hashAndTokens.hashToken(rawToken),
+      inviteTokenExpire: new Date(Date.now() + expiresInMs),
+    },
+  });
+
+  res.status(200).json({
+    success: true,
+    data: { token: rawToken },
+  });
+});

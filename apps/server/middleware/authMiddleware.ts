@@ -46,7 +46,7 @@ export const protect = asyncHandler(async (req, res, next) => {
       throw new Error('JWT_SECRET is not configured');
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET) as jwt.JwtPayload;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET, { algorithms: ['HS256'] }) as jwt.JwtPayload;
 
     req.user = (await User.findById(decoded.id).select(EXCLUDED_FIELDS)) ?? undefined;
 
@@ -55,7 +55,9 @@ export const protect = asyncHandler(async (req, res, next) => {
     }
 
     if (parentToken && req.user.roles.includes(ROLE.child)) {
-      const parentDecoded = jwt.verify(parentToken, process.env.JWT_SECRET) as jwt.JwtPayload;
+      const parentDecoded = jwt.verify(parentToken, process.env.JWT_SECRET, {
+        algorithms: ['HS256'],
+      }) as jwt.JwtPayload;
 
       req.parentUser = await User.findById(parentDecoded.id).select(EXCLUDED_FIELDS);
 
@@ -102,8 +104,19 @@ export const authorize = (...roles: Role[]): RequestHandler => {
       }
     }
 
-    // Check if user is accessing their own sandwich
+    /*
+     * Owner access for sandwich-scoped routes ONLY (no :userId param).
+     * The `!userId` guard is critical: on any user-scoped route that also
+     * carried a :sandwichId, a user could otherwise satisfy authorization by
+     * passing a victim's userId together with a sandwichId they own (IDOR).
+     * No route currently combines both params — the former
+     * `/users/:userId/favorite-sandwiches/:sandwichId` route was folded into the
+     * idempotent vote endpoint — so this branch only ever runs for
+     * sandwich-scoped routes. The guard stays as defense-in-depth in case such a
+     * route is reintroduced.
+     */
     if (
+      !userId &&
       sandwichId &&
       Array.isArray(user.sandwiches) &&
       user.sandwiches.some(

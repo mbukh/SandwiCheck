@@ -16,13 +16,20 @@ export interface SignupDto {
   password?: string;
   /** Validated at runtime to be `child` or `parent`. */
   role?: string;
-  parentId?: string;
+  /** Single-use parent invite token (replaces the previous unauthenticated parentId linking). */
+  inviteToken?: string;
 }
 
 export interface LoginDto {
   email?: string;
   password?: string;
-  parentId?: string;
+  /** Parent invite token; links the account to the inviting parent on login. */
+  inviteToken?: string;
+}
+
+/** Response payload for POST /auth/create-invite. */
+export interface CreateInviteData {
+  token: string;
 }
 
 export interface ChangePasswordDto {

@@ -1,6 +1,7 @@
 import type {
   ChangePasswordDto,
   CreateChildDto,
+  CreateInviteData,
   ForgotPasswordDto,
   LoginChildDto,
   LoginDto,
@@ -26,18 +27,23 @@ const api = createFetchApi(`${import.meta.env.VITE_API_SERVER}/api/v1/auth`, {
  * Base URL: /api/v1/auth
  */
 
-/** POST /signup — register a new user. */
-export const signup = async ({ email, password, name, role, parentId }: SignupDto): Promise<ApiResult<User>> => {
+/** POST /signup — register a new user (optionally under a parent invite token). */
+export const signup = async ({ email, password, name, role, inviteToken }: SignupDto): Promise<ApiResult<User>> => {
   return await handleResponse<User>(async () => {
-    return api.post('/signup', { email, password, name, role, parentId });
+    return api.post('/signup', { email, password, name, role, inviteToken });
   });
 };
 
-/** POST /login — log in with email/password (optionally under a parent). */
-export const login = async ({ email, password, parentId }: LoginDto): Promise<ApiResult<User>> => {
+/** POST /login — log in with email/password (optionally under a parent invite token). */
+export const login = async ({ email, password, inviteToken }: LoginDto): Promise<ApiResult<User>> => {
   return await handleResponse<User>(async () => {
-    return api.post('/login', { email, password, parentId });
+    return api.post('/login', { email, password, inviteToken });
   });
+};
+
+/** POST /create-invite — issue a parent invite token (parent only). */
+export const createInvite = async (): Promise<ApiResult<CreateInviteData>> => {
+  return await handleResponse<CreateInviteData>(async () => api.post('/create-invite'));
 };
 
 /** GET /session — active authenticated session details. */

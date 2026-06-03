@@ -19,7 +19,7 @@ import {
   generateHtmlMessage,
   generateTextMessage,
 } from '#constants/mailing.ts';
-import User from '#models/UserModel.ts';
+import User, { type UserDocument } from '#models/UserModel.ts';
 import asyncHandler from '#utils/asyncHandler.ts';
 import { removeCookie, setTokenCookie } from '#utils/cookies.ts';
 import delay from '#utils/delay.ts';
@@ -27,6 +27,28 @@ import * as hashAndTokens from '#utils/hashAndTokens.ts';
 import logger from '#utils/logger.ts';
 import sendEmail from '#utils/mailer.ts';
 import { createUserParentsConnections } from '#utils/manageUserConnections.ts';
+
+/**
+ * Link a freshly authenticated user to the parent that issued a still-valid invite
+ * token, atomically consuming the token so it is single-use: the matching parent is
+ * found and its token cleared in one operation, so a link cannot be redeemed twice
+ * (and a concurrent double-redeem resolves to a single winner). Returns true when a
+ * link is made. Best-effort by design: callers do not fail the primary action
+ * (signup/login) on a missing/expired/already-used token — the account is still
+ * created/logged in and the parent can issue a new invite.
+ */
+const linkParentByInviteToken = async (user: UserDocument, rawToken: string): Promise<boolean> => {
+  const inviteToken = hashAndTokens.hashToken(rawToken);
+  const parent = await User.findOneAndUpdate(
+    { inviteToken, inviteTokenExpire: { $gt: Date.now() } },
+    { $unset: { inviteToken: 1, inviteTokenExpire: 1 } },
+  );
+  if (!parent) {
+    return false;
+  }
+  await createUserParentsConnections(user, parent._id);
+  return true;
+};
 
 /*
  * @desc    Signup
@@ -39,7 +61,7 @@ export const signup = asyncHandler<ParamsDictionary, unknown, SignupDto>(async (
   const email = req.body.email?.trim().toLowerCase();
   const password = req.body.password;
   const role = req.body.role?.trim();
-  const parentId = req.body.parentId?.trim();
+  const inviteToken = req.body.inviteToken?.trim();
 
   if (!name || !email || !password || !role) {
     return next(createHttpError.BadRequest('All fields are required'));
@@ -72,7 +94,7 @@ export const signup = asyncHandler<ParamsDictionary, unknown, SignupDto>(async (
     userExists.emailConfirmationResendCount = 0; // Reset resend count on new signup attempt
     userExists.emailConfirmationResendCooldown = undefined; // Reset cooldown on new signup attempt
     userExists.name = name;
-    userExists.password = await bcrypt.hash(password, Number.parseInt(process.env.BCRYPT_SALT_ROUNDS ?? '', 10));
+    userExists.password = await bcrypt.hash(password, Number.parseInt(process.env.BCRYPT_SALT_ROUNDS || '10', 10));
     userExists.roles = [ROLE.user, role];
 
     await userExists.save();
@@ -110,7 +132,7 @@ export const signup = asyncHandler<ParamsDictionary, unknown, SignupDto>(async (
     }
   }
 
-  const passwordHash = await bcrypt.hash(password, Number.parseInt(process.env.BCRYPT_SALT_ROUNDS ?? '', 10));
+  const passwordHash = await bcrypt.hash(password, Number.parseInt(process.env.BCRYPT_SALT_ROUNDS || '10', 10));
 
   const user = await User.create({
     name,
@@ -124,10 +146,13 @@ export const signup = asyncHandler<ParamsDictionary, unknown, SignupDto>(async (
     return next(createHttpError.BadRequest('Invalid user data'));
   }
 
-  if (parentId) {
-    const res: unknown = await createUserParentsConnections(user, parentId);
-    if (!res) {
-      return next(new createHttpError.BadRequest('Parent not found'));
+  if (inviteToken) {
+    const linked = await linkParentByInviteToken(user, inviteToken);
+    if (!linked) {
+      logger.warn('Signup used an invalid or expired invite token', {
+        requestId: req.requestId,
+        userId: user._id.toString(),
+      });
     }
   }
 
@@ -203,7 +228,7 @@ export const login = asyncHandler<ParamsDictionary, unknown, LoginDto>(async (re
   // Sanitize and trim inputs
   const email = req.body.email?.trim().toLowerCase();
   const password = req.body.password;
-  const parentId = req.body.parentId?.trim();
+  const inviteToken = req.body.inviteToken?.trim();
 
   if (!email || !password) {
     return next(new createHttpError.BadRequest('Please provide an email and password'));
@@ -222,10 +247,13 @@ export const login = asyncHandler<ParamsDictionary, unknown, LoginDto>(async (re
     return next(createHttpError.Unauthorized('Please confirm your email before logging in'));
   }
 
-  if (parentId) {
-    const res: unknown = await createUserParentsConnections(user, parentId);
-    if (!res) {
-      return next(new createHttpError.BadRequest('Parent not found'));
+  if (inviteToken) {
+    const linked = await linkParentByInviteToken(user, inviteToken);
+    if (!linked) {
+      logger.warn('Login used an invalid or expired invite token', {
+        requestId: req.requestId,
+        userId: user._id.toString(),
+      });
     }
   }
 
@@ -276,7 +304,7 @@ export const changePassword = asyncHandler<ParamsDictionary, unknown, ChangePass
     return next(createHttpError.Unauthorized('Old password is incorrect'));
   }
 
-  user.password = await bcrypt.hash(newPassword, Number.parseInt(process.env.BCRYPT_SALT_ROUNDS ?? '', 10));
+  user.password = await bcrypt.hash(newPassword, Number.parseInt(process.env.BCRYPT_SALT_ROUNDS || '10', 10));
 
   await user.save();
 
@@ -348,6 +376,11 @@ export const resetPassword = asyncHandler<ParamsDictionary, unknown, ResetPasswo
     return next(createHttpError.BadRequest('A new password is required'));
   }
 
+  // Enforce the same length policy as signup and change-password.
+  if (newPassword.length < 5 || newPassword.length > 30) {
+    return next(createHttpError.BadRequest('A password must contain between 5 and 30 characters'));
+  }
+
   const resetPasswordToken = hashAndTokens.hashToken(String(req.params.resetToken));
 
   const user = await User.findOne({
@@ -360,7 +393,7 @@ export const resetPassword = asyncHandler<ParamsDictionary, unknown, ResetPasswo
   }
 
   // Hash the new password before saving
-  user.password = await bcrypt.hash(newPassword, Number.parseInt(process.env.BCRYPT_SALT_ROUNDS ?? '', 10));
+  user.password = await bcrypt.hash(newPassword, Number.parseInt(process.env.BCRYPT_SALT_ROUNDS || '10', 10));
   user.resetPasswordToken = undefined;
   user.resetPasswordExpire = undefined;
 

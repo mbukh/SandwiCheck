@@ -110,7 +110,8 @@ const useForm = (): UseFormResult => {
       return;
     }
 
-    const res = await logIn({ email, password, parentId });
+    // `parentId` is the route param value, which now carries a parent invite token.
+    const res = await logIn({ email, password, inviteToken: parentId });
     if (res.error) {
       // Check for email confirmation error
       if (res.error.message && res.error.message.includes('confirm your email')) {
@@ -135,7 +136,8 @@ const useForm = (): UseFormResult => {
       return;
     }
 
-    const res = await signUp({ name, email, password, role, parentId });
+    // `parentId` is the route param value, which now carries a parent invite token.
+    const res = await signUp({ name, email, password, role, inviteToken: parentId });
     if (res.error) {
       setErrors([res.error.message]);
       return;
