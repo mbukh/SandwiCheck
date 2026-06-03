@@ -25,6 +25,8 @@
     "lint": "eslint",
     "lint:fix": "eslint --fix",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "init-uploads": "node --env-file ./config/.env service/initUploadsFolder.ts",
     "migrate-email-confirmation-fields": "node --env-file ./config/.env service/migrateEmailConfirmationFields.ts",
     "generate-missing-sandwich-images": "node --env-file ./config/.env service/generateMissingSandwichImages.ts"
@@ -59,6 +61,7 @@
     "@types/morgan": "^1.9.10",
     "@types/multer": "^2.1.0",
     "@types/nodemailer": "^8.0.0",
-    "globals": "^17.6.0"
+    "globals": "^17.6.0",
+    "vitest": "^4.1.7"
   }
 }
