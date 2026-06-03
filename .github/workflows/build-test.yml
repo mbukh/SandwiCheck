@@ -75,6 +75,9 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+      - name: Test (server)
+        run: pnpm --filter @sandwicheck/server run test
+
   # Client: verify it tests and builds. No artifact is kept — the Pages build is
   # produced by deploy-to-pages.yml, so there's nothing to hand off here.
   client:
