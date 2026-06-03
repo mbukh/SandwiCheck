@@ -1,6 +1,6 @@
 import express from 'express';
 import { ROLE } from '@sandwicheck/shared';
-import { deleteUser, getUser, getUsers, updateFavoriteSandwiches, updateUser } from '#controllers/usersController.ts';
+import { deleteUser, getUser, getUsers, updateUser } from '#controllers/usersController.ts';
 import { addSandwichToWeekMenu, removeSandwichFromWeekMenu } from '#controllers/userWeekMenuController.ts';
 import { authorize, protect } from '#middleware/authMiddleware.ts';
 import resizeImage from '#middleware/resizeMiddleware.ts';
@@ -15,11 +15,6 @@ export const uploadImage = upload.single('profilePicture');
 router.route('/').get(protect, authorize(ROLE.admin), getUsers);
 
 router.route('/current').get(protect, getUser);
-
-router
-  .route('/:userId/favorite-sandwiches/:sandwichId')
-  .post(protect, authorize(ROLE.user), updateFavoriteSandwiches)
-  .delete(protect, authorize(ROLE.user), updateFavoriteSandwiches);
 
 router
   .route('/:userId/week-menu/:day')

@@ -45,14 +45,9 @@ export const createSandwich = async (parameters: BuilderSandwich): Promise<ApiRe
   return await handleResponse<Sandwich>(async () => api.post('/', payload));
 };
 
-/** POST /:sandwichId/vote — add a vote (private). */
+/** POST /:sandwichId/vote — cast a vote (private; also adds the sandwich to the caller's favorites, idempotent). */
 export const addVoteToSandwich = async (sandwichId: string): Promise<ApiResult<Sandwich>> => {
   return await handleResponse<Sandwich>(async () => api.post(`/${sandwichId}/vote`));
-};
-
-/** DELETE /:sandwichId/vote — remove a vote (private). */
-export const removeVoteFromSandwich = async (sandwichId: string): Promise<ApiResult<Sandwich>> => {
-  return await handleResponse<Sandwich>(async () => api.delete(`/${sandwichId}/vote`));
 };
 
 /** PUT /:sandwichId — update a sandwich (private, owner). */

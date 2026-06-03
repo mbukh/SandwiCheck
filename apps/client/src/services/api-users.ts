@@ -3,7 +3,6 @@ import type { ApiResult } from '@/types/api';
 import type { DayMenuItem, User } from '@/types/domain';
 import { handleResponse } from '@/utils/api-utils';
 import { createFetchApi } from '@/utils/fetch-api';
-import { log } from '@/utils/log';
 
 const api = createFetchApi(`${import.meta.env.VITE_API_SERVER}/api/v1/users`, {
   'Access-Control-Allow-Origin': import.meta.env.VITE_HOST,
@@ -18,7 +17,8 @@ interface UpdateUserParams extends UpdateUserDto {
  * Users API Service
  *
  * Implements all user management endpoints from the server API: profiles,
- * favorites, week menus, and user relationships.
+ * week menus, and user relationships. (Favoriting is owned by the vote endpoint
+ * in api-sandwiches.ts — voting a sandwich adds it to the user's favorites.)
  *
  * Base URL: /api/v1/users
  */
@@ -59,49 +59,6 @@ export const updateUserById = async (
   if (file && file.imageBuffer) formData.append('file', file.imageBuffer, 'profile-picture.png');
 
   return await handleResponse<User>(async () => api.put(`/${userId}`, formData));
-};
-
-/** POST /:userId/favorite-sandwiches/:sandwichId — favorite a sandwich (private). */
-export const addSandwichToFavoritesByUserId = async ({
-  userId,
-  sandwichId,
-}: {
-  userId: string;
-  sandwichId: string;
-}): Promise<ApiResult<string[]>> => {
-  return await handleResponse<string[]>(async () => api.post(`/${userId}/favorite-sandwiches/${sandwichId}`));
-};
-
-/** DELETE /:userId/favorite-sandwiches/:sandwichId — unfavorite a sandwich (private). */
-export const removeSandwichFromFavoritesByUserId = async ({
-  userId,
-  sandwichId,
-}: {
-  userId: string;
-  sandwichId: string;
-}): Promise<ApiResult<string[]>> => {
-  return await handleResponse<string[]>(async () => api.delete(`/${userId}/favorite-sandwiches/${sandwichId}`));
-};
-
-/** Record a local vote for a sandwich (for logged-out users). */
-export const addSandwichToFavoritesInLocalStorage = (sandwichId: string): void => {
-  const allVotesString = localStorage.getItem('user_votes');
-  const allVotes: string[] = allVotesString ? JSON.parse(allVotesString) : [];
-  allVotes.push(sandwichId);
-  localStorage.setItem('user_votes', JSON.stringify([...new Set(allVotes)]));
-};
-
-/** Check whether a sandwich was voted for locally (for logged-out users). */
-export const hasUserVotedForSandwichByIdUsingLocalStorage = (sandwichId: string): boolean => {
-  const allVotesString = localStorage.getItem('user_votes');
-  if (!allVotesString) return false;
-
-  const allVotes = JSON.parse(allVotesString) as string[] | null;
-  if (allVotes && allVotes.includes(sandwichId)) {
-    log('User already voted locally');
-    return true;
-  }
-  return false;
 };
 
 /** GET / — all users (admin only). */
