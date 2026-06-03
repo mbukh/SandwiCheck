@@ -6,7 +6,8 @@ import multer from 'multer';
 const storage = multer.memoryStorage();
 
 const fileFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCallback): void => {
-  const filetypes = /jpeg|jpg|png/;
+  // Anchor to the full MIME type so values like "application/jpeg-x" or "x/png" can't pass.
+  const filetypes = /^image\/(jpe?g|png)$/;
   const mimetype = filetypes.test(file.mimetype);
 
   if (mimetype) {
@@ -18,7 +19,8 @@ const fileFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCallb
 };
 
 const limits = {
-  fileSize: Number.parseInt(process.env.MAX_UPLOAD_SIZE_IN_BYTES ?? '', 10),
+  // Default to 10MB when the env var is unset/invalid, so a misconfig can't disable the cap (NaN = no limit).
+  fileSize: Number.parseInt(process.env.MAX_UPLOAD_SIZE_IN_BYTES ?? '', 10) || 10_485_760,
 };
 
 const upload = multer({ storage, limits, fileFilter });

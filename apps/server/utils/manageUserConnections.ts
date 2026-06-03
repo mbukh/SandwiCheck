@@ -21,8 +21,12 @@ export const removeUserConnections = async (
   // List of ids from a field or a specific id
   const ids = connectionId ? [connectionId] : user[field];
 
-  // Prevent unlinking a parent from a tethered child (no email)
-  if (field === 'parents' && user.isTetheredChild) {
+  /*
+   * Prevent unlinking a parent from a tethered child (no email) via a targeted unlink.
+   * The `connectionId` guard lets bulk teardown (no id, e.g. account deletion) proceed,
+   * so deleting a tethered child still clears its id from every parent's children array.
+   */
+  if (connectionId && field === 'parents' && user.isTetheredChild) {
     return {
       error: `This account is connected to the ${connectionRole} you're attempting to unlink. To detach the account, please add an email address`,
     };

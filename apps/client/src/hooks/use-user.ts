@@ -81,7 +81,14 @@ const useUser = (): UseUserResult => {
      * Only set currentUser and loggedIn if email confirmation is not required.
      * Check if response has a message about checking email.
      */
-    const needsEmailConfirmation = res.message && res.message.includes('check your email');
+    /*
+     * Signup never auto-authenticates (email confirmation is required first), so don't
+     * trigger a session refresh when the account was created but not logged in — whether
+     * confirmation is pending or the confirmation email failed to send.
+     */
+    const needsEmailConfirmation =
+      res.message &&
+      (res.message.includes('check your email') || res.message.includes('confirmation email could not be sent'));
     if (needsEmailConfirmation) {
       applySession(null);
       setIsCurrentUserReady(true);

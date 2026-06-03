@@ -42,8 +42,15 @@ app.use(
 app.use(
   cors({
     origin: (origin, callback) => {
-      const isOriginAllowed = process.env.CLIENT_URL === origin || !origin;
-      callback(null, process.env.NODE_ENV === 'local' || isOriginAllowed);
+      /*
+       * Enforce the CLIENT_URL allowlist (and same-origin / no-origin requests). In local
+       * dev, additionally allow any localhost origin — but never reflect an arbitrary origin
+       * back with credentials, which the previous `NODE_ENV === 'local' || ...` did.
+       */
+      const isLocalhost = !!origin && /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+      const isAllowed =
+        !origin || process.env.CLIENT_URL === origin || (process.env.NODE_ENV === 'local' && isLocalhost);
+      callback(null, isAllowed);
     },
     credentials: true,
   }),
