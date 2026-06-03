@@ -198,6 +198,28 @@ export default defineConfig([
       'import/resolver': {
         typescript: {
           alwaysTryTypes: true,
+          /*
+           * Point the resolver at every workspace package's tsconfig by ABSOLUTE
+           * path (import.meta.dirname is this repo root, since eslint.base.js lives
+           * here). Without an explicit `project`, the TypeScript resolver only finds
+           * a tsconfig relative to cwd — so it picks up each package's `paths`
+           * (e.g. the client's `@/*`) when eslint runs from that package
+           * (`pnpm --filter ... lint`) but NOT when it runs from the repo root.
+           * The lefthook pre-commit hook runs `eslint {staged_files}` from the root,
+           * which previously produced false-positive `import/no-unresolved` errors
+           * on `@/` value imports.
+           *
+           * These are EXACT absolute paths, not globs: glob patterns are matched
+           * relative to cwd, so an absolute glob escapes cwd and matches nothing
+           * when eslint runs from inside a package (breaking the per-package lint).
+           * Exact paths are loaded directly and stay cwd-independent either way.
+           */
+          project: [
+            `${import.meta.dirname}/apps/client/tsconfig.json`,
+            `${import.meta.dirname}/apps/server/tsconfig.json`,
+            `${import.meta.dirname}/packages/shared/tsconfig.json`,
+          ],
+          noWarnOnMultipleProjects: true,
         },
         node: {
           extensions: ['.js', '.jsx', '.ts', '.tsx'],

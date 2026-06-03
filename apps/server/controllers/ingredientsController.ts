@@ -12,7 +12,16 @@ import { removeAllIngredientImagesByImageBase, saveIngredientImages } from '#uti
  * @access  Public
  */
 export const getIngredients = asyncHandler(async (req, res, _next) => {
-  const { dietaryPreferences, type, sortBy } = { ...req.query, ...req.body };
+  const parameters = { ...req.query, ...req.body };
+  /*
+   * Coerce inputs to strings before using them. Without this, a value like
+   * ?type[$ne]= arrives as an object and would be injected as a Mongo operator,
+   * and dietaryPreferences.split() would throw on non-string input.
+   */
+  const dietaryPreferences =
+    typeof parameters.dietaryPreferences === 'string' ? parameters.dietaryPreferences : undefined;
+  const type = typeof parameters.type === 'string' ? parameters.type : undefined;
+  const sortBy = typeof parameters.sortBy === 'string' ? parameters.sortBy : undefined;
   const query: Record<string, unknown> = {};
 
   if (dietaryPreferences) {

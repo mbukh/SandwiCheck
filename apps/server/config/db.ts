@@ -8,6 +8,14 @@ const connectDB = async (): Promise<void> => {
     }
 
     const conn = await mongoose.connect(process.env.MONGO_URI, {
+      /*
+       * Honor MONGO_DB_NAME when set; otherwise fall back to the database in the
+       * URI path. We deliberately do NOT hardcode a default here: a hardcoded name
+       * would silently switch the live database the moment this code deploys. The
+       * cutover away from Mongoose's implicit "test" default must be a conscious
+       * ops action (set MONGO_DB_NAME or add a /<db> path to MONGO_URI).
+       */
+      dbName: process.env.MONGO_DB_NAME || undefined,
       serverSelectionTimeoutMS: 5000, // 5 seconds - fail fast if MongoDB is not available
       connectTimeoutMS: 5000, // 5 seconds - timeout for initial connection
     });
@@ -17,6 +25,13 @@ const connectDB = async (): Promise<void> => {
       database: conn.connection.name,
       // Explicitly do NOT log: conn.connection.uri or MONGO_URI
     });
+
+    // Guard against the implicit "test" database in production (misconfigured URI)
+    if (conn.connection.name === 'test' && process.env.NODE_ENV === 'production') {
+      logger.warn(
+        'MongoDB is using the default "test" database in production — set MONGO_DB_NAME or add a /<database> path to MONGO_URI',
+      );
+    }
   } catch (error) {
     // SECURITY: Error may contain connection string - sanitize it
     const err = error as Error;
