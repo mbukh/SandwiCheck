@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 import createHttpError from 'http-errors';
 import type mongoose from 'mongoose';
 import { PROFILE_PICTURES_DIR } from '#config/dir.ts';
+import EXCLUDED_FIELDS from '#constants/excludeFields.ts';
 import {
   generateChildActivationHtml,
   generateChildActivationText,
@@ -26,7 +27,7 @@ import { removeUserConnections } from '#utils/manageUserConnections.ts';
  * @access  Private/Admin
  */
 export const getUsers = asyncHandler(async (req, res, _next) => {
-  const users = await User.find({});
+  const users = await User.find({}).select(EXCLUDED_FIELDS);
   res.status(200).json({ success: true, data: users });
 });
 
@@ -40,7 +41,11 @@ export const getUser = asyncHandler(async (req, res, next) => {
   // current user or another userID
   const userId = req.params.userId || req.user!.id;
 
-  const user = await User.findById(userId).populate('sandwiches').populate('parents').populate('children');
+  const user = await User.findById(userId)
+    .select(EXCLUDED_FIELDS)
+    .populate('sandwiches')
+    .populate('parents', EXCLUDED_FIELDS)
+    .populate('children', EXCLUDED_FIELDS);
 
   if (!user) {
     return next(createHttpError.NotFound('User not found'));

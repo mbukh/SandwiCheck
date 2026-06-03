@@ -100,6 +100,7 @@ const userSchema = new Schema<IUser, UserModelType, Record<string, never>, Recor
     password: {
       type: String,
       required: [checkChildWithoutEmail, 'Password is required '],
+      select: false, // never loaded by default; auth paths opt in via .select('+password')
     },
     isTetheredChild: {
       type: Boolean,

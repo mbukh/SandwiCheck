@@ -11,7 +11,6 @@ interface SandwichModalProps {
 }
 
 const SandwichModal = ({ closeLink = '' }: SandwichModalProps): React.JSX.Element | null => {
-  const [isModalLoading, setIsModalLoading] = useState(true);
   // Decorative card background, chosen once per mount so it stays stable across re-renders (keeps render pure).
   const [cardBackgroundIndex] = useState(() => Math.ceil(Math.random() * 4));
   const { areIngredientsReady } = useIngredientsGlobalContext();
@@ -23,17 +22,20 @@ const SandwichModal = ({ closeLink = '' }: SandwichModalProps): React.JSX.Elemen
 
   useEffect(() => {
     if (!sandwichId) return;
-
-    void (async () => {
-      await getSandwich(sandwichId);
-
-      if (areIngredientsReady) setIsModalLoading(false);
-    })();
-  }, [areIngredientsReady, getSandwich, sandwichId]);
+    void getSandwich(sandwichId);
+  }, [getSandwich, sandwichId]);
 
   if (!sandwichId) {
     return null;
   }
+
+  /*
+   * Derive loading instead of tracking it in state: show the loader until the sandwich has
+   * loaded AND ingredients are ready to hydrate the card. The previous effect only cleared a
+   * loading flag when ingredients happened to be ready as the fetch resolved, so a late
+   * ingredients load left it stuck until a redundant re-fetch.
+   */
+  const isModalLoading = !sandwich || !areIngredientsReady;
 
   return (
     <Modal modalId="sandwich" isModalLoading={isModalLoading} closeLink={closeLink}>

@@ -99,6 +99,21 @@ export const signup = asyncHandler<ParamsDictionary, unknown, SignupDto>(async (
 
     await userExists.save();
 
+    /*
+     * Link the parent invite token here too: this branch returns before the
+     * post-creation linking below, so without it a child re-signing up through an
+     * invite link (after an earlier unconfirmed attempt) would never be linked.
+     */
+    if (inviteToken) {
+      const linked = await linkParentByInviteToken(userExists, inviteToken);
+      if (!linked) {
+        logger.warn('Signup (existing unconfirmed account) used an invalid or expired invite token', {
+          requestId: req.requestId,
+          userId: userExists._id.toString(),
+        });
+      }
+    }
+
     const confirmationURL = `${process.env.CLIENT_URL}/confirm-email/${confirmationToken}`;
 
     try {
@@ -284,7 +299,7 @@ export const login = asyncHandler<ParamsDictionary, unknown, LoginDto>(async (re
 export const changePassword = asyncHandler<ParamsDictionary, unknown, ChangePasswordDto>(async (req, res, next) => {
   const { oldPassword, newPassword } = req.body;
 
-  const user = await User.findById(req.user!.id);
+  const user = await User.findById(req.user!.id).select('+password');
 
   if (!user) {
     return next(createHttpError.NotFound('User not found'));

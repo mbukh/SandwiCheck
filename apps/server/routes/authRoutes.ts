@@ -51,11 +51,18 @@ const forgotPasswordRateLimit = createRateLimit({
   message: 'Too many password reset requests, please try again later',
 });
 
+// Token-gated endpoints (email confirmation, password reset) — defense-in-depth atop the high-entropy tokens.
+const tokenVerificationRateLimit = createRateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 30,
+  message: 'Too many attempts, please try again later',
+});
+
 router.post('/signup', signupRateLimit, signup);
 router.post('/login', loginRateLimit, login);
 router.get('/session', protect, getSession);
 
-router.get('/confirm-email/:token', confirmEmail);
+router.get('/confirm-email/:token', tokenVerificationRateLimit, confirmEmail);
 router.post('/resend-confirmation', resendConfirmationRateLimit, resendConfirmation);
 
 router.post('/create-child', protect, authorize(ROLE.parent), createChildUser);
@@ -65,7 +72,7 @@ router.post('/switch-to-parent', protect, authorize(ROLE.child), switchToParent)
 
 router.put('/change-password', protect, changePassword);
 router.post('/forgot-password', forgotPasswordRateLimit, forgotPassword);
-router.put('/reset-password/:resetToken', resetPassword);
+router.put('/reset-password/:resetToken', tokenVerificationRateLimit, resetPassword);
 
 router.post('/logout', protect, logout);
 
