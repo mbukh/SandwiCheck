@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import SandwichImage from '@/components/Sandwich/SandwichImage';
+import SignupModal from '@/components/Signup/SignupModal';
 import { ROUTE_PATHS } from '@/constants/route-paths';
 import { useAuthGlobalContext } from '@/context/AuthGlobalContext';
 import { useIngredientsGlobalContext } from '@/context/IngredientsGlobalContext';
@@ -25,6 +26,7 @@ const SandwichCard = ({ index, sandwich, galleryPath = '', isModal }: SandwichCa
 
   const [votesCount, setVotesCount] = useState(sandwich.votesCount);
   const [isProcessingVote, setIsProcessingVote] = useState(false);
+  const [isSignupOpen, setIsSignupOpen] = useState(false);
   const [isOptimisticallyVoted, setIsOptimisticallyVoted] = useState(() =>
     hasUserVotedForSandwich(sandwich, currentUser),
   );
@@ -67,22 +69,27 @@ const SandwichCard = ({ index, sandwich, galleryPath = '', isModal }: SandwichCa
       return;
     }
 
+    // Voting requires an account — send logged-out visitors to signup instead.
     if (!currentUser.id) {
-      showToast('Please log in to vote for sandwiches');
+      setIsSignupOpen(true);
       return;
     }
 
     setIsProcessingVote(true);
 
     try {
-      const response = await voteForSandwich({ userId: currentUser.id, sandwichId: sandwich.id });
+      /*
+       * One authenticated call both casts the vote and adds the sandwich to the user's
+       * favorites (the server owns and keeps them in sync). Reflect both locally.
+       */
+      const voteResponse = await voteForSandwich({ sandwichId: sandwich.id });
 
-      if (!response?.success) {
-        showToast(response?.error?.message || 'Unable to add this sandwich to your favorites');
+      if (!voteResponse?.success) {
+        showToast(voteResponse?.error?.message || 'Unable to register your vote right now.');
         return;
       }
 
-      setVotesCount((prev) => response?.data?.votesCount ?? prev + 1);
+      setVotesCount((prev) => voteResponse.data?.votesCount ?? prev + 1);
       setIsOptimisticallyVoted(true);
 
       setCurrentUser((previousUser) => {
@@ -99,7 +106,7 @@ const SandwichCard = ({ index, sandwich, galleryPath = '', isModal }: SandwichCa
         };
       });
     } catch (error) {
-      const fallbackMessage = extractErrorMessage(error) || 'Unable to add this sandwich to your favorites';
+      const fallbackMessage = extractErrorMessage(error) || 'Unable to register your vote right now.';
       showToast(fallbackMessage);
     } finally {
       setIsProcessingVote(false);
@@ -108,11 +115,9 @@ const SandwichCard = ({ index, sandwich, galleryPath = '', isModal }: SandwichCa
 
   return (
     <div
-      // FIXME: implement voted class from real data
-      // eslint-disable-next-line no-constant-binary-expression
-      className={`sandwich-card ${true && 'voted'} ${
+      className={`sandwich-card ${isVotedByUser ? 'voted' : ''} ${
         isModal
-          ? 'thumb modal__thumb voted flex flex-col justify-center md:flex-row'
+          ? 'thumb modal__thumb flex flex-col justify-center md:flex-row'
           : 'thumb xxl:w-1/5 flex w-1/2 sm:w-1/2 lg:w-1/3 xl:w-1/4'
       }`}
     >
@@ -203,6 +208,7 @@ const SandwichCard = ({ index, sandwich, galleryPath = '', isModal }: SandwichCa
       </div>
 
       {isModal && <SandwichIngredientsList sandwich={sandwich} ingredientsRawList={ingredientsRawList} />}
+      {isSignupOpen && <SignupModal setIsOpenLoginModal={setIsSignupOpen} closeLink="stay" />}
       {toastComponents}
     </div>
   );

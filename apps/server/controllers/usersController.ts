@@ -1,7 +1,6 @@
 import type { ParamsDictionary } from 'express-serve-static-core';
 import { ROLE, type UpdateUserDto } from '@sandwicheck/shared';
 import bcrypt from 'bcryptjs';
-import type { RequestHandler } from 'express';
 import createHttpError from 'http-errors';
 import type mongoose from 'mongoose';
 import { PROFILE_PICTURES_DIR } from '#config/dir.ts';
@@ -235,35 +234,3 @@ export const deleteUser = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({ success: true, message: 'User deleted successfully' });
 });
-
-/*
- * @desc    Add / Remove favorite sandwich
- * @route   POST | DELETE /api/users/:userId/favorite-sandwiches/:sandwichId
- * @access  Private / User
- */
-export const updateFavoriteSandwiches: RequestHandler = async (req, res, next) => {
-  const userId = Array.isArray(req.params.userId) ? req.params.userId[0] : req.params.userId;
-  const sandwichId = Array.isArray(req.params.sandwichId) ? req.params.sandwichId[0] : req.params.sandwichId;
-
-  const user = await User.findById(userId);
-
-  if (!user) {
-    return next(createHttpError.NotFound('User not found'));
-  }
-
-  const favoriteSandwiches = user.favoriteSandwiches as mongoose.Types.Array<mongoose.Types.ObjectId>;
-  const isSandwichAlreadyFavorite = favoriteSandwiches.includes(sandwichId as unknown as mongoose.Types.ObjectId);
-
-  if (req.method === 'POST' && !isSandwichAlreadyFavorite) {
-    favoriteSandwiches.push(sandwichId);
-  } else if (req.method === 'DELETE' && isSandwichAlreadyFavorite) {
-    favoriteSandwiches.pull(sandwichId);
-  }
-
-  await user.save();
-
-  res.status(200).json({
-    success: true,
-    data: user.favoriteSandwiches,
-  });
-};

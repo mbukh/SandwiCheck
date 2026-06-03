@@ -217,29 +217,40 @@ export const deleteSandwich = asyncHandler(async (req, res, next) => {
 });
 
 /*
- * @desc    Update vote count of a sandwich
- * @route   POST|DELETE /api/sandwiches/:sandwichId/vote
+ * @desc    Vote for a sandwich (also adds it to the voter's favorites)
+ * @route   POST /api/sandwiches/:sandwichId/vote
  * @access  Private
  */
-export const updateSandwichVotesCount = asyncHandler(async (req, res, next) => {
-  const { sandwichId } = req.params;
-  const method = req.method;
+export const voteForSandwich = asyncHandler(async (req, res, next) => {
+  const sandwichId = Array.isArray(req.params.sandwichId) ? req.params.sandwichId[0] : req.params.sandwichId;
 
-  const sandwich = await Sandwich.findById(sandwichId);
+  if (!sandwichId || !mongoose.Types.ObjectId.isValid(sandwichId)) {
+    return next(createHttpError.BadRequest('Invalid sandwich id'));
+  }
 
-  if (!sandwich) {
+  if (!(await Sandwich.exists({ _id: sandwichId }))) {
     return next(createHttpError.NotFound('Sandwich not found'));
   }
 
-  if (method === 'POST') {
-    sandwich.votesCount = (sandwich.votesCount ?? 0) + 1;
-  } else if (method === 'DELETE') {
-    sandwich.votesCount = Math.max(0, (sandwich.votesCount ?? 0) - 1);
-  } else {
-    throw createHttpError.MethodNotAllowed('Unsupported vote action');
-  }
+  /*
+   * Voting requires authentication and is coupled to favorites: a vote adds the
+   * sandwich to the caller's favoriteSandwiches and bumps the denormalized
+   * votesCount. The favoriteSandwiches set is the idempotency gate — the `$ne`
+   * filter means $addToSet only matches (and modifies) when the sandwich is not
+   * already favorited, so votesCount is incremented exactly once per user and
+   * re-voting is a harmless no-op. Two single-doc updates (no transaction) because
+   * the local MongoDB is standalone; the only failure mode is a missed +1, never
+   * an over-count.
+   */
+  const favoriteUpdate = await User.updateOne(
+    { _id: req.user!._id, favoriteSandwiches: { $ne: sandwichId } },
+    { $addToSet: { favoriteSandwiches: sandwichId } },
+  );
+  const counted = favoriteUpdate.modifiedCount === 1;
 
-  await sandwich.save();
+  const sandwich = counted
+    ? await Sandwich.findOneAndUpdate({ _id: sandwichId }, { $inc: { votesCount: 1 } }, { new: true })
+    : await Sandwich.findById(sandwichId);
 
   res.status(200).json({
     success: true,
