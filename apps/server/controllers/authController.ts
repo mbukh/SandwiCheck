@@ -376,8 +376,12 @@ export const resetPassword = asyncHandler<ParamsDictionary, unknown, ResetPasswo
     return next(createHttpError.BadRequest('A new password is required'));
   }
 
-  // Enforce the same length policy as signup and change-password.
-  if (newPassword.length < 5 || newPassword.length > 30) {
+  /*
+   * Enforce the same length policy as signup and change-password. The typeof guard
+   * matters because the body is untrusted JSON: a non-string value (e.g. a number)
+   * has an undefined `.length`, so the bounds check below would silently pass.
+   */
+  if (typeof newPassword !== 'string' || newPassword.length < 5 || newPassword.length > 30) {
     return next(createHttpError.BadRequest('A password must contain between 5 and 30 characters'));
   }
 
