@@ -34,6 +34,7 @@
  * - Consider running during maintenance window
  */
 
+import mongoose from 'mongoose';
 import connectDB from '#config/db.ts';
 import User from '#models/UserModel.ts';
 import logger from '#utils/logger.ts';
@@ -80,11 +81,19 @@ const migrateEmailConfirmationFields = async (): Promise<void> => {
       logger.warn('⚠ Warning: Some users may still be confirmed.');
     }
 
-    throw new Error('Migration completed successfully');
+    logger.info('Migration completed successfully.');
   } catch (error) {
     logger.error('Migration failed:', error);
     throw error;
   }
 };
 
-await migrateEmailConfirmationFields();
+try {
+  await migrateEmailConfirmationFields();
+} finally {
+  /*
+   * Close the connection so the process can exit on its own — 0 on success, or
+   * non-zero when the migration rethrew (the error is already logged above).
+   */
+  await mongoose.disconnect();
+}

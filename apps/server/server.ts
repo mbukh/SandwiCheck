@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import helmet from 'helmet';
 import hpp from 'hpp';
+import createHttpError from 'http-errors';
 import morgan from 'morgan';
 import connectDB from './config/db.ts';
 import { CLIENT_DIR, UPLOADS_DIR } from './config/dir.ts';
@@ -17,6 +18,16 @@ import usersRoutes from './routes/usersRoutes.ts';
 import logger, { getLoggerLevel, morganStream } from './utils/logger.ts';
 
 const app = express();
+
+/*
+ * ==== Trust proxy ==== //
+ * The app runs behind a single nginx reverse proxy (container bound to 127.0.0.1).
+ * Trust exactly one hop so `req.ip` and express-rate-limit keys resolve to the real
+ * client IP from `X-Forwarded-For` instead of the upstream/gateway address.
+ * NOTE: do NOT use `true` here — it would let clients spoof X-Forwarded-For and
+ * bypass IP-based rate limiting. Increase the number if more proxies are added.
+ */
+app.set('trust proxy', 1);
 
 // Rate limiter
 app.use(
@@ -112,8 +123,8 @@ app.use('/api/v1/sandwiches', sandwichesRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', usersRoutes);
 
-// === Middleware === //
-app.use(errorHandler);
+// Unknown API routes return a JSON 404 instead of falling through to the SPA static handler
+app.use('/api', (req, res, next) => next(createHttpError.NotFound('Route not found')));
 
 /*
  * === Forward static content === //
@@ -122,6 +133,9 @@ app.use(errorHandler);
 app.use('/', express.static(CLIENT_DIR));
 // Uploads folder
 app.use('/uploads', express.static(UPLOADS_DIR));
+
+// === Error handler (must be registered last so it catches errors from all routes) === //
+app.use(errorHandler);
 
 // Start server
 const PORT = process.env.PORT || 5001;
