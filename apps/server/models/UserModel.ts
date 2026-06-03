@@ -32,6 +32,8 @@ export interface IUser {
   children: mongoose.Types.ObjectId[];
   resetPasswordToken?: string;
   resetPasswordExpire?: Date;
+  inviteToken?: string;
+  inviteTokenExpire?: Date;
   emailConfirmed?: boolean;
   emailConfirmationToken?: string;
   emailConfirmationExpire?: Date;
@@ -147,6 +149,12 @@ const userSchema = new Schema<IUser, UserModelType, Record<string, never>, Recor
     ],
     resetPasswordToken: String,
     resetPasswordExpire: Date,
+    inviteToken: {
+      type: String,
+      index: true,
+      sparse: true, // only index documents that have a pending invite token
+    },
+    inviteTokenExpire: Date,
     emailConfirmed: {
       type: Boolean,
       default: false,
@@ -179,6 +187,8 @@ const userSchema = new Schema<IUser, UserModelType, Record<string, never>, Recor
         delete ret.password;
         delete ret.resetPasswordToken;
         delete ret.resetPasswordExpire;
+        delete ret.inviteToken;
+        delete ret.inviteTokenExpire;
         delete ret.emailConfirmationToken;
         delete ret.emailConfirmationExpire;
       },

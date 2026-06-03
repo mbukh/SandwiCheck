@@ -11,8 +11,13 @@ export const removeUserConnections = async (
   connectionId?: ConnectionId,
 ): Promise<{ error: string } | undefined> => {
   const oppositeField = field === 'parents' ? 'children' : 'parents';
-  const connectionRole = field === 'parents' ? ROLE.parent : ROLE.parent;
-  const selfRole = field === 'parents' ? ROLE.parent : ROLE.parent;
+  /*
+   * Role to remove from the *connection* once it has no reciprocal links left:
+   * unlinking parents may demote a parent; unlinking children may demote a child.
+   */
+  const connectionRole = field === 'parents' ? ROLE.parent : ROLE.child;
+  // Role to remove from *this user* once their own field becomes empty.
+  const selfRole = field === 'parents' ? ROLE.child : ROLE.parent;
   // List of ids from a field or a specific id
   const ids = connectionId ? [connectionId] : user[field];
 

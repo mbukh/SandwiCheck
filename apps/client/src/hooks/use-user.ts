@@ -56,9 +56,9 @@ const useUser = (): UseUserResult => {
     return res;
   }, [applySession]);
 
-  const logIn = async ({ email, password, parentId }: LoginDto): Promise<ApiResult<User>> => {
+  const logIn = async ({ email, password, inviteToken }: LoginDto): Promise<ApiResult<User>> => {
     setIsCurrentUserReady(false);
-    const res = await apiAuth.login({ email, password, parentId });
+    const res = await apiAuth.login({ email, password, inviteToken });
     logResponse('🚪 Logging in', res);
     if (!res?.success) {
       setIsCurrentUserReady(true);
@@ -69,9 +69,9 @@ const useUser = (): UseUserResult => {
     return res;
   };
 
-  const signUp = async ({ email, password, name, role, parentId }: SignupDto): Promise<ApiResult<User>> => {
+  const signUp = async ({ email, password, name, role, inviteToken }: SignupDto): Promise<ApiResult<User>> => {
     setIsCurrentUserReady(false);
-    const res = await apiAuth.signup({ email, password, name, role, parentId });
+    const res = await apiAuth.signup({ email, password, name, role, inviteToken });
     logResponse('🎊 Signing up', res);
     if (!res?.success) {
       setIsCurrentUserReady(true);
