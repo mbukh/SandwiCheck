@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import SandwichImage from '@/components/Sandwich/SandwichImage';
-import SignupModal from '@/components/Signup/SignupModal';
 import { ROUTE_PATHS } from '@/constants/route-paths';
 import { useAuthGlobalContext } from '@/context/AuthGlobalContext';
 import { useIngredientsGlobalContext } from '@/context/IngredientsGlobalContext';
@@ -20,13 +19,12 @@ interface SandwichCardProps {
 }
 
 const SandwichCard = ({ index, sandwich, galleryPath = '', isModal }: SandwichCardProps): React.JSX.Element => {
-  const { currentUser, setCurrentUser } = useAuthGlobalContext();
+  const { currentUser, setCurrentUser, openSignupPrompt } = useAuthGlobalContext();
   const { ingredientsRawList } = useIngredientsGlobalContext();
   const { showToast, toastComponents } = useToast();
 
   const [votesCount, setVotesCount] = useState(sandwich.votesCount);
   const [isProcessingVote, setIsProcessingVote] = useState(false);
-  const [isSignupOpen, setIsSignupOpen] = useState(false);
   const [isOptimisticallyVoted, setIsOptimisticallyVoted] = useState(() =>
     hasUserVotedForSandwich(sandwich, currentUser),
   );
@@ -69,9 +67,9 @@ const SandwichCard = ({ index, sandwich, galleryPath = '', isModal }: SandwichCa
       return;
     }
 
-    // Voting requires an account — send logged-out visitors to signup instead.
+    // Voting requires an account — open the app-level signup prompt for logged-out visitors.
     if (!currentUser.id) {
-      setIsSignupOpen(true);
+      openSignupPrompt();
       return;
     }
 
@@ -208,7 +206,6 @@ const SandwichCard = ({ index, sandwich, galleryPath = '', isModal }: SandwichCa
       </div>
 
       {isModal && <SandwichIngredientsList sandwich={sandwich} ingredientsRawList={ingredientsRawList} />}
-      {isSignupOpen && <SignupModal setIsOpenLoginModal={setIsSignupOpen} closeLink="stay" />}
       {toastComponents}
     </div>
   );

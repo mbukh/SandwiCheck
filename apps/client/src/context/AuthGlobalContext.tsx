@@ -1,10 +1,16 @@
-import { createContext, type ReactNode, useContext, useEffect } from 'react';
+import { createContext, type ReactNode, useCallback, useContext, useEffect, useState } from 'react';
 import { LOGGED_IN_USER_TIME_OUT_DAYS } from '@/constants/user-constants';
 import useUser, { type UseUserResult } from '@/hooks/use-user';
 import { logResponse } from '@/utils/log';
 import { timeDifference } from '@/utils/utils';
 
-type AuthGlobalContextValue = Omit<UseUserResult, 'setIsCurrentUserReady'>;
+type AuthGlobalContextValue = Omit<UseUserResult, 'setIsCurrentUserReady'> & {
+  /** Whether the app-level "please sign up" prompt overlay is open. */
+  isSignupPromptOpen: boolean;
+  setIsSignupPromptOpen: (open: boolean) => void;
+  /** Open the app-level signup prompt (e.g. when a logged-out visitor tries to vote). */
+  openSignupPrompt: () => void;
+};
 
 const AuthGlobalContext = createContext<AuthGlobalContextValue | null>(null);
 
@@ -24,6 +30,10 @@ const AuthGlobalContextProvider = ({ children }: { children: ReactNode }): React
     loginChild,
     switchToParent,
   } = useUser();
+
+  // App-level signup prompt, so it can be opened from anywhere (incl. inside another modal).
+  const [isSignupPromptOpen, setIsSignupPromptOpen] = useState(false);
+  const openSignupPrompt = useCallback(() => setIsSignupPromptOpen(true), []);
 
   useEffect(() => {
     // Check whether a user logged in and the time-out window has not passed
@@ -60,6 +70,9 @@ const AuthGlobalContextProvider = ({ children }: { children: ReactNode }): React
         createChild,
         loginChild,
         switchToParent,
+        isSignupPromptOpen,
+        setIsSignupPromptOpen,
+        openSignupPrompt,
       }}
     >
       {children}
