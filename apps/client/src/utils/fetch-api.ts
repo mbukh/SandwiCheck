@@ -60,9 +60,14 @@ export function createFetchApi(baseURL: string, defaultHeaders: Record<string, s
       for (const [key, value] of Object.entries(params)) {
         // Skip undefined and null values
         if (value !== undefined && value !== null) {
-          // Handle arrays (e.g., dietaryPreferences: ['kosher', 'vegan'])
+          /*
+           * Arrays (e.g. dietaryPreferences: ['kosher', 'vegan']) are joined into
+           * a single comma-separated param. The server's hpp() middleware collapses
+           * repeated keys to their last value, so sending repeated keys would
+           * silently drop all but one element; server list params parse "," / "|".
+           */
           if (Array.isArray(value)) {
-            for (const item of value) searchParams.append(key, String(item));
+            if (value.length > 0) searchParams.append(key, value.map(String).join(','));
           } else {
             searchParams.append(key, String(value));
           }

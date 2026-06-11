@@ -25,7 +25,8 @@ export const getIngredients = asyncHandler(async (req, res, _next) => {
   const query: Record<string, unknown> = {};
 
   if (dietaryPreferences) {
-    query.dietaryPreferences = { $all: dietaryPreferences.split('|') };
+    // Accept the same "," / "|" list dialect as the sandwiches endpoint.
+    query.dietaryPreferences = { $all: dietaryPreferences.split(/[,|]/).filter(Boolean) };
   }
 
   const sort: Record<string, 1 | -1> = {};
