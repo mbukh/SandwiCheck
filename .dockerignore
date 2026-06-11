@@ -8,9 +8,10 @@ node_modules
 **/.next
 **/out
 
-# Environment files
-*.env*
-!*.env.example
+# Environment files (dockerignore patterns are root-anchored: "*" does not
+# cross "/", so the leading "**/" is required to exclude nested env files)
+**/*.env*
+!**/*.env.example
 
 # Git
 .git
@@ -39,10 +40,17 @@ pnpm-debug.log*
 coverage
 .nyc_output
 **/__tests__
+**/__test__
+**/__mocks__
 **/*.test.js
 **/*.test.jsx
+**/*.test.ts
+**/*.test.tsx
 **/*.spec.js
 **/*.spec.jsx
+**/*.spec.ts
+**/*.spec.tsx
+**/vitest.config.ts
 
 # Documentation
 README.md
