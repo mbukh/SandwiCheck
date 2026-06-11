@@ -6,6 +6,19 @@ import EXCLUDED_FIELDS from '#constants/excludeFields.ts';
 import User from '#models/UserModel.ts';
 import asyncHandler from '#utils/asyncHandler.ts';
 
+/*
+ * A JWT issued before the user's last password change is revoked — this is what
+ * lets change/reset-password evict already-stolen sessions. `iat` is in whole
+ * seconds (floored at signing) and passwordChangedAt is backdated 1s on save,
+ * so tokens issued at or after the change always pass.
+ */
+export const isIssuedBeforePasswordChange = (decoded: jwt.JwtPayload, passwordChangedAt?: Date): boolean => {
+  if (!passwordChangedAt) {
+    return false;
+  }
+  return (decoded.iat ?? 0) * 1000 < passwordChangedAt.getTime();
+};
+
 export const protect = asyncHandler(async (req, res, next) => {
   let token, parentToken;
 
@@ -54,6 +67,10 @@ export const protect = asyncHandler(async (req, res, next) => {
       throw new Error('User not found');
     }
 
+    if (isIssuedBeforePasswordChange(decoded, req.user.passwordChangedAt)) {
+      throw new Error('Token issued before the last password change');
+    }
+
     if (parentToken && req.user.roles.includes(ROLE.child)) {
       const parentDecoded = jwt.verify(parentToken, process.env.JWT_SECRET, {
         algorithms: ['HS256'],
@@ -63,6 +80,10 @@ export const protect = asyncHandler(async (req, res, next) => {
 
       if (!req.parentUser) {
         throw new Error('Parent user not found');
+      }
+
+      if (isIssuedBeforePasswordChange(parentDecoded, req.parentUser.passwordChangedAt)) {
+        throw new Error('Parent token issued before the last password change');
       }
     }
 

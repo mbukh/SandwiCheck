@@ -30,6 +30,7 @@ export interface IUser {
   favoriteSandwiches: mongoose.Types.ObjectId[];
   parents: mongoose.Types.ObjectId[];
   children: mongoose.Types.ObjectId[];
+  passwordChangedAt?: Date;
   resetPasswordToken?: string;
   resetPasswordExpire?: Date;
   inviteToken?: string;
@@ -148,6 +149,7 @@ const userSchema = new Schema<IUser, UserModelType, Record<string, never>, Recor
         ref: 'User',
       },
     ],
+    passwordChangedAt: Date,
     resetPasswordToken: String,
     resetPasswordExpire: Date,
     inviteToken: {
@@ -186,6 +188,7 @@ const userSchema = new Schema<IUser, UserModelType, Record<string, never>, Recor
         delete ret.__v;
         delete ret.__t;
         delete ret.password;
+        delete ret.passwordChangedAt;
         delete ret.resetPasswordToken;
         delete ret.resetPasswordExpire;
         delete ret.inviteToken;
@@ -208,6 +211,16 @@ userSchema.pre('save', async function () {
   this.roles = [...new Set(this.roles)];
   this.dietaryPreferences = [...new Set(this.dietaryPreferences)];
   this.favoriteSandwiches = [...new Set(this.favoriteSandwiches)];
+
+  /*
+   * Stamp password changes so protect() can reject JWTs issued before them —
+   * this is what makes change/reset-password actually evict stolen sessions.
+   * Skipped on creation (the signup token is issued right after the first save)
+   * and backdated 1s so a token signed within the same second stays valid.
+   */
+  if (this.isModified('password') && !this.isNew) {
+    this.passwordChangedAt = new Date(Date.now() - 1000);
+  }
 
   // update tethered child if a child gets an email
   this.isTetheredChild = this.isTetheredChild && !this.email ? true : undefined;
