@@ -13,6 +13,7 @@ const Signup = (): React.JSX.Element => {
   const [confirmationEmail, setConfirmationEmail] = useState('');
   const [confirmationMessage, setConfirmationMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [tcAgreed, setTcAgreed] = useState(false);
   const search = useSearch({ strict: false });
   const location = useLocation();
   const {
@@ -40,6 +41,14 @@ const Signup = (): React.JSX.Element => {
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
+    /*
+     * The form is noValidate, so the consent checkbox's `required` is inert —
+     * enforce the dependent-account consent here.
+     */
+    if (parentId && !tcAgreed) {
+      showToast('Please agree to be added as a dependent to continue');
+      return;
+    }
     setIsSubmitting(true);
     try {
       const result = await signUpHandler(e, returnTo);
@@ -227,7 +236,8 @@ const Signup = (): React.JSX.Element => {
               id="termsCheckbox"
               type="checkbox"
               name="tc_agreed"
-              value="1"
+              checked={tcAgreed}
+              onChange={(e) => setTcAgreed(e.target.checked)}
               required
             />
             <label className="custom-control-label" htmlFor="termsCheckbox">

@@ -1,6 +1,6 @@
 import { type ChangeEvent, type Dispatch, type FormEvent, type SetStateAction, useState } from 'react';
 import { useMatchRoute, useNavigate } from '@tanstack/react-router';
-import type { LoginDto, SignupDto } from '@sandwicheck/shared';
+import { type LoginDto, ROLE, type SignupDto } from '@sandwicheck/shared';
 import { ROUTE_PATHS } from '@/constants/route-paths';
 import { useAuthGlobalContext } from '@/context/AuthGlobalContext';
 import { useModalContext } from '@/context/ModalContext';
@@ -130,14 +130,20 @@ const useForm = (): UseFormResult => {
     event.preventDefault();
     setErrors([]);
 
-    const errorMessages = validateForm({ name, email, password, confirmPassword });
+    /*
+     * Invite links always create a dependent (child) account — the role select
+     * is not rendered in that flow, so the role must be derived here.
+     */
+    const effectiveRole = parentId ? ROLE.child : role;
+
+    const errorMessages = validateForm({ name, email, password, confirmPassword, role: effectiveRole });
     if (errorMessages.length > 0) {
       setErrors(errorMessages);
       return;
     }
 
     // `parentId` is the route param value, which now carries a parent invite token.
-    const res = await signUp({ name, email, password, role, inviteToken: parentId });
+    const res = await signUp({ name, email, password, role: effectiveRole, inviteToken: parentId });
     if (res.error) {
       setErrors([res.error.message]);
       return;
