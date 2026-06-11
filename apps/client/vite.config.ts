@@ -1,6 +1,6 @@
 /* eslint-disable unicorn/import-style */
 import tailwindcss from '@tailwindcss/vite';
-import { copyFileSync } from 'node:fs';
+import { copyFileSync, existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
@@ -21,7 +21,15 @@ const spaPagesFallback = (): Plugin => ({
   name: 'spa-pages-404-fallback',
   closeBundle() {
     const outDir = resolve(__dirname, 'build');
-    copyFileSync(resolve(outDir, 'index.html'), resolve(outDir, '404.html'));
+    const indexHtml = resolve(outDir, 'index.html');
+    /*
+     * closeBundle also runs while a FAILED build is being torn down; throwing
+     * ENOENT here would replace the real build error with a misleading one.
+     */
+    if (!existsSync(indexHtml)) {
+      return;
+    }
+    copyFileSync(indexHtml, resolve(outDir, '404.html'));
   },
 });
 

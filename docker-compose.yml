@@ -8,11 +8,11 @@ services:
   #       VITE_API_SERVER: ${VITE_API_SERVER:-}
   #   container_name: sandwicheck-ui
   #   ports:
-  #     - "5173:80"
+  #     - "5173:8080"
   #   env_file: apps/client/.env.example
   #   restart: unless-stopped
   #   healthcheck:
-  #     test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+  #     test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8080/"]
   #     interval: 30s
   #     timeout: 3s
   #     retries: 3
