@@ -29,7 +29,7 @@ jobs:
 
       - name: Detect changed areas
         id: filter
-        uses: dorny/paths-filter@v4
+        uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4
         with:
           filters: |
             shared:
@@ -63,7 +63,7 @@ jobs:
       - name: Configure Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: '24.16.0'
+          node-version-file: '.nvmrc'
           cache: 'pnpm' # caches the pnpm store keyed by pnpm-lock.yaml
 
       - name: Install dependencies
@@ -101,7 +101,7 @@ jobs:
       - name: Configure Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: '24.16.0'
+          node-version-file: '.nvmrc'
           cache: 'pnpm'
 
       - name: Install dependencies
@@ -111,8 +111,12 @@ jobs:
         run: pnpm --filter @sandwicheck/client run test:ci
 
       - name: Test Report
-        uses: dorny/test-reporter@v3
-        if: success() || failure() # run this step even if the test step failed
+        uses: dorny/test-reporter@a43b3a5f7366b97d083190328d2c652e1a8b6aa2 # v3
+        # Run even when tests fail, but skip on fork PRs: the reporter needs checks:write,
+        # which a fork's read-only GITHUB_TOKEN can't grant, so the step would hard-fail.
+        if:
+          ${{ (success() || failure()) && (github.event_name != 'pull_request' ||
+          github.event.pull_request.head.repo.full_name == github.repository) }}
         with:
           name: Vitest Tests
           path: ./apps/client/reports/jest-*.xml

@@ -62,7 +62,10 @@ CONTAINER_PORT="${CONTAINER_PORT:-5001}"  # must equal PORT in ENV_FILE and the 
 CONTAINER_UID="${CONTAINER_UID:-1001}"
 ENV_FILE="${ENV_FILE:-$REPO_DIR/apps/server/config/.env}"
 UPLOADS_DIR="${UPLOADS_DIR:-$REPO_DIR/apps/server/uploads}"
-LOCK_FILE="${LOCK_FILE:-/tmp/sandwicheck-redeploy.lock}"
+# Lock under /run (root-owned tmpfs), not world-writable /tmp, so another local user
+# can't pre-create or squat the lock path. The script already needs root (it chowns the
+# uploads bind-mount), so /run is writable here.
+LOCK_FILE="${LOCK_FILE:-/run/sandwicheck-redeploy.lock}"
 # Health polls are 2s apart, so the budget must exceed the image healthcheck's
 # verdict window (start-period 10s + interval 30s x retries 3 ~= 100s) — otherwise
 # a failing container is still 'starting' when polling stops. 75 x 2s = 150s.
@@ -203,7 +206,19 @@ if ! wait_healthy; then
 fi
 log "container healthy"
 
-# --- Tidy dangling images to keep disk usage in check ---
+# --- Tidy images: drop dangling layers, then bound the :sha tag history. ---
 docker image prune --force >/dev/null 2>&1 || true
+# Keep 'latest' + the 2 newest :sha tags (rollback needs at least one previous build) and
+# remove older sha-tagged images, which would otherwise accumulate forever, one per deploy.
+mapfile -t old_sha_tags < <(
+  docker images "$IMAGE_NAME" --format '{{.CreatedAt}}\t{{.Tag}}' \
+    | awk -F'\t' '$2 != "latest" { print }' \
+    | sort -r \
+    | awk -F'\t' 'NR > 2 { print $2 }'
+)
+for tag in "${old_sha_tags[@]}"; do
+  log "removing old image $IMAGE_NAME:$tag"
+  docker rmi "$IMAGE_NAME:$tag" >/dev/null 2>&1 || true
+done
 
 log "deploy complete: $IMAGE_NAME:$new_sha listening on ${BIND_ADDR}:${HOST_PORT}"
