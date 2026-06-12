@@ -6,6 +6,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import hpp from 'hpp';
 import createHttpError from 'http-errors';
+import mongoose from 'mongoose';
 import morgan from 'morgan';
 import connectDB from './config/db.ts';
 import { CLIENT_DIR, UPLOADS_DIR } from './config/dir.ts';
@@ -203,3 +204,45 @@ process.on('unhandledRejection', (error, _promise) => {
     }
   }, 1000);
 });
+
+// Close the HTTP server (stop accepting connections, drain in-flight) then Mongo.
+const closeForShutdown = async (): Promise<void> => {
+  const httpServer = server;
+  if (httpServer) {
+    await new Promise<void>((resolve, reject) => {
+      httpServer.close((err) => (err ? reject(err) : resolve()));
+    });
+  }
+  await mongoose.connection.close();
+};
+
+/*
+ * Graceful shutdown. As PID 1 in a container, Node ignores SIGTERM/SIGINT unless we
+ * handle them explicitly — otherwise `docker stop` waits the full 10s grace period
+ * and then SIGKILLs. Exit 0 once the server and DB connection have closed.
+ */
+for (const signal of ['SIGTERM', 'SIGINT'] as const) {
+  process.on(signal, () => {
+    logger.info('Received shutdown signal, closing server', { signal });
+
+    // Backstop: if a stuck keep-alive connection prevents a clean close, force-exit.
+    const forceExit = setTimeout(() => {
+      logger.error('Graceful shutdown timed out, forcing exit');
+      process.exit(1);
+    }, 10_000);
+    forceExit.unref();
+
+    void (async () => {
+      try {
+        await closeForShutdown();
+        clearTimeout(forceExit);
+        logger.info('Shutdown complete');
+        process.exit(0);
+      } catch (error) {
+        const err = error as Error;
+        logger.error('Error during graceful shutdown', { message: err.message, name: err.name });
+        process.exit(1);
+      }
+    })();
+  });
+}
