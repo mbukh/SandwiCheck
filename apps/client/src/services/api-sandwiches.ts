@@ -5,6 +5,7 @@ import type { BuilderSandwich, Sandwich } from '@/types/domain';
 import { handleResponse } from '@/utils/api-utils';
 import { createFetchApi } from '@/utils/fetch-api';
 import { log } from '@/utils/log';
+import { readJsonFromStorage } from '@/utils/storage-utils';
 import { timeDifference } from '@/utils/utils';
 
 const api = createFetchApi(`${import.meta.env.VITE_API_SERVER}/api/v1/sandwiches`, {
@@ -67,19 +68,16 @@ export const deleteSandwich = async (sandwichId: string): Promise<ApiResult> => 
 export const readSandwichFromCache = (): BuilderSandwich | null => {
   log('🥪 💾 Reading sandwich from cache');
 
-  const sandwichString = localStorage.getItem('sandwich');
-  const cachedAtString = localStorage.getItem('sandwich-cachedAt');
+  const sandwich = readJsonFromStorage<BuilderSandwich>('sandwich');
+  const cachedAt = readJsonFromStorage<number>('sandwich-cachedAt');
 
-  if (!sandwichString || !cachedAtString) {
+  if (!sandwich || cachedAt === null) {
     return null;
   }
 
-  const sandwich = JSON.parse(sandwichString) as BuilderSandwich | null;
-  const cachedAt = JSON.parse(cachedAtString) as number;
-
   const cacheExpired = timeDifference(cachedAt, Date.now()).days > SANDWICH_CACHE_TIME_OUT_DAYS;
 
-  if (!sandwich || cacheExpired) {
+  if (cacheExpired) {
     return null;
   }
 

@@ -31,14 +31,23 @@ const IngredientsGlobalContextProvider = ({ children }: { children: ReactNode })
     }
 
     void (async () => {
-      const dietaryPreferences = currentUser.id ? currentUser.dietaryPreferences : [];
+      try {
+        const dietaryPreferences = currentUser.id ? currentUser.dietaryPreferences : [];
 
-      const res = await getAllIngredients({ dietaryPreferences });
+        const res = await getAllIngredients({ dietaryPreferences });
 
-      setIngredients(groupIngredientsByTypes(res.data));
-      setIngredientsRawList(res.data);
+        setIngredients(groupIngredientsByTypes(res.data));
+        setIngredientsRawList(res.data);
 
-      setAreIngredientsReady(true);
+        setAreIngredientsReady(true);
+      } catch (error) {
+        /*
+         * Never leave the app stuck on "Loading" because hydration threw. SC-11 upgrades
+         * this to a real error+retry state; here we just unblock with empty ingredients.
+         */
+        log('Failed to load ingredients', error);
+        setAreIngredientsReady(true);
+      }
     })();
   }, [areIngredientsReady, isCurrentUserReady, currentUser]);
 
