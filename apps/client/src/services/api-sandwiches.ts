@@ -74,7 +74,9 @@ export const readSandwichFromCache = (): BuilderSandwich | null => {
     return null;
   }
 
-  const cacheExpired = timeDifference(cachedAt, Date.now()).days > SANDWICH_CACHE_TIME_OUT_DAYS;
+  const now = Date.now();
+  // A future cachedAt (corrupt/forged timestamp, or a clock moved backward) is stale, not eternally fresh.
+  const cacheExpired = cachedAt > now || timeDifference(cachedAt, now).days > SANDWICH_CACHE_TIME_OUT_DAYS;
 
   if (cacheExpired) {
     return null;

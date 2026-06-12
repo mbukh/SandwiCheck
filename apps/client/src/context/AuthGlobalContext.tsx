@@ -42,7 +42,12 @@ const AuthGlobalContextProvider = ({ children }: { children: ReactNode }): React
      * (safely): a corrupt 'loggedIn' value is cleared instead of throwing out of hydration.
      */
     let lastLoginAt = readJsonFromStorage<number>('loggedIn');
-    if (lastLoginAt !== null && timeDifference(lastLoginAt, Date.now()).days > LOGGED_IN_USER_TIME_OUT_DAYS) {
+    const now = Date.now();
+    // A future lastLoginAt (corrupt/forged timestamp, or a clock moved backward) is treated as expired.
+    if (
+      lastLoginAt !== null &&
+      (lastLoginAt > now || timeDifference(lastLoginAt, now).days > LOGGED_IN_USER_TIME_OUT_DAYS)
+    ) {
       localStorage.removeItem('loggedIn');
       lastLoginAt = null;
     }

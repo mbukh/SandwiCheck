@@ -86,7 +86,9 @@ function readIngredientsFromCache(): Ingredient[] | null {
 
   if (!ingredients || cachedAt === null) return null;
 
-  const cacheExpired = timeDifference(cachedAt, Date.now()).minutes > INGREDIENTS_CACHE_TIME_OUT_MINS;
+  const now = Date.now();
+  // A future cachedAt (corrupt/forged timestamp, or a clock moved backward) is stale, not eternally fresh.
+  const cacheExpired = cachedAt > now || timeDifference(cachedAt, now).minutes > INGREDIENTS_CACHE_TIME_OUT_MINS;
 
   if (cacheExpired) return null;
 
