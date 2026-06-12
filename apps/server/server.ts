@@ -221,8 +221,20 @@ const closeForShutdown = async (): Promise<void> => {
  * handle them explicitly — otherwise `docker stop` waits the full 10s grace period
  * and then SIGKILLs. Exit 0 once the server and DB connection have closed.
  */
+let shuttingDown = false;
 for (const signal of ['SIGTERM', 'SIGINT'] as const) {
   process.on(signal, () => {
+    /*
+     * Ignore repeated signals (a second Ctrl-C, an orchestrator retry, SIGINT-then-SIGTERM).
+     * Re-entering closeForShutdown would call httpServer.close() on an already-closing server,
+     * which rejects with ERR_SERVER_NOT_RUNNING and turns a clean exit into exit(1).
+     */
+    if (shuttingDown) {
+      logger.info('Shutdown already in progress, ignoring repeated signal', { signal });
+      return;
+    }
+    shuttingDown = true;
+
     logger.info('Received shutdown signal, closing server', { signal });
 
     // Backstop: if a stuck keep-alive connection prevents a clean close, force-exit.
