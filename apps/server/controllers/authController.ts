@@ -478,6 +478,19 @@ export const resetPassword = asyncHandler<ParamsDictionary, unknown, ResetPasswo
   user.resetPasswordToken = undefined;
   user.resetPasswordExpire = undefined;
 
+  /*
+   * Completing a password reset proves control of the inbox — strictly stronger evidence than a
+   * confirmation-link click. So confirm the email here and reset the resend budget. This is the
+   * only self-service recovery for an account that exhausted its confirmation-email resends
+   * (forgotPassword already serves unconfirmed accounts), which would otherwise be permanently
+   * unable to activate.
+   */
+  user.emailConfirmed = true;
+  user.emailConfirmationResendCount = 0;
+  user.emailConfirmationResendCooldown = undefined;
+  user.emailConfirmationToken = undefined;
+  user.emailConfirmationExpire = undefined;
+
   await user.save();
 
   res.status(200).json({
