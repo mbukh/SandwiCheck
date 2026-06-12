@@ -1,3 +1,9 @@
+/*
+ * DEV / DEMO SEED DATA ONLY — do NOT run against a real database.
+ * Every account below shares the same placeholder bcrypt hash (a single known password), so seeding
+ * a production environment would create real, trivially-loginable accounts. The seed script
+ * (initDatabase.ts) refuses to run when NODE_ENV=production as a guard.
+ */
 import { DIETARY_PREFERENCE as D_P, ROLE } from '@sandwicheck/shared';
 
 /*

@@ -421,6 +421,16 @@ const createSandwiches = async (): Promise<void> => {
 };
 
 const main = async (): Promise<void> => {
+  /*
+   * The seed data is dev/demo-only — every account shares one known password hash. Refuse to seed a
+   * production database so this can never create real, trivially-loginable accounts there.
+   */
+  if (process.env.NODE_ENV === 'production') {
+    logger.error('Refusing to seed: NODE_ENV=production. init-db is for dev/demo databases only.');
+    process.exitCode = 1;
+    return;
+  }
+
   try {
     await connectDB();
 
