@@ -273,11 +273,16 @@ export const signup = asyncHandler<ParamsDictionary, unknown, SignupDto>(async (
       error: emailError,
     });
 
-    // Don't fail the signup - user is created, they can request resend
+    /*
+     * Return the SAME masked body as every other pending-signup branch. A distinct message or
+     * emailSent:false here would let a caller tell a brand-new email (mail just failed) apart from
+     * an already-registered one (always emailSent:true) — re-opening enumeration while SMTP is down.
+     * The account is created; the user recovers via the resend-confirmation flow.
+     */
     res.status(200).json({
       success: true,
-      message: 'Account created, but confirmation email could not be sent. Please use the resend confirmation option.',
-      data: signupPendingData(false),
+      message: SIGNUP_PENDING_MESSAGE,
+      data: signupPendingData(true),
     });
   }
 });

@@ -161,4 +161,21 @@ describe('signup masking and resend rate-limiting', () => {
     expect(payload.data).not.toHaveProperty('email');
     expect(payload.data).not.toHaveProperty('roles');
   });
+
+  it('a brand-new account whose confirmation email FAILS returns the identical masked body', async () => {
+    const created: MockUser = {
+      emailConfirmed: false,
+      email: 'user@example.com',
+      _id: { toString: () => 'new-id' },
+      isTetheredChild: false,
+      save: vi.fn(async () => {}),
+    };
+    // SMTP outage: the send rejects. The response must not betray that this email was brand new.
+    vi.mocked(sendEmail).mockRejectedValueOnce(new Error('smtp down'));
+
+    const { res, next } = await runSignup(null, created);
+
+    expect(next).not.toHaveBeenCalled();
+    expect(res.json).toHaveBeenCalledWith(MASKED_PENDING);
+  });
 });
