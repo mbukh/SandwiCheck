@@ -11,22 +11,13 @@ interface AppError extends Error {
 }
 
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
-  /*
-   * If a response was already sent, delegate to Express's default handler instead of
-   * writing a second time (which throws ERR_HTTP_HEADERS_SENT and can crash the request).
-   */
-  if (res.headersSent) {
-    return next(err);
-  }
-
-  let error: AppError = { ...err, message: err.message, status: err.status };
-
   // Extract user ID if available (from auth middleware)
   const userId = req.user?._id?.toString() || req.user?.id?.toString();
 
   /*
-   * Logging - log error with context (requestId, userId, request details)
-   * Error object will be automatically sanitized by logger
+   * Logging - log error with context (requestId, userId, request details). Done first, before the
+   * headersSent short-circuit below, so an error raised after the response already started is still
+   * recorded instead of being silently dropped. Error object is automatically sanitized by logger.
    */
   logger.error('Request error', {
     requestId: req.requestId,
@@ -41,6 +32,16 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
       stack: err.stack,
     },
   });
+
+  /*
+   * If a response was already sent, delegate to Express's default handler instead of
+   * writing a second time (which throws ERR_HTTP_HEADERS_SENT and can crash the request).
+   */
+  if (res.headersSent) {
+    return next(err);
+  }
+
+  let error: AppError = { ...err, message: err.message, status: err.status };
 
   // Mongoose bad ObjectId
   if (err.name === 'CastError') {

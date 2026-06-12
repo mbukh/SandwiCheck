@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import logger from '#utils/logger.ts';
 import errorHandler from '../errorHandler.ts';
 
 // vi.mock is hoisted above the import above, so errorHandler picks up the stubbed logger.
@@ -71,7 +72,12 @@ describe('errorHandler duplicate-key handling', () => {
 });
 
 describe('errorHandler when the response was already sent', () => {
-  it('delegates to next(err) without writing a second response', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('logs the error, then delegates to next(err) without writing a second response', () => {
+    vi.mocked(logger.error).mockClear();
     const err = new Error('late error');
     const status = vi.fn();
     const json = vi.fn();
@@ -81,6 +87,8 @@ describe('errorHandler when the response was already sent', () => {
 
     errorHandler(err, req, res, next);
 
+    // The error must still be recorded even though the response already started.
+    expect(logger.error).toHaveBeenCalledTimes(1);
     expect(next).toHaveBeenCalledWith(err);
     expect(status).not.toHaveBeenCalled();
     expect(json).not.toHaveBeenCalled();
