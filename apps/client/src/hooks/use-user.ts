@@ -56,9 +56,9 @@ const useUser = (): UseUserResult => {
     return res;
   }, [applySession]);
 
-  const logIn = async ({ email, password, inviteToken }: LoginDto): Promise<ApiResult<User>> => {
+  const logIn = async ({ email, password, inviteToken, acceptInvite }: LoginDto): Promise<ApiResult<User>> => {
     setIsCurrentUserReady(false);
-    const res = await apiAuth.login({ email, password, inviteToken });
+    const res = await apiAuth.login({ email, password, inviteToken, acceptInvite });
     logResponse('🚪 Logging in', res);
     if (!res?.success) {
       setIsCurrentUserReady(true);

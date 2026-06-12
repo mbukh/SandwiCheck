@@ -40,10 +40,10 @@ export const signup = async ({
   });
 };
 
-/** POST /login — log in with email/password (optionally under a parent invite token). */
-export const login = async ({ email, password, inviteToken }: LoginDto): Promise<ApiResult<User>> => {
+/** POST /login — log in with email/password (optionally redeeming a consented parent invite token). */
+export const login = async ({ email, password, inviteToken, acceptInvite }: LoginDto): Promise<ApiResult<User>> => {
   return await handleResponse<User>(async () => {
-    return api.post('/login', { email, password, inviteToken });
+    return api.post('/login', { email, password, inviteToken, acceptInvite });
   });
 };
 

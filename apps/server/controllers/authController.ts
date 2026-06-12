@@ -313,7 +313,14 @@ export const login = asyncHandler<ParamsDictionary, unknown, LoginDto>(async (re
     return next(error);
   }
 
-  if (inviteToken) {
+  /*
+   * Redeem the invite only when the user explicitly consented to being linked as a dependent
+   * (the client sends `acceptInvite` alongside the token). Without consent the token is ignored,
+   * so a victim logging in through an attacker's invite link is not silently attached to the
+   * attacker's account. The client also withholds the token unless consent is given; this is the
+   * server-side backstop.
+   */
+  if (inviteToken && req.body.acceptInvite === true) {
     const linked = await linkParentByInviteToken(user, inviteToken);
     if (!linked) {
       logger.warn('Login used an invalid or expired invite token', {

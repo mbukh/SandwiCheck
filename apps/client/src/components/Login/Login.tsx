@@ -14,8 +14,18 @@ const Login = (): React.JSX.Element => {
   const navigate = useNavigate();
   const search = useSearch({ strict: false });
   const location = useLocation();
-  const { email, setEmail, password, setPassword, LoginHandler, parentId, errors, loginNeedsEmailConfirmation } =
-    useForm();
+  const {
+    email,
+    setEmail,
+    password,
+    setPassword,
+    LoginHandler,
+    parentId,
+    linkConsent,
+    setLinkConsent,
+    errors,
+    loginNeedsEmailConfirmation,
+  } = useForm();
   const { currentUser, isCurrentUserReady } = useAuthGlobalContext();
 
   /*
@@ -275,7 +285,8 @@ const Login = (): React.JSX.Element => {
               id="termsCheckbox"
               type="checkbox"
               name="tc_agreed"
-              value="1"
+              checked={linkConsent}
+              onChange={(e) => setLinkConsent(e.target.checked)}
               required
             />
             <label className="custom-control-label" htmlFor="termsCheckbox">

@@ -25,6 +25,12 @@ export interface LoginDto {
   password?: string;
   /** Parent invite token; links the account to the inviting parent on login. */
   inviteToken?: string;
+  /**
+   * Explicit consent to redeem `inviteToken` and be linked as a dependent. The server only
+   * redeems the token when this is `true`, so a victim logging in through an attacker's invite
+   * link is never silently attached to the attacker's account.
+   */
+  acceptInvite?: boolean;
 }
 
 /** Response payload for POST /auth/create-invite. */

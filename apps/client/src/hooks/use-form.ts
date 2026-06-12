@@ -40,6 +40,9 @@ interface UseFormResult {
   signUpHandler: (event: FormEvent, returnTo?: string | null) => Promise<SignUpResult | void>;
   navigate: ReturnType<typeof useNavigate>;
   parentId: string | undefined;
+  /** Whether the user consented to redeeming the parent invite token on login. */
+  linkConsent: boolean;
+  setLinkConsent: Dispatch<SetStateAction<boolean>>;
   role: string;
   setRole: Dispatch<SetStateAction<string>>;
   handleFileChange: (event: ChangeEvent<HTMLInputElement>) => void;
@@ -54,6 +57,8 @@ const useForm = (): UseFormResult => {
 
   const [errors, setErrors] = useState<string[]>([]);
   const [loginNeedsEmailConfirmation, setLoginNeedsEmailConfirmation] = useState(false);
+  // Consent to be linked as a dependent when logging in through a parent invite link.
+  const [linkConsent, setLinkConsent] = useState(false);
   const { showToast } = useToast();
 
   const { logIn, signUp, currentUser: user } = useAuthGlobalContext();
@@ -115,8 +120,17 @@ const useForm = (): UseFormResult => {
       return;
     }
 
-    // `parentId` is the route param value, which now carries a parent invite token.
-    const res = await logIn({ email, password, inviteToken: parentId });
+    /*
+     * `parentId` is the route param value, which now carries a parent invite token. Only send it
+     * (and the explicit consent flag) when the user ticked the consent checkbox — otherwise log in
+     * normally without linking, so an invite link can never silently attach the account to a parent.
+     */
+    const res = await logIn({
+      email,
+      password,
+      inviteToken: linkConsent ? parentId : undefined,
+      acceptInvite: linkConsent ? true : undefined,
+    });
     if (res.error) {
       // The server stamps EMAIL_NOT_CONFIRMED so we can offer the resend UI without parsing prose.
       if (res.error.code === ERROR_CODE.emailNotConfirmed) {
@@ -201,6 +215,8 @@ const useForm = (): UseFormResult => {
     signUpHandler,
     navigate,
     parentId,
+    linkConsent,
+    setLinkConsent,
     role,
     setRole,
     handleFileChange,
