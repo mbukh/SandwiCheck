@@ -51,6 +51,13 @@ const forgotPasswordRateLimit = createRateLimit({
   message: 'Too many password reset requests, please try again later',
 });
 
+// change-password verifies the old password, so it's a brute-force surface like login — cap it too.
+const changePasswordRateLimit = createRateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 10,
+  message: 'Too many password change requests, please try again later',
+});
+
 // Token-gated endpoints (email confirmation, password reset) — defense-in-depth atop the high-entropy tokens.
 const tokenVerificationRateLimit = createRateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -70,7 +77,7 @@ router.post('/create-invite', protect, authorize(ROLE.parent), createInvite);
 router.post('/login-child', protect, authorize(ROLE.parent), loginChildUser);
 router.post('/switch-to-parent', protect, authorize(ROLE.child), switchToParent);
 
-router.put('/change-password', protect, changePassword);
+router.put('/change-password', changePasswordRateLimit, protect, changePassword);
 router.post('/forgot-password', forgotPasswordRateLimit, forgotPassword);
 router.put('/reset-password/:resetToken', tokenVerificationRateLimit, resetPassword);
 
