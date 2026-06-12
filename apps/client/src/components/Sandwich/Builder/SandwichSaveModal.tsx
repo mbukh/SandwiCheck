@@ -411,11 +411,19 @@ const SandwichSaveModal = ({ isOpen, onClose }: SandwichSaveModalProps): React.J
               )}
             </div>
           </div>
-
-          {isOpenLoginModal && <SignupModal setIsOpenLoginModal={handleSignupPromptOpenChange} closeLink="stay" />}
-          {toastComponents}
         </Modal>
       )}
+
+      {/*
+       * Kept OUTSIDE the {isOpen && <Modal>} block on purpose: opening the signup prompt registers
+       * modalId="signup", which the one-active-modal rule closes "sandwich-save" for → onClose →
+       * SandwichBuilder.setIsSaveModalOpen(false) → isOpen becomes false. If the prompt (and the
+       * toasts) lived inside that block they would unmount before ever rendering. As siblings here
+       * they survive the save modal closing, so the prompt actually displays and dismissing it can
+       * clear the pending-autosave flag.
+       */}
+      {isOpenLoginModal && <SignupModal setIsOpenLoginModal={handleSignupPromptOpenChange} closeLink="stay" />}
+      {toastComponents}
     </>
   );
 };
