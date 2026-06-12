@@ -10,7 +10,15 @@ interface AppError extends Error {
   cooldownRemainingMs?: number;
 }
 
-const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
+const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
+  /*
+   * If a response was already sent, delegate to Express's default handler instead of
+   * writing a second time (which throws ERR_HTTP_HEADERS_SENT and can crash the request).
+   */
+  if (res.headersSent) {
+    return next(err);
+  }
+
   let error: AppError = { ...err, message: err.message, status: err.status };
 
   // Extract user ID if available (from auth middleware)

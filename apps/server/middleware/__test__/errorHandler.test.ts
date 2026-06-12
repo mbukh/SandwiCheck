@@ -48,3 +48,20 @@ describe('errorHandler multer handling', () => {
     expect(payload.error.message).toContain('2MB');
   });
 });
+
+describe('errorHandler when the response was already sent', () => {
+  it('delegates to next(err) without writing a second response', () => {
+    const err = new Error('late error');
+    const status = vi.fn();
+    const json = vi.fn();
+    const res = { headersSent: true, status, json } as unknown as Response;
+    const next: NextFunction = vi.fn();
+    const req = { path: '/api/v1/auth/forgot-password', method: 'POST' } as unknown as Request;
+
+    errorHandler(err, req, res, next);
+
+    expect(next).toHaveBeenCalledWith(err);
+    expect(status).not.toHaveBeenCalled();
+    expect(json).not.toHaveBeenCalled();
+  });
+});

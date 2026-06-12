@@ -400,7 +400,11 @@ export const forgotPassword = asyncHandler<ParamsDictionary, unknown, ForgotPass
       message: 'Reset password email sent',
     });
 
-    return next();
+    /*
+     * Response already sent — do NOT call next(), which would fall into the /api 404 catch-all
+     * and have the error handler attempt a second response on this request.
+     */
+    return;
   }
 
   const resetToken = hashAndTokens.generateResetPasswordToken();
