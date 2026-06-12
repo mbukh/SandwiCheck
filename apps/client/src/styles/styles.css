@@ -405,6 +405,32 @@ header a.no-hover.active {
   border-top: 2px solid transparent;
 }
 
+/*
+ * Logout is a <button> (it performs an action, not navigation) but should read as a sibling nav
+ * link. The unlayered `button` global paints it as a white pill and outranks Tailwind's @layer
+ * utilities, so reset it here — also unlayered — and mirror the `header a` treatment. Exclude
+ * `.btn-wrapper` (the hamburger) and `.button` (the ActingBanner "Return to parent" pill), which
+ * intentionally keep their own styling.
+ */
+header button:not(.btn-wrapper):not(.button) {
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
+  color: inherit;
+  font-weight: inherit;
+  box-sizing: border-box;
+  padding-block: 0.2em;
+  margin-block: 1em;
+  border-bottom: 2px solid transparent;
+  border-top: 2px solid transparent;
+  transition: border 0.2s ease-in-out;
+}
+
+header button:not(.btn-wrapper):not(.button):hover {
+  border-bottom: 2px solid var(--color-white);
+  border-top: 2px solid var(--color-white);
+}
+
 header .mobile-menu {
   background: var(--color-black);
   opacity: 0;
