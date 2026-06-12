@@ -47,6 +47,15 @@ const useUser = (): UseUserResult => {
     logResponse('🔄 Refresh session', res);
     if (!res?.success) {
       applySession(null);
+      /*
+       * A 401 means the cookie/JWT is gone or expired — clear the stale `loggedIn` flag so the
+       * route guards (e.g. /menu) stop treating the user as authenticated. Only on 401: transient
+       * failures map to status 0 in fetch-api, and clearing on those would log users out on a
+       * flaky network.
+       */
+      if (res?.error?.status === 401) {
+        localStorage.removeItem('loggedIn');
+      }
       setIsCurrentUserReady(true);
       return res;
     }
