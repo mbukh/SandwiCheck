@@ -53,7 +53,8 @@ const useGallery = (): UseGalleryResult => {
     logResponse('🍔👽 Fetch user with sandwiches', res);
 
     if (res.success && res.data) {
-      let sandwiches = res.data.sandwiches || [];
+      // User.sandwiches may be IDs (unpopulated responses) or full objects; keep only the latter.
+      let sandwiches: Sandwich[] = (res.data.sandwiches || []).filter((s): s is Sandwich => typeof s !== 'string');
       // Sort by createdAt (newest first) if requested (for personal menu)
       if (sortByCreatedAt) {
         sandwiches = [...sandwiches].sort((a, b) => {

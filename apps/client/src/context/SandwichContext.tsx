@@ -20,7 +20,7 @@ import type { ApiResult } from '@/types/api';
 import type { BuilderSandwich, Ingredient, Sandwich, SandwichLayer } from '@/types/domain';
 import { withLayerInstanceId } from '@/utils/layer-instance-utils';
 import { logResponse } from '@/utils/log';
-import { doesStayKosherWithIngredient } from '@/utils/sandwich-utils';
+import { buildDefaultSandwichName, doesStayKosherWithIngredient } from '@/utils/sandwich-utils';
 import { useAuthGlobalContext } from './AuthGlobalContext.tsx';
 import { useIngredientsGlobalContext } from './IngredientsGlobalContext.tsx';
 
@@ -73,7 +73,7 @@ const SandwichContextProvider = ({ children }: { children: ReactNode }): ReactNo
   const { currentType, setCurrentType, sandwich, sandwichDispatch, isSavingSandwich, setIsSavingSandwich } =
     useSandwich();
 
-  const defaultName = `${currentUser.firstName}'s Sandwich`;
+  const defaultName = buildDefaultSandwichName(currentUser.firstName);
   const isSandwichReady = sandwich.ingredients.length > 1;
   const hasToBeKosher = Boolean(currentUser.dietaryPreferences?.includes(DIETARY_PREFERENCE.kosher));
 
@@ -301,7 +301,9 @@ const SandwichContextProvider = ({ children }: { children: ReactNode }): ReactNo
             }
 
             const existingSandwiches = previousUser.sandwiches || [];
-            const alreadyIncluded = existingSandwiches.some((item) => item.id === created.id);
+            const alreadyIncluded = existingSandwiches.some(
+              (item) => typeof item !== 'string' && item.id === created.id,
+            );
 
             return {
               ...previousUser,
