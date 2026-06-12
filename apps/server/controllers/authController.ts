@@ -9,6 +9,7 @@ import {
   type ResetPasswordDto,
   ROLE,
   type SignupDto,
+  type SignupPendingData,
 } from '@sandwicheck/shared';
 import bcrypt from 'bcryptjs';
 import createHttpError from 'http-errors';
@@ -27,6 +28,26 @@ import * as hashAndTokens from '#utils/hashAndTokens.ts';
 import logger from '#utils/logger.ts';
 import sendEmail from '#utils/mailer.ts';
 import { createUserParentsConnections } from '#utils/manageUserConnections.ts';
+
+/*
+ * Email-confirmation resend budget. Shared by the signup re-attempt path, resendConfirmation,
+ * and confirmEmail so the endpoints draw from the SAME limit — re-signing up can't be used to
+ * bypass the resend cap.
+ */
+const MAX_EMAIL_CONFIRMATION_RESENDS = 5;
+const getEmailConfirmationResendCooldownMs = (): number =>
+  Number.parseInt(process.env.EMAIL_CONFIRMATION_RESEND_COOLDOWN_MS || '900000', 10);
+
+/*
+ * Masked signup response. Returned byte-for-byte identically for a brand-new pending account, a
+ * refreshed unconfirmed account, and an attempt against an already-confirmed account, so signup
+ * leaks nothing about whether an email is registered or how much resend budget it has left.
+ */
+const SIGNUP_PENDING_MESSAGE = 'Please check your email to confirm your account';
+const signupPendingData = (emailSent: boolean): SignupPendingData => ({
+  requiresEmailConfirmation: true,
+  emailSent,
+});
 
 /**
  * Link a freshly authenticated user to the parent that issued a still-valid invite
@@ -77,32 +98,39 @@ export const signup = asyncHandler<ParamsDictionary, unknown, SignupDto>(async (
 
   const userExists = await User.findOne({ email });
 
-  // Handle duplicate signup - if user exists but not confirmed, invalidate old token and generate new one
+  // Handle an email that is already registered, without revealing that it is.
   if (userExists) {
-    if (userExists.emailConfirmed) {
-      return next(createHttpError.BadRequest('User already exists'));
-    }
     /*
-     * User exists but not confirmed - invalidate old token and generate new one
-     * Reset resend count and cooldown to give user a fresh start
+     * Already-confirmed account: do NOT disclose that it exists (the old 400 'User already exists'
+     * was an enumeration oracle). Mirror a real pending signup — jittered delay, identical body,
+     * no DB write, no email.
      */
-    const confirmationToken = hashAndTokens.generateResetPasswordToken();
-    userExists.emailConfirmationToken = hashAndTokens.hashToken(confirmationToken);
-    userExists.emailConfirmationExpire = new Date(
-      Date.now() + Number.parseInt(process.env.EMAIL_CONFIRMATION_EXPIRES_IN || '86400000', 10),
-    );
-    userExists.emailConfirmationResendCount = 0; // Reset resend count on new signup attempt
-    userExists.emailConfirmationResendCooldown = undefined; // Reset cooldown on new signup attempt
+    if (userExists.emailConfirmed) {
+      await delay(2000 + Math.random() * 2000);
+      logger.info('Signup attempt for an already-confirmed email (masked)', { requestId: req.requestId });
+      return res.status(200).json({
+        success: true,
+        message: SIGNUP_PENDING_MESSAGE,
+        data: signupPendingData(true),
+      });
+    }
+
+    /*
+     * Unconfirmed account: treat as a legitimate retry (e.g. with a new password) and overwrite the
+     * credentials. But rate-limit the confirmation email against the SAME budget as
+     * resendConfirmation, and always return the masked body — so signup is neither an email-spam
+     * vector nor an existence oracle. The token rotates only when an email actually goes out, so
+     * the last delivered link stays valid even when this attempt is throttled.
+     */
     userExists.name = name;
     userExists.password = await bcrypt.hash(password, Number.parseInt(process.env.BCRYPT_SALT_ROUNDS || '10', 10));
     userExists.roles = [ROLE.user, role];
-
     await userExists.save();
 
     /*
-     * Link the parent invite token here too: this branch returns before the
-     * post-creation linking below, so without it a child re-signing up through an
-     * invite link (after an earlier unconfirmed attempt) would never be linked.
+     * Link the parent invite token here too: this branch returns before the post-creation linking
+     * below, so without it a child re-signing up through an invite link (after an earlier
+     * unconfirmed attempt) would never be linked.
      */
     if (inviteToken) {
       const linked = await linkParentByInviteToken(userExists, inviteToken);
@@ -114,37 +142,57 @@ export const signup = asyncHandler<ParamsDictionary, unknown, SignupDto>(async (
       }
     }
 
-    const confirmationURL = `${process.env.CLIENT_URL}/confirm-email/${confirmationToken}`;
+    const resendCount = userExists.emailConfirmationResendCount || 0;
+    const lastResendTime = userExists.emailConfirmationResendCooldown
+      ? new Date(userExists.emailConfirmationResendCooldown).getTime()
+      : 0;
+    const withinCooldown = lastResendTime > 0 && Date.now() - lastResendTime < getEmailConfirmationResendCooldownMs();
 
-    try {
-      await sendEmail({
-        to: userExists.email!,
-        subject: 'Email Confirmation',
-        html: generateEmailConfirmationHtml({ user: userExists, confirmationURL }),
-        text: generateEmailConfirmationText({ user: userExists, confirmationURL }),
-      });
+    if (resendCount < MAX_EMAIL_CONFIRMATION_RESENDS && !withinCooldown) {
+      const confirmationToken = hashAndTokens.generateResetPasswordToken();
+      const confirmationURL = `${process.env.CLIENT_URL}/confirm-email/${confirmationToken}`;
+      try {
+        await sendEmail({
+          to: userExists.email!,
+          subject: 'Email Confirmation',
+          html: generateEmailConfirmationHtml({ user: userExists, confirmationURL }),
+          text: generateEmailConfirmationText({ user: userExists, confirmationURL }),
+        });
 
-      return res.status(200).json({
-        success: true,
-        message: 'Please check your email to confirm your account',
-        data: userExists,
-      });
-    } catch (emailError) {
-      // Log email sending error (PII will be automatically masked)
-      logger.error('Failed to send confirmation email during signup', {
+        // Only after the email is sent: rotate the token and consume one unit of resend budget.
+        userExists.emailConfirmationToken = hashAndTokens.hashToken(confirmationToken);
+        userExists.emailConfirmationExpire = new Date(
+          Date.now() + Number.parseInt(process.env.EMAIL_CONFIRMATION_EXPIRES_IN || '86400000', 10),
+        );
+        userExists.emailConfirmationResendCount = resendCount + 1;
+        userExists.emailConfirmationResendCooldown = new Date();
+        await userExists.save();
+
+        logger.info('Confirmation email resent for an unconfirmed account on re-signup', {
+          requestId: req.requestId,
+          userId: userExists._id.toString(),
+          resendCount: resendCount + 1,
+        });
+      } catch (emailError) {
+        // Log only; the masked response must be identical whether or not the email went out.
+        logger.error('Failed to send confirmation email during re-signup', {
+          requestId: req.requestId,
+          userId: userExists._id.toString(),
+          error: emailError,
+        });
+      }
+    } else {
+      logger.info('Re-signup for an unconfirmed account was rate-limited (no email sent)', {
         requestId: req.requestId,
         userId: userExists._id.toString(),
-        error: emailError,
-      });
-
-      // Don't fail the signup - user is created, they can request resend
-      return res.status(200).json({
-        success: true,
-        message:
-          'Account created, but confirmation email could not be sent. Please use the resend confirmation option.',
-        data: userExists,
       });
     }
+
+    return res.status(200).json({
+      success: true,
+      message: SIGNUP_PENDING_MESSAGE,
+      data: signupPendingData(true),
+    });
   }
 
   const passwordHash = await bcrypt.hash(password, Number.parseInt(process.env.BCRYPT_SALT_ROUNDS || '10', 10));
@@ -214,8 +262,8 @@ export const signup = asyncHandler<ParamsDictionary, unknown, SignupDto>(async (
     // DO NOT log user in - they need to confirm email first
     res.status(200).json({
       success: true,
-      message: 'Please check your email to confirm your account',
-      data: user,
+      message: SIGNUP_PENDING_MESSAGE,
+      data: signupPendingData(true),
     });
   } catch (emailError) {
     // Log email sending error (PII will be automatically masked)
@@ -229,7 +277,7 @@ export const signup = asyncHandler<ParamsDictionary, unknown, SignupDto>(async (
     res.status(200).json({
       success: true,
       message: 'Account created, but confirmation email could not be sent. Please use the resend confirmation option.',
-      data: user,
+      data: signupPendingData(false),
     });
   }
 });
@@ -447,7 +495,7 @@ export const logout = asyncHandler(async (req, res, _next) => {
  */
 export const confirmEmail = asyncHandler(async (req, res, next) => {
   const confirmationToken = hashAndTokens.hashToken(String(req.params.token));
-  const MAX_RESEND_COUNT = 5; // Must match resendConfirmation MAX_RESEND_COUNT
+  const MAX_RESEND_COUNT = MAX_EMAIL_CONFIRMATION_RESENDS;
 
   // First, try to find user with valid (non-expired) token
   let user = await User.findOne({
@@ -557,9 +605,9 @@ export const resendConfirmation = asyncHandler<ParamsDictionary, unknown, Resend
   async (req, res, next) => {
     // Sanitize and trim email input
     const email = req.body.email?.trim().toLowerCase();
-    const MAX_RESEND_COUNT = 5;
-    // Cooldown period: 15 minutes (900000 ms) - can be configured via env var
-    const RESEND_COOLDOWN_MS = Number.parseInt(process.env.EMAIL_CONFIRMATION_RESEND_COOLDOWN_MS || '900000', 10);
+    const MAX_RESEND_COUNT = MAX_EMAIL_CONFIRMATION_RESENDS;
+    // Cooldown period (default 15 minutes) - shared with the signup re-attempt path.
+    const RESEND_COOLDOWN_MS = getEmailConfirmationResendCooldownMs();
 
     if (!email) {
       return next(createHttpError.BadRequest('Email is required'));

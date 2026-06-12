@@ -49,6 +49,16 @@ export interface ResendConfirmationDto {
   email?: string;
 }
 
+/**
+ * Response payload for a pending (email-confirmation-required) signup. Returned identically
+ * whether the account was just created, an unconfirmed account was refreshed, or the email
+ * already belongs to a confirmed account — so the endpoint never reveals which case occurred.
+ */
+export interface SignupPendingData {
+  requiresEmailConfirmation: true;
+  emailSent: boolean;
+}
+
 // ==== Child accounts ==== //
 
 export interface CreateChildDto {
