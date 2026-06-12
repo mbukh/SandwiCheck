@@ -49,6 +49,27 @@ describe('errorHandler multer handling', () => {
   });
 });
 
+describe('errorHandler duplicate-key handling', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('returns a static message and never reflects the duplicated value', () => {
+    const err = Object.assign(
+      new Error(
+        'E11000 duplicate key error collection: app.users index: email_1 dup key: { email: "victim@example.com" }',
+      ),
+      { code: 11_000 },
+    );
+
+    const { statusMock, payload } = runErrorHandler(err);
+
+    expect(statusMock).toHaveBeenCalledWith(400);
+    expect(payload.error.message).toBe('A record with these details already exists');
+    expect(payload.error.message).not.toContain('victim@example.com');
+  });
+});
+
 describe('errorHandler when the response was already sent', () => {
   it('delegates to next(err) without writing a second response', () => {
     const err = new Error('late error');

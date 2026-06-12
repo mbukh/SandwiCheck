@@ -47,12 +47,14 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
     const message = `Resource not found with id ending ...${String(err.value).slice(-6)} not found`;
     error = createHttpError.NotFound(message);
   }
-  // Mongoose duplicate key
+  /*
+   * Mongoose duplicate key — never reflect the offending field/value back to the client. The old
+   * `Duplicate data {email: ...}` message was an enumeration oracle: any authenticated user could
+   * probe arbitrary emails via a profile update. The duplicated value is still captured in the
+   * logger.error call above for debugging.
+   */
   if (err.code === 11_000) {
-    const match = error.message.match(/\{(.*)\}/g);
-    const field_value = match ? match[0].replaceAll('"', '') : 'unknown field';
-    const message = `Duplicate data ${field_value}`;
-    error = createHttpError.BadRequest(message);
+    error = createHttpError.BadRequest('A record with these details already exists');
   }
   // Mongoose validation error
   if (err.name === 'ValidationError') {

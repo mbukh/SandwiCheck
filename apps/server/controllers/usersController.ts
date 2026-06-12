@@ -73,12 +73,29 @@ export const updateUser = asyncHandler<ParamsDictionary, unknown, UpdateUserDto>
   const initialEmail = user.email;
   const wasTetheredChild = Boolean(user.isTetheredChild && !user.email);
 
+  /*
+   * Normalize to match the schema's `lowercase: true`. Without this, changing only the casing of
+   * one's own email would look like a new address and needlessly trigger re-confirmation below.
+   */
+  const normalizedEmail = email?.trim().toLowerCase();
+
   if (name) {
     user.name = name;
   }
 
-  if (email && email !== initialEmail) {
-    user.email = email;
+  if (normalizedEmail && normalizedEmail !== initialEmail) {
+    /*
+     * Reject a duplicate email up front with a neutral message instead of letting the unique-index
+     * violation (E11000) surface — that used to reflect the probed address, making profile update an
+     * email-enumeration oracle for any authenticated user. Exclude the user's own _id so a self-match
+     * can never produce a false 400; the static errorHandler message covers the residual save-time race.
+     */
+    const emailTaken = await User.findOne({ email: normalizedEmail, _id: { $ne: user._id } }).select('_id');
+    if (emailTaken) {
+      return next(createHttpError.BadRequest('Unable to update to that email address'));
+    }
+
+    user.email = normalizedEmail;
     // Email changed - require re-confirmation
     user.emailConfirmed = false;
     // Reset resend count and cooldown when email changes
