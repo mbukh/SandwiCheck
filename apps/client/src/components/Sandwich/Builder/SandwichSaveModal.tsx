@@ -15,6 +15,8 @@ import useToast from '@/hooks/use-toast';
 import { SANDWICH_ACTION } from '@/reducers/sandwich-reducer';
 import type { BuilderSandwich, Sandwich } from '@/types/domain';
 import { generateIngredientImageSrc } from '@/utils/ingredients-utils';
+import { isPendingAutosaveFresh } from '@/utils/pending-autosave';
+import { readJsonFromStorage } from '@/utils/storage-utils';
 import validateForm from '@/utils/validate-utils';
 
 interface SandwichSaveModalProps {
@@ -112,17 +114,32 @@ const SandwichSaveModal = ({ isOpen, onClose }: SandwichSaveModalProps): React.J
       return;
     }
 
-    localStorage.setItem(PENDING_SANDWICH_LOCALSTORAGE_KEY, 'true');
+    // Timestamp the flag (not 'true') so a forgotten one expires instead of arming forever.
+    localStorage.setItem(PENDING_SANDWICH_LOCALSTORAGE_KEY, JSON.stringify(Date.now()));
     setIsOpenLoginModal(true);
   };
+
+  /*
+   * Clear the pending-auth flag if the signup prompt is dismissed without logging in, so a later
+   * unrelated login can't auto-save a stale draft. Check localStorage synchronously (not
+   * currentUser) to avoid the context-propagation race right after a successful login.
+   */
+  const handleSignupPromptOpenChange = useCallback((open: boolean): void => {
+    if (!open && !localStorage.getItem('loggedIn')) {
+      localStorage.removeItem(PENDING_SANDWICH_LOCALSTORAGE_KEY);
+    }
+    setIsOpenLoginModal(open);
+  }, []);
 
   useEffect(() => {
     if (!currentUser.id || isSavingSandwich) {
       return;
     }
 
-    const shouldResume = localStorage.getItem(PENDING_SANDWICH_LOCALSTORAGE_KEY);
-    if (!shouldResume) {
+    // Only resume a still-fresh flag; drop missing/stale/garbled ones without auto-saving.
+    const pendingSince = readJsonFromStorage<number>(PENDING_SANDWICH_LOCALSTORAGE_KEY);
+    if (!isPendingAutosaveFresh(pendingSince, Date.now())) {
+      localStorage.removeItem(PENDING_SANDWICH_LOCALSTORAGE_KEY);
       return;
     }
 
@@ -395,7 +412,7 @@ const SandwichSaveModal = ({ isOpen, onClose }: SandwichSaveModalProps): React.J
             </div>
           </div>
 
-          {isOpenLoginModal && <SignupModal setIsOpenLoginModal={setIsOpenLoginModal} closeLink="stay" />}
+          {isOpenLoginModal && <SignupModal setIsOpenLoginModal={handleSignupPromptOpenChange} closeLink="stay" />}
           {toastComponents}
         </Modal>
       )}
