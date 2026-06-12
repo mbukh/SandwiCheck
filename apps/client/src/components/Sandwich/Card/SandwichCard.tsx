@@ -197,6 +197,7 @@ const SandwichCard = ({ index, sandwich, galleryPath = '', isModal }: SandwichCa
             <Link
               to={`https://wa.me/?text=This+sandwich+from+SandwiCheck+looks+yummy%21+${globalThis.location.protocol}%2F%2F${globalThis.location.hostname}%2Fsandwich%2F${sandwich.id}`}
               target="_blank"
+              rel="noopener noreferrer"
               className="ml-1 inline-block md:ml-2"
             >
               <i className="icon icon-whatsapp h-8 w-auto sm:h-10 md:h-12" title="Share via Whatsapp"></i>
