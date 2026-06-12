@@ -8,12 +8,17 @@ import { logResponse } from '@/utils/log';
 interface UseGalleryResult {
   gallerySandwiches: Sandwich[];
   setGallerySandwiches: Dispatch<SetStateAction<Sandwich[]>>;
+  galleryError: string | null;
   fetchUserSandwiches: (id: string, sortByCreatedAt?: boolean) => Promise<void>;
   fetchSandwiches: (query: SandwichQuery) => Promise<void>;
 }
 
+const GALLERY_ERROR_FALLBACK = 'We could not load these sandwiches right now.';
+
 const useGallery = (): UseGalleryResult => {
   const [gallerySandwiches, setGallerySandwiches] = useState<Sandwich[]>([]);
+  // null = no error. A failed load sets this so the gallery can show a retry instead of a fake "empty".
+  const [galleryError, setGalleryError] = useState<string | null>(null);
 
   const fetchSandwiches = useCallback(
     async ({
@@ -32,7 +37,13 @@ const useGallery = (): UseGalleryResult => {
       });
       logResponse('🥪 Read sandwiches', res);
 
-      setGallerySandwiches(res.data || []);
+      if (res.success) {
+        setGallerySandwiches(res.data || []);
+        setGalleryError(null);
+      } else {
+        // Keep any previously loaded sandwiches; surface the error for the empty-first-load case.
+        setGalleryError(res.error?.message || GALLERY_ERROR_FALLBACK);
+      }
     },
     [],
   );
@@ -41,8 +52,8 @@ const useGallery = (): UseGalleryResult => {
     const res = await apiUsers.fetchUserById(id);
     logResponse('🍔👽 Fetch user with sandwiches', res);
 
-    if (res.data && res.data.sandwiches) {
-      let sandwiches = res.data.sandwiches;
+    if (res.success && res.data) {
+      let sandwiches = res.data.sandwiches || [];
       // Sort by createdAt (newest first) if requested (for personal menu)
       if (sortByCreatedAt) {
         sandwiches = [...sandwiches].sort((a, b) => {
@@ -52,12 +63,16 @@ const useGallery = (): UseGalleryResult => {
         });
       }
       setGallerySandwiches(sandwiches);
+      setGalleryError(null);
+    } else {
+      setGalleryError(res.error?.message || GALLERY_ERROR_FALLBACK);
     }
   }, []);
 
   return {
     gallerySandwiches,
     setGallerySandwiches,
+    galleryError,
     fetchUserSandwiches,
     fetchSandwiches,
   };

@@ -1,4 +1,4 @@
-import type { DietaryPreference } from '@sandwicheck/shared';
+import type { ApiErrorResponse, DietaryPreference } from '@sandwicheck/shared';
 import { INGREDIENTS_CACHE_TIME_OUT_MINS } from '@/constants/ingredients-constants';
 import type { ApiResult } from '@/types/api';
 import type { Ingredient } from '@/types/domain';
@@ -49,7 +49,10 @@ const fetchIngredients = async ({
 /** GET / — all ingredients, with dietary filtering and client-side caching. */
 export const getAllIngredients = async ({
   dietaryPreferences = [],
-}: { dietaryPreferences?: DietaryPreference[] } = {}): Promise<{ data: Ingredient[] }> => {
+}: { dietaryPreferences?: DietaryPreference[] } = {}): Promise<{
+  data: Ingredient[];
+  error?: ApiErrorResponse['error'];
+}> => {
   let ingredients = readIngredientsFromCache();
   if (ingredients) {
     log('📝 💾 Read ingredients from cache', ingredients);
@@ -63,11 +66,10 @@ export const getAllIngredients = async ({
 
       localStorage.setItem('ingredients', JSON.stringify(ingredients));
       localStorage.setItem('ingredients-cachedAt', JSON.stringify(Date.now()));
+    } else {
+      // Report the failure instead of masquerading as an empty catalog (dead builder + Randomize).
+      return { data: [], error: res.error };
     }
-  }
-
-  if (!ingredients) {
-    return { data: [] };
   }
 
   if (dietaryPreferences && dietaryPreferences.length > 0) {

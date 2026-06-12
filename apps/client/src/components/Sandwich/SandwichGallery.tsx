@@ -3,6 +3,7 @@ import { Link, useMatchRoute, useNavigate, useSearch } from '@tanstack/react-rou
 import Loading from '@/components/Loading';
 import SandwichCard from '@/components/Sandwich/Card/SandwichCard';
 import { ROUTE_PATHS } from '@/constants/route-paths';
+import { BUTTON_BASE_CLASSES } from '@/constants/ui-constants';
 import { useAuthGlobalContext } from '@/context/AuthGlobalContext';
 import { useIngredientsGlobalContext } from '@/context/IngredientsGlobalContext';
 import useGallery from '@/hooks/use-gallery';
@@ -20,7 +21,9 @@ const SandwichGallery = ({ children, galleryType = '' }: SandwichGalleryProps): 
   const [child, setChild] = useState<Partial<User>>({});
   const { currentUser, isCurrentUserReady } = useAuthGlobalContext();
   const { areIngredientsReady } = useIngredientsGlobalContext();
-  const { gallerySandwiches, setGallerySandwiches, fetchSandwiches, fetchUserSandwiches } = useGallery();
+  const { gallerySandwiches, setGallerySandwiches, galleryError, fetchSandwiches, fetchUserSandwiches } = useGallery();
+  // Bumping this re-runs the data-fetching effect (the Retry button after a load failure).
+  const [reloadKey, setReloadKey] = useState(0);
   const matchRoute = useMatchRoute();
   const familyRouteMatch = matchRoute({ to: ROUTE_PATHS.FAMILY_CHILD });
   const familySandwichRouteMatch = matchRoute({ to: '/family/$childId/sandwich/$sandwichId' });
@@ -94,6 +97,7 @@ const SandwichGallery = ({ children, galleryType = '' }: SandwichGalleryProps): 
     fetchUserSandwiches,
     galleryType,
     isCurrentUserReady,
+    reloadKey,
     setGallerySandwiches,
   ]);
 
@@ -168,6 +172,17 @@ const SandwichGallery = ({ children, galleryType = '' }: SandwichGalleryProps): 
                 isModal={false}
               />
             ))
+          ) : galleryError ? (
+            <div className="mx-auto flex flex-col items-center justify-center py-8 text-center">
+              <p className="my-4">{galleryError}</p>
+              <button
+                type="button"
+                onClick={() => setReloadKey((key) => key + 1)}
+                className={`${BUTTON_BASE_CLASSES} bg-magenta text-white`}
+              >
+                Try again
+              </button>
+            </div>
           ) : (
             <EmptyGallery galleryType={galleryType} childId={childId || undefined} />
           )}
