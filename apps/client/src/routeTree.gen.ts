@@ -16,7 +16,6 @@ import { Route as LatestRouteImport } from './routes/latest'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as FamilyRouteImport } from './routes/family'
 import { Route as CreateRouteImport } from './routes/create'
-import { Route as CartRouteImport } from './routes/cart'
 import { Route as BestRouteImport } from './routes/best'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SandwichSandwichIdRouteImport } from './routes/sandwich.$sandwichId'
@@ -59,11 +58,6 @@ const FamilyRoute = FamilyRouteImport.update({
 const CreateRoute = CreateRouteImport.update({
   id: '/create',
   path: '/create',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CartRoute = CartRouteImport.update({
-  id: '/cart',
-  path: '/cart',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BestRoute = BestRouteImport.update({
@@ -110,7 +104,6 @@ const LoginParentParentIdRoute = LoginParentParentIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/best': typeof BestRoute
-  '/cart': typeof CartRoute
   '/create': typeof CreateRoute
   '/family': typeof FamilyRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
@@ -128,7 +121,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/best': typeof BestRoute
-  '/cart': typeof CartRoute
   '/create': typeof CreateRoute
   '/family': typeof FamilyRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
@@ -147,7 +139,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/best': typeof BestRoute
-  '/cart': typeof CartRoute
   '/create': typeof CreateRoute
   '/family': typeof FamilyRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
@@ -167,7 +158,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/best'
-    | '/cart'
     | '/create'
     | '/family'
     | '/forgot-password'
@@ -185,7 +175,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/best'
-    | '/cart'
     | '/create'
     | '/family'
     | '/forgot-password'
@@ -203,7 +192,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/best'
-    | '/cart'
     | '/create'
     | '/family'
     | '/forgot-password'
@@ -222,7 +210,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BestRoute: typeof BestRoute
-  CartRoute: typeof CartRoute
   CreateRoute: typeof CreateRoute
   FamilyRoute: typeof FamilyRouteWithChildren
   ForgotPasswordRoute: typeof ForgotPasswordRoute
@@ -284,13 +271,6 @@ declare module '@tanstack/react-router' {
       path: '/create'
       fullPath: '/create'
       preLoaderRoute: typeof CreateRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cart': {
-      id: '/cart'
-      path: '/cart'
-      fullPath: '/cart'
-      preLoaderRoute: typeof CartRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/best': {
@@ -387,7 +367,6 @@ const SignupRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BestRoute: BestRoute,
-  CartRoute: CartRoute,
   CreateRoute: CreateRoute,
   FamilyRoute: FamilyRouteWithChildren,
   ForgotPasswordRoute: ForgotPasswordRoute,

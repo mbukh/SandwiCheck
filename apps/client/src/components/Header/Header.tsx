@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from '@tanstack/react-router';
-import LoginModal from '@/components/Login/LoginModal';
-import SignupModal from '@/components/Signup/SignupModal';
 import { ROUTE_PATHS } from '@/constants/route-paths';
 import { useAuthGlobalContext } from '@/context/AuthGlobalContext';
 import { isAuthRoute } from '@/utils/auth-utils';
@@ -11,26 +9,12 @@ import MobileMenu from './MobileMenu';
 
 const Header = (): React.JSX.Element => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isOpenLoginModal, setIsOpenLoginModal] = useState(false);
-  const [isOpenSignupModal, setIsOpenSignupModal] = useState(false);
   const [isSwitchingParent, setIsSwitchingParent] = useState(false);
   const { logOut, currentUser: user, actingAsChild, parentUser, switchToParent } = useAuthGlobalContext();
   const parameters = useParams({ strict: false });
   const location = useLocation();
   const navigate = useNavigate();
   const sandwichId = parameters.sandwichId;
-
-  const isOnAuthRoute = ['/login', '/signup', '/forgot-password'].includes(location.pathname);
-
-  // Close the login/signup modals when navigating onto an auth route (reset during render, not in an effect).
-  const [wasOnAuthRoute, setWasOnAuthRoute] = useState(isOnAuthRoute);
-  if (isOnAuthRoute !== wasOnAuthRoute) {
-    setWasOnAuthRoute(isOnAuthRoute);
-    if (isOnAuthRoute) {
-      setIsOpenLoginModal(false);
-      setIsOpenSignupModal(false);
-    }
-  }
 
   const toggleMobileMenuHandler = (): void => {
     setIsMobileMenuOpen((state) => !state);
@@ -40,11 +24,6 @@ const Header = (): React.JSX.Element => {
     e.preventDefault();
 
     const targetId = e.target instanceof HTMLElement ? e.target.id : '';
-
-    if (targetId === 'logout') {
-      logOut();
-      return;
-    }
 
     // Get current pathname and check if it's an auth route
     const currentPath = location.pathname;
@@ -84,6 +63,7 @@ const Header = (): React.JSX.Element => {
         isMobileMenuOpen={isMobileMenuOpen}
         toggleMobileMenuHandler={toggleMobileMenuHandler}
         authHandler={authHandler}
+        onLogout={logOut}
         user={user}
         actingAsChild={actingAsChild}
         parentUser={parentUser}
@@ -140,9 +120,9 @@ const Header = (): React.JSX.Element => {
                     </Link>
                   )}
 
-                  <Link id="logout" onClick={authHandler} to="/logout" className="ml-6 xl:ml-4">
+                  <button type="button" onClick={() => logOut()} className="ml-6 cursor-pointer uppercase xl:ml-4">
                     Log out
-                  </Link>
+                  </button>
                 </>
               ) : (
                 <>
@@ -154,9 +134,6 @@ const Header = (): React.JSX.Element => {
                     activeProps={{ className: 'active' }}
                   >
                     Log in
-                    {isOpenLoginModal && !isOnAuthRoute && (
-                      <LoginModal setIsOpenLoginModal={setIsOpenLoginModal} closeLink="stay" />
-                    )}
                   </Link>
                   <Link
                     id="signup"
@@ -166,9 +143,6 @@ const Header = (): React.JSX.Element => {
                     activeProps={{ className: 'active' }}
                   >
                     Signup
-                    {isOpenSignupModal && !isOnAuthRoute && (
-                      <SignupModal setIsOpenLoginModal={setIsOpenSignupModal} closeLink="stay" />
-                    )}
                   </Link>
                 </>
               )}

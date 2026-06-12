@@ -25,10 +25,13 @@ const SandwichGallery = ({ children, galleryType = '' }: SandwichGalleryProps): 
   // Bumping this re-runs the data-fetching effect (the Retry button after a load failure).
   const [reloadKey, setReloadKey] = useState(0);
   const matchRoute = useMatchRoute();
+  /*
+   * Gallery sandwich modals open via the ?sandwichId search param, so the only family route that
+   * carries a childId is FAMILY_CHILD. The old /family/$childId/sandwich/$sandwichId match never
+   * resolved (that route is not in the tree).
+   */
   const familyRouteMatch = matchRoute({ to: ROUTE_PATHS.FAMILY_CHILD });
-  const familySandwichRouteMatch = matchRoute({ to: '/family/$childId/sandwich/$sandwichId' });
-  const childId =
-    (familyRouteMatch && familyRouteMatch.childId) || (familySandwichRouteMatch && familySandwichRouteMatch.childId);
+  const childId = familyRouteMatch && familyRouteMatch.childId;
   const navigate = useNavigate();
   const search = useSearch({ strict: false });
   const sandwichIdFromQuery = search?.sandwichId;

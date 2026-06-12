@@ -6,7 +6,6 @@ export const ROUTE_PATHS = {
   INDEX: '/',
   ROOT: '/',
   BEST: '/best',
-  CART: '/cart',
   CONFIRM_EMAIL: '/confirm-email/$token',
   CREATE: '/create',
   FAMILY: '/family',
