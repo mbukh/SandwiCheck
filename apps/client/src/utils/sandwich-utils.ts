@@ -58,8 +58,9 @@ export const doesStayKosherWithIngredient = (newIngredient: Ingredient, sandwich
     return true;
   }
 
-  const hasMeat = sandwich.ingredients.some((ingredient) => ingredient.dietaryPreferences.includes(PRODUCT.meat));
-  const hasDairy = sandwich.ingredients.some((ingredient) => ingredient.dietaryPreferences.includes(PRODUCT.dairy));
+  // Guard the optional chaining: a cached/legacy layer may lack dietaryPreferences and would throw.
+  const hasMeat = sandwich.ingredients.some((ingredient) => ingredient.dietaryPreferences?.includes(PRODUCT.meat));
+  const hasDairy = sandwich.ingredients.some((ingredient) => ingredient.dietaryPreferences?.includes(PRODUCT.dairy));
 
   if (
     (hasMeat && newIngredient.dietaryPreferences.includes(PRODUCT.dairy)) ||

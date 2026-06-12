@@ -1,6 +1,10 @@
-import { MAX_NAME_LENGTH, PORTION } from '@sandwicheck/shared';
-import type { Ingredient, Sandwich } from '@/types/domain';
-import { buildDefaultSandwichName, hydrateSandwichIngredientsData } from '@/utils/sandwich-utils';
+import { MAX_NAME_LENGTH, PORTION, PRODUCT } from '@sandwicheck/shared';
+import type { Ingredient, Sandwich, SandwichLayer } from '@/types/domain';
+import {
+  buildDefaultSandwichName,
+  doesStayKosherWithIngredient,
+  hydrateSandwichIngredientsData,
+} from '@/utils/sandwich-utils';
 
 const ingredient = (id: string, name: string): Ingredient => ({
   id,
@@ -59,6 +63,27 @@ describe('hydrateSandwichIngredientsData', () => {
 
     expect(result.ingredients).toHaveLength(1);
     expect(result.ingredients[0]).toMatchObject({ id: 'a', name: 'Sourdough', portion: PORTION.half });
+  });
+});
+
+describe('doesStayKosherWithIngredient', () => {
+  const withDiet = (id: string, ...prefs: string[]): SandwichLayer =>
+    ({ ...ingredient(id, id), dietaryPreferences: prefs }) as unknown as SandwichLayer;
+
+  it('does not throw when an existing layer has no dietaryPreferences', () => {
+    // A cached/legacy layer missing the field used to crash the .includes() call.
+    const legacyLayer = { id: 'a', name: 'Bread', type: 'bread' } as unknown as SandwichLayer;
+    const sandwich = { ingredients: [legacyLayer, withDiet('b')] };
+    const dairy = { ...ingredient('c', 'Cheese'), dietaryPreferences: [PRODUCT.dairy] } as Ingredient;
+
+    expect(() => doesStayKosherWithIngredient(dairy, sandwich)).not.toThrow();
+  });
+
+  it('rejects adding dairy when an existing layer is meat', () => {
+    const sandwich = { ingredients: [withDiet('m', PRODUCT.meat), withDiet('b')] };
+    const dairy = { ...ingredient('c', 'Cheese'), dietaryPreferences: [PRODUCT.dairy] } as Ingredient;
+
+    expect(doesStayKosherWithIngredient(dairy, sandwich)).toBe(false);
   });
 });
 
