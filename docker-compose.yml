@@ -48,13 +48,16 @@ services:
 
   # MongoDB service (uncomment when needed)
   mongo_db:
-    image: mongo:latest
+    # Pinned to the current 8.2 line (what `latest` resolved to). Avoid `latest` so a future
+    # major (9.x) can't silently break local dev; 8.2 also reads existing 8.2 data dirs.
+    image: mongo:8.2
     container_name: sandwicheck-mongo
     restart: unless-stopped
     volumes:
       - ./data/mongo:/data/db
     ports:
-      - '27018:27017'
+      # Loopback only: this dev DB has no auth — never publish it on all interfaces.
+      - '127.0.0.1:27018:27017'
     environment:
       MONGO_INITDB_DATABASE: sandwicheck
     healthcheck:
@@ -68,12 +71,13 @@ services:
 
   # Mailpit - Local SMTP server for development
   mailpit:
-    image: axllent/mailpit:latest
+    image: axllent/mailpit:v1.30
     container_name: sandwicheck-mailpit
     restart: unless-stopped
     ports:
-      - '1025:1025' # SMTP port
-      - '8025:8025' # Web UI port
+      # Loopback only: keep the dev SMTP sink and its web UI off all external interfaces.
+      - '127.0.0.1:1025:1025' # SMTP port
+      - '127.0.0.1:8025:8025' # Web UI port
     environment:
       MP_MAX_MESSAGES: 5000
       MP_SMTP_AUTH_ACCEPT_ANY: 1
