@@ -7,7 +7,7 @@ import useForm from '@/hooks/use-form';
 import useToast from '@/hooks/use-toast';
 import * as apiAuth from '@/services/api-auth';
 import { readSandwichFromCache } from '@/services/api-sandwiches';
-import { isAuthRoute } from '@/utils/auth-utils';
+import { isAuthRoute, isSafeReturnTo } from '@/utils/auth-utils';
 
 const Login = (): React.JSX.Element => {
   const { showToast, toastComponents } = useToast();
@@ -48,7 +48,7 @@ const Login = (): React.JSX.Element => {
       // User is authenticated, redirect them
       const returnTo: string | null = search?.returnTo;
       let destination: string;
-      if (returnTo && returnTo.trim() && !isAuthRoute(returnTo)) {
+      if (isSafeReturnTo(returnTo)) {
         destination = returnTo;
       } else {
         const unExpiredSavedSandwich = readSandwichFromCache();

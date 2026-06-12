@@ -22,3 +22,18 @@ export const isAuthRoute = (pathname: string): boolean => {
 
   return authRoutePatterns.some((pattern) => pattern.test(pathname));
 };
+
+/**
+ * Whether a `returnTo` value is a safe post-login redirect target: a non-empty same-origin path
+ * that is not an auth route. Rejects absolute and protocol-relative URLs (`//evil.com`,
+ * `https://…`) so a crafted `?returnTo=` can't bounce the user off-site after authenticating.
+ */
+export const isSafeReturnTo = (returnTo: string | null | undefined): returnTo is string => {
+  if (!returnTo || !returnTo.trim()) {
+    return false;
+  }
+  if (!returnTo.startsWith('/') || returnTo.startsWith('//')) {
+    return false;
+  }
+  return !isAuthRoute(returnTo);
+};

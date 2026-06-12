@@ -7,7 +7,7 @@ import { useModalContext } from '@/context/ModalContext';
 import { readSandwichFromCache } from '@/services/api-sandwiches';
 import type { ApiResult } from '@/types/api';
 import type { User } from '@/types/domain';
-import { isAuthRoute } from '@/utils/auth-utils';
+import { isSafeReturnTo } from '@/utils/auth-utils';
 import validateForm from '@/utils/validate-utils';
 import useToast from './use-toast.tsx';
 
@@ -86,7 +86,7 @@ const useForm = (): UseFormResult => {
      * 3. Else → /menu
      */
     let destination: string;
-    if (returnTo && returnTo.trim() && !isAuthRoute(returnTo)) {
+    if (isSafeReturnTo(returnTo)) {
       destination = returnTo;
     } else {
       const unExpiredSavedSandwich = readSandwichFromCache();
