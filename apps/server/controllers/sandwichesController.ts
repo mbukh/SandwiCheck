@@ -13,6 +13,7 @@ import { SANDWICHES_DIR } from '#config/dir.ts';
 import {
   DEFAULT_SANDWICH_UPDATE_WINDOW_MINUTES,
   DEFAULT_SANDWICHES_PER_PAGE,
+  MAX_SANDWICHES_PER_PAGE,
   NO_USER_SANDWICH_USERNAME,
 } from '#constants/sandwichConstants.ts';
 import type { IIngredientWithPortion, SandwichDocument } from '#models/SandwichModel.ts';
@@ -49,7 +50,8 @@ export const getSandwiches = asyncHandler(async (req, res, _next) => {
   query.sort(normalizeSort(sortBy));
 
   const defaultLimit = parsePositiveInteger(process.env.SANDWICHES_PER_PAGE_DEFAULT, DEFAULT_SANDWICHES_PER_PAGE);
-  const pageLimit = parsePositiveInteger(limit, defaultLimit);
+  // Clamp to a hard ceiling so neither a hostile ?limit= nor a misconfigured env can unbound the page.
+  const pageLimit = Math.min(parsePositiveInteger(limit, defaultLimit), MAX_SANDWICHES_PER_PAGE);
   const pageNumber = parsePositiveInteger(page, 1);
 
   query.skip((pageNumber - 1) * pageLimit).limit(pageLimit);
