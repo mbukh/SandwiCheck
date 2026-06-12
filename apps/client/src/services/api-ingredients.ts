@@ -93,7 +93,7 @@ function readIngredientsFromCache(): Ingredient[] | null {
   return ingredients;
 }
 
-function filterIngredientsByDietaryPreferences(
+export function filterIngredientsByDietaryPreferences(
   ingredients: Ingredient[],
   dietaryPreferences: DietaryPreference[],
 ): Ingredient[] {

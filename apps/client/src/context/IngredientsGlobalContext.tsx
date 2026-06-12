@@ -1,5 +1,5 @@
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useState } from 'react';
-import { getAllIngredients } from '@/services/api-ingredients';
+import { filterIngredientsByDietaryPreferences, getAllIngredients } from '@/services/api-ingredients';
 import type { Ingredient } from '@/types/domain';
 import { groupIngredientsByTypes } from '@/utils/ingredients-utils';
 import { log } from '@/utils/log';
@@ -43,9 +43,11 @@ const IngredientsGlobalContextProvider = ({ children }: { children: ReactNode })
 
     void (async () => {
       try {
-        const dietaryPreferences = currentUser.id ? currentUser.dietaryPreferences : [];
-
-        const res = await getAllIngredients({ dietaryPreferences });
+        /*
+         * Always fetch the FULL catalog. ingredientsRawList must stay unfiltered so hydrating other
+         * users' sandwiches (and copying them) never drops layers that fall outside the viewer's diet.
+         */
+        const res = await getAllIngredients({});
 
         if (res.error) {
           /*
@@ -57,7 +59,17 @@ const IngredientsGlobalContextProvider = ({ children }: { children: ReactNode })
           return;
         }
 
-        setIngredients(groupIngredientsByTypes(res.data));
+        /*
+         * The builder picker (grouped list) is filtered to the viewer's diet so they only build
+         * conforming sandwiches; the raw list stays full for display/hydration.
+         */
+        const dietaryPreferences = currentUser.id ? currentUser.dietaryPreferences : [];
+        const builderIngredients =
+          dietaryPreferences && dietaryPreferences.length > 0
+            ? filterIngredientsByDietaryPreferences(res.data, dietaryPreferences)
+            : res.data;
+
+        setIngredients(groupIngredientsByTypes(builderIngredients));
         setIngredientsRawList(res.data);
         setIngredientsLoadFailed(false);
         setAreIngredientsReady(true);
