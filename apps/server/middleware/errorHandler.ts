@@ -54,13 +54,17 @@ const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
     error = createHttpError.BadRequest(message);
   }
 
-  if (err.name === 'MulterError' && error.code === 'LIMIT_FILE_SIZE') {
-    error = createHttpError(
-      400,
-      `The file is too large. The maximum file size allowed is ${Math.round(
-        Number.parseInt(process.env.MAX_UPLOAD_SIZE_IN_BYTES ?? '', 10) / 1024 / 1024,
-      )}MB`,
-    );
+  // All multer upload errors are client problems (bad/oversized/unexpected file) → 400, not 500.
+  if (err.name === 'MulterError') {
+    error =
+      error.code === 'LIMIT_FILE_SIZE'
+        ? createHttpError(
+            400,
+            `The file is too large. The maximum file size allowed is ${Math.round(
+              Number.parseInt(process.env.MAX_UPLOAD_SIZE_IN_BYTES ?? '', 10) / 1024 / 1024,
+            )}MB`,
+          )
+        : createHttpError(400, `File upload error: ${err.message}`);
   }
 
   res.status(error.status || 500);

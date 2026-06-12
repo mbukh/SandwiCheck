@@ -33,7 +33,7 @@ export interface FetchApi {
   get: <TData = unknown>(url: string, options?: RequestOptions) => Promise<FetchApiResponse<TData>>;
   post: <TData = unknown>(url: string, body?: unknown, options?: RequestOptions) => Promise<FetchApiResponse<TData>>;
   put: <TData = unknown>(url: string, body?: unknown, options?: RequestOptions) => Promise<FetchApiResponse<TData>>;
-  delete: <TData = unknown>(url: string, options?: RequestOptions) => Promise<FetchApiResponse<TData>>;
+  delete: <TData = unknown>(url: string, body?: unknown, options?: RequestOptions) => Promise<FetchApiResponse<TData>>;
   defaults: { headers: Record<string, string> };
 }
 
@@ -245,7 +245,7 @@ export function createFetchApi(baseURL: string, defaultHeaders: Record<string, s
     get: (url, options) => request(url, { ...options, method: 'GET' }),
     post: (url, body, options = {}) => request(url, { ...options, method: 'POST', body }),
     put: (url, body, options = {}) => request(url, { ...options, method: 'PUT', body }),
-    delete: (url, options) => request(url, { ...options, method: 'DELETE' }),
+    delete: (url, body, options = {}) => request(url, { ...options, method: 'DELETE', body }),
     defaults, // Expose defaults for compatibility (api.defaults.headers)
   };
 

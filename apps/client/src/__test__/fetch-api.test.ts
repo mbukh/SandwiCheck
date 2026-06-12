@@ -40,3 +40,34 @@ describe('fetch-api query parameter serialization', () => {
     expect(url).toContain('page=2');
   });
 });
+
+describe('fetch-api DELETE body', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('serializes a DELETE body as JSON with a Content-Type header', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse);
+    vi.stubGlobal('fetch', fetchMock);
+
+    const api = createFetchApi('http://api.test');
+    await api.delete('/users/u1/week-menu/monday', { sandwichId: 's1' });
+
+    const init = fetchMock.mock.calls[0]?.[1] as RequestInit;
+    expect(init.method).toBe('DELETE');
+    expect(init.body).toBe(JSON.stringify({ sandwichId: 's1' }));
+    expect((init.headers as Record<string, string>)['Content-Type']).toBe('application/json');
+  });
+
+  it('sends no body for a DELETE called with only a URL', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse);
+    vi.stubGlobal('fetch', fetchMock);
+
+    const api = createFetchApi('http://api.test');
+    await api.delete('/users/u1');
+
+    const init = fetchMock.mock.calls[0]?.[1] as RequestInit;
+    expect(init.method).toBe('DELETE');
+    expect(init.body).toBeUndefined();
+  });
+});

@@ -52,11 +52,20 @@ export const updateUserById = async (
   if (name) formData.append('name', name);
   if (email) formData.append('email', email);
   if (role) formData.append('role', role);
-  if (dietaryPreferences) formData.append('dietaryPreferences', String(dietaryPreferences));
+  /*
+   * Repeat the field once per value: multer/multipart delivers repeated keys as an array,
+   * which the server stores into the [String] enum. String(array) sent one bogus "a,b" value.
+   */
+  if (dietaryPreferences) {
+    for (const preference of dietaryPreferences) {
+      formData.append('dietaryPreferences', preference);
+    }
+  }
   if (unlinkParentId) formData.append('unlinkParentId', unlinkParentId);
   if (unlinkChildId) formData.append('unlinkChildId', unlinkChildId);
   if (removeProfilePicture) formData.append('removeProfilePicture', String(removeProfilePicture));
-  if (file && file.imageBuffer) formData.append('file', file.imageBuffer, 'profile-picture.png');
+  // Field name must match upload.single('profilePicture') on the server, or the file is dropped.
+  if (file && file.imageBuffer) formData.append('profilePicture', file.imageBuffer, 'profile-picture.png');
 
   return await handleResponse<User>(async () => api.put(`/${userId}`, formData));
 };
@@ -83,11 +92,14 @@ export const addSandwichToWeekMenu = async ({
 export const removeSandwichFromWeekMenu = async ({
   userId,
   day,
+  sandwichId,
 }: {
   userId: string;
   day: string;
+  sandwichId: string;
 }): Promise<ApiResult<DayMenuItem[]>> => {
-  return await handleResponse<DayMenuItem[]>(async () => api.delete(`/${userId}/week-menu/${day}`));
+  // The server requires sandwichId in the request body (which sandwich to pull from the day).
+  return await handleResponse<DayMenuItem[]>(async () => api.delete(`/${userId}/week-menu/${day}`, { sandwichId }));
 };
 
 /** DELETE /:userId — delete a user account (private, self). */
