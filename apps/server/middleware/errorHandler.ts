@@ -78,7 +78,17 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
         : createHttpError(400, `File upload error: ${err.message}`);
   }
 
-  res.status(error.status || 500);
+  const finalStatus = error.status || 500;
+  res.status(finalStatus);
+
+  /*
+   * Never return the internal message/code on a server error (5xx): unrecognized errors fall
+   * through here carrying their raw err.message/err.code, which would leak implementation details.
+   * The full detail is already captured in the logger.error call above. 4xx responses keep their
+   * message and structured code (e.g. emailNotConfirmed) — the client keys UX on those.
+   */
+  const isServerError = finalStatus >= 500;
+
   const errorResponse: {
     success: boolean;
     error: {
@@ -91,7 +101,7 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
     success: false,
     error: {
       status: error.status,
-      message: error.message || 'Server Error',
+      message: isServerError ? 'Internal Server Error' : error.message || 'Server Error',
     },
   };
 
@@ -100,8 +110,8 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
     errorResponse.error.cooldownRemainingMs = error.cooldownRemainingMs;
   }
 
-  // Include error code if present (for distinguishing error types)
-  if (error.code !== undefined) {
+  // Include error code if present (4xx only — never expose an internal code on a 5xx)
+  if (!isServerError && error.code !== undefined) {
     errorResponse.error.code = error.code;
   }
 

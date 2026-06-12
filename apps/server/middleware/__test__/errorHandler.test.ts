@@ -71,6 +71,35 @@ describe('errorHandler duplicate-key handling', () => {
   });
 });
 
+describe('errorHandler 5xx detail leak prevention', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('returns a generic message and omits the code on an unrecognized (500) error', () => {
+    const err = Object.assign(new Error('connect ECONNREFUSED 10.0.0.5:5432'), { code: 'ECONNREFUSED' });
+
+    const { statusMock, payload } = runErrorHandler(err);
+
+    expect(statusMock).toHaveBeenCalledWith(500);
+    expect(payload.error.message).toBe('Internal Server Error');
+    expect(payload.error.code).toBeUndefined();
+  });
+
+  it('keeps the message and structured code on a 4xx error', () => {
+    const err = Object.assign(new Error('Please confirm your email'), {
+      status: 401,
+      code: 'EMAIL_NOT_CONFIRMED',
+    });
+
+    const { statusMock, payload } = runErrorHandler(err);
+
+    expect(statusMock).toHaveBeenCalledWith(401);
+    expect(payload.error.message).toBe('Please confirm your email');
+    expect(payload.error.code).toBe('EMAIL_NOT_CONFIRMED');
+  });
+});
+
 describe('errorHandler when the response was already sent', () => {
   afterEach(() => {
     vi.restoreAllMocks();
