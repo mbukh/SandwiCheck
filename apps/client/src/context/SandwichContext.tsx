@@ -31,7 +31,6 @@ interface SandwichContextValue {
   sandwichDispatch: Dispatch<SandwichAction>;
   isSavingSandwich: boolean;
   setIsSavingSandwich: Dispatch<SetStateAction<boolean>>;
-  getSandwich: (sandwichId: string) => Promise<void>;
   clearSandwich: () => void;
   randomizeSandwich: () => void;
   saveSandwich: (sandwichToSave: BuilderSandwich) => Promise<ApiResult<Sandwich>>;
@@ -71,15 +70,8 @@ const SandwichContextProvider = ({ children }: { children: ReactNode }): ReactNo
   const layerAddedViaAddTopRef = useRef<number | null>(null);
   const { ingredients, areIngredientsReady, forceFetchIngredients } = useIngredientsGlobalContext();
   const { currentUser, setCurrentUser, isCurrentUserReady } = useAuthGlobalContext();
-  const {
-    currentType,
-    setCurrentType,
-    sandwich,
-    sandwichDispatch,
-    isSavingSandwich,
-    setIsSavingSandwich,
-    getSandwich,
-  } = useSandwich();
+  const { currentType, setCurrentType, sandwich, sandwichDispatch, isSavingSandwich, setIsSavingSandwich } =
+    useSandwich();
 
   const defaultName = `${currentUser.firstName}'s Sandwich`;
   const isSandwichReady = sandwich.ingredients.length > 1;
@@ -407,7 +399,6 @@ const SandwichContextProvider = ({ children }: { children: ReactNode }): ReactNo
         sandwichDispatch,
         isSavingSandwich,
         setIsSavingSandwich,
-        getSandwich,
         clearSandwich,
         randomizeSandwich,
         saveSandwich,
