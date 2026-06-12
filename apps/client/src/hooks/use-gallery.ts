@@ -1,4 +1,4 @@
-import { type Dispatch, type SetStateAction, useCallback, useState } from 'react';
+import { type Dispatch, type SetStateAction, useCallback, useRef, useState } from 'react';
 import type { SandwichQuery } from '@/services/api-sandwiches';
 import * as apiSandwiches from '@/services/api-sandwiches';
 import * as apiUsers from '@/services/api-users';
@@ -19,6 +19,12 @@ const useGallery = (): UseGalleryResult => {
   const [gallerySandwiches, setGallerySandwiches] = useState<Sandwich[]>([]);
   // null = no error. A failed load sets this so the gallery can show a retry instead of a fake "empty".
   const [galleryError, setGalleryError] = useState<string | null>(null);
+  /*
+   * Monotonic request counter shared by both fetchers. Each call captures its generation; only the
+   * most recent request commits state, so a slow earlier response can't clobber a newer one
+   * (out-of-order responses when the gallery refetches in quick succession).
+   */
+  const requestGenerationRef = useRef(0);
 
   const fetchSandwiches = useCallback(
     async ({
@@ -28,6 +34,7 @@ const useGallery = (): UseGalleryResult => {
       page = 1,
       limit = 48,
     }: SandwichQuery): Promise<void> => {
+      const generation = ++requestGenerationRef.current;
       const res = await apiSandwiches.fetchSandwiches({
         dietaryPreferences,
         ingredients,
@@ -36,6 +43,11 @@ const useGallery = (): UseGalleryResult => {
         limit,
       });
       logResponse('🥪 Read sandwiches', res);
+
+      // A newer request started while this one was in flight — drop this (stale) response.
+      if (generation !== requestGenerationRef.current) {
+        return;
+      }
 
       if (res.success) {
         setGallerySandwiches(res.data || []);
@@ -49,8 +61,14 @@ const useGallery = (): UseGalleryResult => {
   );
 
   const fetchUserSandwiches = useCallback(async (id: string, sortByCreatedAt = false): Promise<void> => {
+    const generation = ++requestGenerationRef.current;
     const res = await apiUsers.fetchUserById(id);
     logResponse('🍔👽 Fetch user with sandwiches', res);
+
+    // A newer request started while this one was in flight — drop this (stale) response.
+    if (generation !== requestGenerationRef.current) {
+      return;
+    }
 
     if (res.success && res.data) {
       // User.sandwiches may be IDs (unpopulated responses) or full objects; keep only the latter.
