@@ -61,22 +61,33 @@ export const createChildUser = asyncHandler<ParamsDictionary, unknown, CreateChi
  * @access  Private/Child
  */
 export const switchToParent = asyncHandler(async (request, res, next) => {
-  if (!request.parentUser) {
+  const parentUser = request.parentUser;
+  if (!parentUser) {
     return next(createHttpError.BadRequest('A logged-in parent required to switch back'));
+  }
+
+  /*
+   * Defense-in-depth: parentUser already derives from a verified parentToken, but assert the current
+   * child is still linked to that parent (the link could have been removed mid-session) before
+   * minting a parent session.
+   */
+  const stillLinked = request.user?.parents?.some((parentId) => parentId.equals(parentUser._id));
+  if (!stillLinked) {
+    return next(createHttpError.Forbidden('Not authorized to switch to this parent'));
   }
 
   removeCookie('childToken', res);
 
   const token = {
     name: 'token',
-    value: hashAndTokens.generatePasswordToken({ id: request.parentUser._id }),
+    value: hashAndTokens.generatePasswordToken({ id: parentUser._id }),
   };
 
   setTokenCookie(token, res);
 
   res.status(200).json({
     success: true,
-    data: await populateUserSessionData(request.parentUser._id),
+    data: await populateUserSessionData(parentUser._id),
   });
 });
 
