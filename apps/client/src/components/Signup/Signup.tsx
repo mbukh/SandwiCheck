@@ -11,7 +11,7 @@ const Signup = (): React.JSX.Element => {
   const { showToast, toastComponents } = useToast();
   const [needsEmailConfirmation, setNeedsEmailConfirmation] = useState(false);
   const [confirmationEmail, setConfirmationEmail] = useState('');
-  const [confirmationMessage, setConfirmationMessage] = useState('');
+  const [emailFailedToSend, setEmailFailedToSend] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tcAgreed, setTcAgreed] = useState(false);
   const search = useSearch({ strict: false });
@@ -55,7 +55,8 @@ const Signup = (): React.JSX.Element => {
       if (result && result.needsEmailConfirmation) {
         setNeedsEmailConfirmation(true);
         setConfirmationEmail(result.email || email);
-        setConfirmationMessage(result.message || '');
+        // emailSent === false means the account was created but the confirmation email failed.
+        setEmailFailedToSend(result.emailSent === false);
         // Reset form fields
         setName('');
         setEmail('');
@@ -76,7 +77,7 @@ const Signup = (): React.JSX.Element => {
           Check Your Email!
         </h1>
         <div className="mb-6 text-base md:mb-8 md:text-xl xl:text-3xl">
-          {confirmationMessage && confirmationMessage.includes('confirmation email could not be sent') ? (
+          {emailFailedToSend ? (
             <>
               <p className="mb-4">
                 Your account has been created for <strong className="text-yellow">{confirmationEmail}</strong>

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate, useSearch } from '@tanstack/react-router';
-import { formatDuration } from '@sandwicheck/shared';
+import { ERROR_CODE, formatDuration } from '@sandwicheck/shared';
 import { ROUTE_PATHS } from '@/constants/route-paths';
 import { useAuthGlobalContext } from '@/context/AuthGlobalContext';
 import useForm from '@/hooks/use-form';
@@ -14,7 +14,8 @@ const Login = (): React.JSX.Element => {
   const navigate = useNavigate();
   const search = useSearch({ strict: false });
   const location = useLocation();
-  const { email, setEmail, password, setPassword, LoginHandler, parentId, errors } = useForm();
+  const { email, setEmail, password, setPassword, LoginHandler, parentId, errors, loginNeedsEmailConfirmation } =
+    useForm();
   const { currentUser, isCurrentUserReady } = useAuthGlobalContext();
 
   /*
@@ -54,16 +55,16 @@ const Login = (): React.JSX.Element => {
     }
   }, [errors, showToast]);
 
-  // Derive the resend-confirmation UI state from the errors, resetting during render when they change.
-  const [previousErrors, setPreviousErrors] = useState(errors);
-  if (errors !== previousErrors) {
-    setPreviousErrors(errors);
-    if (errors.length > 0) {
-      const lastError = errors.at(-1);
-      setShowResendConfirmation(Boolean(lastError && lastError.includes('confirm your email')));
-      if (errors.some((error) => error && error.includes('confirm your email'))) {
-        setEmailSentSuccessfully(false);
-      }
+  /*
+   * Show the resend-confirmation UI when a login was rejected for an unconfirmed email. Keyed on the
+   * structured flag from use-form (EMAIL_NOT_CONFIRMED), not on error-message prose.
+   */
+  const [previousNeedsConfirmation, setPreviousNeedsConfirmation] = useState(loginNeedsEmailConfirmation);
+  if (loginNeedsEmailConfirmation !== previousNeedsConfirmation) {
+    setPreviousNeedsConfirmation(loginNeedsEmailConfirmation);
+    setShowResendConfirmation(loginNeedsEmailConfirmation);
+    if (loginNeedsEmailConfirmation) {
+      setEmailSentSuccessfully(false);
     }
   }
 
@@ -126,22 +127,19 @@ const Login = (): React.JSX.Element => {
       } else {
         // Handle error response (res.success === false or res.error exists)
         const errorStatus = res?.error?.status;
+        const errorCode = res?.error?.code;
         const errorMessage = res?.error?.message || res?.message || 'Failed to send confirmation email';
         const cooldownMs = res?.error?.cooldownRemainingMs;
 
-        // Check for rate limit (429) with cooldown
-        if (errorStatus === 429 || errorMessage.includes('Too many') || errorMessage.includes('wait')) {
+        // Rate limited (429): show the cooldown countdown.
+        if (errorStatus === 429) {
           if (cooldownMs !== undefined && cooldownMs > 0) {
             setCooldownRemainingMs(cooldownMs);
           }
           showToast(errorMessage);
         }
-        // Check for max resend count reached (403)
-        else if (
-          errorStatus === 403 ||
-          errorMessage.includes('Maximum number') ||
-          errorMessage.includes('max resends')
-        ) {
+        // Resend cap reached (MAX_RESENDS): stop offering the resend button.
+        else if (errorCode === ERROR_CODE.maxResends) {
           showToast('Maximum number of confirmation email resends reached. Please contact support for assistance.');
           setShowResendConfirmation(false);
           setCooldownRemainingMs(null);
@@ -159,21 +157,22 @@ const Login = (): React.JSX.Element => {
           : undefined;
       const errorStatus = response?.status;
       const errorData = response?.data as
-        | { error?: { message?: string; cooldownRemainingMs?: number }; message?: string }
+        | { error?: { message?: string; code?: string | number; cooldownRemainingMs?: number }; message?: string }
         | undefined;
+      const errorCode = errorData?.error?.code;
       const errorMessage =
         errorData?.error?.message || errorData?.message || 'Failed to send confirmation email. Please try again.';
       const cooldownMs = errorData?.error?.cooldownRemainingMs;
 
-      // Check for rate limit (429) with cooldown
-      if (errorStatus === 429 || errorMessage.includes('Too many') || errorMessage.includes('wait')) {
+      // Rate limited (429): show the cooldown countdown.
+      if (errorStatus === 429) {
         if (cooldownMs !== undefined && cooldownMs > 0) {
           setCooldownRemainingMs(cooldownMs);
         }
         showToast(errorMessage);
       }
-      // Check for max resend count reached (403)
-      else if (errorStatus === 403 || errorMessage.includes('Maximum number') || errorMessage.includes('max resends')) {
+      // Resend cap reached (MAX_RESENDS): stop offering the resend button.
+      else if (errorCode === ERROR_CODE.maxResends) {
         showToast('Maximum number of confirmation email resends reached. Please contact support for assistance.');
         setShowResendConfirmation(false);
         setCooldownRemainingMs(null);

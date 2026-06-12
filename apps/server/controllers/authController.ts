@@ -307,7 +307,10 @@ export const login = asyncHandler<ParamsDictionary, unknown, LoginDto>(async (re
   // Check email confirmation (skip for tethered children)
   const isTetheredChild = user.isTetheredChild || !user.email;
   if (!isTetheredChild && !user.emailConfirmed) {
-    return next(createHttpError.Unauthorized('Please confirm your email before logging in'));
+    // Stamp a structured code so the client can show the resend-confirmation UI without parsing prose.
+    const error = createHttpError.Unauthorized('Please confirm your email before logging in');
+    error.code = ERROR_CODE.emailNotConfirmed;
+    return next(error);
   }
 
   if (inviteToken) {

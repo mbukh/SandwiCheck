@@ -1,5 +1,5 @@
 import { type Dispatch, type SetStateAction, useCallback, useState } from 'react';
-import type { CreateChildDto, LoginChildDto, LoginDto, SignupDto } from '@sandwicheck/shared';
+import type { CreateChildDto, LoginChildDto, LoginDto, SignupDto, SignupPendingData } from '@sandwicheck/shared';
 import * as apiAuth from '@/services/api-auth';
 import type { ApiResult } from '@/types/api';
 import type { Session, User } from '@/types/domain';
@@ -13,7 +13,7 @@ export interface UseUserResult {
   isCurrentUserReady: boolean;
   setIsCurrentUserReady: Dispatch<SetStateAction<boolean>>;
   logIn: (params: LoginDto) => Promise<ApiResult<User>>;
-  signUp: (params: SignupDto) => Promise<ApiResult<User>>;
+  signUp: (params: SignupDto) => Promise<ApiResult<SignupPendingData>>;
   logOut: () => Promise<ApiResult>;
   refreshSession: () => Promise<ApiResult<Session>>;
   createChild: (params: CreateChildDto) => Promise<ApiResult<User>>;
@@ -69,7 +69,13 @@ const useUser = (): UseUserResult => {
     return res;
   };
 
-  const signUp = async ({ email, password, name, role, inviteToken }: SignupDto): Promise<ApiResult<User>> => {
+  const signUp = async ({
+    email,
+    password,
+    name,
+    role,
+    inviteToken,
+  }: SignupDto): Promise<ApiResult<SignupPendingData>> => {
     setIsCurrentUserReady(false);
     const res = await apiAuth.signup({ email, password, name, role, inviteToken });
     logResponse('🎊 Signing up', res);
@@ -78,18 +84,11 @@ const useUser = (): UseUserResult => {
       return res;
     }
     /*
-     * Only set currentUser and loggedIn if email confirmation is not required.
-     * Check if response has a message about checking email.
+     * Signup never auto-authenticates a regular account (email confirmation is required first), so
+     * don't refresh the session when the response says confirmation is pending — whether the email
+     * was sent or failed to send. The server signals this with data.requiresEmailConfirmation.
      */
-    /*
-     * Signup never auto-authenticates (email confirmation is required first), so don't
-     * trigger a session refresh when the account was created but not logged in — whether
-     * confirmation is pending or the confirmation email failed to send.
-     */
-    const needsEmailConfirmation =
-      res.message &&
-      (res.message.includes('check your email') || res.message.includes('confirmation email could not be sent'));
-    if (needsEmailConfirmation) {
+    if (res.data?.requiresEmailConfirmation) {
       applySession(null);
       setIsCurrentUserReady(true);
     } else {

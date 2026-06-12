@@ -9,7 +9,6 @@ import { readJsonFromStorage } from '@/utils/storage-utils';
 import { timeDifference } from '@/utils/utils';
 
 const api = createFetchApi(`${import.meta.env.VITE_API_SERVER}/api/v1/sandwiches`, {
-  'Access-Control-Allow-Origin': import.meta.env.VITE_HOST,
   'Content-Type': 'application/json',
 });
 

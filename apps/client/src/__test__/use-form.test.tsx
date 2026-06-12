@@ -1,7 +1,9 @@
+import { ERROR_CODE } from '@sandwicheck/shared';
 import { act, renderHook } from '@testing-library/react';
 import useForm from '@/hooks/use-form';
 
 const signUpMock = vi.fn();
+const logInMock = vi.fn();
 const matchRouteMock = vi.fn();
 
 vi.mock('@tanstack/react-router', () => ({
@@ -10,7 +12,7 @@ vi.mock('@tanstack/react-router', () => ({
 }));
 
 vi.mock('@/context/AuthGlobalContext', () => ({
-  useAuthGlobalContext: () => ({ logIn: vi.fn(), signUp: signUpMock, currentUser: {} }),
+  useAuthGlobalContext: () => ({ logIn: logInMock, signUp: signUpMock, currentUser: {} }),
 }));
 
 vi.mock('@/context/ModalContext', () => ({
@@ -31,7 +33,12 @@ const fillValidFields = (result: { current: ReturnType<typeof useForm> }): void 
 describe('useForm signUpHandler', () => {
   beforeEach(() => {
     signUpMock.mockReset();
-    signUpMock.mockResolvedValue({ success: true, message: 'Please check your email to confirm your account' });
+    // The server signals a pending account via data.requiresEmailConfirmation, not message prose.
+    signUpMock.mockResolvedValue({
+      success: true,
+      message: 'Please check your email to confirm your account',
+      data: { requiresEmailConfirmation: true, emailSent: true },
+    });
     matchRouteMock.mockReset();
   });
 
@@ -86,5 +93,77 @@ describe('useForm signUpHandler', () => {
     });
 
     expect(signUpMock).toHaveBeenCalledWith(expect.objectContaining({ role: 'parent', inviteToken: undefined }));
+  });
+
+  it('returns emailSent: false when the account was created but the email failed', async () => {
+    matchRouteMock.mockReturnValue(false);
+    signUpMock.mockResolvedValue({
+      success: true,
+      message: 'Account created, but confirmation email could not be sent. Please use the resend confirmation option.',
+      data: { requiresEmailConfirmation: true, emailSent: false },
+    });
+
+    const { result } = renderHook(() => useForm());
+    fillValidFields(result);
+    act(() => {
+      result.current.setRole('parent');
+    });
+
+    let outcome!: Awaited<ReturnType<typeof result.current.signUpHandler>>;
+    await act(async () => {
+      outcome = await result.current.signUpHandler(fakeSubmitEvent);
+    });
+
+    expect(outcome).toEqual(expect.objectContaining({ needsEmailConfirmation: true, emailSent: false }));
+  });
+});
+
+describe('useForm LoginHandler', () => {
+  beforeEach(() => {
+    logInMock.mockReset();
+    matchRouteMock.mockReset();
+    matchRouteMock.mockReturnValue(false);
+  });
+
+  const fillLogin = (result: { current: ReturnType<typeof useForm> }): void => {
+    act(() => {
+      result.current.setEmail('user@example.com');
+      result.current.setPassword('secret1');
+    });
+  };
+
+  it('flags email-not-confirmed when login is rejected with EMAIL_NOT_CONFIRMED', async () => {
+    logInMock.mockResolvedValue({
+      success: false,
+      error: {
+        status: 401,
+        message: 'Please confirm your email before logging in',
+        code: ERROR_CODE.emailNotConfirmed,
+      },
+    });
+
+    const { result } = renderHook(() => useForm());
+    fillLogin(result);
+
+    await act(async () => {
+      await result.current.LoginHandler(fakeSubmitEvent);
+    });
+
+    expect(result.current.loginNeedsEmailConfirmation).toBe(true);
+    expect(result.current.errors).toEqual(['Please confirm your email before logging in']);
+  });
+
+  it('shows a generic error (flag stays false) for a code-less 401', async () => {
+    logInMock.mockResolvedValue({ success: false, error: { status: 401, message: 'Invalid credentials' } });
+
+    const { result } = renderHook(() => useForm());
+    fillLogin(result);
+
+    await act(async () => {
+      await result.current.LoginHandler(fakeSubmitEvent);
+    });
+
+    expect(result.current.loginNeedsEmailConfirmation).toBe(false);
+    expect(result.current.errors).toEqual(['Login failed, try signup instead']);
   });
 });

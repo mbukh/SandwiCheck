@@ -8,6 +8,7 @@ export const ERROR_CODE = {
   tokenExpired: 'TOKEN_EXPIRED',
   tokenInvalid: 'TOKEN_INVALID',
   maxResends: 'MAX_RESENDS',
+  emailNotConfirmed: 'EMAIL_NOT_CONFIRMED',
 } as const;
 
 export type ErrorCode = (typeof ERROR_CODE)[keyof typeof ERROR_CODE];

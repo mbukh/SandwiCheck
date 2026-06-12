@@ -5,7 +5,6 @@ import { handleResponse } from '@/utils/api-utils';
 import { createFetchApi } from '@/utils/fetch-api';
 
 const api = createFetchApi(`${import.meta.env.VITE_API_SERVER}/api/v1/users`, {
-  'Access-Control-Allow-Origin': import.meta.env.VITE_HOST,
   'Content-Type': 'application/json',
 });
 
