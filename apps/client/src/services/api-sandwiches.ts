@@ -98,6 +98,8 @@ export const deleteSandwichFromCache = (): void => {
   log('Removing sandwich from cache');
 
   localStorage.removeItem('sandwich');
+  // Remove the companion timestamp too, so it doesn't linger as orphaned storage.
+  localStorage.removeItem('sandwich-cachedAt');
 };
 
 /** Normalize builder state into the API create/update payload. */
