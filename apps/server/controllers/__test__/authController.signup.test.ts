@@ -32,7 +32,7 @@ const VALID_BODY = { name: 'Test User', email: 'user@example.com', password: 'se
 const MASKED_PENDING = {
   success: true,
   message: 'Please check your email to confirm your account',
-  data: { requiresEmailConfirmation: true, emailSent: true },
+  data: { requiresEmailConfirmation: true },
 };
 
 const flush = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, 0));
@@ -157,7 +157,7 @@ describe('signup masking and resend rate-limiting', () => {
     expect(sendEmail).toHaveBeenCalledTimes(1);
     expect(res.json).toHaveBeenCalledWith(MASKED_PENDING);
     const payload = res.json.mock.calls[0]?.[0] as { data: Record<string, unknown> };
-    expect(payload.data).toEqual({ requiresEmailConfirmation: true, emailSent: true });
+    expect(payload.data).toEqual({ requiresEmailConfirmation: true });
     expect(payload.data).not.toHaveProperty('email');
     expect(payload.data).not.toHaveProperty('roles');
   });

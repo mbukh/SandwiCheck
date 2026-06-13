@@ -62,7 +62,6 @@ export interface ResendConfirmationDto {
  */
 export interface SignupPendingData {
   requiresEmailConfirmation: true;
-  emailSent: boolean;
 }
 
 // ==== Child accounts ==== //

@@ -44,9 +44,8 @@ const getEmailConfirmationResendCooldownMs = (): number =>
  * leaks nothing about whether an email is registered or how much resend budget it has left.
  */
 const SIGNUP_PENDING_MESSAGE = 'Please check your email to confirm your account';
-const signupPendingData = (emailSent: boolean): SignupPendingData => ({
+const signupPendingData = (): SignupPendingData => ({
   requiresEmailConfirmation: true,
-  emailSent,
 });
 
 /*
@@ -122,7 +121,7 @@ export const signup = asyncHandler<ParamsDictionary, unknown, SignupDto>(async (
       return res.status(200).json({
         success: true,
         message: SIGNUP_PENDING_MESSAGE,
-        data: signupPendingData(true),
+        data: signupPendingData(),
       });
     }
 
@@ -202,7 +201,7 @@ export const signup = asyncHandler<ParamsDictionary, unknown, SignupDto>(async (
     return res.status(200).json({
       success: true,
       message: SIGNUP_PENDING_MESSAGE,
-      data: signupPendingData(true),
+      data: signupPendingData(),
     });
   }
 
@@ -274,7 +273,7 @@ export const signup = asyncHandler<ParamsDictionary, unknown, SignupDto>(async (
     res.status(200).json({
       success: true,
       message: SIGNUP_PENDING_MESSAGE,
-      data: signupPendingData(true),
+      data: signupPendingData(),
     });
   } catch (emailError) {
     // Log email sending error (PII will be automatically masked)
@@ -285,15 +284,15 @@ export const signup = asyncHandler<ParamsDictionary, unknown, SignupDto>(async (
     });
 
     /*
-     * Return the SAME masked body as every other pending-signup branch. A distinct message or
-     * emailSent:false here would let a caller tell a brand-new email (mail just failed) apart from
-     * an already-registered one (always emailSent:true) — re-opening enumeration while SMTP is down.
-     * The account is created; the user recovers via the resend-confirmation flow.
+     * Return the SAME masked body as every other pending-signup branch. A distinct message here
+     * would let a caller tell a brand-new email (mail just failed) apart from an already-registered
+     * one — re-opening enumeration while SMTP is down. The account is created; the user recovers via
+     * the resend-confirmation flow, offered in-band on the signup-pending screen.
      */
     res.status(200).json({
       success: true,
       message: SIGNUP_PENDING_MESSAGE,
-      data: signupPendingData(true),
+      data: signupPendingData(),
     });
   }
 });

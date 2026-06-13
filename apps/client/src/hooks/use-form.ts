@@ -14,8 +14,6 @@ import useToast from './use-toast.tsx';
 interface SignUpResult {
   success: boolean;
   needsEmailConfirmation: boolean;
-  /** False when the account was created but the confirmation email could not be sent. */
-  emailSent?: boolean;
   email?: string;
   message?: string;
 }
@@ -172,8 +170,8 @@ const useForm = (): UseFormResult => {
     }
 
     /*
-     * The server signals a pending account via data.requiresEmailConfirmation (emailSent says
-     * whether the confirmation email actually went out), regardless of the human-readable message.
+     * The server signals a pending account via data.requiresEmailConfirmation, regardless of the
+     * human-readable message. The signup-pending screen offers an in-band resend if it never arrives.
      */
     if (res.data?.requiresEmailConfirmation) {
       // Don't redirect - return success state to show confirmation message
@@ -181,7 +179,6 @@ const useForm = (): UseFormResult => {
       return {
         success: true,
         needsEmailConfirmation: true,
-        emailSent: res.data.emailSent,
         email,
         message: res.message,
       };

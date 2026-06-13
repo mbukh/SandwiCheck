@@ -37,7 +37,7 @@ describe('useForm signUpHandler', () => {
     signUpMock.mockResolvedValue({
       success: true,
       message: 'Please check your email to confirm your account',
-      data: { requiresEmailConfirmation: true, emailSent: true },
+      data: { requiresEmailConfirmation: true },
     });
     matchRouteMock.mockReset();
   });
@@ -93,28 +93,6 @@ describe('useForm signUpHandler', () => {
     });
 
     expect(signUpMock).toHaveBeenCalledWith(expect.objectContaining({ role: 'parent', inviteToken: undefined }));
-  });
-
-  it('returns emailSent: false when the account was created but the email failed', async () => {
-    matchRouteMock.mockReturnValue(false);
-    signUpMock.mockResolvedValue({
-      success: true,
-      message: 'Account created, but confirmation email could not be sent. Please use the resend confirmation option.',
-      data: { requiresEmailConfirmation: true, emailSent: false },
-    });
-
-    const { result } = renderHook(() => useForm());
-    fillValidFields(result);
-    act(() => {
-      result.current.setRole('parent');
-    });
-
-    let outcome!: Awaited<ReturnType<typeof result.current.signUpHandler>>;
-    await act(async () => {
-      outcome = await result.current.signUpHandler(fakeSubmitEvent);
-    });
-
-    expect(outcome).toEqual(expect.objectContaining({ needsEmailConfirmation: true, emailSent: false }));
   });
 });
 
