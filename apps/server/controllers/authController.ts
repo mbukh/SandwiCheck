@@ -49,6 +49,17 @@ const signupPendingData = (emailSent: boolean): SignupPendingData => ({
   emailSent,
 });
 
+/*
+ * Masked resend-confirmation response. Returned identically for a not-found email, an
+ * already-confirmed account, and a freshly (re)sent unconfirmed account — so a caller cannot use
+ * this endpoint to learn whether an email is registered, and in particular cannot learn that an
+ * email belongs to a *confirmed* account (signup itself never discloses that). The cooldown (429)
+ * and resend-cap (403) responses stay distinct: they concern only an already-unconfirmed account
+ * and are bounded by the per-IP resend rate limiter.
+ */
+const RESEND_MASKED_MESSAGE =
+  'If an account with this email still needs confirmation, a new confirmation email has been sent.';
+
 /**
  * Link a freshly authenticated user to the parent that issued a still-valid invite
  * token, atomically consuming the token so it is single-use: the matching parent is
@@ -647,20 +658,26 @@ export const resendConfirmation = asyncHandler<ParamsDictionary, unknown, Resend
 
     const user = await User.findOne({ email });
 
-    // Security: Don't reveal if user exists - use delay + fake success
+    // Security: Don't reveal if user exists - use delay + masked success
     if (!user) {
       await delay(2000 + Math.random() * 2000);
       return res.status(200).json({
         success: true,
-        message: 'If an account exists with this email, a confirmation email has been sent',
+        message: RESEND_MASKED_MESSAGE,
       });
     }
 
-    // If already confirmed, return appropriate message
+    /*
+     * Already confirmed: send nothing (never email a confirmed user), but return the SAME masked
+     * body as the not-found branch AND the same jittered delay — otherwise a fast, distinctly-worded
+     * response would reveal that this email belongs to a confirmed account, the one fact signup is
+     * careful never to disclose.
+     */
     if (user.emailConfirmed) {
+      await delay(2000 + Math.random() * 2000);
       return res.status(200).json({
         success: true,
-        message: 'Email is already confirmed. You can log in now.',
+        message: RESEND_MASKED_MESSAGE,
       });
     }
 
@@ -808,7 +825,7 @@ export const resendConfirmation = asyncHandler<ParamsDictionary, unknown, Resend
 
       res.status(200).json({
         success: true,
-        message: 'Confirmation email sent. Please check your inbox.',
+        message: RESEND_MASKED_MESSAGE,
       });
     } catch (emailError) {
       // Log email sending error (PII will be automatically masked)
