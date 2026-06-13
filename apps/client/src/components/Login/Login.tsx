@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate, useSearch } from '@tanstack/react-router';
-import { ERROR_CODE, formatDuration } from '@sandwicheck/shared';
+import { formatDuration } from '@sandwicheck/shared';
 import { ROUTE_PATHS } from '@/constants/route-paths';
 import { useAuthGlobalContext } from '@/context/AuthGlobalContext';
 import useForm from '@/hooks/use-form';
+import useResendConfirmation from '@/hooks/use-resend-confirmation';
 import useToast from '@/hooks/use-toast';
-import * as apiAuth from '@/services/api-auth';
 import { readSandwichFromCache } from '@/services/api-sandwiches';
 import { isAuthRoute, isSafeReturnTo } from '@/utils/auth-utils';
 
@@ -36,11 +36,9 @@ const Login = (): React.JSX.Element => {
    */
   const returnTo: string | null = search?.returnTo || (isAuthRoute(location.pathname) ? null : location.pathname);
   const [showResendConfirmation, setShowResendConfirmation] = useState(false);
-  const [resending, setResending] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [emailSentSuccessfully, setEmailSentSuccessfully] = useState(false);
-  const [cooldownRemainingMs, setCooldownRemainingMs] = useState<number | null>(null);
-  const cooldownIntervalReference = useRef<ReturnType<typeof setInterval> | null>(null);
+  const { resend, resending, cooldownRemainingMs, emailSentSuccessfully, maxResendsReached, reset } =
+    useResendConfirmation(showToast);
 
   // Redirect authenticated users away from login page
   useEffect(() => {
@@ -74,127 +72,9 @@ const Login = (): React.JSX.Element => {
     setPreviousNeedsConfirmation(loginNeedsEmailConfirmation);
     setShowResendConfirmation(loginNeedsEmailConfirmation);
     if (loginNeedsEmailConfirmation) {
-      setEmailSentSuccessfully(false);
+      reset();
     }
   }
-
-  // Countdown timer for cooldown
-  useEffect(() => {
-    if (cooldownRemainingMs === null || cooldownRemainingMs <= 0) {
-      if (cooldownIntervalReference.current) {
-        clearInterval(cooldownIntervalReference.current);
-        cooldownIntervalReference.current = null;
-      }
-      return;
-    }
-
-    cooldownIntervalReference.current = setInterval(() => {
-      setCooldownRemainingMs((previous) => {
-        if (previous === null || previous <= 0) {
-          return null;
-        }
-        const newValue = previous - 1000;
-        return newValue <= 0 ? null : newValue;
-      });
-    }, 1000);
-
-    return () => {
-      if (cooldownIntervalReference.current) {
-        clearInterval(cooldownIntervalReference.current);
-        cooldownIntervalReference.current = null;
-      }
-    };
-  }, [cooldownRemainingMs]);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (cooldownIntervalReference.current) {
-        clearInterval(cooldownIntervalReference.current);
-        cooldownIntervalReference.current = null;
-      }
-    };
-  }, []);
-
-  const handleResendConfirmation = async (): Promise<void> => {
-    if (!email) {
-      showToast('Please enter your email address first');
-      return;
-    }
-
-    setResending(true);
-    setEmailSentSuccessfully(false);
-    setCooldownRemainingMs(null); // Reset cooldown
-    try {
-      const res = await apiAuth.resendConfirmation(email);
-      // Check if response indicates success
-      if (res && res.success === true) {
-        // Email sent successfully
-        setEmailSentSuccessfully(true);
-        setShowResendConfirmation(false);
-        setCooldownRemainingMs(null);
-        // No toast - message is shown inline instead
-      } else {
-        // Handle error response (res.success === false or res.error exists)
-        const errorStatus = res?.error?.status;
-        const errorCode = res?.error?.code;
-        const errorMessage = res?.error?.message || res?.message || 'Failed to send confirmation email';
-        const cooldownMs = res?.error?.cooldownRemainingMs;
-
-        // Rate limited (429): show the cooldown countdown.
-        if (errorStatus === 429) {
-          if (cooldownMs !== undefined && cooldownMs > 0) {
-            setCooldownRemainingMs(cooldownMs);
-          }
-          showToast(errorMessage);
-        }
-        // Resend cap reached (MAX_RESENDS): stop offering the resend button.
-        else if (errorCode === ERROR_CODE.maxResends) {
-          showToast('Maximum number of confirmation email resends reached. Please contact support for assistance.');
-          setShowResendConfirmation(false);
-          setCooldownRemainingMs(null);
-        }
-        // Generic error
-        else {
-          showToast(errorMessage);
-        }
-      }
-    } catch (error) {
-      // Handle unexpected errors (network errors, etc.)
-      const response =
-        error && typeof error === 'object' && 'response' in error
-          ? (error as { response?: { status?: number; data?: unknown } }).response
-          : undefined;
-      const errorStatus = response?.status;
-      const errorData = response?.data as
-        | { error?: { message?: string; code?: string | number; cooldownRemainingMs?: number }; message?: string }
-        | undefined;
-      const errorCode = errorData?.error?.code;
-      const errorMessage =
-        errorData?.error?.message || errorData?.message || 'Failed to send confirmation email. Please try again.';
-      const cooldownMs = errorData?.error?.cooldownRemainingMs;
-
-      // Rate limited (429): show the cooldown countdown.
-      if (errorStatus === 429) {
-        if (cooldownMs !== undefined && cooldownMs > 0) {
-          setCooldownRemainingMs(cooldownMs);
-        }
-        showToast(errorMessage);
-      }
-      // Resend cap reached (MAX_RESENDS): stop offering the resend button.
-      else if (errorCode === ERROR_CODE.maxResends) {
-        showToast('Maximum number of confirmation email resends reached. Please contact support for assistance.');
-        setShowResendConfirmation(false);
-        setCooldownRemainingMs(null);
-      }
-      // Generic error
-      else {
-        showToast(errorMessage);
-      }
-    } finally {
-      setResending(false);
-    }
-  };
 
   return (
     <div className="login mx-auto max-w-3xl text-center text-white">
@@ -306,7 +186,7 @@ const Login = (): React.JSX.Element => {
               Please check your email to confirm your account.
             </p>
           </div>
-        ) : showResendConfirmation ? (
+        ) : showResendConfirmation && !maxResendsReached ? (
           <div className="mb-4 text-center md:mb-6">
             <p className="mb-2 text-base md:text-xl">Need to resend the confirmation email?</p>
             {cooldownRemainingMs !== null && cooldownRemainingMs > 0 ? (
@@ -318,7 +198,7 @@ const Login = (): React.JSX.Element => {
             ) : null}
             <button
               type="button"
-              onClick={handleResendConfirmation}
+              onClick={() => resend(email)}
               disabled={resending || (cooldownRemainingMs !== null && cooldownRemainingMs > 0)}
               className="box-shadow-10 bg-yellow xl:box-shadow-20 inline-flex h-8 appearance-none items-center justify-center rounded-lg px-4 py-2 text-sm font-bold text-magenta uppercase focus:outline-none disabled:opacity-50 md:h-10 md:px-6 md:text-base xl:h-12 xl:text-lg"
             >
