@@ -166,4 +166,52 @@ describe('useForm LoginHandler', () => {
     expect(result.current.loginNeedsEmailConfirmation).toBe(false);
     expect(result.current.errors).toEqual(['Login failed, try signup instead']);
   });
+
+  it('omits the invite token on login when the user has not consented', async () => {
+    // Simulate landing on /login/parent/$parentId (a parent invite link).
+    matchRouteMock.mockImplementation(({ to }: { to: string }) =>
+      to.includes('login') ? { parentId: 'parent-invite-1' } : false,
+    );
+    logInMock.mockResolvedValue({ success: false, error: { status: 401, message: 'Invalid credentials' } });
+
+    const { result } = renderHook(() => useForm());
+    fillLogin(result);
+    // We really are on an invite route — so omitting the token below is a deliberate gate, not a no-op.
+    expect(result.current.parentId).toBe('parent-invite-1');
+
+    await act(async () => {
+      await result.current.LoginHandler(fakeSubmitEvent);
+    });
+
+    expect(logInMock).toHaveBeenCalledWith({
+      email: 'user@example.com',
+      password: 'secret1',
+      inviteToken: undefined,
+      acceptInvite: undefined,
+    });
+  });
+
+  it('redeems the invite token on login only after explicit consent', async () => {
+    matchRouteMock.mockImplementation(({ to }: { to: string }) =>
+      to.includes('login') ? { parentId: 'parent-invite-1' } : false,
+    );
+    logInMock.mockResolvedValue({ success: false, error: { status: 401, message: 'Invalid credentials' } });
+
+    const { result } = renderHook(() => useForm());
+    fillLogin(result);
+    act(() => {
+      result.current.setLinkConsent(true);
+    });
+
+    await act(async () => {
+      await result.current.LoginHandler(fakeSubmitEvent);
+    });
+
+    expect(logInMock).toHaveBeenCalledWith({
+      email: 'user@example.com',
+      password: 'secret1',
+      inviteToken: 'parent-invite-1',
+      acceptInvite: true,
+    });
+  });
 });

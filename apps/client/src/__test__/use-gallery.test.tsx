@@ -45,3 +45,45 @@ describe('useGallery error state', () => {
     expect(result.current.gallerySandwiches).toHaveLength(1);
   });
 });
+
+describe('useGallery stale-response guard', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('drops a slow earlier response so it cannot clobber a newer one', async () => {
+    // Two requests in flight at once; the OLDER one will resolve last and must be ignored.
+    let resolveFirst!: (value: ApiResult<Sandwich[]>) => void;
+    let resolveSecond!: (value: ApiResult<Sandwich[]>) => void;
+    const firstInFlight = new Promise<ApiResult<Sandwich[]>>((resolve) => {
+      resolveFirst = resolve;
+    });
+    const secondInFlight = new Promise<ApiResult<Sandwich[]>>((resolve) => {
+      resolveSecond = resolve;
+    });
+    fetchSandwichesMock.mockReturnValueOnce(firstInFlight).mockReturnValueOnce(secondInFlight);
+
+    const { result } = renderHook(() => useGallery());
+
+    let first!: Promise<void>;
+    let second!: Promise<void>;
+    act(() => {
+      first = result.current.fetchSandwiches({});
+      second = result.current.fetchSandwiches({});
+    });
+
+    // The newer (second) request resolves first and commits its data.
+    await act(async () => {
+      resolveSecond({ success: true, data: [{ id: 'newest' } as unknown as Sandwich] });
+      await second;
+    });
+    expect(result.current.gallerySandwiches).toEqual([{ id: 'newest' }]);
+
+    // The older (first) request resolves last — its stale data must be dropped, not committed.
+    await act(async () => {
+      resolveFirst({ success: true, data: [{ id: 'stale' } as unknown as Sandwich] });
+      await first;
+    });
+    expect(result.current.gallerySandwiches).toEqual([{ id: 'newest' }]);
+  });
+});
