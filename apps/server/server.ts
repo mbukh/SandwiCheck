@@ -11,6 +11,7 @@ import morgan from 'morgan';
 import connectDB from './config/db.ts';
 import { CLIENT_DIR, UPLOADS_DIR } from './config/dir.ts';
 import errorHandler from './middleware/errorHandler.ts';
+import { isAllowedOrigin, originCheck } from './middleware/originCheckMiddleware.ts';
 import requestIdMiddleware from './middleware/requestIdMiddleware.ts';
 import authRoutes from './routes/authRoutes.ts';
 import ingredientsRoutes from './routes/ingredientsRoutes.ts';
@@ -39,23 +40,25 @@ app.use(
     message: 'Too many requests, please try again later',
   }),
 );
-// CORS cross-domain access
+/*
+ * CORS cross-domain access. Enforce the CLIENT_URL allowlist (and same-origin /
+ * no-origin requests); in local dev, additionally allow any localhost origin — but
+ * never reflect an arbitrary origin back with credentials, which the previous
+ * `NODE_ENV === 'local' || ...` did. The allowlist lives in originCheckMiddleware
+ * so CORS and the CSRF origin check can never drift apart.
+ */
 app.use(
   cors({
-    origin: (origin, callback) => {
-      /*
-       * Enforce the CLIENT_URL allowlist (and same-origin / no-origin requests). In local
-       * dev, additionally allow any localhost origin — but never reflect an arbitrary origin
-       * back with credentials, which the previous `NODE_ENV === 'local' || ...` did.
-       */
-      const isLocalhost = !!origin && /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
-      const isAllowed =
-        !origin || process.env.CLIENT_URL === origin || (process.env.NODE_ENV === 'local' && isLocalhost);
-      callback(null, isAllowed);
-    },
+    origin: (origin, callback) => callback(null, isAllowedOrigin(origin)),
     credentials: true,
   }),
 );
+/*
+ * CSRF origin check: CORS only stops cross-site pages from READING responses —
+ * no-preflight requests (HTML form posts, multipart uploads) still EXECUTE.
+ * Block state-changing API requests from foreign web origins outright.
+ */
+app.use('/api/', originCheck);
 
 // Body parser middleware
 app.use(express.json({ limit: '5kb' }));
