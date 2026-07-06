@@ -8,7 +8,7 @@ const Footer = (): React.JSX.Element => {
         <nav className="footer__nav">
           <ul className="text-shadow-3 flex text-center text-xxs uppercase md:text-xs">
             <li className="mr-4 md:mr-8">
-              <Link className="hover:opacity-80" to="https://mbukh.dev" target="_blank">
+              <Link className="hover:opacity-80" to="https://mbukh.dev" target="_blank" rel="noopener noreferrer">
                 MBUKH.dev
               </Link>
             </li>
@@ -17,7 +17,12 @@ const Footer = (): React.JSX.Element => {
       </div>
 
       <div className="footer__triangle pointer-events-none absolute right-0 bottom-0">
-        <Link className="pointer-events-auto" to="https://github.com/mbukh/SandwiCheck" target="_blank">
+        <Link
+          className="pointer-events-auto"
+          to="https://github.com/mbukh/SandwiCheck"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <img
             className="footer__logo absolute right-0 bottom-0 mr-5 mb-4 block md:mr-12 md:mb-5 md:w-16 xl:mr-20"
             src={github}

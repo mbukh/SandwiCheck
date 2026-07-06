@@ -7,6 +7,7 @@ interface MobileMenuProps {
   isMobileMenuOpen: boolean;
   toggleMobileMenuHandler: () => void;
   authHandler: (event: React.MouseEvent<HTMLAnchorElement>) => void;
+  onLogout: () => void;
   user: CurrentUser;
   // Passed by Header but currently unused here (acting-as-child UI lives in ActingBanner).
   actingAsChild?: boolean;
@@ -19,6 +20,7 @@ const MobileMenu = ({
   isMobileMenuOpen,
   toggleMobileMenuHandler,
   authHandler,
+  onLogout,
   user,
 }: MobileMenuProps): React.JSX.Element => {
   return (
@@ -46,9 +48,9 @@ const MobileMenu = ({
                 My family
               </Link>
             )}
-            <Link id="logout" onClick={authHandler} to="/logout">
+            <button type="button" onClick={() => onLogout()} className="cursor-pointer uppercase">
               Log out
-            </Link>
+            </button>
           </>
         ) : (
           <>

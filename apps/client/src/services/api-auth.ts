@@ -6,6 +6,7 @@ import type {
   LoginChildDto,
   LoginDto,
   SignupDto,
+  SignupPendingData,
 } from '@sandwicheck/shared';
 import type { ApiResult } from '@/types/api';
 import type { Session, User } from '@/types/domain';
@@ -13,7 +14,6 @@ import { handleResponse } from '@/utils/api-utils';
 import { createFetchApi } from '@/utils/fetch-api';
 
 const api = createFetchApi(`${import.meta.env.VITE_API_SERVER}/api/v1/auth`, {
-  'Access-Control-Allow-Origin': import.meta.env.VITE_HOST,
   'Content-Type': 'application/json',
 });
 
@@ -28,16 +28,22 @@ const api = createFetchApi(`${import.meta.env.VITE_API_SERVER}/api/v1/auth`, {
  */
 
 /** POST /signup — register a new user (optionally under a parent invite token). */
-export const signup = async ({ email, password, name, role, inviteToken }: SignupDto): Promise<ApiResult<User>> => {
-  return await handleResponse<User>(async () => {
+export const signup = async ({
+  email,
+  password,
+  name,
+  role,
+  inviteToken,
+}: SignupDto): Promise<ApiResult<SignupPendingData>> => {
+  return await handleResponse<SignupPendingData>(async () => {
     return api.post('/signup', { email, password, name, role, inviteToken });
   });
 };
 
-/** POST /login — log in with email/password (optionally under a parent invite token). */
-export const login = async ({ email, password, inviteToken }: LoginDto): Promise<ApiResult<User>> => {
+/** POST /login — log in with email/password (optionally redeeming a consented parent invite token). */
+export const login = async ({ email, password, inviteToken, acceptInvite }: LoginDto): Promise<ApiResult<User>> => {
   return await handleResponse<User>(async () => {
-    return api.post('/login', { email, password, inviteToken });
+    return api.post('/login', { email, password, inviteToken, acceptInvite });
   });
 };
 

@@ -1,18 +1,21 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useSearch } from '@tanstack/react-router';
-import { MAX_USER_NAME_LENGTH } from '@sandwicheck/shared';
+import { formatDuration, MAX_USER_NAME_LENGTH } from '@sandwicheck/shared';
 import { ROUTE_PATHS } from '@/constants/route-paths';
 import { SIGNUP_ROLES } from '@/constants/user-constants';
 import useForm from '@/hooks/use-form';
+import useResendConfirmation from '@/hooks/use-resend-confirmation';
 import useToast from '@/hooks/use-toast';
 import { isAuthRoute } from '@/utils/auth-utils';
 
 const Signup = (): React.JSX.Element => {
   const { showToast, toastComponents } = useToast();
+  const { resend, resending, cooldownRemainingMs, emailSentSuccessfully, maxResendsReached } =
+    useResendConfirmation(showToast);
   const [needsEmailConfirmation, setNeedsEmailConfirmation] = useState(false);
   const [confirmationEmail, setConfirmationEmail] = useState('');
-  const [confirmationMessage, setConfirmationMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [tcAgreed, setTcAgreed] = useState(false);
   const search = useSearch({ strict: false });
   const location = useLocation();
   const {
@@ -40,13 +43,20 @@ const Signup = (): React.JSX.Element => {
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
+    /*
+     * The form is noValidate, so the consent checkbox's `required` is inert —
+     * enforce the dependent-account consent here.
+     */
+    if (parentId && !tcAgreed) {
+      showToast('Please agree to be added as a dependent to continue');
+      return;
+    }
     setIsSubmitting(true);
     try {
       const result = await signUpHandler(e, returnTo);
       if (result && result.needsEmailConfirmation) {
         setNeedsEmailConfirmation(true);
         setConfirmationEmail(result.email || email);
-        setConfirmationMessage(result.message || '');
         // Reset form fields
         setName('');
         setEmail('');
@@ -67,28 +77,43 @@ const Signup = (): React.JSX.Element => {
           Check Your Email!
         </h1>
         <div className="mb-6 text-base md:mb-8 md:text-xl xl:text-3xl">
-          {confirmationMessage && confirmationMessage.includes('confirmation email could not be sent') ? (
-            <>
-              <p className="mb-4">
-                Your account has been created for <strong className="text-yellow">{confirmationEmail}</strong>
-              </p>
-              <p className="text-yellow mb-4">
-                However, the confirmation email could not be sent. Please use the resend confirmation option on the
-                login page.
-              </p>
-              <p className="text-sm md:text-base xl:text-lg">
-                Once you've confirmed your email, you'll be able to log in and start creating delicious sandwiches!
-              </p>
-            </>
+          <p className="mb-4">
+            We've sent a confirmation email to <strong className="text-yellow">{confirmationEmail}</strong>
+          </p>
+          <p className="mb-4">Please check your inbox and click the confirmation link to activate your account.</p>
+          <p className="text-sm md:text-base xl:text-lg">
+            Once you've confirmed your email, you'll be able to log in and start creating delicious sandwiches!
+          </p>
+        </div>
+
+        {/* In-band recovery if the email never arrives — same resend flow as the login page. */}
+        <div className="mb-4 text-center md:mb-6">
+          {emailSentSuccessfully ? (
+            <p className="text-yellow text-base font-semibold md:text-xl">
+              A new confirmation email is on its way — please check your inbox.
+            </p>
+          ) : maxResendsReached ? (
+            <p className="text-yellow text-sm md:text-base xl:text-lg">
+              You've reached the resend limit. Please contact support for assistance.
+            </p>
           ) : (
             <>
-              <p className="mb-4">
-                We've sent a confirmation email to <strong className="text-yellow">{confirmationEmail}</strong>
+              <p className="mb-2 text-sm md:text-base xl:text-lg">
+                Didn't get it? Check your spam folder, or resend the confirmation email.
               </p>
-              <p className="mb-4">Please check your inbox and click the confirmation link to activate your account.</p>
-              <p className="text-sm md:text-base xl:text-lg">
-                Once you've confirmed your email, you'll be able to log in and start creating delicious sandwiches!
-              </p>
+              {cooldownRemainingMs !== null && cooldownRemainingMs > 0 ? (
+                <p className="text-yellow mb-2 text-sm font-semibold md:text-base">
+                  Please wait {formatDuration(cooldownRemainingMs)} before requesting another confirmation email.
+                </p>
+              ) : null}
+              <button
+                type="button"
+                onClick={() => resend(confirmationEmail)}
+                disabled={resending || (cooldownRemainingMs !== null && cooldownRemainingMs > 0)}
+                className="box-shadow-10 bg-yellow xl:box-shadow-20 inline-flex h-8 appearance-none items-center justify-center rounded-lg px-4 py-2 text-sm font-bold text-magenta uppercase focus:outline-none disabled:opacity-50 md:h-10 md:px-6 md:text-base xl:h-12 xl:text-lg"
+              >
+                {resending ? 'Sending...' : 'Resend confirmation email'}
+              </button>
             </>
           )}
         </div>
@@ -227,7 +252,8 @@ const Signup = (): React.JSX.Element => {
               id="termsCheckbox"
               type="checkbox"
               name="tc_agreed"
-              value="1"
+              checked={tcAgreed}
+              onChange={(e) => setTcAgreed(e.target.checked)}
               required
             />
             <label className="custom-control-label" htmlFor="termsCheckbox">

@@ -18,21 +18,17 @@ catalog:
   typescript: ^5.9.3
   typescript-eslint: ^8.60.0
 
+# pnpm 11's allowBuilds is the single source of truth for dependency build-script
+# permission — it replaces the legacy onlyBuiltDependencies / ignoredBuiltDependencies,
+# which previously listed sharp in BOTH allow and ignore. sharp is allowed: its install
+# script just verifies the prebuilt @img/sharp-* binary (no source build).
 allowBuilds:
+  core-js: false
+  core-js-pure: false
   esbuild: true
   lefthook: true
   sharp: true
   unrs-resolver: true
-
-ignoredBuiltDependencies:
-  - core-js
-  - core-js-pure
-  - sharp
-
-onlyBuiltDependencies:
-  - esbuild
-  - unrs-resolver
-  - lefthook
 
 patchedDependencies:
   eslint-plugin-react@7.37.5: patches/eslint-plugin-react@7.37.5.patch

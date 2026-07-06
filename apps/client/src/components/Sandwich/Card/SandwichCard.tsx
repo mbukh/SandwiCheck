@@ -5,7 +5,7 @@ import { ROUTE_PATHS } from '@/constants/route-paths';
 import { useAuthGlobalContext } from '@/context/AuthGlobalContext';
 import { useIngredientsGlobalContext } from '@/context/IngredientsGlobalContext';
 import useToast from '@/hooks/use-toast';
-import { updateSandwichInCache } from '@/services/api-sandwiches';
+import { readSandwichFromCache, updateSandwichInCache } from '@/services/api-sandwiches';
 import { hasUserVotedForSandwich, voteForSandwich } from '@/services/votes';
 import type { Sandwich } from '@/types/domain';
 import { hydrateSandwichIngredientsData } from '@/utils/sandwich-utils';
@@ -54,6 +54,19 @@ const SandwichCard = ({ index, sandwich, galleryPath = '', isModal }: SandwichCa
 
   const copyThisSandwichHandler = (e: React.MouseEvent): void => {
     e.preventDefault();
+
+    /*
+     * Copying overwrites the builder draft in the cache. If a non-empty in-progress draft exists,
+     * confirm first so the user doesn't silently lose their own sandwich.
+     */
+    const existingDraft = readSandwichFromCache();
+    if (
+      existingDraft &&
+      existingDraft.ingredients.length > 0 &&
+      !globalThis.confirm('You have a sandwich in progress. Replace it with this copy?')
+    ) {
+      return;
+    }
 
     const hydratedSandwich = hydrateSandwichIngredientsData(sandwich, ingredientsRawList);
     updateSandwichInCache(hydratedSandwich);
@@ -197,6 +210,7 @@ const SandwichCard = ({ index, sandwich, galleryPath = '', isModal }: SandwichCa
             <Link
               to={`https://wa.me/?text=This+sandwich+from+SandwiCheck+looks+yummy%21+${globalThis.location.protocol}%2F%2F${globalThis.location.hostname}%2Fsandwich%2F${sandwich.id}`}
               target="_blank"
+              rel="noopener noreferrer"
               className="ml-1 inline-block md:ml-2"
             >
               <i className="icon icon-whatsapp h-8 w-auto sm:h-10 md:h-12" title="Share via Whatsapp"></i>

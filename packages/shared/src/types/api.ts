@@ -17,7 +17,7 @@ export interface ApiErrorResponse {
   error: {
     status?: number;
     message: string;
-    /** Distinguishes error variants, e.g. 'TOKEN_EXPIRED', 'MAX_RESENDS', or 11000 (Mongo duplicate key). */
+    /** Distinguishes error variants, e.g. 'TOKEN_EXPIRED', 'MAX_RESENDS', 'EMAIL_NOT_CONFIRMED' (see ERROR_CODE). */
     code?: string | number;
     /** Present only on 429 responses (email-confirmation resend cooldown). */
     cooldownRemainingMs?: number;

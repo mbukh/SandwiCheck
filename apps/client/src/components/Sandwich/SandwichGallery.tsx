@@ -3,6 +3,7 @@ import { Link, useMatchRoute, useNavigate, useSearch } from '@tanstack/react-rou
 import Loading from '@/components/Loading';
 import SandwichCard from '@/components/Sandwich/Card/SandwichCard';
 import { ROUTE_PATHS } from '@/constants/route-paths';
+import { BUTTON_BASE_CLASSES } from '@/constants/ui-constants';
 import { useAuthGlobalContext } from '@/context/AuthGlobalContext';
 import { useIngredientsGlobalContext } from '@/context/IngredientsGlobalContext';
 import useGallery from '@/hooks/use-gallery';
@@ -20,12 +21,17 @@ const SandwichGallery = ({ children, galleryType = '' }: SandwichGalleryProps): 
   const [child, setChild] = useState<Partial<User>>({});
   const { currentUser, isCurrentUserReady } = useAuthGlobalContext();
   const { areIngredientsReady } = useIngredientsGlobalContext();
-  const { gallerySandwiches, setGallerySandwiches, fetchSandwiches, fetchUserSandwiches } = useGallery();
+  const { gallerySandwiches, setGallerySandwiches, galleryError, fetchSandwiches, fetchUserSandwiches } = useGallery();
+  // Bumping this re-runs the data-fetching effect (the Retry button after a load failure).
+  const [reloadKey, setReloadKey] = useState(0);
   const matchRoute = useMatchRoute();
+  /*
+   * Gallery sandwich modals open via the ?sandwichId search param, so the only family route that
+   * carries a childId is FAMILY_CHILD. The old /family/$childId/sandwich/$sandwichId match never
+   * resolved (that route is not in the tree).
+   */
   const familyRouteMatch = matchRoute({ to: ROUTE_PATHS.FAMILY_CHILD });
-  const familySandwichRouteMatch = matchRoute({ to: '/family/$childId/sandwich/$sandwichId' });
-  const childId =
-    (familyRouteMatch && familyRouteMatch.childId) || (familySandwichRouteMatch && familySandwichRouteMatch.childId);
+  const childId = familyRouteMatch && familyRouteMatch.childId;
   const navigate = useNavigate();
   const search = useSearch({ strict: false });
   const sandwichIdFromQuery = search?.sandwichId;
@@ -48,6 +54,17 @@ const SandwichGallery = ({ children, galleryType = '' }: SandwichGalleryProps): 
     }
   }, [isCurrentUserReady, galleryType, currentUser, childId, navigate]);
 
+  /*
+   * Narrow the data-fetching effect to the fields it actually reads instead of the whole currentUser
+   * object: refreshSession hands back a new object identity on every call, which otherwise refetched
+   * the gallery on every auth tick.
+   */
+  const {
+    id: currentUserId,
+    children: currentUserChildren,
+    dietaryPreferences: currentUserDietaryPreferences,
+  } = currentUser;
+
   // Data fetching - use useEffect for async operations
   useEffect(() => {
     if (!areIngredientsReady || !isCurrentUserReady) {
@@ -55,20 +72,20 @@ const SandwichGallery = ({ children, galleryType = '' }: SandwichGalleryProps): 
     }
 
     // Don't fetch data if we're redirecting (unauthenticated personal menu)
-    if (galleryType === 'personal' && !currentUser?.id) {
+    if (galleryType === 'personal' && !currentUserId) {
       return;
     }
 
     // Don't fetch data if childId doesn't match
-    if (childId && !currentUser?.children?.some((child) => child.id === childId)) {
+    if (childId && !currentUserChildren?.some((child) => child.id === childId)) {
       return;
     }
 
-    const dietaryPreferences = currentUser.dietaryPreferences || [];
+    const dietaryPreferences = currentUserDietaryPreferences || [];
 
     void (async () => {
       if (childId) {
-        const childInfo = currentUser.children?.find((child) => child.id === childId);
+        const childInfo = currentUserChildren?.find((child) => child.id === childId);
         if (childInfo) {
           await fetchUserSandwiches(childInfo.id);
           setChild(childInfo);
@@ -77,24 +94,26 @@ const SandwichGallery = ({ children, galleryType = '' }: SandwichGalleryProps): 
         await fetchSandwiches({ dietaryPreferences });
       } else if (galleryType === 'best') {
         await fetchSandwiches({ dietaryPreferences, sortBy: 'votesCount' });
-      } else if (currentUser.id) {
+      } else if (currentUserId) {
         /*
          * For personal menu, fetch user sandwiches to ensure all fields (including images) are properly populated
          * This prevents race conditions where currentUser.sandwiches might not have all fields after login
          * Sort by createdAt (newest first) for personal menu
          */
-        await fetchUserSandwiches(currentUser.id, true);
+        await fetchUserSandwiches(currentUserId, true);
       }
     })();
   }, [
     areIngredientsReady,
     childId,
-    currentUser,
+    currentUserId,
+    currentUserChildren,
+    currentUserDietaryPreferences,
     fetchSandwiches,
     fetchUserSandwiches,
     galleryType,
     isCurrentUserReady,
-    setGallerySandwiches,
+    reloadKey,
   ]);
 
   // Clear gallery when user logs out (for personal menu)
@@ -168,6 +187,17 @@ const SandwichGallery = ({ children, galleryType = '' }: SandwichGalleryProps): 
                 isModal={false}
               />
             ))
+          ) : galleryError ? (
+            <div className="mx-auto flex flex-col items-center justify-center py-8 text-center">
+              <p className="my-4">{galleryError}</p>
+              <button
+                type="button"
+                onClick={() => setReloadKey((key) => key + 1)}
+                className={`${BUTTON_BASE_CLASSES} bg-magenta text-white`}
+              >
+                Try again
+              </button>
+            </div>
           ) : (
             <EmptyGallery galleryType={galleryType} childId={childId || undefined} />
           )}

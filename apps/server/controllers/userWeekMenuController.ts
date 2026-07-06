@@ -2,6 +2,7 @@ import type { ParamsDictionary } from 'express-serve-static-core';
 import { type ApiResponse, type DayOfWeek, DAYS_OF_WEEK, type WeekMenuItemDto } from '@sandwicheck/shared';
 import createHttpError from 'http-errors';
 import type mongoose from 'mongoose';
+import Sandwich from '#models/SandwichModel.ts';
 import type { IDayMenuItem } from '#models/UserModel.ts';
 import User from '#models/UserModel.ts';
 import asyncHandler from '#utils/asyncHandler.ts';
@@ -28,6 +29,12 @@ export const addSandwichToWeekMenu = asyncHandler<ParamsDictionary, ApiResponse<
 
     if (!sandwichId) {
       return next(createHttpError.BadRequest('Sandwich ID is required'));
+    }
+
+    // Reject references to sandwiches that don't exist, so the week menu never accrues dangling ids.
+    const sandwichExists = await Sandwich.exists({ _id: sandwichId });
+    if (!sandwichExists) {
+      return next(createHttpError.NotFound('Sandwich not found'));
     }
 
     const user = await User.findById(userId);

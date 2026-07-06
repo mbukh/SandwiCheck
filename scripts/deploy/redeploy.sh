@@ -62,8 +62,14 @@ CONTAINER_PORT="${CONTAINER_PORT:-5001}"  # must equal PORT in ENV_FILE and the 
 CONTAINER_UID="${CONTAINER_UID:-1001}"
 ENV_FILE="${ENV_FILE:-$REPO_DIR/apps/server/config/.env}"
 UPLOADS_DIR="${UPLOADS_DIR:-$REPO_DIR/apps/server/uploads}"
-LOCK_FILE="${LOCK_FILE:-/tmp/sandwicheck-redeploy.lock}"
-HEALTH_RETRIES="${HEALTH_RETRIES:-30}"
+# Lock under /run (root-owned tmpfs), not world-writable /tmp, so another local user
+# can't pre-create or squat the lock path. The script already needs root (it chowns the
+# uploads bind-mount), so /run is writable here.
+LOCK_FILE="${LOCK_FILE:-/run/sandwicheck-redeploy.lock}"
+# Health polls are 2s apart, so the budget must exceed the image healthcheck's
+# verdict window (start-period 10s + interval 30s x retries 3 ~= 100s) — otherwise
+# a failing container is still 'starting' when polling stops. 75 x 2s = 150s.
+HEALTH_RETRIES="${HEALTH_RETRIES:-75}"
 FORCE="${FORCE:-false}"
 
 # Paths whose changes require an image rebuild + container restart.
@@ -72,6 +78,40 @@ SERVER_PATHS=(apps/server packages/shared package.json pnpm-lock.yaml pnpm-works
 log() { printf '%s  %s\n' "$(date '+%Y-%m-%dT%H:%M:%S%z')" "$*"; }
 die() { log "ERROR: $*"; exit 1; }
 trap 'die "unexpected failure near line $LINENO"' ERR
+
+container_health() {
+  local health
+  health="$(docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}' "$CONTAINER_NAME" 2>/dev/null)" || health=""
+  echo "${health:-unknown}"
+}
+
+run_container() { # $1 = image ref
+  docker run --detach \
+    --name "$CONTAINER_NAME" \
+    --restart unless-stopped \
+    --env-file "$ENV_FILE" \
+    --publish "${BIND_ADDR}:${HOST_PORT}:${CONTAINER_PORT}" \
+    --volume "${UPLOADS_DIR}:/app/apps/server/uploads" \
+    "$1"
+}
+
+# Poll the container HEALTHCHECK. Succeeds only on an explicit 'healthy' (or the
+# image having no HEALTHCHECK at all); still 'starting' when the budget runs out
+# is a FAILURE — the gate fails closed instead of assuming success.
+wait_healthy() {
+  local status=unknown
+  for _ in $(seq 1 "$HEALTH_RETRIES"); do
+    status="$(container_health)"
+    case "$status" in
+      healthy) return 0 ;;
+      none) log "image has no HEALTHCHECK; skipping health wait"; return 0 ;;
+      unhealthy) log "container reported unhealthy"; return 1 ;;
+    esac
+    sleep 2
+  done
+  log "health check still '$status' after $((HEALTH_RETRIES * 2))s"
+  return 1
+}
 
 # --- Single-instance lock (skip if a previous run is still going) ---
 exec 9>"$LOCK_FILE" || die "cannot open lock file: $LOCK_FILE"
@@ -103,6 +143,12 @@ need_deploy=false
 reason=""
 [ "$FORCE" = "true" ] && { need_deploy=true; reason="forced"; }
 [ -z "$running" ] && { need_deploy=true; reason="${reason:+$reason; }container not running"; }
+# A running-but-unhealthy container must trigger a redeploy too — otherwise a
+# failed deploy would satisfy the 'running' check forever and mask the outage.
+if [ -n "$running" ] && [ "$(container_health)" = "unhealthy" ]; then
+  need_deploy=true
+  reason="${reason:+$reason; }container unhealthy"
+fi
 
 if [ "$local_sha" != "$remote_sha" ]; then
   log "new commits on $BRANCH: ${local_sha:0:7} -> ${remote_sha:0:7}; updating working tree"
@@ -136,30 +182,43 @@ if [ "$(stat -c %u "$UPLOADS_DIR" 2>/dev/null)" != "$CONTAINER_UID" ]; then
   chown -R "$CONTAINER_UID:$CONTAINER_UID" "$UPLOADS_DIR"
 fi
 
-# --- Replace the container ---
+# --- Replace the container (remember the old image so a failed deploy can roll back) ---
+previous_image="$(docker inspect --format '{{.Config.Image}}' "$CONTAINER_NAME" 2>/dev/null || true)"
 log "replacing container $CONTAINER_NAME"
 docker rm -f "$CONTAINER_NAME" >/dev/null 2>&1 || true
-docker run --detach \
-  --name "$CONTAINER_NAME" \
-  --restart unless-stopped \
-  --env-file "$ENV_FILE" \
-  --publish "${BIND_ADDR}:${HOST_PORT}:${CONTAINER_PORT}" \
-  --volume "${UPLOADS_DIR}:/app/apps/server/uploads" \
-  "$IMAGE_NAME:$new_sha"
+run_container "$IMAGE_NAME:$new_sha"
 
-# --- Wait for the container HEALTHCHECK to report healthy ---
+# --- Health gate: fail closed, roll back to the previous image on failure ---
 log "waiting for health check..."
-for _ in $(seq 1 "$HEALTH_RETRIES"); do
-  status="$(docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}' "$CONTAINER_NAME" 2>/dev/null || echo unknown)"
-  case "$status" in
-    healthy) log "container healthy"; break ;;
-    unhealthy) die "container is unhealthy — inspect: docker logs $CONTAINER_NAME" ;;
-    none) log "image has no HEALTHCHECK; skipping health wait"; break ;;
-  esac
-  sleep 2
-done
+if ! wait_healthy; then
+  log "deploy of $IMAGE_NAME:$new_sha failed the health gate — recent container logs:"
+  docker logs --tail 50 "$CONTAINER_NAME" 2>&1 | sed 's/^/    /' || true
+  if [ -n "$previous_image" ]; then
+    log "rolling back to $previous_image"
+    docker rm -f "$CONTAINER_NAME" >/dev/null 2>&1 || true
+    run_container "$previous_image"
+    if wait_healthy; then
+      die "deploy of $new_sha failed; rolled back to $previous_image (old version still serving)"
+    fi
+    die "deploy of $new_sha failed AND rollback to $previous_image is not healthy — manual intervention required"
+  fi
+  die "deploy of $new_sha failed and there is no previous container image to roll back to"
+fi
+log "container healthy"
 
-# --- Tidy dangling images to keep disk usage in check ---
+# --- Tidy images: drop dangling layers, then bound the :sha tag history. ---
 docker image prune --force >/dev/null 2>&1 || true
+# Keep 'latest' + the 2 newest :sha tags (rollback needs at least one previous build) and
+# remove older sha-tagged images, which would otherwise accumulate forever, one per deploy.
+mapfile -t old_sha_tags < <(
+  docker images "$IMAGE_NAME" --format '{{.CreatedAt}}\t{{.Tag}}' \
+    | awk -F'\t' '$2 != "latest" { print }' \
+    | sort -r \
+    | awk -F'\t' 'NR > 2 { print $2 }'
+)
+for tag in "${old_sha_tags[@]}"; do
+  log "removing old image $IMAGE_NAME:$tag"
+  docker rmi "$IMAGE_NAME:$tag" >/dev/null 2>&1 || true
+done
 
 log "deploy complete: $IMAGE_NAME:$new_sha listening on ${BIND_ADDR}:${HOST_PORT}"

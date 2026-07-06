@@ -7,6 +7,13 @@ interface ToastItem {
   message: string;
 }
 
+/*
+ * Module-scope monotonic counter for toast keys. The old `message + Date.now()` scheme collided
+ * when the same message was shown twice in one millisecond (e.g. an error loop), which — now that
+ * onHide actually unmounts toasts — caused a React duplicate-key warning and removed both at once.
+ */
+let toastKeySequence = 0;
+
 interface UseToastResult {
   showToast: (message: string) => void;
   toastComponents: ReactNode;
@@ -16,7 +23,8 @@ const useToast = (): UseToastResult => {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
 
   const showToast = useCallback((message: string) => {
-    const key = message + Date.now();
+    toastKeySequence += 1;
+    const key = `toast-${toastKeySequence}`;
     setToasts((previousToasts) => [...previousToasts, { key, message }]);
   }, []);
 

@@ -1,13 +1,13 @@
 import { type ChangeEvent, type Dispatch, type FormEvent, type SetStateAction, useState } from 'react';
 import { useMatchRoute, useNavigate } from '@tanstack/react-router';
-import type { LoginDto, SignupDto } from '@sandwicheck/shared';
+import { ERROR_CODE, type LoginDto, ROLE, type SignupDto, type SignupPendingData } from '@sandwicheck/shared';
 import { ROUTE_PATHS } from '@/constants/route-paths';
 import { useAuthGlobalContext } from '@/context/AuthGlobalContext';
 import { useModalContext } from '@/context/ModalContext';
 import { readSandwichFromCache } from '@/services/api-sandwiches';
 import type { ApiResult } from '@/types/api';
 import type { User } from '@/types/domain';
-import { isAuthRoute } from '@/utils/auth-utils';
+import { isSafeReturnTo } from '@/utils/auth-utils';
 import validateForm from '@/utils/validate-utils';
 import useToast from './use-toast.tsx';
 
@@ -30,12 +30,17 @@ interface UseFormResult {
   errors: string[];
   setErrors: Dispatch<SetStateAction<string[]>>;
   logIn: (params: LoginDto) => Promise<ApiResult<User>>;
-  signUp: (params: SignupDto) => Promise<ApiResult<User>>;
+  signUp: (params: SignupDto) => Promise<ApiResult<SignupPendingData>>;
   user: Partial<User>;
+  /** True after a login was rejected because the account's email is not yet confirmed. */
+  loginNeedsEmailConfirmation: boolean;
   LoginHandler: (event: FormEvent, returnTo?: string | null) => Promise<void>;
   signUpHandler: (event: FormEvent, returnTo?: string | null) => Promise<SignUpResult | void>;
   navigate: ReturnType<typeof useNavigate>;
   parentId: string | undefined;
+  /** Whether the user consented to redeeming the parent invite token on login. */
+  linkConsent: boolean;
+  setLinkConsent: Dispatch<SetStateAction<boolean>>;
   role: string;
   setRole: Dispatch<SetStateAction<string>>;
   handleFileChange: (event: ChangeEvent<HTMLInputElement>) => void;
@@ -49,6 +54,9 @@ const useForm = (): UseFormResult => {
   const [role, setRole] = useState('');
 
   const [errors, setErrors] = useState<string[]>([]);
+  const [loginNeedsEmailConfirmation, setLoginNeedsEmailConfirmation] = useState(false);
+  // Consent to be linked as a dependent when logging in through a parent invite link.
+  const [linkConsent, setLinkConsent] = useState(false);
   const { showToast } = useToast();
 
   const { logIn, signUp, currentUser: user } = useAuthGlobalContext();
@@ -76,7 +84,7 @@ const useForm = (): UseFormResult => {
      * 3. Else → /menu
      */
     let destination: string;
-    if (returnTo && returnTo.trim() && !isAuthRoute(returnTo)) {
+    if (isSafeReturnTo(returnTo)) {
       destination = returnTo;
     } else {
       const unExpiredSavedSandwich = readSandwichFromCache();
@@ -110,19 +118,31 @@ const useForm = (): UseFormResult => {
       return;
     }
 
-    // `parentId` is the route param value, which now carries a parent invite token.
-    const res = await logIn({ email, password, inviteToken: parentId });
+    /*
+     * `parentId` is the route param value, which now carries a parent invite token. Only send it
+     * (and the explicit consent flag) when the user ticked the consent checkbox — otherwise log in
+     * normally without linking, so an invite link can never silently attach the account to a parent.
+     */
+    const res = await logIn({
+      email,
+      password,
+      inviteToken: linkConsent ? parentId : undefined,
+      acceptInvite: linkConsent ? true : undefined,
+    });
     if (res.error) {
-      // Check for email confirmation error
-      if (res.error.message && res.error.message.includes('confirm your email')) {
+      // The server stamps EMAIL_NOT_CONFIRMED so we can offer the resend UI without parsing prose.
+      if (res.error.code === ERROR_CODE.emailNotConfirmed) {
+        setLoginNeedsEmailConfirmation(true);
         setErrors([res.error.message]);
         return;
       }
+      setLoginNeedsEmailConfirmation(false);
       setErrors(['Login failed, try signup instead']);
       return;
     }
 
     // Login successful - show toast and redirect
+    setLoginNeedsEmailConfirmation(false);
     redirectUser(returnTo, 'Login successful!');
   };
 
@@ -130,30 +150,38 @@ const useForm = (): UseFormResult => {
     event.preventDefault();
     setErrors([]);
 
-    const errorMessages = validateForm({ name, email, password, confirmPassword });
+    /*
+     * Invite links always create a dependent (child) account — the role select
+     * is not rendered in that flow, so the role must be derived here.
+     */
+    const effectiveRole = parentId ? ROLE.child : role;
+
+    const errorMessages = validateForm({ name, email, password, confirmPassword, role: effectiveRole });
     if (errorMessages.length > 0) {
       setErrors(errorMessages);
       return;
     }
 
     // `parentId` is the route param value, which now carries a parent invite token.
-    const res = await signUp({ name, email, password, role, inviteToken: parentId });
+    const res = await signUp({ name, email, password, role: effectiveRole, inviteToken: parentId });
     if (res.error) {
       setErrors([res.error.message]);
       return;
     }
 
     /*
-     * Check if email confirmation is required.
-     * Handle both successful email send and failed email send cases.
+     * The server signals a pending account via data.requiresEmailConfirmation, regardless of the
+     * human-readable message. The signup-pending screen offers an in-band resend if it never arrives.
      */
-    if (
-      res.message &&
-      (res.message.includes('check your email') || res.message.includes('confirmation email could not be sent'))
-    ) {
+    if (res.data?.requiresEmailConfirmation) {
       // Don't redirect - return success state to show confirmation message
       setErrors([]); // Clear errors
-      return { success: true, needsEmailConfirmation: true, email, message: res.message };
+      return {
+        success: true,
+        needsEmailConfirmation: true,
+        email,
+        message: res.message,
+      };
     }
 
     // Signup successful (no email confirmation needed) - show toast and redirect
@@ -179,10 +207,13 @@ const useForm = (): UseFormResult => {
     logIn,
     signUp,
     user,
+    loginNeedsEmailConfirmation,
     LoginHandler,
     signUpHandler,
     navigate,
     parentId,
+    linkConsent,
+    setLinkConsent,
     role,
     setRole,
     handleFileChange,

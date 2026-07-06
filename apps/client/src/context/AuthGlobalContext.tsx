@@ -2,6 +2,7 @@ import { createContext, type ReactNode, useCallback, useContext, useEffect, useS
 import { LOGGED_IN_USER_TIME_OUT_DAYS } from '@/constants/user-constants';
 import useUser, { type UseUserResult } from '@/hooks/use-user';
 import { logResponse } from '@/utils/log';
+import { readJsonFromStorage } from '@/utils/storage-utils';
 import { timeDifference } from '@/utils/utils';
 
 type AuthGlobalContextValue = Omit<UseUserResult, 'setIsCurrentUserReady'> & {
@@ -36,15 +37,23 @@ const AuthGlobalContextProvider = ({ children }: { children: ReactNode }): React
   const openSignupPrompt = useCallback(() => setIsSignupPromptOpen(true), []);
 
   useEffect(() => {
-    // Check whether a user logged in and the time-out window has not passed
-    const lastLoginAt = JSON.parse(localStorage.getItem('loggedIn') ?? 'null');
-    const loggedInFor = timeDifference(lastLoginAt, Date.now()).days;
-    if (loggedInFor > LOGGED_IN_USER_TIME_OUT_DAYS) {
+    /*
+     * Check whether a user logged in and the time-out window has not passed. Parse once
+     * (safely): a corrupt 'loggedIn' value is cleared instead of throwing out of hydration.
+     */
+    let lastLoginAt = readJsonFromStorage<number>('loggedIn');
+    const now = Date.now();
+    // A future lastLoginAt (corrupt/forged timestamp, or a clock moved backward) is treated as expired.
+    if (
+      lastLoginAt !== null &&
+      (lastLoginAt > now || timeDifference(lastLoginAt, now).days > LOGGED_IN_USER_TIME_OUT_DAYS)
+    ) {
       localStorage.removeItem('loggedIn');
+      lastLoginAt = null;
     }
 
-    // Skip readCurrentUser for a not-logged-in user
-    if (!JSON.parse(localStorage.getItem('loggedIn') ?? 'null')) {
+    // Skip readCurrentUser for a not-logged-in (or expired) user
+    if (lastLoginAt === null) {
       setIsCurrentUserReady(true);
       return;
     }

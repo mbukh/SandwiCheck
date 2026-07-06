@@ -1,14 +1,14 @@
-import type { DietaryPreference } from '@sandwicheck/shared';
+import type { ApiErrorResponse, DietaryPreference } from '@sandwicheck/shared';
 import { INGREDIENTS_CACHE_TIME_OUT_MINS } from '@/constants/ingredients-constants';
 import type { ApiResult } from '@/types/api';
 import type { Ingredient } from '@/types/domain';
 import { handleResponse } from '@/utils/api-utils';
 import { createFetchApi } from '@/utils/fetch-api';
 import { log, logResponse } from '@/utils/log';
+import { readJsonFromStorage } from '@/utils/storage-utils';
 import { timeDifference } from '@/utils/utils';
 
 const api = createFetchApi(`${import.meta.env.VITE_API_SERVER}/api/v1/ingredients`, {
-  'Access-Control-Allow-Origin': import.meta.env.VITE_HOST,
   'Content-Type': 'application/json',
 });
 
@@ -48,7 +48,10 @@ const fetchIngredients = async ({
 /** GET / — all ingredients, with dietary filtering and client-side caching. */
 export const getAllIngredients = async ({
   dietaryPreferences = [],
-}: { dietaryPreferences?: DietaryPreference[] } = {}): Promise<{ data: Ingredient[] }> => {
+}: { dietaryPreferences?: DietaryPreference[] } = {}): Promise<{
+  data: Ingredient[];
+  error?: ApiErrorResponse['error'];
+}> => {
   let ingredients = readIngredientsFromCache();
   if (ingredients) {
     log('📝 💾 Read ingredients from cache', ingredients);
@@ -62,11 +65,10 @@ export const getAllIngredients = async ({
 
       localStorage.setItem('ingredients', JSON.stringify(ingredients));
       localStorage.setItem('ingredients-cachedAt', JSON.stringify(Date.now()));
+    } else {
+      // Report the failure instead of masquerading as an empty catalog (dead builder + Randomize).
+      return { data: [], error: res.error };
     }
-  }
-
-  if (!ingredients) {
-    return { data: [] };
   }
 
   if (dietaryPreferences && dietaryPreferences.length > 0) {
@@ -79,24 +81,21 @@ export const getAllIngredients = async ({
 // UTILS //
 
 function readIngredientsFromCache(): Ingredient[] | null {
-  const ingredientsString = localStorage.getItem('ingredients');
-  const cachedAtString = localStorage.getItem('ingredients-cachedAt');
+  const ingredients = readJsonFromStorage<Ingredient[]>('ingredients');
+  const cachedAt = readJsonFromStorage<number>('ingredients-cachedAt');
 
-  if (!ingredientsString || !cachedAtString) return null;
+  if (!ingredients || cachedAt === null) return null;
 
-  const ingredients = JSON.parse(ingredientsString) as Ingredient[] | null;
-  const cachedAt = JSON.parse(cachedAtString) as number;
-
-  if (!ingredients) return null;
-
-  const cacheExpired = timeDifference(cachedAt, Date.now()).minutes > INGREDIENTS_CACHE_TIME_OUT_MINS;
+  const now = Date.now();
+  // A future cachedAt (corrupt/forged timestamp, or a clock moved backward) is stale, not eternally fresh.
+  const cacheExpired = cachedAt > now || timeDifference(cachedAt, now).minutes > INGREDIENTS_CACHE_TIME_OUT_MINS;
 
   if (cacheExpired) return null;
 
   return ingredients;
 }
 
-function filterIngredientsByDietaryPreferences(
+export function filterIngredientsByDietaryPreferences(
   ingredients: Ingredient[],
   dietaryPreferences: DietaryPreference[],
 ): Ingredient[] {

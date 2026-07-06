@@ -25,7 +25,8 @@ export const getIngredients = asyncHandler(async (req, res, _next) => {
   const query: Record<string, unknown> = {};
 
   if (dietaryPreferences) {
-    query.dietaryPreferences = { $all: dietaryPreferences.split('|') };
+    // Accept the same "," / "|" list dialect as the sandwiches endpoint.
+    query.dietaryPreferences = { $all: dietaryPreferences.split(/[,|]/).filter(Boolean) };
   }
 
   const sort: Record<string, 1 | -1> = {};
@@ -183,7 +184,15 @@ export const deleteIngredient = asyncHandler(async (req, res, next) => {
     return next(createHttpError.NotFound('Ingredient not found'));
   }
 
-  // await removeAllIngredientImagesByImageBase(ingredient.imageBase);
+  /*
+   * Clean up the orphaned image files — but only if no other ingredient still references the same
+   * imageBase, so we never delete images out from under a sibling that shares the base.
+   * (removeFilesInPath uses allSettled, so missing files are tolerated.)
+   */
+  const sharesImageBase = await Ingredient.exists({ imageBase: ingredient.imageBase, _id: { $ne: ingredient._id } });
+  if (!sharesImageBase) {
+    await removeAllIngredientImagesByImageBase(ingredient.imageBase);
+  }
 
   res.status(200).json({
     success: true,

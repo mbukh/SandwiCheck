@@ -90,10 +90,7 @@ function ConfirmEmail(): React.JSX.Element {
 
       {!loading && error && (
         <div className="mt-15 md:mt-20 xl:mt-24">
-          {errorType === ERROR_CODE.maxResends ||
-          error.includes('Maximum number') ||
-          error.includes('max resends') ||
-          error.includes('contact support') ? (
+          {errorType === ERROR_CODE.maxResends ? (
             <div className="flex flex-col items-center">
               <div className="mb-6 md:mb-8 xl:mb-10">
                 <svg

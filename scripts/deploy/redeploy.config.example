@@ -29,8 +29,9 @@
 # images. Persists across rebuilds.
 # UPLOADS_DIR=/app/sandwicheck/apps/server/uploads
 
-# How many 2s health-check polls to wait after (re)starting the container.
-# HEALTH_RETRIES=30
+# How many 2s health-check polls to wait after (re)starting the container. Must exceed the image
+# healthcheck's ~100s verdict window (start-period 10s + interval 30s x retries 3), so 75 x 2s = 150s.
+# HEALTH_RETRIES=75
 
 # Set to true to rebuild + restart even when there are no new commits (debugging).
 # FORCE=false

@@ -6,10 +6,12 @@ import cors from 'cors';
 import helmet from 'helmet';
 import hpp from 'hpp';
 import createHttpError from 'http-errors';
+import mongoose from 'mongoose';
 import morgan from 'morgan';
 import connectDB from './config/db.ts';
 import { CLIENT_DIR, UPLOADS_DIR } from './config/dir.ts';
 import errorHandler from './middleware/errorHandler.ts';
+import { isAllowedOrigin, originCheck } from './middleware/originCheckMiddleware.ts';
 import requestIdMiddleware from './middleware/requestIdMiddleware.ts';
 import authRoutes from './routes/authRoutes.ts';
 import ingredientsRoutes from './routes/ingredientsRoutes.ts';
@@ -38,23 +40,25 @@ app.use(
     message: 'Too many requests, please try again later',
   }),
 );
-// CORS cross-domain access
+/*
+ * CORS cross-domain access. Enforce the CLIENT_URL allowlist (and same-origin /
+ * no-origin requests); in local dev, additionally allow any localhost origin — but
+ * never reflect an arbitrary origin back with credentials, which the previous
+ * `NODE_ENV === 'local' || ...` did. The allowlist lives in originCheckMiddleware
+ * so CORS and the CSRF origin check can never drift apart.
+ */
 app.use(
   cors({
-    origin: (origin, callback) => {
-      /*
-       * Enforce the CLIENT_URL allowlist (and same-origin / no-origin requests). In local
-       * dev, additionally allow any localhost origin — but never reflect an arbitrary origin
-       * back with credentials, which the previous `NODE_ENV === 'local' || ...` did.
-       */
-      const isLocalhost = !!origin && /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
-      const isAllowed =
-        !origin || process.env.CLIENT_URL === origin || (process.env.NODE_ENV === 'local' && isLocalhost);
-      callback(null, isAllowed);
-    },
+    origin: (origin, callback) => callback(null, isAllowedOrigin(origin)),
     credentials: true,
   }),
 );
+/*
+ * CSRF origin check: CORS only stops cross-site pages from READING responses —
+ * no-preflight requests (HTML form posts, multipart uploads) still EXECUTE.
+ * Block state-changing API requests from foreign web origins outright.
+ */
+app.use('/api/', originCheck);
 
 // Body parser middleware
 app.use(express.json({ limit: '5kb' }));
@@ -203,3 +207,57 @@ process.on('unhandledRejection', (error, _promise) => {
     }
   }, 1000);
 });
+
+// Close the HTTP server (stop accepting connections, drain in-flight) then Mongo.
+const closeForShutdown = async (): Promise<void> => {
+  const httpServer = server;
+  if (httpServer) {
+    await new Promise<void>((resolve, reject) => {
+      httpServer.close((err) => (err ? reject(err) : resolve()));
+    });
+  }
+  await mongoose.connection.close();
+};
+
+/*
+ * Graceful shutdown. As PID 1 in a container, Node ignores SIGTERM/SIGINT unless we
+ * handle them explicitly — otherwise `docker stop` waits the full 10s grace period
+ * and then SIGKILLs. Exit 0 once the server and DB connection have closed.
+ */
+let shuttingDown = false;
+for (const signal of ['SIGTERM', 'SIGINT'] as const) {
+  process.on(signal, () => {
+    /*
+     * Ignore repeated signals (a second Ctrl-C, an orchestrator retry, SIGINT-then-SIGTERM).
+     * Re-entering closeForShutdown would call httpServer.close() on an already-closing server,
+     * which rejects with ERR_SERVER_NOT_RUNNING and turns a clean exit into exit(1).
+     */
+    if (shuttingDown) {
+      logger.info('Shutdown already in progress, ignoring repeated signal', { signal });
+      return;
+    }
+    shuttingDown = true;
+
+    logger.info('Received shutdown signal, closing server', { signal });
+
+    // Backstop: if a stuck keep-alive connection prevents a clean close, force-exit.
+    const forceExit = setTimeout(() => {
+      logger.error('Graceful shutdown timed out, forcing exit');
+      process.exit(1);
+    }, 10_000);
+    forceExit.unref();
+
+    void (async () => {
+      try {
+        await closeForShutdown();
+        clearTimeout(forceExit);
+        logger.info('Shutdown complete');
+        process.exit(0);
+      } catch (error) {
+        const err = error as Error;
+        logger.error('Error during graceful shutdown', { message: err.message, name: err.name });
+        process.exit(1);
+      }
+    })();
+  });
+}

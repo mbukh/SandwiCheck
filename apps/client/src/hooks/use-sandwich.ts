@@ -1,11 +1,10 @@
-import { type Dispatch, type SetStateAction, useCallback, useReducer, useState } from 'react';
+import { type Dispatch, type SetStateAction, useReducer, useState } from 'react';
 import { TYPE } from '@sandwicheck/shared';
 import { EMPTY_SANDWICH } from '@/constants/sandwich-constants';
-import sandwichReducer, { SANDWICH_ACTION, type SandwichAction } from '@/reducers/sandwich-reducer';
-import { fetchSandwichById, readSandwichFromCache } from '@/services/api-sandwiches';
+import sandwichReducer, { type SandwichAction } from '@/reducers/sandwich-reducer';
+import { readSandwichFromCache } from '@/services/api-sandwiches';
 import type { BuilderSandwich } from '@/types/domain';
 import { ensureLayerInstanceIds } from '@/utils/layer-instance-utils';
-import { logResponse } from '@/utils/log';
 
 interface UseSandwichResult {
   currentType: string;
@@ -14,7 +13,6 @@ interface UseSandwichResult {
   sandwichDispatch: Dispatch<SandwichAction>;
   isSavingSandwich: boolean;
   setIsSavingSandwich: Dispatch<SetStateAction<boolean>>;
-  getSandwich: (sandwichId: string) => Promise<void>;
 }
 
 /**
@@ -50,18 +48,6 @@ const useSandwich = (): UseSandwichResult => {
 
   const [sandwich, sandwichDispatch] = useReducer(sandwichReducer, EMPTY_SANDWICH, initializeSandwich);
 
-  const getSandwich = useCallback(async (sandwichId: string): Promise<void> => {
-    const res = await fetchSandwichById(sandwichId);
-    logResponse('🥪 Read sandwich', res);
-
-    if (res.success) {
-      sandwichDispatch({
-        type: SANDWICH_ACTION.UPDATE_SANDWICH,
-        payload: res.data || EMPTY_SANDWICH,
-      });
-    }
-  }, []);
-
   return {
     currentType,
     setCurrentType,
@@ -69,7 +55,6 @@ const useSandwich = (): UseSandwichResult => {
     sandwichDispatch,
     isSavingSandwich,
     setIsSavingSandwich,
-    getSandwich,
   };
 };
 

@@ -25,6 +25,12 @@ export interface LoginDto {
   password?: string;
   /** Parent invite token; links the account to the inviting parent on login. */
   inviteToken?: string;
+  /**
+   * Explicit consent to redeem `inviteToken` and be linked as a dependent. The server only
+   * redeems the token when this is `true`, so a victim logging in through an attacker's invite
+   * link is never silently attached to the attacker's account.
+   */
+  acceptInvite?: boolean;
 }
 
 /** Response payload for POST /auth/create-invite. */
@@ -47,6 +53,15 @@ export interface ResetPasswordDto {
 
 export interface ResendConfirmationDto {
   email?: string;
+}
+
+/**
+ * Response payload for a pending (email-confirmation-required) signup. Returned identically
+ * whether the account was just created, an unconfirmed account was refreshed, or the email
+ * already belongs to a confirmed account — so the endpoint never reveals which case occurred.
+ */
+export interface SignupPendingData {
+  requiresEmailConfirmation: true;
 }
 
 // ==== Child accounts ==== //

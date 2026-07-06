@@ -23,7 +23,22 @@ export interface SandwichLayer extends Ingredient {
   ingredientId?: string;
 }
 
-/** A sandwich as served by the API. Wire dates arrive as ISO strings. */
+/**
+ * A sandwich layer as it arrives on the wire: only the ingredient reference and portion. The
+ * server does NOT populate the catalog fields (name/type/image…); the client hydrates them from
+ * the ingredients list. (`id` appears on builder-originated payloads as a fallback reference.)
+ */
+export interface WireSandwichLayer {
+  ingredientId?: string;
+  id?: string;
+  portion?: Portion;
+}
+
+/**
+ * A sandwich as served by the API. Wire dates arrive as ISO strings. `ingredients` are
+ * un-hydrated references — use HydratedSandwich (via hydrateSandwichIngredientsData) once the
+ * catalog fields are filled in.
+ */
 export interface Sandwich {
   id: string;
   name: string;
@@ -31,12 +46,15 @@ export interface Sandwich {
   authorId?: string;
   image: string;
   votesCount: number;
-  ingredients: SandwichLayer[];
+  ingredients: WireSandwichLayer[];
   dietaryPreferences: DietaryPreference[];
   comment?: string;
   createdAt: string;
   updatedAt: string;
 }
+
+/** A Sandwich whose layers have been hydrated with their full catalog data. */
+export type HydratedSandwich = Omit<Sandwich, 'ingredients'> & { ingredients: SandwichLayer[] };
 
 export interface DayMenuItem {
   sandwichId: string;
@@ -55,7 +73,8 @@ export interface User {
   roles: Role[];
   profilePicture?: string;
   dietaryPreferences?: DietaryPreference[];
-  sandwiches: Sandwich[];
+  /** Login/signup/admin responses send sandwich IDs; populated responses send full sandwiches. */
+  sandwiches: Array<string | Sandwich>;
   weekMenu?: WeekMenu;
   favoriteSandwiches: string[];
   parents: User[];
